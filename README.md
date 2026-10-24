@@ -103,6 +103,14 @@ php -S 127.0.0.1:8080 -t public
 curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application/json" -d "{\"question\":\"What are the main risks?\"}"
 ```
 
+## Tests
+
+```powershell
+php vendor/phpunit/phpunit/phpunit
+```
+
+12 tests cover RAG chunking, cosine similarity, and the `.env` loader — no database or API required.
+
 ## Security
 
 Prepared SQL statements · CSRF protection · password hashing · RBAC checked on every target object · deny-by-default · files outside the web root · no secrets in code or logs · HTTPS and security headers · sensitive operations logged.
