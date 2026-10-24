@@ -1,4 +1,4 @@
-# AI layer (services/ai)
+# AI layer (services/Ai)
 
 Generic, self-contained services for the Meta Model API integration and the
 RAG (Retrieval-Augmented Generation) pipeline. No client-specific code and no

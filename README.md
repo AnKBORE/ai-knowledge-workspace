@@ -56,7 +56,7 @@ config/       environment configuration and routes
 core/         HTTP, routing, session, security, PDO
 controllers/  MVC controllers
 models/       data access
-services/     business logic (+ ai/ for Meta API integration)
+services/     business logic (+ Ai/ for Meta API integration)
 validators/   input validation
 views/        templates and pages
 storage/      logs, files, backups, cache (never exposed)

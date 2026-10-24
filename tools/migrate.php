@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use PDO;
-
 /**
  * Minimal migration runner (self-contained — no Composer needed).
  *

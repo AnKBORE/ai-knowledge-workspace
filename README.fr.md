@@ -56,7 +56,7 @@ config/       configuration par environnement et routes
 core/         HTTP, routage, session, sécurité, PDO
 controllers/  contrôleurs MVC
 models/       accès aux données
-services/     logique métier (+ ai/ pour l'intégration de l'API Meta)
+services/     logique métier (+ Ai/ pour l'intégration de l'API Meta)
 validators/   validation des entrées
 views/        gabarits et pages
 storage/      journaux, fichiers, sauvegardes, cache (jamais exposé)
