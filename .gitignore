@@ -1,0 +1,28 @@
+# Dépendances
+/vendor/
+
+# Secrets et configuration locale
+/.env
+
+# Outillage local
+/tools/composer.phar
+/tools/mailpit/
+/composer-setup.php
+
+# Journaux, fichiers déposés, sauvegardes, cache
+/storage/logs/*
+/storage/files/*
+/storage/backups/*
+/storage/cache/*
+!/storage/logs/.gitkeep
+!/storage/files/.gitkeep
+!/storage/backups/.gitkeep
+!/storage/cache/.gitkeep
+
+# PHPUnit
+/.phpunit.cache/
+/phpunit.xml.bak
+
+# Système
+.DS_Store
+Thumbs.db
