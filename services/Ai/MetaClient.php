@@ -12,7 +12,7 @@ namespace App\Services\Ai;
  * against the official Meta Model API at the hackathon kickoff; adjust
  * `request()` if the paths differ.
  */
-final class MetaClient
+class MetaClient
 {
     /**
      * @param array<string, mixed> $config Configuration from config/meta.php.
