@@ -82,6 +82,26 @@ php -S 127.0.0.1:8080 -t public
 
 En production, le document root doit pointer sur `public/`.
 
+## Démarrage rapide — démo IA
+
+```powershell
+# 1. Dépendances (crée vendor/autoload.php)
+composer install
+
+# 2. Créer le schéma (exécuter migrations/001_ai_rag.up.sql)
+
+# 3. Configurer .env avec vos clés API Meta (voir .env.example)
+
+# 4. Indexer un document
+php tools/index_document.php "Rapport annuel" chemin/rapport.txt
+
+# 5. Lancer le serveur local
+php -S 127.0.0.1:8080 -t public
+
+# 6. Poser une question (dans un autre terminal)
+curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application/json" -d "{\"question\":\"Quels sont les principaux risques ?\"}"
+```
+
 ## Sécurité
 
 Requêtes SQL préparées · protection CSRF · hachage des mots de passe · RBAC vérifié sur chaque objet ciblé · refus par défaut · fichiers hors de la racine web · aucun secret dans le code ni les journaux · HTTPS et en-têtes de sécurité · journalisation des opérations sensibles.
