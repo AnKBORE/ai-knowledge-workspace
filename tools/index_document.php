@@ -9,9 +9,10 @@ use App\Services\Ai\RagService;
  *
  * Usage:
  *   php tools/index_document.php "Title" /path/to/file.txt
+ *   php tools/index_document.php "Title" /path/to/file.pdf
  *
- * Supports plain text (.txt, .md). PDF text extraction requires a parser
- * (e.g. smalot/pdfparser) to be added in phase 1.
+ * Plain text (.txt, .md) is read directly. PDF text extraction uses
+ * smalot/pdfparser (composer install required).
  */
 
 $dependencies = require dirname(__DIR__) . '/bootstrap.php';
@@ -29,9 +30,25 @@ if (!is_file($file)) {
     exit(1);
 }
 
-$content = file_get_contents($file);
-if ($content === false) {
-    fwrite(STDERR, "Could not read: {$file}\n");
+$extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+
+if ($extension === 'pdf') {
+    if (!class_exists(\Smalot\PdfParser\Parser::class)) {
+        fwrite(STDERR, "PDF extraction requires smalot/pdfparser. Run `composer install` first.\n");
+        exit(1);
+    }
+    $parser = new \Smalot\PdfParser\Parser();
+    $content = $parser->parseFile($file)->getText();
+} else {
+    $content = file_get_contents($file);
+    if ($content === false) {
+        fwrite(STDERR, "Could not read: {$file}\n");
+        exit(1);
+    }
+}
+
+if (trim($content) === '') {
+    fwrite(STDERR, "No text could be extracted from: {$file}\n");
     exit(1);
 }
 

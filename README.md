@@ -88,12 +88,13 @@ In production the document root must point to `public/`.
 # 1. Dependencies (creates vendor/autoload.php)
 composer install
 
-# 2. Create the schema (run migrations/001_ai_rag.up.sql)
+# 2. Create the schema
+php tools/migrate.php migrate
 
 # 3. Configure .env with your Meta API keys (see .env.example)
 
-# 4. Index a document
-php tools/index_document.php "Annual report" path/to/report.txt
+# 4. Index a document (.txt, .md, .pdf)
+php tools/index_document.php "Annual report" docs/sample-report.txt
 
 # 5. Run the local server
 php -S 127.0.0.1:8080 -t public
