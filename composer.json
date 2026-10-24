@@ -1,10 +1,10 @@
 {
     "name": "ai-knowledge-workspace/app",
-    "description": "AI-powered institutional knowledge workspace (PHP 8.4 / MySQL 8.4, strict MVC).",
+    "description": "AI-powered institutional knowledge workspace (PHP 8.4.27 / MySQL 8.4.13, strict MVC).",
     "type": "project",
     "license": "proprietary",
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.4.27",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-openssl": "*",

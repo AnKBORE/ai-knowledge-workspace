@@ -42,8 +42,8 @@ Phase 2 : recherche vectorielle et génération augmentée par récupération (R
 
 | Composant | Version |
 |---|---|
-| PHP | 8.4 |
-| MySQL | 8.4 (InnoDB, utf8mb4) |
+| PHP | 8.4.27 |
+| MySQL | 8.4.13 (InnoDB, utf8mb4) |
 | Serveur web | Apache 2.4 |
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript ES6 |
 | IA | API Meta Model (REST) |

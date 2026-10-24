@@ -42,8 +42,8 @@ Phase 2: vector search and Retrieval-Augmented Generation (RAG).
 
 | Component | Version |
 |---|---|
-| PHP | 8.4 |
-| MySQL | 8.4 (InnoDB, utf8mb4) |
+| PHP | 8.4.27 |
+| MySQL | 8.4.13 (InnoDB, utf8mb4) |
 | Web server | Apache 2.4 |
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript ES6 |
 | AI | Meta Model API (REST) |
