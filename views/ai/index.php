@@ -80,10 +80,10 @@ declare(strict_types=1);
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title">Documents indexés</h2>
-                    <p class="panel-sub"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?></p>
+                    <p class="panel-sub" id="documents-count"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?></p>
                 </div>
             </div>
-            <div class="panel-body">
+            <div class="panel-body" id="documents-list">
                 <?php if (empty($documents)): ?>
                     <div class="dashboard-empty">
                         <div class="dashboard-empty-copy">
@@ -287,6 +287,93 @@ declare(strict_types=1);
         }
     });
 
+    function bindSummarizeButtons() {
+        document.querySelectorAll('.summarize-btn').forEach(function (button) {
+            if (button.dataset.bound === '1') {
+                return;
+            }
+            button.dataset.bound = '1';
+
+            button.addEventListener('click', async function () {
+                var documentTitle = button.getAttribute('data-document-title') || 'Document';
+                showLoading('Résumé', 'Résumé — ' + documentTitle, 'Synthèse du document…');
+
+                try {
+                    var data = await postJson('<?= e(url('/api/summarize.php')) ?>', {
+                        document_id: Number(button.getAttribute('data-document-id'))
+                    });
+                    if (data.error) {
+                        showError(data.error);
+                        return;
+                    }
+                    showResult('Résumé', 'Résumé — ' + documentTitle, 'Synthèse générée à partir du document.', data.summary || '', data.sources);
+                } catch (err) {
+                    showError('Erreur réseau.');
+                }
+            });
+        });
+    }
+
+    function renderDocuments(documents) {
+        var list = document.getElementById('documents-list');
+        var count = document.getElementById('documents-count');
+        count.textContent = documents.length + ' document' + (documents.length > 1 ? 's' : '');
+
+        if (documents.length === 0) {
+            list.innerHTML = '<div class="dashboard-empty"><div class="dashboard-empty-copy">'
+                + '<p class="dashboard-empty-label">Aucun document</p>'
+                + '<p>Ajoutez un premier document pour commencer.</p></div></div>';
+            return;
+        }
+
+        list.innerHTML = '';
+
+        documents.forEach(function (doc) {
+            var row = document.createElement('div');
+            row.className = 'dashboard-document-row';
+
+            var icon = document.createElement('span');
+            icon.className = 'doc-icon';
+            icon.setAttribute('aria-hidden', 'true');
+            icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>';
+
+            var copy = document.createElement('div');
+            copy.className = 'dashboard-document-copy';
+            var strong = document.createElement('strong');
+            strong.textContent = doc.title || '';
+            var span = document.createElement('span');
+            span.textContent = doc.filename || '';
+            copy.appendChild(strong);
+            copy.appendChild(span);
+
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'btn btn-sm btn-outline-primary summarize-btn';
+            button.setAttribute('data-document-id', String(doc.id));
+            button.setAttribute('data-document-title', doc.title || 'Document');
+            button.textContent = 'Résumer';
+
+            row.appendChild(icon);
+            row.appendChild(copy);
+            row.appendChild(button);
+            list.appendChild(row);
+        });
+
+        bindSummarizeButtons();
+    }
+
+    async function refreshDocuments() {
+        try {
+            var response = await fetch('<?= e(url('/api/documents.php')) ?>', { headers: { 'Accept': 'application/json' } });
+            var data = await response.json();
+            if (Array.isArray(data.documents)) {
+                renderDocuments(data.documents);
+            }
+        } catch (err) {
+            // Silent: the list keeps its previous state.
+        }
+    }
+
     var uploadForm = document.getElementById('upload-form');
     var uploadStatus = document.getElementById('upload-status');
 
@@ -306,33 +393,16 @@ declare(strict_types=1);
                 uploadStatus.className = 'small text-danger mt-2';
                 return;
             }
-            uploadStatus.textContent = 'Indexé : ' + data.title + ' (' + data.chunks + ' segments). Rechargez pour voir la liste.';
+            uploadStatus.textContent = 'Indexé : ' + data.title + ' (' + data.chunks + ' segments).';
             uploadStatus.className = 'small text-success mt-2';
             uploadForm.reset();
+            await refreshDocuments();
         } catch (err) {
             uploadStatus.textContent = 'Erreur réseau.';
             uploadStatus.className = 'small text-danger mt-2';
         }
     });
 
-    document.querySelectorAll('.summarize-btn').forEach(function (button) {
-        button.addEventListener('click', async function () {
-            var documentTitle = button.getAttribute('data-document-title') || 'Document';
-
-            showLoading('Résumé', 'Résumé — ' + documentTitle, 'Synthèse du document…');
-            try {
-                var data = await postJson('<?= e(url('/api/summarize.php')) ?>', {
-                    document_id: Number(button.getAttribute('data-document-id'))
-                });
-                if (data.error) {
-                    showError(data.error);
-                    return;
-                }
-                showResult('Résumé', 'Résumé — ' + documentTitle, 'Synthèse générée à partir du document.', data.summary || '', data.sources);
-            } catch (err) {
-                showError('Erreur réseau.');
-            }
-        });
-    });
+    bindSummarizeButtons();
 })();
 </script>
