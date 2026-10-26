@@ -7,11 +7,14 @@ use App\Core\Csrf;
 use App\Core\Env;
 use App\Core\Session;
 use App\Models\Adhesion;
+use App\Models\Document;
 use App\Models\Espace;
 use App\Models\TentativeConnexion;
 use App\Models\Utilisateur;
+use App\Models\VersionDocument;
 use App\Services\Ai\EmbeddingService;
 use App\Services\AuthentificationService;
+use App\Services\DocumentService;
 use App\Services\PermissionService;
 use App\Services\Ai\MetaClient;
 use App\Services\Ai\RagService;
@@ -64,6 +67,9 @@ $authService = new AuthentificationService($users, $tentatives, $auth);
 $espaces = new Espace($pdo);
 $adhesions = new Adhesion($pdo);
 $permissions = new PermissionService($pdo);
+$documentModel = new Document($pdo);
+$versionModel = new VersionDocument($pdo);
+$documentService = new DocumentService($documentModel, $versionModel, $root . '/storage/files');
 
 $metaClient = new MetaClient($config);
 $embeddings = new EmbeddingService($metaClient, (string) ($config['embedding_mode'] ?? 'local'));
@@ -81,6 +87,9 @@ return [
     'permissions' => $permissions,
     'espaces' => $espaces,
     'adhesions' => $adhesions,
+    'document_model' => $documentModel,
+    'version_model' => $versionModel,
+    'documents_service' => $documentService,
     'meta' => $metaClient,
     'rag' => $rag,
     'transcription' => $transcription,

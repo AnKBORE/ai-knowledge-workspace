@@ -31,6 +31,7 @@ final class RagServiceIntegrationTest extends TestCase
         $this->pdo->exec('CREATE TABLE document_chunks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             document_id INTEGER NOT NULL,
+            version_document_id INTEGER NULL,
             chunk_index INTEGER NOT NULL,
             content TEXT NOT NULL,
             embedding TEXT NOT NULL

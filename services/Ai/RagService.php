@@ -51,17 +51,20 @@ final class RagService
 
     /**
      * Index a document: split it, embed each chunk, and store it.
+     *
+     * When a version id is given, chunks are attached to that immutable version.
      */
-    public function indexDocument(int $documentId, string $content): void
+    public function indexDocument(int $documentId, string $content, ?int $versionId = null): void
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO document_chunks (document_id, chunk_index, content, embedding)
-             VALUES (:document_id, :chunk_index, :content, :embedding)'
+            'INSERT INTO document_chunks (document_id, version_document_id, chunk_index, content, embedding)
+             VALUES (:document_id, :version_id, :chunk_index, :content, :embedding)'
         );
 
         foreach ($this->chunk($content) as $index => $chunk) {
             $stmt->execute([
                 'document_id' => $documentId,
+                'version_id' => $versionId,
                 'chunk_index' => $index,
                 'content' => $chunk,
                 'embedding' => json_encode($this->embeddings->embed($chunk), JSON_THROW_ON_ERROR),

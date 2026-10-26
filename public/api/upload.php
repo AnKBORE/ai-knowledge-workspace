@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 /**
- * Public endpoint — POST /api/upload.php
+ * Protected endpoint — POST /api/upload.php
  *
  * Multipart form with `title` and `file`. Extracts text from the file
- * (text / PDF / scanned image / audio), indexes it, and returns JSON.
+ * (text / PDF / scanned image / audio), creates an immutable version
+ * (SHA-256, stored outside the web root) and indexes the content.
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
@@ -40,17 +41,15 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
     exit;
 }
 
-$tmp = (string) $upload['tmp_name'];
-$originalName = (string) ($upload['name'] ?? 'document');
-
 try {
+    $tmp = (string) $upload['tmp_name'];
+    $originalName = (string) ($upload['name'] ?? 'document');
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
-    $audioExtensions = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'];
-    $imageExtensions = ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'];
 
-    if (in_array($extension, $audioExtensions, true)) {
+    // 1. Extract the text BEFORE moving the uploaded file.
+    if (in_array($extension, ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'], true)) {
         $content = $dependencies['transcription']->transcribe($tmp);
-    } elseif (in_array($extension, $imageExtensions, true)) {
+    } elseif (in_array($extension, ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'], true)) {
         $content = $dependencies['vision']->extractText($tmp);
     } elseif ($extension === 'pdf') {
         if (!class_exists(\Smalot\PdfParser\Parser::class)) {
@@ -66,19 +65,24 @@ try {
         throw new \RuntimeException('No text could be extracted from the file.');
     }
 
-    $pdo = $dependencies['pdo'];
-    $stmt = $pdo->prepare('INSERT INTO documents (title, filename, mime_type) VALUES (:title, :filename, :mime_type)');
-    $stmt->execute([
-        'title' => $title,
-        'filename' => $originalName,
-        'mime_type' => (string) ($upload['type'] ?? ''),
-    ]);
+    // 2. Store the file and create the document + first immutable version.
+    $result = $dependencies['documents_service']->createDocument(
+        $title,
+        null,
+        $dependencies['auth']->id(),
+        $upload,
+    );
 
-    $documentId = (int) $pdo->lastInsertId();
+    // 3. Index the extracted text, attached to the version.
     $chunks = count($dependencies['rag']->chunk($content));
-    $dependencies['rag']->indexDocument($documentId, $content);
+    $dependencies['rag']->indexDocument($result['document_id'], $content, $result['version_id']);
 
-    echo json_encode(['title' => $title, 'chunks' => $chunks], JSON_UNESCAPED_UNICODE);
+    echo json_encode([
+        'title' => $title,
+        'chunks' => $chunks,
+        'version' => 1,
+        'sha256' => substr($result['sha256'], 0, 12),
+    ], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
     http_response_code(500);
     $debug = getenv('APP_DEBUG') === '1';

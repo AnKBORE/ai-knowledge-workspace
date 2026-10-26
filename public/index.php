@@ -99,9 +99,7 @@ if ($method === 'POST' && $path === '/api/ask') {
 
 // Workspace UI.
 if ($method === 'GET') {
-    $documents = $dependencies['pdo']
-        ->query('SELECT id, title, filename FROM documents ORDER BY id DESC LIMIT 20')
-        ->fetchAll();
+$documents = $dependencies['document_model']->listRecent();
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render('ai/index', [
