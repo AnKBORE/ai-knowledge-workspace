@@ -121,6 +121,7 @@ Start the server and open <http://127.0.0.1:8080/>.
 ## Documentation
 
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — execution roadmap (phases, checklists, milestones).
+- [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — issue register & resolution log.
 
 ## Tests
 

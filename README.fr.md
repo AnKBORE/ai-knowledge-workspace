@@ -121,6 +121,7 @@ Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
 ## Documentation
 
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons).
+- [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et journal des résolutions.
 
 ## Tests
 

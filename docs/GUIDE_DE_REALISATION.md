@@ -324,4 +324,14 @@ git push
 
 ---
 
+## 9. Suivi des problèmes & résolutions
+
+Tous les blocages et écarts sont suivis dans **[REGISTRE_PROBLEMES.md](REGISTRE_PROBLEMES.md)** :
+
+- chaque problème a un **ID** (O1, O2…) ;
+- quand il est résolu : statut **✅** + résolution datée + ligne dans le **Journal des résolutions** ;
+- la **checklist ci-dessus** est mise à jour en conséquence.
+
+> Règle : **aucun problème ne disparaît sans trace**.
+
 *Ce guide est un document vivant : coche chaque critère de sortie avant de passer à la phase suivante.*
