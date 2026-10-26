@@ -118,6 +118,10 @@ The workspace is a server-rendered page (Bootstrap 5 + the foundation's design s
 
 Start the server and open <http://127.0.0.1:8080/>.
 
+## Documentation
+
+- [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — execution roadmap (phases, checklists, milestones).
+
 ## Tests
 
 ```powershell

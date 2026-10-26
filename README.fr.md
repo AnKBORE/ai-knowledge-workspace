@@ -118,6 +118,10 @@ L'espace de travail est une page rendue côté serveur (Bootstrap 5 + le design 
 
 Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
 
+## Documentation
+
+- [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons).
+
 ## Tests
 
 ```powershell
