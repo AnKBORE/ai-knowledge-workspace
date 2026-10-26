@@ -90,7 +90,7 @@ final class RagService
      */
     public function answer(string $question, int $topK = 6): array
     {
-        $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK);
+        $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK, $question);
 
         if ($chunks === []) {
             return [
@@ -113,7 +113,7 @@ final class RagService
      */
     public function task(string $instruction, int $topK = 8): array
     {
-        $chunks = $this->retrieveSimilar($this->embeddings->embed($instruction), $topK);
+        $chunks = $this->retrieveSimilar($this->embeddings->embed($instruction), $topK, $instruction);
 
         if ($chunks === []) {
             return [
@@ -278,15 +278,26 @@ PROMPT;
     }
 
     /**
-     * Retrieve the chunks most similar to the query vector.
+     * Retrieve the most relevant chunks for a query (exposed for tooling and tests).
      *
-     * Cosine similarity is computed in PHP for portability. In phase 2 this
-     * step can be replaced by a dedicated vector store or a MySQL vector index.
+     * @return list<array{content: string, title: string, score: float}>
+     */
+    public function search(string $query, int $topK = 6): array
+    {
+        return $this->retrieveSimilar($this->embeddings->embed($query), $topK, $query);
+    }
+
+    /**
+     * Retrieve the chunks most similar to the query (hybrid ranking).
+     *
+     * The final score blends the semantic similarity (cosine) with a lexical
+     * overlap score, which keeps precision high with the local hashing
+     * embeddings and stays correct when an API embedding is configured.
      *
      * @param list<float> $queryVector
      * @return list<array{content: string, title: string, score: float}>
      */
-    private function retrieveSimilar(array $queryVector, int $topK): array
+    private function retrieveSimilar(array $queryVector, int $topK, string $query = ''): array
     {
         $rows = $this->db->query(
             'SELECT c.content, c.embedding, d.title
@@ -300,15 +311,69 @@ PROMPT;
             if (!is_array($vector)) {
                 continue;
             }
+
+            $semantic = $this->embeddings->similarity($queryVector, $vector);
+            $lexical = $query !== '' ? $this->lexicalScore($query, (string) $row['content']) : 0.0;
+
             $scored[] = [
                 'content' => (string) $row['content'],
                 'title' => (string) ($row['title'] ?? 'Document'),
-                'score' => $this->embeddings->similarity($queryVector, $vector),
+                'score' => 0.6 * $semantic + 0.4 * $lexical,
             ];
         }
 
         usort($scored, static fn (array $a, array $b): int => $b['score'] <=> $a['score']);
 
         return array_slice($scored, 0, $topK);
+    }
+
+    /**
+     * Lexical overlap between the query and a chunk (0..1), stop words removed.
+     */
+    private function lexicalScore(string $query, string $content): float
+    {
+        $queryTokens = $this->tokens($query);
+        $contentTokens = $this->tokens($content);
+
+        if ($queryTokens === [] || $contentTokens === []) {
+            return 0.0;
+        }
+
+        $contentCounts = array_count_values($contentTokens);
+        $matches = 0;
+
+        foreach ($queryTokens as $token) {
+            if (isset($contentCounts[$token])) {
+                $matches++;
+            }
+        }
+
+        return $matches / count($queryTokens);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function tokens(string $text): array
+    {
+        $text = mb_strtolower($text);
+        $text = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $text) ?? $text;
+        $tokens = preg_split('/\s+/u', trim($text)) ?: [];
+
+        $stopWords = [
+            'le', 'la', 'les', 'de', 'des', 'du', 'un', 'une', 'et', 'ou', 'en', 'a', 'au', 'aux',
+            'ce', 'ces', 'que', 'qui', 'quel', 'quels', 'quelle', 'quelles', 'est', 'sont',
+            'pour', 'dans', 'sur', 'avec', 'par', 'il', 'elle', 'ils', 'elles', 'on', 'nous',
+            'vous', 'je', 'tu', 'ne', 'pas', 'plus', 'son', 'sa', 'ses', 'leur', 'leurs',
+            'the', 'a', 'an', 'and', 'or', 'of', 'to', 'in', 'on', 'for', 'with', 'is', 'are',
+            'what', 'which', 'how', 'why', 'this', 'that', 'from', 'by', 'at', 'be', 'as',
+        ];
+
+        return array_values(array_filter(
+            $tokens,
+            static fn (string $token): bool => $token !== ''
+                && mb_strlen($token) > 1
+                && !in_array($token, $stopWords, true),
+        ));
     }
 }

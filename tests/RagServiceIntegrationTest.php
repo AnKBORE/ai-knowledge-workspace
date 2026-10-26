@@ -120,4 +120,18 @@ final class RagServiceIntegrationTest extends TestCase
         $this->assertStringContainsString('Aucun contenu', $result['summary']);
         $this->assertSame([], $result['sources']);
     }
+
+    public function testHybridSearchRanksLexicalMatchesFirst(): void
+    {
+        $informatique = $this->insertDocument('Informatique');
+        $this->rag->indexDocument($informatique, 'Le cours informatique de 6e presente le bon comportement en salle informatique.');
+
+        $nutrition = $this->insertDocument('Nutrition');
+        $this->rag->indexDocument($nutrition, 'Le rapport nutrition traite des maladies chroniques et de l alimentation.');
+
+        $results = $this->rag->search('informatique', 1);
+
+        $this->assertNotEmpty($results);
+        $this->assertSame('Informatique', $results[0]['title']);
+    }
 }
