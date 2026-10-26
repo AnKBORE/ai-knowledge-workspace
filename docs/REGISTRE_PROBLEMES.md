@@ -61,7 +61,8 @@
 | **R18** | Crédits Baseten (partenaires) | **Demande soumise** (100 $ + 2M TPM) ; sélection par cas d'usage, réponse par e-mail | 2026-10-26 |
 | **R19** | RBAC effectif, documents rattachés, versions, suppression | **Livré** : RBAC appliqué aux 4 endpoints (200 responsable / 403 membre sans adhésion), `espace_id` renseigné, badge versions, suppression + journal, 52 tests | 2026-10-26 |
 | **R20** | Recherche sémantique faible | **Livré** : recherche **hybride** (cosinus 60 % + recouvrement lexical 40 %), `search()` exposé, test de classement, 53 tests | 2026-10-26 |
-| **R21** | Multimodal non démontré | **Livré et testé** : **vision** via Muse Spark Open (`image_url`, OCR « BONJOUR LE MONDE ») + **audio** via `audio_url` (discours de JFK transcrit) ; upload image de bout en bout validé (document indexé, `espace_id` renseigné) | 2026-10-26 |
+| **R21** | Multimodal non démontré | **Livré et testé** : **vision** via Muse Spark Open (`image_url`, OCR « BONJOUR LE MONDE ») + **audio** via `audio_url` (discours de JFK transcrit) ; upload image de bout en bout validé | 2026-10-26 |
+| **R22** | Audio limité à 5 min | **Livré** : découpage interne en chunks de 5 min (WAV/MP3, **streaming**), limite app **10 min** avec message clair, timeout/mémoire augmentés, 55 tests | 2026-10-26 |
 
 ---
 
@@ -91,6 +92,7 @@
 | 2026-10-26 | R19 | RBAC appliqué aux endpoints (403 vérifié) ; documents rattachés à un espace ; versions visibles ; suppression de document. |
 | 2026-10-26 | R20 | Recherche hybride (sémantique + lexicale) livrée ; bruit de retrieval supprimé ; 53 tests verts. |
 | 2026-10-26 | R21 | Vision via Muse Spark Open validée en live (OCR) ; audio (`audio_url`) validé en live (discours de JFK) ; upload image de bout en bout. |
+| 2026-10-26 | R22 | Audio jusqu'à 10 min (découpage streaming en chunks de 5 min) ; message clair au-delà de 10 min. |
 
 ---
 
