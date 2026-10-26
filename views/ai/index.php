@@ -26,21 +26,12 @@ declare(strict_types=1);
                 </div>
             </div>
             <div class="panel-body">
-                <form id="ask-form" class="mb-3">
+                <form id="ask-form">
                     <label for="question" class="form-label">Votre question</label>
                     <textarea id="question" class="form-control" rows="3" placeholder="Quels sont les principaux risques du dernier trimestre ?" required></textarea>
                     <button type="submit" class="btn btn-primary mt-3">Demander</button>
                 </form>
-
-                <div id="answer" class="border rounded-3 p-3 bg-light" hidden>
-                    <strong class="d-block mb-2">Réponse</strong>
-                    <div id="answer-text" class="mb-0"></div>
-                    <div id="answer-sources" class="mt-3" hidden>
-                        <strong class="d-block mb-1">Sources</strong>
-                        <ul id="answer-sources-list" class="small mb-0"></ul>
-                    </div>
-                </div>
-                <div id="answer-error" class="alert alert-danger mt-3" hidden></div>
+                <div id="ask-error" class="alert alert-danger mt-3" hidden></div>
             </div>
         </section>
 
@@ -56,33 +47,7 @@ declare(strict_types=1);
                     <textarea id="instruction" class="form-control" rows="3" placeholder="Ex. « Prépare une note pour le directeur sur les activités du trimestre »" required></textarea>
                     <button type="submit" class="btn btn-primary mt-3">Générer un brouillon</button>
                 </form>
-
-                <div id="draft" class="border rounded-3 p-3 bg-light mt-3" hidden>
-                    <strong class="d-block mb-2">Brouillon</strong>
-                    <div id="draft-text" class="mb-0"></div>
-                    <div id="draft-sources" class="mt-3" hidden>
-                        <strong class="d-block mb-1">Sources</strong>
-                        <ul id="draft-sources-list" class="small mb-0"></ul>
-                    </div>
-                </div>
                 <div id="task-error" class="alert alert-danger mt-3" hidden></div>
-            </div>
-        </section>
-
-        <section id="summary-card" class="panel" hidden>
-            <div class="panel-head">
-                <div>
-                    <h2 class="panel-title">Résumé</h2>
-                    <p class="panel-sub">Synthèse du document sélectionné.</p>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div id="summary-text"></div>
-                <div id="summary-sources" class="mt-2 small" hidden>
-                    <strong class="d-block mb-1">Sources</strong>
-                    <ul id="summary-sources-list" class="mb-0"></ul>
-                </div>
-                <div id="summary-error" class="alert alert-danger mt-2" hidden></div>
             </div>
         </section>
     </div>
@@ -137,12 +102,36 @@ declare(strict_types=1);
                                 <span><?= e($doc['filename'] ?? '') ?></span>
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
-                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Résumer</button>
+                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
+                                    data-document-title="<?= e($doc['title'] ?? 'Document') ?>">Résumer</button>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
         </section>
+    </div>
+</div>
+
+<div class="modal fade" id="result-modal" tabindex="-1" aria-labelledby="result-modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="result-modal-title">Résultat</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <div id="result-content"></div>
+                <div id="result-sources" class="mt-3" hidden>
+                    <strong class="d-block mb-1">Sources</strong>
+                    <ul id="result-sources-list" class="small mb-0"></ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="download-docx">Télécharger DOCX</button>
+                <button type="button" class="btn btn-outline-secondary" id="download-pdf">Télécharger PDF</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -186,17 +175,55 @@ declare(strict_types=1);
         return response.json();
     }
 
+    var resultModalEl = document.getElementById('result-modal');
+    var resultModal = new bootstrap.Modal(resultModalEl);
+    var resultTitle = document.getElementById('result-modal-title');
+    var resultContent = document.getElementById('result-content');
+    var resultSources = document.getElementById('result-sources');
+    var resultSourcesList = document.getElementById('result-sources-list');
+    var currentResult = { title: 'Résultat', content: '' };
+
+    function showResult(title, content, sources) {
+        currentResult = { title: title, content: content };
+        resultTitle.textContent = title;
+        resultContent.innerHTML = escapeThenBold(content);
+        resultSources.hidden = !renderSources(resultSourcesList, sources);
+        resultModal.show();
+    }
+
+    async function downloadResult(format) {
+        try {
+            var response = await fetch('<?= e(url('/api/export.php')) ?>', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: currentResult.title, content: currentResult.content, format: format })
+            });
+            if (!response.ok) {
+                throw new Error('export');
+            }
+            var blob = await response.blob();
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = currentResult.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.' + format;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            alert('Export impossible.');
+        }
+    }
+
+    document.getElementById('download-pdf').addEventListener('click', function () { downloadResult('pdf'); });
+    document.getElementById('download-docx').addEventListener('click', function () { downloadResult('docx'); });
+
     var askForm = document.getElementById('ask-form');
-    var answer = document.getElementById('answer');
-    var answerText = document.getElementById('answer-text');
-    var answerSources = document.getElementById('answer-sources');
-    var answerSourcesList = document.getElementById('answer-sources-list');
-    var answerError = document.getElementById('answer-error');
+    var askError = document.getElementById('ask-error');
 
     askForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        answer.hidden = true;
-        answerError.hidden = true;
+        askError.hidden = true;
 
         var question = document.getElementById('question').value.trim();
         if (!question) { return; }
@@ -204,29 +231,22 @@ declare(strict_types=1);
         try {
             var data = await postJson('<?= e(url('/api/ask.php')) ?>', { question: question, mode: 'answer' });
             if (data.error) {
-                answerError.textContent = data.error;
-                answerError.hidden = false;
+                askError.textContent = data.error;
+                askError.hidden = false;
                 return;
             }
-            answerText.innerHTML = escapeThenBold(data.answer || '');
-            answerSources.hidden = !renderSources(answerSourcesList, data.sources);
-            answer.hidden = false;
+            showResult('Réponse', data.answer || '', data.sources);
         } catch (err) {
-            answerError.textContent = 'Erreur réseau. Vérifiez le serveur.';
-            answerError.hidden = false;
+            askError.textContent = 'Erreur réseau. Vérifiez le serveur.';
+            askError.hidden = false;
         }
     });
 
     var taskForm = document.getElementById('task-form');
-    var draft = document.getElementById('draft');
-    var draftText = document.getElementById('draft-text');
-    var draftSources = document.getElementById('draft-sources');
-    var draftSourcesList = document.getElementById('draft-sources-list');
     var taskError = document.getElementById('task-error');
 
     taskForm.addEventListener('submit', async function (event) {
         event.preventDefault();
-        draft.hidden = true;
         taskError.hidden = true;
 
         var instruction = document.getElementById('instruction').value.trim();
@@ -239,9 +259,7 @@ declare(strict_types=1);
                 taskError.hidden = false;
                 return;
             }
-            draftText.innerHTML = escapeThenBold(data.draft || '');
-            draftSources.hidden = !renderSources(draftSourcesList, data.sources);
-            draft.hidden = false;
+            showResult('Brouillon', data.draft || '', data.sources);
         } catch (err) {
             taskError.textContent = 'Erreur réseau. Vérifiez le serveur.';
             taskError.hidden = false;
@@ -276,32 +294,21 @@ declare(strict_types=1);
         }
     });
 
-    var summaryCard = document.getElementById('summary-card');
-    var summaryText = document.getElementById('summary-text');
-    var summarySources = document.getElementById('summary-sources');
-    var summarySourcesList = document.getElementById('summary-sources-list');
-    var summaryError = document.getElementById('summary-error');
-
     document.querySelectorAll('.summarize-btn').forEach(function (button) {
         button.addEventListener('click', async function () {
-            summaryCard.hidden = false;
-            summaryError.hidden = true;
-            summaryText.textContent = 'Résumé en cours…';
+            var documentTitle = button.getAttribute('data-document-title') || 'Document';
 
             try {
                 var data = await postJson('<?= e(url('/api/summarize.php')) ?>', {
                     document_id: Number(button.getAttribute('data-document-id'))
                 });
                 if (data.error) {
-                    summaryError.textContent = data.error;
-                    summaryError.hidden = false;
+                    alert(data.error);
                     return;
                 }
-                summaryText.innerHTML = escapeThenBold(data.summary || '');
-                summarySources.hidden = !renderSources(summarySourcesList, data.sources);
+                showResult('Résumé — ' + documentTitle, data.summary || '', data.sources);
             } catch (err) {
-                summaryError.textContent = 'Erreur réseau.';
-                summaryError.hidden = false;
+                alert('Erreur réseau.');
             }
         });
     });
