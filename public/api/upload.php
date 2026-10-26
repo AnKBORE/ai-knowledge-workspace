@@ -75,5 +75,6 @@ try {
     echo json_encode(['title' => $title, 'chunks' => $chunks], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Indexing failed.'], JSON_UNESCAPED_UNICODE);
+    $debug = getenv('APP_DEBUG') === '1';
+    echo json_encode(['error' => $debug ? $e->getMessage() : 'Indexing failed.'], JSON_UNESCAPED_UNICODE);
 }

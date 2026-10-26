@@ -28,7 +28,8 @@ $input = is_array($input) ? $input : [];
 try {
     $controller = new AiAssistantController($dependencies['rag']);
     echo json_encode($controller->ask($input), JSON_UNESCAPED_UNICODE);
-} catch (Throwable) {
+} catch (Throwable $e) {
     http_response_code(500);
-    echo json_encode(['error' => 'Internal server error.'], JSON_UNESCAPED_UNICODE);
+    $debug = getenv('APP_DEBUG') === '1';
+    echo json_encode(['error' => $debug ? $e->getMessage() : 'Internal server error.'], JSON_UNESCAPED_UNICODE);
 }
