@@ -59,6 +59,7 @@
 | **R16** | Journalisation (audit) | **Phase 7 livrée** : `JournalService` append-only + instrumentation (connexion, déconnexion, dépôt, question), journal live validé, 45 tests verts | 2026-10-26 |
 | **R17** | Résumé automatique | **Livré** : `RagService::summarize()` + `/api/summarize.php` + bouton « Résumer » dans l'UI, résumé live validé (sources incluses), 47 tests verts | 2026-10-26 |
 | **R18** | Crédits Baseten (partenaires) | **Demande soumise** (100 $ + 2M TPM) ; sélection par cas d'usage, réponse par e-mail | 2026-10-26 |
+| **R19** | RBAC effectif, documents rattachés, versions, suppression | **Livré** : RBAC appliqué aux 4 endpoints (200 responsable / 403 membre sans adhésion), `espace_id` renseigné, badge versions, suppression + journal, 52 tests | 2026-10-26 |
 
 ---
 
@@ -85,6 +86,7 @@
 | 2026-10-26 | R16 | Phase 7 (journal d'audit append-only) livrée ; 45 tests verts. |
 | 2026-10-26 | R17 | Résumé automatique livré (sources incluses) ; 47 tests verts. |
 | 2026-10-26 | R18 | Demande de crédits Baseten soumise (100 $ + 2M TPM) ; réponse par e-mail si sélectionné. |
+| 2026-10-26 | R19 | RBAC appliqué aux endpoints (403 vérifié) ; documents rattachés à un espace ; versions visibles ; suppression de document. |
 
 ---
 
