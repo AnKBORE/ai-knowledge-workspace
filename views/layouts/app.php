@@ -32,6 +32,7 @@ $initials = mb_strtoupper(
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>">
+    <script src="<?= e(url('/assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>"></script>
 </head>
 <body class="app-body">
 <div class="app-shell">
@@ -100,7 +101,6 @@ $initials = mb_strtoupper(
     </div>
 </div>
 
-<script src="<?= e(url('/assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>" defer></script>
 <script src="<?= e(url('/assets/js/shell.js')) ?>" defer></script>
 </body>
 </html>
