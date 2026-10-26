@@ -72,7 +72,7 @@ final class RagServiceIntegrationTest extends TestCase
     {
         $answer = $this->rag->query('What are the main risks?');
 
-        $this->assertStringContainsString('No relevant document', $answer);
+        $this->assertStringContainsString('documents fournis', $answer);
     }
 
     public function testAnswerReturnsCitedSources(): void
@@ -117,7 +117,7 @@ final class RagServiceIntegrationTest extends TestCase
     {
         $result = $this->rag->summarize(999);
 
-        $this->assertStringContainsString('No content', $result['summary']);
+        $this->assertStringContainsString('Aucun contenu', $result['summary']);
         $this->assertSame([], $result['sources']);
     }
 }

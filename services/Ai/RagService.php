@@ -12,6 +12,9 @@ use PDO;
  * Indexing: document -> chunks -> embeddings -> stored in the database.
  * Querying:  question -> embedding -> similar chunks -> grounded answer.
  * Tasking:   instruction -> retrieval -> structured draft (agentic).
+ *
+ * Anti-hallucination: prompts forbid inventing facts and require citing the
+ * numbered excerpts; temperature is kept low (0.2) for precise, stable output.
  */
 final class RagService
 {
@@ -75,7 +78,7 @@ final class RagService
     /**
      * Answer a question grounded in the indexed documents (plain string).
      */
-    public function query(string $question, int $topK = 4): string
+    public function query(string $question, int $topK = 6): string
     {
         return (string) $this->answer($question, $topK)['answer'];
     }
@@ -85,19 +88,19 @@ final class RagService
      *
      * @return array{answer: string, sources: list<array{title: string, excerpt: string}>}
      */
-    public function answer(string $question, int $topK = 4): array
+    public function answer(string $question, int $topK = 6): array
     {
         $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK);
 
         if ($chunks === []) {
-            return ['answer' => 'No relevant document found. Index documents first.', 'sources' => []];
+            return [
+                'answer' => "Cette information ne figure pas dans les documents fournis. Indexez d'abord un document.",
+                'sources' => [],
+            ];
         }
 
-        $system = "You are a knowledge assistant. Answer using ONLY the excerpts below.\n"
-            . "If the answer is not present, say so explicitly. Keep the answer concise and factual.\n\n"
-            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
-
-        $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]]);
+        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+        $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
 
         return ['answer' => $answer, 'sources' => $this->sources($chunks)];
     }
@@ -108,20 +111,19 @@ final class RagService
      *
      * @return array{draft: string, sources: list<array{title: string, excerpt: string}>}
      */
-    public function task(string $instruction, int $topK = 5): array
+    public function task(string $instruction, int $topK = 8): array
     {
         $chunks = $this->retrieveSimilar($this->embeddings->embed($instruction), $topK);
 
         if ($chunks === []) {
-            return ['draft' => 'No relevant document found. Index documents first.', 'sources' => []];
+            return [
+                'draft' => "Aucun document pertinent n'a été trouvé. Indexez d'abord un document.",
+                'sources' => [],
+            ];
         }
 
-        $system = "You draft documents for an organization, using ONLY the excerpts below.\n"
-            . "Produce a well-structured draft with a title and short sections (bullet points when useful).\n"
-            . "Do not invent facts. If something is missing, add a short 'Information manquante' note.\n\n"
-            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
-
-        $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $system]]);
+        $system = $this->taskPrompt() . "\n\n" . $this->labeledContext($chunks);
+        $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $system]], null, 0.2);
 
         return ['draft' => $draft, 'sources' => $this->sources($chunks)];
     }
@@ -137,23 +139,106 @@ final class RagService
 
         if ($chunks === []) {
             return [
-                'summary' => 'No content indexed for this document.',
+                'summary' => 'Aucun contenu indexé pour ce document.',
                 'document_id' => $documentId,
                 'sources' => [],
             ];
         }
 
-        $system = "You summarize documents. Using ONLY the excerpts below, write a concise summary "
-            . "(5 bullet points max) in the same language as the document. Do not invent facts.\n\n"
-            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
-
-        $summary = $this->client->chat('Summarize this document.', [['role' => 'system', 'content' => $system]]);
+        $system = $this->summaryPrompt() . "\n\n" . $this->labeledContext($chunks);
+        $summary = $this->client->chat('Résume ce document.', [['role' => 'system', 'content' => $system]], null, 0.2);
 
         return [
             'summary' => $summary,
             'document_id' => $documentId,
             'sources' => $this->sources($chunks),
         ];
+    }
+
+    /**
+     * Build the numbered context the model must ground itself in.
+     *
+     * @param list<array{content: string, title: string, score: float}> $chunks
+     */
+    private function labeledContext(array $chunks): string
+    {
+        $parts = [];
+
+        foreach ($chunks as $index => $chunk) {
+            $parts[] = sprintf(
+                "[Extrait %d — %s]\n%s",
+                $index + 1,
+                (string) ($chunk['title'] ?? 'Document'),
+                (string) $chunk['content'],
+            );
+        }
+
+        return implode("\n\n---\n\n", $parts);
+    }
+
+    private function answerPrompt(): string
+    {
+        return <<<'PROMPT'
+Tu es un assistant documentaire expert, rigoureux et professionnel.
+
+RÈGLES ABSOLUES :
+1. Réponds UNIQUEMENT à partir des extraits fournis. N'invente aucun fait, chiffre, date, nom ni citation.
+2. Si l'information demandée n'est pas présente dans les extraits, réponds exactement : « Cette information ne figure pas dans les documents fournis. »
+3. Reprends les données exactes (chiffres, dates, noms, intitulés) sans les arrondir ni les reformuler.
+4. Réponds dans la langue de la question.
+5. Structure ta réponse :
+   - une phrase de synthèse directe ;
+   - les points clés sous forme de liste à puces, chacun appuyé sur un extrait ;
+   - termine par « Sources : [1], [2] » en citant les numéros des extraits réellement utilisés.
+6. Ton neutre et précis, sans remplissage ni formule de politesse.
+PROMPT;
+    }
+
+    private function taskPrompt(): string
+    {
+        return <<<'PROMPT'
+Tu es un rédacteur professionnel chargé de produire un document de travail (note, rapport, synthèse).
+
+RÈGLES ABSOLUES :
+1. Utilise UNIQUEMENT les faits contenus dans les extraits fournis.
+2. N'invente aucun chiffre, date, nom, engagement ni recommandation non appuyée.
+3. Structure le document :
+   - un titre clair ;
+   - une section « Objet » (1 à 2 phrases) ;
+   - des sections thématiques avec des puces ;
+   - une section « Points d'attention » si des informations manquent (sans les inventer) ;
+   - une section « Sources » citant [1], [2]…
+4. Reprends les données exactes (chiffres, dates, noms).
+5. Ton professionnel, concis, prêt à être relu et validé.
+6. Rédige dans la langue de la demande.
+PROMPT;
+    }
+
+    private function summaryPrompt(): string
+    {
+        return <<<'PROMPT'
+Tu résumes un document de façon fidèle, précise et professionnelle.
+
+RÈGLES :
+1. Reprends les faits, chiffres, dates et noms exacts.
+2. Structure : une phrase de synthèse, puis 3 à 6 points clés.
+3. N'invente rien et n'ajoute aucune interprétation.
+4. Rédige dans la langue du document.
+PROMPT;
+    }
+
+    /**
+     * @param list<array{content: string, title: string, score: float}> $chunks
+     * @return list<array{title: string, excerpt: string}>
+     */
+    private function sources(array $chunks): array
+    {
+        return array_map(static function (array $chunk): array {
+            return [
+                'title' => (string) ($chunk['title'] ?? 'Document'),
+                'excerpt' => mb_substr((string) ($chunk['content'] ?? ''), 0, 240),
+            ];
+        }, $chunks);
     }
 
     /**
@@ -185,20 +270,6 @@ final class RagService
         }
 
         return $chunks;
-    }
-
-    /**
-     * @param list<array{content: string, title: string, score: float}> $chunks
-     * @return list<array{title: string, excerpt: string}>
-     */
-    private function sources(array $chunks): array
-    {
-        return array_map(static function (array $chunk): array {
-            return [
-                'title' => (string) ($chunk['title'] ?? 'Document'),
-                'excerpt' => mb_substr((string) ($chunk['content'] ?? ''), 0, 240),
-            ];
-        }, $chunks);
     }
 
     /**

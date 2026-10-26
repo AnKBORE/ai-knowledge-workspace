@@ -28,15 +28,17 @@ class MetaClient
      *  - "meta"   : POST {base_url}/v1/responses         (Meta Responses API)
      *  - "openai" : POST {base_url}/v1/chat/completions   (Baseten, Modal, Fireworks)
      *
+     * A low temperature (0.2 by default) keeps answers precise and stable.
+     *
      * @param array<int, array{role: string, content: string}> $context
      */
-    public function chat(string $prompt, array $context = [], ?string $model = null): string
+    public function chat(string $prompt, array $context = [], ?string $model = null, ?float $temperature = null): string
     {
         $style = (string) ($this->config['api_style'] ?? 'meta');
 
         return $style === 'openai'
-            ? $this->chatOpenAi($prompt, $context, $model)
-            : $this->chatMeta($prompt, $context, $model);
+            ? $this->chatOpenAi($prompt, $context, $model, $temperature)
+            : $this->chatMeta($prompt, $context, $model, $temperature);
     }
 
     /**
@@ -44,7 +46,7 @@ class MetaClient
      *
      * @param array<int, array{role: string, content: string}> $context
      */
-    private function chatMeta(string $prompt, array $context, ?string $model): string
+    private function chatMeta(string $prompt, array $context, ?string $model, ?float $temperature): string
     {
         $input = [];
         foreach ($context as $message) {
@@ -59,6 +61,7 @@ class MetaClient
             'model' => $model ?? (string) ($this->config['chat_model'] ?? 'muse-wonder-1.0'),
             'input' => $input,
             'stream' => false,
+            'temperature' => $temperature ?? 0.2,
         ]);
 
         return $this->extractOutputText($payload);
@@ -69,7 +72,7 @@ class MetaClient
      *
      * @param array<int, array{role: string, content: string}> $context
      */
-    private function chatOpenAi(string $prompt, array $context, ?string $model): string
+    private function chatOpenAi(string $prompt, array $context, ?string $model, ?float $temperature): string
     {
         $messages = [];
         foreach ($context as $message) {
@@ -83,6 +86,7 @@ class MetaClient
         $payload = $this->request('/v1/chat/completions', [
             'model' => $model ?? (string) ($this->config['chat_model'] ?? ''),
             'messages' => $messages,
+            'temperature' => $temperature ?? 0.2,
         ]);
 
         return (string) ($payload['choices'][0]['message']['content'] ?? '');

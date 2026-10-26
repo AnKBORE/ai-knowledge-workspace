@@ -21,7 +21,7 @@ final class FakeMetaClient extends MetaClient
         return [1.0, 0.0, 0.0];
     }
 
-    public function chat(string $prompt, array $context = [], ?string $model = null): string
+    public function chat(string $prompt, array $context = [], ?string $model = null, ?float $temperature = null): string
     {
         return 'Grounded answer from context.';
     }
