@@ -226,7 +226,9 @@ class MetaClient
     }
 
     /**
-     * OpenAI-compatible multimodal call with an audio file (base64 input_audio).
+     * OpenAI-compatible multimodal call with an audio file (base64 data URL).
+     *
+     * Baseten expects the `audio_url` content type (WAV/MP3/FLAC/OGG/M4A).
      */
     private function chatWithAudio(string $prompt, string $audioPath): string
     {
@@ -236,7 +238,14 @@ class MetaClient
         }
 
         $extension = strtolower(pathinfo($audioPath, PATHINFO_EXTENSION));
-        $format = in_array($extension, ['mp3', 'wav'], true) ? $extension : 'wav';
+        $mime = match ($extension) {
+            'mp3' => 'audio/mpeg',
+            'flac' => 'audio/flac',
+            'ogg' => 'audio/ogg',
+            'm4a', 'aac' => 'audio/mp4',
+            default => 'audio/wav',
+        };
+        $dataUrl = 'data:' . $mime . ';base64,' . base64_encode($data);
 
         $payload = $this->request('/v1/chat/completions', [
             'model' => (string) ($this->config['chat_model'] ?? ''),
@@ -244,10 +253,7 @@ class MetaClient
                 'role' => 'user',
                 'content' => [
                     ['type' => 'text', 'text' => $prompt],
-                    ['type' => 'input_audio', 'input_audio' => [
-                        'data' => base64_encode($data),
-                        'format' => $format,
-                    ]],
+                    ['type' => 'audio_url', 'audio_url' => ['url' => $dataUrl]],
                 ],
             ]],
             'temperature' => 0.2,

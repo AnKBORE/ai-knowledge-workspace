@@ -53,7 +53,7 @@ The repository contains two **clearly separated** layers:
 | Immutable document versions (SHA-256) | ✅ |
 | Append-only audit journal | ✅ |
 | Scanned images (OCR via Muse Spark Open vision) | ✅ (live-tested) |
-| Voice (audio via Muse Spark Open) | 🔌 code path ready (to test with a real audio) |
+| Voice (audio via Muse Spark Open) | ✅ (live-tested with speech) |
 | SAM 3.1 / Muse Voice Transcribe (dedicated endpoints) | 🔜 optional (Meta Model API) |
 
 ---

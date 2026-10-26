@@ -53,7 +53,7 @@ Le dépôt contient deux couches **clairement séparées** :
 | Versions immuables des documents (SHA-256) | ✅ |
 | Journal d'audit en ajout seul | ✅ |
 | Images scannées (OCR via la vision de Muse Spark Open) | ✅ (testé en live) |
-| Voix (audio via Muse Spark Open) | 🔌 code prêt (à tester avec un audio réel) |
+| Voix (audio via Muse Spark Open) | ✅ (testé en live avec de la parole) |
 | SAM 3.1 / Muse Voice Transcribe (endpoints dédiés) | 🔜 optionnel (Meta Model API) |
 
 ---
