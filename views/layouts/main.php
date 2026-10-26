@@ -26,8 +26,19 @@ $locale = (string) config('app.locale', 'fr');
             <span class="brand-text"><?= e($productName) ?></span>
         </a>
 
-        <div class="navbar-nav ms-auto align-items-lg-center">
+        <div class="navbar-nav ms-auto align-items-lg-center gap-2">
             <a class="nav-link" href="<?= e(url('/')) ?>">Assistant</a>
+            <?php if (!empty($currentUser) && isset($csrf)): ?>
+                <span class="nav-link disabled">
+                    <?= e(trim((string) ($currentUser['prenom'] ?? '') . ' ' . (string) ($currentUser['nom'] ?? ''))) ?>
+                </span>
+                <form method="post" action="<?= e(url('/logout')) ?>" class="m-0">
+                    <?= $csrf->field() ?>
+                    <button type="submit" class="btn btn-sm btn-outline-light">Déconnexion</button>
+                </form>
+            <?php else: ?>
+                <a class="nav-link" href="<?= e(url('/login')) ?>">Connexion</a>
+            <?php endif; ?>
         </div>
     </nav>
 </header>

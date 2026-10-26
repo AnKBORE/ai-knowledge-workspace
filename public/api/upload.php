@@ -14,6 +14,12 @@ $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
+if (!$dependencies['auth']->check()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);

@@ -3,13 +3,17 @@
 declare(strict_types=1);
 
 use App\Controllers\AiAssistantController;
+use App\Controllers\AuthController;
 use App\Core\View;
 
 /**
  * Front controller — single entry point of the application.
  *
- *   GET  /          -> workspace UI (upload + chat)
- *   POST /api/ask   -> AI knowledge assistant ({"question": "..."})
+ *   GET  /login   -> login form
+ *   POST /login   -> authenticate
+ *   POST /logout  -> sign out
+ *   GET  /        -> workspace UI (authenticated only)
+ *   POST /api/ask -> AI knowledge assistant (authenticated only)
  */
 
 try {
@@ -29,7 +33,60 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path = '/' . trim($path, '/');
 
-// JSON API (used by the workspace UI, and available under Apache rewriting).
+$view = new View(dirname(__DIR__) . '/views');
+$auth = $dependencies['auth'];
+$csrf = $dependencies['csrf'];
+$authController = new AuthController($dependencies['auth_service'], $csrf, $view);
+
+// Login form.
+if ($method === 'GET' && $path === '/login') {
+    if ($auth->check()) {
+        header('Location: ' . url('/'));
+        exit;
+    }
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo $authController->showLogin();
+    exit;
+}
+
+// Login submit.
+if ($method === 'POST' && $path === '/login') {
+    if (!$csrf->validate($_POST['_csrf'] ?? null)) {
+        http_response_code(419);
+        header('Content-Type: text/html; charset=utf-8');
+        echo $authController->showLogin('Session expirée. Rechargez la page et réessayez.');
+        exit;
+    }
+
+    if ($authController->login($_POST)) {
+        header('Location: ' . url('/'));
+        exit;
+    }
+
+    http_response_code(401);
+    header('Content-Type: text/html; charset=utf-8');
+    echo $authController->showLogin('Identifiants invalides.');
+    exit;
+}
+
+// Logout.
+if ($method === 'POST' && $path === '/logout') {
+    if ($csrf->validate($_POST['_csrf'] ?? null)) {
+        $authController->logout();
+    }
+
+    header('Location: ' . url('/login'));
+    exit;
+}
+
+// Everything below requires an authenticated user.
+if (!$auth->check()) {
+    header('Location: ' . url('/login'));
+    exit;
+}
+
+// JSON API (also available under Apache rewriting).
 if ($method === 'POST' && $path === '/api/ask') {
     $controller = new AiAssistantController($dependencies['rag']);
     $input = json_decode((string) file_get_contents('php://input'), true);
@@ -40,15 +97,19 @@ if ($method === 'POST' && $path === '/api/ask') {
     exit;
 }
 
-// Workspace UI (any normal GET).
+// Workspace UI.
 if ($method === 'GET') {
     $documents = $dependencies['pdo']
         ->query('SELECT id, title, filename FROM documents ORDER BY id DESC LIMIT 20')
         ->fetchAll();
 
     header('Content-Type: text/html; charset=utf-8');
-    $view = new View(dirname(__DIR__) . '/views');
-    echo $view->render('ai/index', ['title' => 'Assistant', 'documents' => $documents]);
+    echo $view->render('ai/index', [
+        'title' => 'Assistant',
+        'documents' => $documents,
+        'currentUser' => $auth->user(),
+        'csrf' => $csrf,
+    ]);
     exit;
 }
 

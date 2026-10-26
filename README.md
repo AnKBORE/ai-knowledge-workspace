@@ -108,6 +108,18 @@ php -S 127.0.0.1:8080 -t public
 curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application/json" -d "{\"question\":\"What are the main risks?\"}"
 ```
 
+## Authentication
+
+The workspace is protected by a session-based login (CSRF protection, brute-force lockout, password hashing).
+
+Create the first administrator account:
+
+```bash
+php tools/seed_admin.php
+```
+
+Credentials are controlled by `ADMIN_EMAIL` / `ADMIN_PASSWORD` (see `tools/seed_admin.php`). Then open <http://127.0.0.1:8080/login>.
+
 ## Web UI
 
 The workspace is a server-rendered page (Bootstrap 5 + the foundation's design system):

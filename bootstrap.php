@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Core\Auth;
+use App\Core\Csrf;
 use App\Core\Env;
+use App\Core\Session;
+use App\Models\TentativeConnexion;
+use App\Models\Utilisateur;
 use App\Services\Ai\EmbeddingService;
+use App\Services\AuthentificationService;
 use App\Services\Ai\MetaClient;
 use App\Services\Ai\RagService;
 use App\Services\Ai\TranscriptionService;
@@ -43,6 +49,16 @@ $pdo = new PDO(
     ],
 );
 
+$session = new Session();
+if (PHP_SAPI !== 'cli') {
+    $session->start();
+}
+$csrf = new Csrf($session);
+$auth = new Auth($session);
+$users = new Utilisateur($pdo);
+$tentatives = new TentativeConnexion($pdo);
+$authService = new AuthentificationService($users, $tentatives, $auth);
+
 $metaClient = new MetaClient($config);
 $embeddings = new EmbeddingService($metaClient, (string) ($config['embedding_mode'] ?? 'local'));
 $rag = new RagService($metaClient, $embeddings, $pdo);
@@ -52,6 +68,10 @@ $vision = new VisionService($metaClient);
 return [
     'config' => $config,
     'pdo' => $pdo,
+    'session' => $session,
+    'csrf' => $csrf,
+    'auth' => $auth,
+    'auth_service' => $authService,
     'meta' => $metaClient,
     'rag' => $rag,
     'transcription' => $transcription,

@@ -53,6 +53,7 @@
 | **O12** | Test réel de l'API | **Pipeline RAG complet validé** (retrieve + Muse Spark Open) | 2026-10-26 |
 | **O5** | Sources citées absentes | `RagService::answer()` renvoie les **sources** ; affichées dans l'UI | 2026-10-26 |
 | **O6** | Tâches agentiques | `RagService::task()` + section « Tâche agentique » dans l'UI | 2026-10-26 |
+| **R13** | Auth / RBAC / versions / audit | **Phase 1 livrée** : `utilisateur`, `Session`, `Csrf`, `Auth`, `AuthentificationService`, login/logout, 30 tests verts | 2026-10-26 |
 
 ---
 
@@ -73,6 +74,7 @@
 | 2026-10-26 | O12 | Pipeline RAG complet validé (réponse sourcée sur le rapport neutre). |
 | 2026-10-26 | O5 | Sources citées affichées sous la réponse. |
 | 2026-10-26 | O6 | Tâche agentique (« Générer un brouillon ») fonctionnelle. |
+| 2026-10-26 | R13 | Phase 1 (auth, CSRF, anti-brute-force) livrée ; 30 tests verts. |
 
 ---
 
