@@ -1,9 +1,8 @@
 # Guide de réalisation — Agentic Multimodal Knowledge Workspace
 
-> Feuille de route d'exécution du projet, de l'état actuel jusqu'à la soumission au **Meta Global AI Developer Hackathon**.
+> Feuille de route d'exécution, de l'état actuel jusqu'à la soumission au **Meta Global AI Developer Hackathon**.
 > Piste : **Indie Developer** · Thème : **Build for Your World** · Deadline : **4 novembre 2026, 21 h ET**.
-
-> **Statut (2026-10-26)** : pipeline **validé de bout en bout** via Baseten (Plan B) ; **sources citées** + **tâche agentique** livrées ; **21 tests verts**.
+> **Statut (2026-10-26)** : socle + RAG + assistant agentique (sources + tâches) validés ; MVP **partiel** (auth/RBAC, versions, audit à construire).
 
 ---
 
@@ -16,355 +15,452 @@
 | Un « basic RAG » | Notre projet |
 |---|---|
 | PDF texte uniquement | **Texte + PDF + scans (SAM 3.1) + voix (Muse Voice Transcribe)** |
-| « Question → réponse » | **Tâches multi-étapes** (rédiger une note, lister les retards, générer un rapport) |
+| « Question → réponse » | **Tâches multi-étapes** (note, rapport, liste des retards) |
 | Réponse sans traçabilité | **Sources citées** + brouillon prêt à l'emploi |
 | Chatbot générique | **Domaine concret** : paroisses, ONG, écoles, associations en Afrique |
+| Aucune gouvernance | **RBAC, versions immuables, journal d'audit** (repris du socle `espace_collaboratif`) |
 
-> ⚠️ Ne jamais présenter le projet comme « un chatbot qui répond aux questions sur des documents ». Toujours insister sur **l'agentique + le multimodal + la traçabilité**.
+> ⚠️ Ne jamais présenter le projet comme « un chatbot qui répond aux questions sur des documents ». Toujours insister sur **agentique + multimodal + traçabilité + gouvernance**.
 
 ---
 
-## 1. État actuel du projet (point de départ)
+## 1. État actuel (point de départ vérifié)
 
 ### ✅ Déjà réalisé
 
-- Scaffold MVC complet (PHP 8.4.27 / MySQL 8.4.13).
-- Pipeline RAG : `chunk → embed → retrieve → generate`.
-- Client API Meta aligné sur l'API réelle : `POST /v1/responses`, modèle `muse-wonder-1.0`.
-- Embedding **local** (hashing) par défaut → le RAG fonctionne sans endpoint d'embeddings.
-- Services multi-modaux : `TranscriptionService` (voix), `VisionService` (scans).
-- Base MySQL + schéma (5 tables).
-- **UI web** réutilisant le design du socle (Bootstrap 5, Poppins, `app.css`) : upload + chat.
-- Endpoints : `GET /`, `POST /api/ask.php`, `POST /api/upload.php`.
-- **19 tests PHPUnit** verts.
-- Scripts : `setup.ps1`, `setup.bat`, `serve.bat`, `tools/migrate.php`, `tools/index_document.php`.
-- README EN + FR.
+- Scaffold MVC (PHP 8.4.27 / MySQL 8.4.13), PSR-4, `.env`, autoload.
+- **RAG** : `chunk → embed → retrieve → generate`, embedding **local** (hashing) par défaut.
+- **Client API** compatible **Meta** (`/v1/responses`, `muse-wonder-1.0`) **et partenaires** (`/v1/chat/completions`, `META_API_STYLE=openai`).
+- **Assistant agentique** : `answer()` avec **sources citées**, `task()` pour **rédiger un brouillon**.
+- **UI** : upload + question + sources + tâche agentique.
+- **Upload PDF** (`smalot/pdfparser`) testé ; audio (transcription) et image (vision) branchés côté code.
+- **21 tests PHPUnit** verts ; scripts `setup` / `serve` / `migrate` / `index_document`.
+- Docs : README EN/FR, guide, registre, licence MIT, script vidéo/soumission.
+- Dépôt **public** : `https://github.com/AnKBORE/ai-knowledge-workspace`.
 
-### ⏳ Reste à faire (voir phases ci-dessous)
+### ❌ Manquant pour le MVP complet (vérifié dans le code)
 
-- Crédits Meta + clé API.
-- Brancher les vraies appels API (test réel).
-- Enrichir la couche **agentique** (tâches multi-étapes, sources dans l'UI).
-- Vidéo de démonstration (3 min).
-- Repo **public** + soumission.
+| Fonctionnalité MVP | État | À faire |
+|---|---|---|
+| Auth sécurisée + RBAC | ❌ | Tables `utilisateur`/`adhesion`, `Auth`, `PermissionService` |
+| Gestion documentaire + versions | ❌ | `document` + `version_document` (SHA-256, versions immuables) |
+| Scans via SAM 3.1 | ⚠️ | Confirmer l'endpoint, tester |
+| Voix via Muse Voice Transcribe | ⚠️ | Confirmer l'endpoint, tester |
+| Résumé automatique dédié | ⚠️ | Endpoint/bouton « Résumer » |
+| Journalisation (audit) | ❌ | Table `journal` append-only + `JournalService` |
 
 ---
 
-## 2. Architecture cible
+## 2. Architecture cible (alignée sur `espace_collaboratif`)
 
 ```
-Entrées (multi-modales)
-  ├─ Texte / PDF      → extraction (smalot/pdfparser)
-  ├─ Scan / photo     → SAM 3.1 (vision)
-  └─ Audio / réunion  → Muse Voice Transcribe
-          │
-          ▼
-   Chunking → Embedding (local ou API) → Stockage (documents, document_chunks)
-          │
-          ▼
-   Assistant agentique
-   ├─ Question → embedding → récupération des passages → Muse Wonder (muse-wonder-1.0)
-   ├─ Tâches multi-étapes (note, rapport, liste des retards)
-   └─ Réponse ancrée + sources citées
+                        ┌──────────────────────────────┐
+   Navigateur ────────► │  public/index.php (front)     │
+                        └──────────────┬───────────────┘
+                                       ▼
+                        ┌──────────────────────────────┐
+                        │  core/  Router · Request      │
+                        │  Session · Csrf · Auth        │
+                        │  SecurityHeaders · View       │
+                        └──────────────┬───────────────┘
+                                       ▼
+                        ┌──────────────────────────────┐
+                        │  controllers/                 │
+                        │  AuthController · Document…   │
+                        │  AiAssistantController        │
+                        └──────────────┬───────────────┘
+                                       ▼
+              ┌────────────────────────┴────────────────────────┐
+              ▼                        ▼                        ▼
+   services/ (métier)        services/Ai/ (IA)          models/ (PDO)
+   AuthentificationService   MetaClient · RagService    Utilisateur
+   PermissionService         EmbeddingService           Document
+   DocumentService           TranscriptionService       VersionDocument
+   JournalService            VisionService              Journal
+              │                        │                        │
+              └────────────────────────┴────────────────────────┘
+                                       ▼
+                        MySQL 8.4.13 (InnoDB, utf8mb4)
 ```
 
 ### Stack
 
 | Couche | Technologie |
 |---|---|
-| Backend | PHP 8.4.27 (MVC strict) |
+| Backend | PHP 8.4.27 (MVC strict, PSR-4) |
 | Base | MySQL 8.4.13 (InnoDB, utf8mb4) |
-| IA | Meta Model API : `POST https://api.meta.ai/v1/responses`, modèle `muse-wonder-1.0` |
+| IA | Meta (Muse Wonder / Muse Spark Open) **ou** partenaire (Baseten/Modal) |
 | Frontend | Bootstrap 5 + design system du socle (Poppins, `app.css`) |
 | Tests | PHPUnit 11 |
 
----
+### Règles d'architecture (héritées du socle)
 
-## 3. Phases de réalisation
-
-> Chaque phase a un **objectif**, des **actions**, et un **critère de sortie** (ne passe à la suivante que quand il est atteint).
-
-### Phase 0 — Comptes, crédits et environnement
-
-**Objectif** : tout est prêt pour coder et appeler l'API.
-
-1. **Meta Model API** :
-   - Compte sur https://dev.meta.ai/
-   - **Moyen de paiement** ajouté (obligatoire).
-   - **Clé API** : *API keys → Create API key* → copier **immédiatement** la clé complète (`LLM_...`).
-   - **Crédits $150** : soumettre le formulaire de demande (Full Name + Email + **Team ID** + Terms).
-   - **Team ID** : dans l'URL après connexion (`?team_id=...` ou `/teams/...`).
-   - **Limite de dépenses** : *Facturation → Spend limit = 150 $*.
-2. **Discord** : serveur Meta Global AI Developer Hackathon → **Linked Roles → Builders → Terminer**.
-3. **GitHub** : compte `AnKBORE`, dépôt `ai-knowledge-workspace` (→ **public** avant la soumission).
-4. **Environnement local** : PHP 8.4.27 (WAMP), MySQL 8.4.13, composer (`tools/composer.phar`).
-
-**Critère de sortie** : la clé API est dans `.env`, les crédits sont visibles dans *Facturation → Crédits gratuits*, et `php -v` montre **8.4.27**.
-
-> ⚠️ **Ne fais AUCUN appel API tant que les crédits ne sont pas visibles** → sinon débit réel sur la carte.
+1. **Une seule porte d'entrée** : `public/index.php` ; tout le reste hors racine web.
+2. **Service = métier** ; **Modèle = données** ; **Contrôleur = HTTP** ; jamais de SQL dans une vue.
+3. **Permissions résolues uniquement par `PermissionService`** — jamais dans les vues.
+4. **Journal d'audit en ajout seul** — jamais de `UPDATE`/`DELETE` sur `journal`.
+5. **Versions immuables** — un dépôt crée une ligne, jamais une mise à jour.
+6. **Secrets** : `.env` uniquement, jamais dans le code, les logs ou le dépôt.
 
 ---
 
-### Phase 1 — Socle, base de données et sécurité
+## 3. Modèle de données cible
 
-**Objectif** : un socle solide et sécurisé.
+### 3.1 Comptes & sécurité
 
-1. Base `ai_knowledge_workspace` créée + `php tools/migrate.php migrate` (5 tables).
-2. `.env` renseigné (DB + Meta API).
-3. Vérifier la **sécurité de base** :
-   - requêtes préparées (PDO),
-   - échappement HTML (`e()`),
-   - RBAC (si intégré au socle),
-   - fichiers hors racine web,
-   - aucun secret dans le code/journaux.
+| Table | Colonnes clés | Règle |
+|---|---|---|
+| `utilisateur` | `id`, `tenant_id`, `courriel` (unique), `nom`, `prenom`, `mot_de_passe` (hash), `role_global`, `statut`, `derniere_connexion_le`, `cree_le`, `maj_le`, `supprime_le` | **Suppression logique** uniquement |
+| `jeton_compte` | `id`, `utilisateur_id`, `usage_jeton` (`activation`/`reinitialisation`), `empreinte` (SHA-256), `expire_le`, `utilise_le` | Jeton **brut jamais stocké** |
+| `tentative_connexion` | `empreinte_courriel`, `echecs`, `verrouille_jusqua`, `maj_le` | Verrouillage **progressif** |
+| `securite_compte` | `utilisateur_id`, `secret_mfa` (chiffré), `empreinte_session` | MFA optionnel |
 
-**Critère de sortie** : `GET /` affiche l'UI, la base répond, aucun secret versionné.
+### 3.2 Espaces & RBAC
 
----
+| Table | Colonnes clés | Règle |
+|---|---|---|
+| `espace` | `id`, `tenant_id`, `parent_id`, `nom`, `visibilite` (`public_interne`/`restreint`/`prive`), `statut`, `supprime_le` | Arbre ; `prive` coupe l'héritage |
+| `adhesion` | `id`, `tenant_id`, `espace_id`, `utilisateur_id`, `role_local`, `debut_le`, `fin_le` | **Rôle local par espace**, daté |
+| `historique_adhesions` | `id`, `adhesion_id`, `…` | Trace des fins d'adhésion |
 
-### Phase 2 — Ingestion multi-modale
+### 3.3 Documents
 
-**Objectif** : pouvoir ajouter du texte, des PDF, des scans et de l'audio.
+| Table | Colonnes clés | Règle |
+|---|---|---|
+| `document` | `id`, `tenant_id`, `espace_id`, `titre`, `resume`, `type`, `langue`, `confidentialite`, `statut` (`brouillon`/`publie`/`archive`), `proprietaire_id`, `supprime_le` | Confidentialité ≤ visibilité de l'espace |
+| `version_document` | `id`, `document_id`, `numero` (unique par document), `fichier` (hors web), `nom_original`, `type_mime`, `taille_octets`, `empreinte` (SHA-256), `auteur_id`, `commentaire`, `cree_le` | **Immuable** : chaque dépôt = 1 ligne |
 
-1. Texte / PDF : déjà géré (`smalot/pdfparser`).
-2. **Scans** : `VisionService` → SAM 3.1 (endpoint à confirmer selon la doc ; sinon décrire la démarche).
-3. **Voix** : `TranscriptionService` → Muse Voice Transcribe (idem).
-4. Tester l'ingestion depuis l'UI (`#upload-form`) et la CLI (`tools/index_document.php`).
+### 3.4 Audit
 
-**Critère de sortie** : un document indexé apparaît dans la liste et crée des `document_chunks`.
+| Table | Colonnes clés | Règle |
+|---|---|---|
+| `journal` | `id`, `acteur_id` (NULL = système), `action`, `objet_type`, `objet_id`, `resultat` (`succes`/`refus`/`erreur`), `adresse_ip`, `details` (JSON), `horodatage` | **Append-only** : jamais de modification |
 
----
+### 3.5 IA
 
-### Phase 3 — RAG (récupération)
-
-**Objectif** : retrouver les bons passages.
-
-1. Vérifier `chunk()` (taille/chevauchement).
-2. Embedding : **local** par défaut (déjà en place) ; `META_EMBEDDING_MODE=api` si un endpoint d'embeddings est confirmé.
-3. `retrieveSimilar()` : cosinus + top-k.
-4. Tests : `RagServiceTest`, `RagServiceIntegrationTest`.
-
-**Critère de sortie** : une question renvoie les passages pertinents + une réponse générée.
-
----
-
-### Phase 4 — Assistant agentique (le vrai différenciateur)
-
-**Objectif** : dépasser le « Q&A ».
-
-1. **Sources citées** : chaque réponse doit indiquer les documents/passages utilisés.
-   - Ajouter au retour de `RagService::query()` les sources (titre + extrait).
-   - Afficher les sources dans l'UI.
-2. **Tâches multi-étapes** (au moins 2 scénarios) :
-   - « Prépare une note pour le directeur sur les activités du trimestre » → récupère, synthétise, rédige.
-   - « Quels projets sont en retard ? » → croise les documents avec les dates.
-3. **Prompt système** clair : répondre UNIQUEMENT à partir des extraits, citer, ne pas inventer.
-4. Journaliser les actions (audit) si possible.
-
-**Critère de sortie** : la démo montre une **tâche rédigée** avec **sources**, pas juste une réponse.
+| Table | Colonnes clés | Règle |
+|---|---|---|
+| `document_chunks` | `id`, `version_document_id`, `chunk_index`, `content` (TEXT), `embedding` (JSON) | 1 chunk = 1 version de document |
+| `conversations` | `id`, `utilisateur_id`, `cree_le` | Historique des échanges |
+| `messages` | `id`, `conversation_id`, `role`, `content`, `sources` (JSON), `cree_le` | Sources citées stockées |
 
 ---
 
-### Phase 5 — Interface (UI/UX)
+## 4. Modèle de sécurité
 
-**Objectif** : une démo convaincante et cohérente avec le socle.
+### 4.1 Authentification
 
-1. Page unique : upload + chat + liste des documents (déjà en place).
-2. Ajouter :
-   - l'affichage des **sources** sous la réponse,
-   - un **état de chargement**,
-   - la gestion des erreurs (clé absente, fichier vide).
-3. Vérifier le **responsive** (mobile) et l'accessibilité de base.
+- **Mot de passe** : hash `PASSWORD_ARGON2ID` (ou `PASSWORD_DEFAULT`), politique `PolitiqueMotDePasse` (longueur ≥ 12, complexité).
+- **Session** : cookie `HttpOnly`, `SameSite=Lax`, `Secure` en production ; **régénération** à la connexion.
+- **CSRF** : jeton par session, vérifié sur **tous** les POST.
+- **Anti-brute-force** : `tentative_connexion` → verrouillage **progressif** (ex. 5 échecs → 15 min).
+- **Jetons** : activation/réinitialisation → **SHA-256** stocké, usage unique, expiration.
+- **MFA** (optionnel) : `securite_compte.secret_mfa` chiffré.
 
-**Critère de sortie** : un utilisateur peut uploader un document et poser une question **sans aide**.
+### 4.2 RBAC — 2 niveaux
+
+**Rôles globaux** (`utilisateur.role_global`) :
+
+| Rôle | Permissions |
+|---|---|
+| `administrateur_technique` | `compte.inviter`, `journal.lire`, `dashboard.systeme` |
+| `administrateur_fonctionnel` | `compte.inviter`, `espace.administrer`, `espace.creer`, `adhesion.gerer`, `espace.archiver` |
+| `membre` | aucune permission globale ; tout vient des rôles locaux |
+
+**Rôles locaux** (`adhesion.role_local`, par espace) :
+
+| Rôle | Cumul |
+|---|---|
+| `lecteur` | `espace.consulter`, `document.consulter`, `assistant.interroger` |
+| `contributeur` | lecteur + `document.deposer`, `assistant.tacher` |
+| `animateur` | contributeur + `fil.moderer`, `annonce.publier` |
+| `responsable` | animateur + `adhesion.gerer`, `espace.archiver` |
+
+**Résolution** (jamais dans les vues) :
+
+```
+peut(acteur, action, espace?) :
+1. role_global permet l'action ?            → accordé
+2. sinon, résoudre le rôle local :
+   adhésion valide sur l'espace ? oui → role_local
+   sinon remonter l'arbre des parents (sauf espace `prive`)
+3. role_local contient l'action ?           → accordé
+4. sinon → refus + journal('permission_refusee')
+```
+
+### 4.3 Défense en profondeur
+
+| Mesure | Implémentation |
+|---|---|
+| Injections SQL | **Requêtes préparées** (PDO) partout |
+| XSS | Échappement `e()` ; jamais de HTML brut utilisateur |
+| Upload | **Type MIME réel**, taille max, extension whitelist, stockage **hors web** |
+| Sessions | `Session::regenerate()`, expiration, `HttpOnly` |
+| En-têtes | `SecurityHeaders` (CSP, X-Frame-Options, nosniff…) |
+| Secrets | `.env` (ignoré), aucun secret dans les logs |
+| Audit | `journal` append-only + refus journalisés |
 
 ---
 
-### Phase 6 — Qualité et sécurité
+## 5. Phases de réalisation
+
+> Chaque phase a un **objectif**, des **actions** et un **critère de sortie**. On ne passe à la suivante que lorsque le critère est atteint.
+
+### Phase 0 — Fondations *(fait)*
+
+**Objectif** : socle technique prêt.
+
+- Scaffold MVC, PSR-4, `.env`, `bootstrap.php`, `View`, `Router`.
+- Base `ai_knowledge_workspace` + migrations.
+- `serve.bat`, `setup.bat`, `tools/migrate.php`.
+
+**Critère de sortie** : `GET /` répond, la base est connectée, `php -v` = 8.4.27.
+
+---
+
+### Phase 1 — Comptes & authentification
+
+**Objectif** : un compte sécurisé, avec session et CSRF.
+
+1. **Migrations** : `001_utilisateur`, `002_jeton_compte`, `003_tentative_connexion`, `004_securite_compte`.
+2. **Modèles** : `Utilisateur`, `SecuriteCompte`, `JetonCompte`.
+3. **Services** : `AuthentificationService` (inscription, connexion, déconnexion, réinitialisation), `PolitiqueMotDePasse`.
+4. **Core** : `Session`, `Csrf`, `Auth` (contrat), `SecurityHeaders`.
+5. **Contrôleurs** : `AuthController` (login, logout), `MfaController` (optionnel).
+6. **Vues** : `views/auth/login.php`, `views/auth/request-reset.php`.
+7. **Seed** : un compte `administrateur_technique` initial (CLI).
+
+**Critère de sortie** : login/logout fonctionnels ; mot de passe hashé ; CSRF actif ; verrouillage après 5 échecs ; tests `AuthentificationServiceTest`.
+
+---
+
+### Phase 2 — RBAC (espaces & adhésions)
+
+**Objectif** : les droits sont résolus centralement.
+
+1. **Migrations** : `005_espace`, `006_adhesion`, `007_historique_adhesions`.
+2. **Modèles** : `Espace`, `Adhesion`.
+3. **Service** : `PermissionService` (matrices GLOBAL/LOCAL, héritage d'arbre, espaces privés, journalisation des refus).
+4. **Middleware** : `Controller::requirePermission()`.
+5. **Tests** : `PermissionServiceTest` (héritage, privé, refus).
+
+**Critère de sortie** : `peut()` respecte la matrice ; un `membre` sans adhésion est refusé ; refus journalisé.
+
+---
+
+### Phase 3 — Documents & versions
+
+**Objectif** : gestion documentaire versionnée, sécurisée.
+
+1. **Migrations** : `008_document`, `009_version_document`.
+2. **Modèle** : `Document`, `VersionDocument`.
+3. **Service** : `DocumentService` (création, dépôt d'une version, SHA-256, stockage hors web, suppression logique).
+4. **Contrôleur** : `DocumentController` (liste, upload, versions).
+5. **Vues** : `views/documents/index.php`.
+6. **Validation** : type MIME réel, taille, extension.
+
+**Critère de sortie** : un document a plusieurs versions immuables ; l'empreinte SHA-256 est stockée ; aucun fichier en racine web.
+
+---
+
+### Phase 4 — Base de connaissances & RAG
+
+**Objectif** : retrouver les bons passages, version par version.
+
+1. **Migration** : `010_document_chunks` (rattaché à `version_document`).
+2. **Service** : `RagService` (`indexDocument`, `answer`, `task`, `retrieveSimilar`).
+3. **Embedding** : local (défaut) ; `META_EMBEDDING_MODE=api` si endpoint confirmé.
+4. **Tests** : `RagServiceTest`, `RagServiceIntegrationTest`.
+
+**Critère de sortie** : une question renvoie les passages pertinents **de la version courante** + une réponse.
+
+---
+
+### Phase 5 — Assistant agentique
+
+**Objectif** : le différenciateur.
+
+1. **Sources citées** : `answer()` renvoie `{answer, sources}` ; affichage UI.
+2. **Tâches** : `task()` (note, rapport, liste des retards) ; brouillon structuré.
+3. **Résumé dédié** : endpoint « Résumer ce document ».
+4. **Prompt système** : répondre **uniquement** à partir des extraits, citer, ne pas inventer.
+5. **Tests** : `answer()` avec sources ; `task()` avec brouillon.
+
+**Critère de sortie** : la démo montre une **tâche rédigée** avec **sources**.
+
+---
+
+### Phase 6 — Multimodal (scans & voix)
+
+**Objectif** : traiter images et audio.
+
+1. **Vision** : `VisionService` → SAM 3.1 ; confirmer l'endpoint ; test sur un scan.
+2. **Voix** : `TranscriptionService` → Muse Voice Transcribe ; test sur un audio.
+3. **Pipeline** : image/audio → texte → `indexDocument`.
+4. **UI** : accepter `.pdf/.txt/.md/.png/.jpg/.mp3/.wav`.
+
+**Critère de sortie** : un scan et un audio produisent du texte indexé et interrogeable.
+
+---
+
+### Phase 7 — Audit & sécurité
+
+**Objectif** : traçabilité complète.
+
+1. **Migration** : `011_journal` (append-only).
+2. **Service** : `JournalService` (`log(acteur, action, objet, resultat, details)`).
+3. **Instrumentation** : connexion, upload, suppression, question, refus.
+4. **En-têtes** : `SecurityHeaders` (CSP, nosniff, frame-options).
+5. **Tests** : `JournalServiceTest` ; vérifier l'absence de `UPDATE`/`DELETE` sur `journal`.
+
+**Critère de sortie** : chaque action sensible crée une ligne `journal` ; aucun secret dans `details`.
+
+---
+
+### Phase 8 — Tests & recette
 
 **Objectif** : un projet fiable.
 
-1. `phpunit` → **tous les tests verts** (19+).
+1. `phpunit` → **tous verts** (unitaires + intégration).
 2. `php -l` sur les fichiers modifiés.
-3. Revue sécurité : `.env` ignoré, pas de clé dans le code, validation des uploads (taille/type).
-4. Nettoyer les fichiers temporaires.
+3. Revue sécurité : `.env` ignoré, uploads validés, aucune clé dans le code.
+4. Test « clone propre » (voir `DEMO_VIDEO_ET_SOUMISSION.md`).
 
-**Critère de sortie** : tests verts + `git status` propre (hors fichiers ignorés).
-
----
-
-### Phase 7 — Vidéo de démonstration (3 min)
-
-**Objectif** : montrer uniquement **ce qui a été construit pendant le hackathon**.
-
-**Script proposé (3 min)** :
-1. **0:00–0:30** — Problème : documents dispersés, connaissances perdues (contexte paroisses/ONG).
-2. **0:30–1:00** — Upload d'un document + un scan + un audio (multi-modal).
-3. **1:00–1:45** — Question naturelle → réponse **avec sources citées**.
-4. **1:45–2:30** — Tâche agentique : « prépare une note… » → brouillon généré.
-5. **2:30–3:00** — Ce qui a été construit pendant le hackathon (couche IA) vs le socle préexistant.
-
-**Règles à respecter** :
-- Montrer **clairement** ce qui est nouveau (couche IA) vs le socle.
-- Pas de données client réelles.
-- Vidéo accessible (YouTube/Loom non listé ou lien public).
-
-**Critère de sortie** : une vidéo de ≤ 3 min, claire, qui montre les différenciateurs.
+**Critère de sortie** : tests verts + `git status` propre.
 
 ---
 
-### Phase 8 — Publication GitHub
+### Phase 9 — Vidéo & soumission
 
-**Objectif** : un dépôt public, propre et crédible.
+**Objectif** : livrer dans les délais.
 
-1. **Rendre le dépôt public** : *Settings → Danger Zone → Change visibility → Public*.
-2. Vérifier le **README** (EN + FR) : positionnement, fonctionnalités, modèles, installation, tests.
-3. Vérifier qu'**aucun secret** n'est versionné (`.env` ignoré, pas de clé).
-4. Ajouter **Topics** : `ai php mysql rag knowledge-management semantic-search meta-ai hackathon`.
-5. `git push` (dernier commit).
-6. (Optionnel) Tag de version : `git tag v1.0.0 && git push --tags`.
+1. **Vidéo** (≤ 3 min) : voir `DEMO_VIDEO_ET_SOUMISSION.md`.
+2. **Dépôt public** : README, LICENSE, pas de secret.
+3. **Formulaire** : repo + vidéo + description.
+4. **Soumettre avant le 4 nov. 21 h ET**.
 
-**Critère de sortie** : `https://github.com/AnKBORE/ai-knowledge-workspace` accessible **sans connexion**, avec un README à jour.
+**Critère de sortie** : confirmation de soumission.
 
 ---
 
-### Phase 9 — Soumission
+## 6. Correspondance MVP → phases
 
-**Objectif** : livrer dans les délais, sans oubli.
-
-1. **Formulaire de soumission** : https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit
-2. Renseigner :
-   - le **lien du dépôt GitHub** (public),
-   - le **lien de la vidéo** (accessible),
-   - les **membres** (toi),
-   - la **description** du projet.
-3. Vérifier que tout est **accessibles sans compte**.
-4. Soumettre **avant le 4 nov. 21 h ET** (pas de soumission tardive acceptée).
-5. Conserver une **copie** de la soumission (capture/email).
-
-**Critère de sortie** : confirmation de soumission reçue.
+| Fonctionnalité MVP | Phase |
+|---|---|
+| Auth sécurisée + RBAC | **1 + 2** |
+| Gestion documentaire + versions | **3** |
+| Upload + indexation PDF | **3 + 4** |
+| Scans via SAM 3.1 | **6** |
+| Voix via Muse Voice Transcribe | **6** |
+| Base de connaissances | **4** |
+| Assistant agentique + sources | **5** |
+| Résumé automatique | **5** |
+| Génération de rapports | **5** |
+| Recherche sémantique | **4** |
+| Journalisation (audit) | **7** |
 
 ---
 
-## 4. Alignement avec la notation (Indie Developer)
+## 7. Alignement avec la notation (Indie Developer)
 
-Le jury évalue (0–10, poids égaux) : **créativité, ambition technique, fonctionnalité**.
-
-| Critère | Ce que le projet apporte | Preuve à montrer |
+| Critère | Ce que le projet apporte | Preuve |
 |---|---|---|
-| **Créativité** | Assistant **agentique + multimodal** pour des organisations africaines | Démo : scan + voix + tâche rédigée |
-| **Ambition technique** | RAG réel, API Meta, pipeline complet, sécurité | Dépôt + code + tests |
-| **Fonctionnalité** | MVP qui marche de bout en bout | Vidéo + démonstration live |
+| **Créativité** | Agentique + multimodal + gouvernance pour des organisations africaines | Démo : scan + voix + tâche |
+| **Ambition technique** | RAG réel, RBAC, versions, audit, API Meta | Dépôt + code + tests |
+| **Fonctionnalité** | MVP qui marche de bout en bout | Vidéo + démo live |
 
-> Stage 1 du jury : le projet doit **correspondre au thème** et **utiliser l'API Meta / les modèles ouverts**. → Toujours montrer l'appel à `muse-wonder-1.0`.
+> Stage 1 : le projet doit **correspondre au thème** et **utiliser l'API Meta / les modèles ouverts**.
 
 ---
 
-## 5. Calendrier des jalons
+## 8. Calendrier
 
 | Date | Jalon |
 |---|---|
-| **26 oct.** | Kickoff ; comptes, crédits, clé API, Discord |
-| **27 oct. – 2 nov.** | Phases 2 à 6 (ingestion, agentique, UI, tests) |
-| **3 nov.** | Vidéo de démonstration + répétition |
-| **4 nov. 21 h ET** | **Soumission** (dépôt public + vidéo) |
+| **26 oct.** | Kickoff ; comptes, crédits, clé API |
+| **27–29 oct.** | Phases 1–2 (auth, RBAC) |
+| **30–31 oct.** | Phase 3 (documents/versions) |
+| **1–2 nov.** | Phases 4–5 (RAG, agentique) |
+| **3 nov.** | Phases 6–7 (multimodal, audit) + vidéo |
+| **4 nov. 21 h ET** | **Soumission** |
 | **5–8 nov.** | Jugement |
-| **9 nov.** | Annonce des gagnants |
+| **9 nov.** | Annonce |
 
 ---
 
-## 6. Risques et parades
+## 9. Risques et parades
 
 | Risque | Parade |
 |---|---|
-| Crédits $150 absents | Ne pas appeler l'API ; relancer via #credit-requests / support ; utiliser les crédits partenaires (Baseten/Modal/Fireworks) |
-| Endpoint transcription/vision incertain | Confirmer la doc Meta ; sinon démontrer le texte + PDF et mentionner la roadmap multimodale |
-| API qui échoue en démo | Préparer un **jeu de données local** + captures ; avoir un fallback vidéo |
-| Perçu comme « basic RAG » | Insister sur **agentique + multimodal + sources** dans la vidéo et le README |
-| Dépôt privé à la soumission | Vérifier la visibilité **Public** avant de soumettre |
-| Fuite de secret | `.env` ignoré ; jamais de clé dans le code/README |
+| Auth/RBAC trop long | Commencer par le **minimum** (login + `PermissionService`) ; enrichir ensuite |
+| Endpoints SAM 3.1 / voix incertains | Confirmer la doc ; sinon démontrer texte + PDF et documenter la roadmap |
+| API qui échoue en démo | Jeu de données local + **Plan B Baseten** |
+| Perçu comme « basic RAG » | Insister sur **agentique + multimodal + sources + gouvernance** |
+| Fuite de secret | `.env` ignoré ; audit `details` sans secret |
+| Dépôt privé | Vérifier **Public** avant soumission |
 
 ---
 
-## 7. Commandes utiles
+## 10. Commandes utiles
 
 ```powershell
-# Lancer le serveur (PHP 8.4.27)
+# Serveur
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 .\serve.bat
-# ou : & "C:\wamp64\bin\php\php8.4.27\php.exe" -S 127.0.0.1:8080 -t public
-
-# Indexer un document
-& "C:\wamp64\bin\php\php8.4.27\php.exe" tools/index_document.php "Rapport" docs/sample-report.txt
 
 # Migrations
 & "C:\wamp64\bin\php\php8.4.27\php.exe" tools/migrate.php migrate
+
+# Indexer un document
+& "C:\wamp64\bin\php\php8.4.27\php.exe" tools/index_document.php "Rapport" docs/sample-report.txt
 
 # Tests
 & "C:\wamp64\bin\php\php8.4.27\php.exe" vendor/phpunit/phpunit/phpunit
 
 # Git
-git add -A
-git commit -m "…"
-git push
+git add -A ; git commit -m "…" ; git push
 ```
 
 ---
 
-## 8. Checklist finale (à cocher avant soumission)
+## 11. Checklist finale
 
-- [ ] Crédits $150 visibles dans *Facturation → Crédits gratuits*
-- [ ] Clé API dans `.env` (jamais dans le repo)
-- [ ] Test réel : upload + question → réponse avec sources
-- [ ] Tâche agentique fonctionnelle (note/rapport)
+- [ ] Auth + RBAC fonctionnels (login, `peut()`, refus journalisés)
+- [ ] Document + versions immuables (SHA-256)
+- [ ] Upload PDF + chunking + indexation
+- [ ] RAG (retrieve + answer + sources)
+- [ ] Tâche agentique (brouillon)
+- [ ] Multimodal (scan + audio) — si endpoints confirmés
+- [ ] Journal d'audit append-only
 - [ ] Tests PHPUnit verts
-- [ ] README EN + FR à jour
-- [ ] Dépôt **public** et accessible
-- [ ] Vidéo **≤ 3 min** accessible
-- [ ] Formulaire de soumission rempli (repo + vidéo + description)
+- [ ] README EN/FR, LICENSE, aucun secret
+- [ ] Dépôt **public**
+- [ ] Vidéo **≤ 3 min**
 - [ ] Soumis **avant le 4 nov. 21 h ET**
 
 ---
 
-## 9. Suivi des problèmes & résolutions
+## 12. Suivi des problèmes & résolutions
 
 Tous les blocages et écarts sont suivis dans **[REGISTRE_PROBLEMES.md](REGISTRE_PROBLEMES.md)** :
-
-- chaque problème a un **ID** (O1, O2…) ;
-- quand il est résolu : statut **✅** + résolution datée + ligne dans le **Journal des résolutions** ;
-- la **checklist ci-dessus** est mise à jour en conséquence.
+ID (O1, O2…), statut, résolution datée, journal.
 
 > Règle : **aucun problème ne disparaît sans trace**.
 
-## 10. Plan B — Inférence partenaire (si l'API Meta est bloquée)
+---
 
-Si l'ajout d'un moyen de paiement Meta est impossible (ex. **carte prépayée refusée**), on peut utiliser un **fournisseur d'inférence partenaire** avec un modèle à pondération ouverte.
+## 13. Plan B — Inférence partenaire
 
-Le client est déjà compatible : `META_API_STYLE=openai` bascule sur le format **OpenAI** (`/v1/chat/completions`).
-
-### Configuration (exemple Baseten)
+Si l'API Meta est bloquée (ex. carte prépayée refusée) :
 
 ```dotenv
 META_API_STYLE=openai
 META_MODEL_API_BASE_URL=https://inference.baseten.co
 META_MODEL_API_KEY=<clé Baseten>
-META_MODEL_NAME=<identifiant du modèle sur Baseten>
+META_MODEL_NAME=meta-models/muse-spark-open
+META_EMBEDDING_MODE=local
 ```
 
-### Avec Modal
-
-```dotenv
-META_API_STYLE=openai
-META_MODEL_API_BASE_URL=<URL OpenAI-compatible de votre déploiement Modal>
-META_MODEL_API_KEY=<clé Modal>
-META_MODEL_NAME=<nom du modèle>
-```
-
-### Vérifier
-
-1. `php tools/index_document.php "Rapport" docs/sample-report.txt` (indexation locale, sans API).
-2. Poser une question dans l'UI → la réponse doit venir du modèle partenaire.
-
-> Les embeddings restent **locaux** (`META_EMBEDDING_MODE=local`) : seul le chat bascule sur le partenaire.
+> Les embeddings restent **locaux** : seul le chat bascule sur le partenaire.
 
 *Ce guide est un document vivant : coche chaque critère de sortie avant de passer à la phase suivante.*
