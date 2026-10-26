@@ -44,7 +44,7 @@ $upload = $_FILES['file'] ?? null;
 if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     $code = is_array($upload) ? (int) ($upload['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
     $messages = [
-        UPLOAD_ERR_INI_SIZE => 'Le fichier dépasse la limite du serveur (upload_max_filesize).',
+        UPLOAD_ERR_INI_SIZE => 'Le fichier dépasse la limite du serveur (upload_max_filesize = ' . ini_get('upload_max_filesize') . ', post_max_size = ' . ini_get('post_max_size') . ').',
         UPLOAD_ERR_FORM_SIZE => 'Le fichier dépasse la limite du formulaire.',
         UPLOAD_ERR_PARTIAL => "L'envoi a été interrompu.",
         UPLOAD_ERR_NO_FILE => 'Aucun fichier sélectionné.',
