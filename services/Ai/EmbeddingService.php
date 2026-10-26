@@ -6,11 +6,18 @@ namespace App\Services\Ai;
 
 /**
  * Vector helpers used by the RAG pipeline.
+ *
+ * By default it uses a local, dependency-free embedding (hashing trick), so the
+ * retrieval works without a dedicated embeddings endpoint. Set
+ * META_EMBEDDING_MODE=api to use the Meta embeddings endpoint instead.
  */
 final class EmbeddingService
 {
-    public function __construct(private readonly MetaClient $client)
-    {
+    public function __construct(
+        private readonly MetaClient $client,
+        private readonly string $mode = 'local',
+        private readonly int $dimensions = 256,
+    ) {
     }
 
     /**
@@ -20,7 +27,43 @@ final class EmbeddingService
      */
     public function embed(string $text): array
     {
-        return $this->client->embed($text);
+        if ($this->mode === 'api') {
+            $vector = $this->client->embed($text);
+            if ($vector !== []) {
+                return $vector;
+            }
+        }
+
+        return $this->localEmbed($text);
+    }
+
+    /**
+     * Deterministic local embedding using the hashing trick (bag of words).
+     *
+     * @return list<float>
+     */
+    private function localEmbed(string $text): array
+    {
+        $vector = array_fill(0, $this->dimensions, 0.0);
+        $tokens = preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower($text), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+
+        foreach ($tokens as $token) {
+            $vector[crc32($token) % $this->dimensions] += 1.0;
+        }
+
+        $norm = 0.0;
+        foreach ($vector as $value) {
+            $norm += $value * $value;
+        }
+        $norm = sqrt($norm);
+
+        if ($norm > 0.0) {
+            foreach ($vector as $index => $value) {
+                $vector[$index] = $value / $norm;
+            }
+        }
+
+        return $vector;
     }
 
     /**

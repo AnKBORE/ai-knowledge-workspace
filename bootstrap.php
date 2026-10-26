@@ -44,7 +44,7 @@ $pdo = new PDO(
 );
 
 $metaClient = new MetaClient($config);
-$embeddings = new EmbeddingService($metaClient);
+$embeddings = new EmbeddingService($metaClient, (string) ($config['embedding_mode'] ?? 'local'));
 $rag = new RagService($metaClient, $embeddings, $pdo);
 $transcription = new TranscriptionService($metaClient);
 $vision = new VisionService($metaClient);

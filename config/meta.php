@@ -17,14 +17,16 @@ return [
     // API key — never committed (see .env).
     'api_key' => getenv('META_MODEL_API_KEY') ?: '',
 
-    // Main conversational model (Muse Spark).
-    'chat_model' => getenv('META_MODEL_NAME') ?: 'muse-spark',
+    // Main conversational model (Muse Wonder, per the live API example).
+    'chat_model' => getenv('META_MODEL_NAME') ?: 'muse-wonder-1.0',
 
-    // Advanced model for report generation / decision support (Muse Wonder).
-    'advanced_model' => 'muse-wonder',
+    // Advanced model for report generation / decision support.
+    'advanced_model' => 'muse-wonder-1.0',
 
-    // Embedding model (open-weight, e.g. hosted via Baseten / Modal).
+    // Embedding model + mode. 'local' = hashing embedding (no endpoint needed);
+    // 'api' = use the Meta embeddings endpoint.
     'embedding_model' => getenv('META_EMBEDDING_MODEL') ?: 'open-weight-embedding',
+    'embedding_mode' => getenv('META_EMBEDDING_MODE') ?: 'local',
 
     // Speech-to-text model (Muse Voice Transcribe) + endpoint.
     'transcription_model' => 'muse-voice-transcribe',

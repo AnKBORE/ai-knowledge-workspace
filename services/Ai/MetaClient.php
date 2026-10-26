@@ -28,14 +28,52 @@ class MetaClient
      */
     public function chat(string $prompt, array $context = [], ?string $model = null): string
     {
-        $messages = [...$context, ['role' => 'user', 'content' => $prompt]];
+        $input = [];
+        foreach ($context as $message) {
+            $input[] = [
+                'role' => (string) ($message['role'] ?? 'user'),
+                'content' => [['type' => 'input_text', 'text' => (string) ($message['content'] ?? '')]],
+            ];
+        }
+        $input[] = ['role' => 'user', 'content' => [['type' => 'input_text', 'text' => $prompt]]];
 
-        $payload = $this->request('/v1/chat/completions', [
-            'model' => $model ?? (string) ($this->config['chat_model'] ?? 'muse-spark'),
-            'messages' => $messages,
+        $payload = $this->request('/v1/responses', [
+            'model' => $model ?? (string) ($this->config['chat_model'] ?? 'muse-wonder-1.0'),
+            'input' => $input,
+            'stream' => false,
         ]);
 
-        return (string) ($payload['choices'][0]['message']['content'] ?? '');
+        return $this->extractOutputText($payload);
+    }
+
+    /**
+     * Extract the assistant text from a Responses API payload.
+     *
+     * @param array<string, mixed> $payload
+     */
+    private function extractOutputText(array $payload): string
+    {
+        $text = '';
+
+        foreach (($payload['output'] ?? []) as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+            foreach (($item['content'] ?? []) as $part) {
+                if (is_array($part) && ($part['type'] ?? '') === 'output_text' && isset($part['text'])) {
+                    $text .= (string) $part['text'];
+                }
+            }
+            if (isset($item['text']) && is_string($item['text'])) {
+                $text .= $item['text'];
+            }
+        }
+
+        if ($text === '') {
+            $text = (string) ($payload['output_text'] ?? '');
+        }
+
+        return $text;
     }
 
     /**
