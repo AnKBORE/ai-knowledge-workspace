@@ -54,6 +54,7 @@
 | **O5** | Sources citées absentes | `RagService::answer()` renvoie les **sources** ; affichées dans l'UI | 2026-10-26 |
 | **O6** | Tâches agentiques | `RagService::task()` + section « Tâche agentique » dans l'UI | 2026-10-26 |
 | **R13** | Auth / RBAC / versions / audit | **Phase 1 livrée** : `utilisateur`, `Session`, `Csrf`, `Auth`, `AuthentificationService`, login/logout, 30 tests verts | 2026-10-26 |
+| **R14** | RBAC (espaces & adhésions) | **Phase 2 livrée** : `espace`, `adhesion`, `historique_adhesions`, `journal`, `PermissionService` (global/local, héritage, espaces privés), 37 tests verts | 2026-10-26 |
 
 ---
 
@@ -75,6 +76,7 @@
 | 2026-10-26 | O5 | Sources citées affichées sous la réponse. |
 | 2026-10-26 | O6 | Tâche agentique (« Générer un brouillon ») fonctionnelle. |
 | 2026-10-26 | R13 | Phase 1 (auth, CSRF, anti-brute-force) livrée ; 30 tests verts. |
+| 2026-10-26 | R14 | Phase 2 (espaces, adhésions, PermissionService) livrée ; 37 tests verts. |
 
 ---
 
