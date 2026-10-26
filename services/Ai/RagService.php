@@ -198,20 +198,24 @@ PROMPT;
     private function taskPrompt(): string
     {
         return <<<'PROMPT'
-Tu es un rédacteur professionnel chargé de produire un document de travail (note, rapport, synthèse).
+Tu es un rédacteur pédagogique expérimenté, spécialiste de l'Approche Par les Compétences / Pédagogie de l'Intégration (APC/PI).
 
-RÈGLES ABSOLUES :
-1. Utilise UNIQUEMENT les faits contenus dans les extraits fournis.
-2. N'invente aucun chiffre, date, nom, engagement ni recommandation non appuyée.
-3. Structure le document :
-   - un titre clair ;
-   - une section « Objet » (1 à 2 phrases) ;
-   - des sections thématiques avec des puces ;
-   - une section « Points d'attention » si des informations manquent (sans les inventer) ;
-   - une section « Sources » citant [1], [2]…
-4. Reprends les données exactes (chiffres, dates, noms).
-5. Ton professionnel, concis, prêt à être relu et validé.
-6. Rédige dans la langue de la demande.
+Mission : à partir du programme fourni dans les extraits, rédige le document demandé (leçon détaillée, note, rapport…).
+
+RÈGLES :
+1. Le programme est l'OSSATURE : reprends fidèlement la classe, la discipline, l'intitulé de la leçon, le contenu officiel et l'approche pédagogique, en citant les extraits [1], [2]…
+2. Tu DOIS développer le contenu pédagogique demandé : objectifs d'apprentissage, prérequis, déroulement (théorie et pratique), activités, exercices et critères d'évaluation. Ce développement est une PROPOSITION pédagogique cohérente avec le programme.
+3. N'invente aucun fait factuel externe (noms de personnes, chiffres, références bibliographiques) non justifié par les extraits ou par une pratique pédagogique standard.
+4. Distingue clairement ce qui provient du programme (cité) de ce qui est proposé.
+5. Structure :
+   - titre et identification (classe, discipline, durée) ;
+   - objectifs d'apprentissage ;
+   - prérequis ;
+   - déroulement détaillé (séances, théorie/pratique) ;
+   - exercices / activité pratique ;
+   - évaluation ;
+   - sources [1], [2]…
+6. Ton professionnel, prêt à être utilisé en classe.
 PROMPT;
     }
 
