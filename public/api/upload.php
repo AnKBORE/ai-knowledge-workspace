@@ -109,7 +109,16 @@ try {
         'sha256' => substr($result['sha256'], 0, 12),
     ], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
+    $message = $e->getMessage();
+
+    if (str_contains($message, 'Audio too long')) {
+        $error = "L'audio dépasse la limite de 5 minutes. Découpez-le en segments de 5 minutes maximum, puis réessayez.";
+    } elseif (str_contains($message, 'Media could not be processed')) {
+        $error = "Le média n'a pas pu être traité (format audio non pris en charge ou fichier trop lourd).";
+    } else {
+        $error = getenv('APP_DEBUG') === '1' ? $message : 'Indexing failed.';
+    }
+
     http_response_code(500);
-    $debug = getenv('APP_DEBUG') === '1';
-    echo json_encode(['error' => $debug ? $e->getMessage() : 'Indexing failed.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $error], JSON_UNESCAPED_UNICODE);
 }
