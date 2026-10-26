@@ -334,4 +334,35 @@ Tous les blocages et écarts sont suivis dans **[REGISTRE_PROBLEMES.md](REGISTRE
 
 > Règle : **aucun problème ne disparaît sans trace**.
 
+## 10. Plan B — Inférence partenaire (si l'API Meta est bloquée)
+
+Si l'ajout d'un moyen de paiement Meta est impossible (ex. **carte prépayée refusée**), on peut utiliser un **fournisseur d'inférence partenaire** avec un modèle à pondération ouverte.
+
+Le client est déjà compatible : `META_API_STYLE=openai` bascule sur le format **OpenAI** (`/v1/chat/completions`).
+
+### Configuration (exemple Baseten)
+
+```dotenv
+META_API_STYLE=openai
+META_MODEL_API_BASE_URL=https://inference.baseten.co
+META_MODEL_API_KEY=<clé Baseten>
+META_MODEL_NAME=<identifiant du modèle sur Baseten>
+```
+
+### Avec Modal
+
+```dotenv
+META_API_STYLE=openai
+META_MODEL_API_BASE_URL=<URL OpenAI-compatible de votre déploiement Modal>
+META_MODEL_API_KEY=<clé Modal>
+META_MODEL_NAME=<nom du modèle>
+```
+
+### Vérifier
+
+1. `php tools/index_document.php "Rapport" docs/sample-report.txt` (indexation locale, sans API).
+2. Poser une question dans l'UI → la réponse doit venir du modèle partenaire.
+
+> Les embeddings restent **locaux** (`META_EMBEDDING_MODE=local`) : seul le chat bascule sur le partenaire.
+
 *Ce guide est un document vivant : coche chaque critère de sortie avant de passer à la phase suivante.*

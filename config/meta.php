@@ -11,8 +11,11 @@ declare(strict_types=1);
  */
 
 return [
-    // Meta Model API entry point (confirm the exact URL at the kickoff, 26 Oct).
+    // API entry point. For a partner (Baseten/Modal/Fireworks) use its base URL.
     'base_url' => getenv('META_MODEL_API_BASE_URL') ?: 'https://api.meta.ai',
+
+    // "meta" = /v1/responses (Meta) ; "openai" = /v1/chat/completions (partners).
+    'api_style' => getenv('META_API_STYLE') ?: 'meta',
 
     // API key — never committed (see .env).
     'api_key' => getenv('META_MODEL_API_KEY') ?: '',

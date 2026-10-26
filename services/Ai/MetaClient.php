@@ -22,11 +22,29 @@ class MetaClient
     }
 
     /**
-     * Ask a conversational model (Muse Spark) and return its text answer.
+     * Ask a conversational model and return its text answer.
+     *
+     * Two API styles are supported:
+     *  - "meta"   : POST {base_url}/v1/responses         (Meta Responses API)
+     *  - "openai" : POST {base_url}/v1/chat/completions   (Baseten, Modal, Fireworks)
      *
      * @param array<int, array{role: string, content: string}> $context
      */
     public function chat(string $prompt, array $context = [], ?string $model = null): string
+    {
+        $style = (string) ($this->config['api_style'] ?? 'meta');
+
+        return $style === 'openai'
+            ? $this->chatOpenAi($prompt, $context, $model)
+            : $this->chatMeta($prompt, $context, $model);
+    }
+
+    /**
+     * Meta Model API — Responses API format.
+     *
+     * @param array<int, array{role: string, content: string}> $context
+     */
+    private function chatMeta(string $prompt, array $context, ?string $model): string
     {
         $input = [];
         foreach ($context as $message) {
@@ -44,6 +62,30 @@ class MetaClient
         ]);
 
         return $this->extractOutputText($payload);
+    }
+
+    /**
+     * OpenAI-compatible endpoint (Baseten, Modal, Fireworks, ...).
+     *
+     * @param array<int, array{role: string, content: string}> $context
+     */
+    private function chatOpenAi(string $prompt, array $context, ?string $model): string
+    {
+        $messages = [];
+        foreach ($context as $message) {
+            $messages[] = [
+                'role' => (string) ($message['role'] ?? 'user'),
+                'content' => (string) ($message['content'] ?? ''),
+            ];
+        }
+        $messages[] = ['role' => 'user', 'content' => $prompt];
+
+        $payload = $this->request('/v1/chat/completions', [
+            'model' => $model ?? (string) ($this->config['chat_model'] ?? ''),
+            'messages' => $messages,
+        ]);
+
+        return (string) ($payload['choices'][0]['message']['content'] ?? '');
     }
 
     /**
