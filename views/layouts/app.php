@@ -21,6 +21,13 @@ $initials = mb_strtoupper(
     . mb_substr((string) ($currentUser['nom'] ?? ''), 0, 1),
     'UTF-8'
 );
+$currentPath = '/' . trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH), '/');
+$navItems = [
+    ['path' => '/', 'label' => 'Question'],
+    ['path' => '/tache', 'label' => 'Tâche agentique'],
+    ['path' => '/documents', 'label' => 'Documents indexés'],
+    ['path' => '/ajouter', 'label' => 'Ajouter un document'],
+];
 ?>
 <!doctype html>
 <html lang="<?= e($locale) ?>">
@@ -47,10 +54,13 @@ $initials = mb_strtoupper(
 
         <nav class="side-nav" aria-label="Menu principal">
             <p class="side-label">Espace de travail</p>
-            <a class="side-link is-active" href="<?= e(url('/')) ?>" aria-current="page">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>
-                Assistant
-            </a>
+            <?php foreach ($navItems as $item): ?>
+                <?php $isActive = $currentPath === $item['path']; ?>
+                <a class="side-link <?= $isActive ? 'is-active' : '' ?>" href="<?= e(url($item['path'])) ?>"<?= $isActive ? ' aria-current="page"' : '' ?>>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></svg>
+                    <?= e($item['label']) ?>
+                </a>
+            <?php endforeach; ?>
         </nav>
 
         <div class="side-foot">
@@ -101,6 +111,8 @@ $initials = mb_strtoupper(
     </div>
 </div>
 
+<script>window.WORKSPACE_BASE = <?= json_encode(rtrim(url('/'), '/'), JSON_UNESCAPED_SLASHES) ?>;</script>
+<script src="<?= e(url('/assets/js/workspace.js')) ?>" defer></script>
 <script src="<?= e(url('/assets/js/shell.js')) ?>" defer></script>
 </body>
 </html>

@@ -97,13 +97,28 @@ if ($method === 'POST' && $path === '/api/ask') {
     exit;
 }
 
-// Workspace UI.
+// Workspace pages: each section is its own navigable page.
 if ($method === 'GET') {
-$documents = $dependencies['document_model']->listRecent();
+    $pages = [
+        '/' => ['view' => 'ai/question', 'title' => 'Question'],
+        '/tache' => ['view' => 'ai/task', 'title' => 'Tâche agentique'],
+        '/ajouter' => ['view' => 'ai/upload', 'title' => 'Ajouter un document'],
+        '/documents' => ['view' => 'ai/documents', 'title' => 'Documents indexés'],
+    ];
+
+    if (!isset($pages[$path])) {
+        http_response_code(404);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => 'Not found.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $page = $pages[$path];
+    $documents = $dependencies['document_model']->listRecent();
 
     header('Content-Type: text/html; charset=utf-8');
-    echo $view->render('ai/index', [
-        'title' => 'Assistant',
+    echo $view->render($page['view'], [
+        'title' => $page['title'],
         'documents' => $documents,
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
