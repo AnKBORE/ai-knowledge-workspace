@@ -22,15 +22,12 @@
 
 | ID | Problème | Impact | Priorité | Statut | Résolution |
 |---|---|---|---|---|---|
-| **O1** | `META_MODEL_API_KEY` vide dans `.env` | Le chat échoue (« Internal server error ») | 🔥 Critique | 🔴 | — |
 | **O4** | Endpoints `transcription` (voix) et `vision` (scan) non confirmés par la doc Meta | Le multimodal voix/scan n'est pas testé | Moyenne | 🔴 | — |
 | **O5** | Les **sources citées** ne sont pas affichées dans l'UI | Perte du principal différenciateur → risque « basic RAG » | 🔥 Critique | 🔴 | — |
 | **O6** | **Tâches agentiques** multi-étapes non implémentées | Le projet reste un Q&A → risque « basic RAG » | 🔥 Critique | 🔴 | — |
-| **O7** | Document client (OFFRE TECHNIQUE) indexé | Risque d'exposer des données client en démo | Moyenne | 🔴 | — |
 | **O9** | **Vidéo de démonstration** (3 min) non enregistrée | Élément central de notation | 🔥 Critique | 🔴 | — |
 | **O10** | **Soumission** au hackathon non faite | Sans soumission => pas de prix | 🔥 Critique | 🔴 | — |
 | **O11** | `php` absent du PATH Windows | Commandes `php …` en erreur | Faible | 🟡 | Contournement : `serve.bat` / chemin complet |
-| **O12** | Test réel de l'API (`/v1/responses`) non effectué | On ne sait pas encore si le format de réponse est bon | Moyenne | 🔴 | — |
 
 ---
 
@@ -53,6 +50,9 @@
 | **O3** | Team ID / formulaire de crédits | Formulaire de crédits **soumis** (Team ID renseigné) | 2026-10-26 |
 | **O8** | Dépôt GitHub privé | Dépôt passé en **public** | 2026-10-26 |
 | **O2** | Crédits $150 non visibles | **Crédits actifs** : « Free credits in use: $150,00 » | 2026-10-26 |
+| **O1** | Clé API / chat | Clé **Baseten** configurée (Plan B) ; réponse `[OK]` | 2026-10-26 |
+| **O7** | Document client indexé | Supprimé de la base ; démo sur document neutre | 2026-10-26 |
+| **O12** | Test réel de l'API | **Pipeline RAG complet validé** (retrieve + Muse Spark Open) | 2026-10-26 |
 
 ---
 
@@ -68,6 +68,9 @@
 | 2026-10-26 | O3 | Formulaire de crédits **soumis** (Team ID renseigné). |
 | 2026-10-26 | O8 | Dépôt GitHub passé en **public**. |
 | 2026-10-26 | O2 | Crédits $150 activés (« Free credits in use: $150,00 »). |
+| 2026-10-26 | O1 | Clé Baseten configurée (Plan B) ; appel test `[OK]`. |
+| 2026-10-26 | O7 | Document client supprimé ; démo sur `docs/sample-report.txt`. |
+| 2026-10-26 | O12 | Pipeline RAG complet validé (réponse sourcée sur le rapport neutre). |
 
 ---
 

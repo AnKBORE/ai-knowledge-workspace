@@ -17,6 +17,9 @@ return [
     // "meta" = /v1/responses (Meta) ; "openai" = /v1/chat/completions (partners).
     'api_style' => getenv('META_API_STYLE') ?: 'meta',
 
+    // Optional CA bundle (needed on Windows when curl.cainfo is not set).
+    'ca_bundle' => getenv('META_CA_BUNDLE') ?: '',
+
     // API key — never committed (see .env).
     'api_key' => getenv('META_MODEL_API_KEY') ?: '',
 

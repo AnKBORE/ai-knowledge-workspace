@@ -194,6 +194,7 @@ class MetaClient
             CURLOPT_POSTFIELDS => json_encode($body, JSON_THROW_ON_ERROR),
             CURLOPT_TIMEOUT => (int) ($this->config['timeout'] ?? 60),
         ]);
+        $this->applyCaBundle($handle);
 
         $response = curl_exec($handle);
         $error = curl_error($handle);
@@ -230,6 +231,7 @@ class MetaClient
             CURLOPT_POSTFIELDS => ['file' => new \CURLFile($filePath)],
             CURLOPT_TIMEOUT => (int) ($this->config['timeout'] ?? 60),
         ]);
+        $this->applyCaBundle($handle);
 
         $response = curl_exec($handle);
         $error = curl_error($handle);
@@ -245,5 +247,16 @@ class MetaClient
         }
 
         return $decoded;
+    }
+
+    /**
+     * Apply the optional CA bundle to a cURL handle (Windows without curl.cainfo).
+     */
+    private function applyCaBundle($handle): void
+    {
+        $caBundle = (string) ($this->config['ca_bundle'] ?? '');
+        if ($caBundle !== '' && is_file($caBundle)) {
+            curl_setopt($handle, CURLOPT_CAINFO, $caBundle);
+        }
     }
 }
