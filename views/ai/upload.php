@@ -14,7 +14,7 @@ declare(strict_types=1);
 </section>
 
 <div class="row g-4">
-    <div class="col-lg-8">
+    <div class="col-lg-8 mx-auto">
         <section class="panel">
             <div class="panel-head">
                 <div>
