@@ -1181,3 +1181,158 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .search-result strong{font-size:.85rem;font-weight:600}
 .search-result span{font-size:.72rem;color:#64748b}
 .search-result-empty{padding:10px;font-size:.8rem;color:#64748b;text-align:center}
+
+/* ==========================================================================
+   Agentic Knowledge Workspace — modern skin (auth + workspace)
+   ========================================================================== */
+
+/* Hero */
+.workspace-hero {
+    background:
+        radial-gradient(1100px 380px at 12% -10%, rgba(249, 115, 22, .20), transparent 60%),
+        linear-gradient(135deg, #0b1220 0%, #12203a 55%, #1e3a8a 100%);
+    color: #fff;
+    padding: 4.2rem 0 3.4rem;
+    position: relative;
+    overflow: hidden;
+}
+.workspace-hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-size: .72rem;
+    font-weight: 600;
+    color: #fdba74;
+    margin-bottom: 1rem;
+}
+.workspace-hero h1 {
+    font-size: clamp(2rem, 3.4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.12;
+    max-width: 24ch;
+    margin-bottom: 1rem;
+}
+.workspace-hero .hero-lead {
+    color: rgba(255, 255, 255, .78);
+    font-size: 1.05rem;
+    max-width: 62ch;
+    margin-bottom: 1.6rem;
+}
+.hero-chips { display: flex; flex-wrap: wrap; gap: .6rem; }
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .06);
+    color: rgba(255, 255, 255, .88);
+    font-size: .82rem;
+    font-weight: 500;
+}
+.chip-accent { border-color: rgba(249, 115, 22, .6); background: rgba(249, 115, 22, .16); color: #ffd7b0; }
+
+/* Workspace cards */
+.workspace-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px -18px rgba(15, 23, 42, .35);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+.workspace-card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -22px rgba(15, 23, 42, .45); }
+.workspace-card .card-body { padding: 1.6rem; }
+
+.section-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: .4rem;
+}
+
+/* Document rows */
+.doc-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .85rem 0;
+    border-bottom: 1px solid var(--line);
+}
+.doc-row:last-child { border-bottom: 0; }
+.doc-row .doc-meta { min-width: 0; }
+.doc-row .doc-title { font-weight: 600; color: var(--ink); }
+.doc-row .doc-file { color: var(--muted); font-size: .82rem; }
+
+/* Auth split screen */
+.auth-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+}
+.auth-visual {
+    background:
+        radial-gradient(900px 420px at 18% 0%, rgba(249, 115, 22, .22), transparent 55%),
+        linear-gradient(150deg, #0b1220 0%, #13223d 55%, #1e3a8a 100%);
+    color: #fff;
+    padding: clamp(2rem, 5vw, 4rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.4rem;
+    position: relative;
+    overflow: hidden;
+}
+.auth-visual .brand { color: #fff; }
+.auth-visual h1 {
+    font-size: clamp(1.9rem, 3.2vw, 2.9rem);
+    font-weight: 700;
+    line-height: 1.12;
+    max-width: 20ch;
+}
+.auth-visual p { color: rgba(255, 255, 255, .75); max-width: 46ch; }
+.auth-points { list-style: none; margin: 0; padding: 0; display: grid; gap: .8rem; }
+.auth-points li { display: flex; gap: .7rem; align-items: flex-start; color: rgba(255, 255, 255, .85); font-size: .95rem; }
+.auth-points .dot {
+    flex: 0 0 auto;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, .2);
+    border: 1px solid rgba(249, 115, 22, .55);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fdba74;
+    font-size: .7rem;
+    font-weight: 700;
+}
+.auth-visual-foot { color: rgba(255, 255, 255, .55); font-size: .8rem; letter-spacing: .04em; }
+.auth-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    background: var(--bg);
+}
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: clamp(1.6rem, 3vw, 2.4rem);
+    box-shadow: 0 24px 60px -30px rgba(15, 23, 42, .45);
+}
+.auth-card h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: .3rem; }
+.auth-card .auth-sub { color: var(--muted); font-size: .92rem; margin-bottom: 1.6rem; }
+.auth-card .form-control { border-radius: 10px; padding: .7rem .9rem; }
+.auth-card .btn { border-radius: 10px; padding: .75rem 1rem; font-weight: 600; }
+
+@media (max-width: 900px) {
+    .auth-shell { grid-template-columns: 1fr; }
+    .auth-visual { padding: 2.2rem 1.5rem; }
+    .auth-visual h1 { max-width: none; }
+}

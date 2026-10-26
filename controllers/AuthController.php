@@ -26,7 +26,7 @@ final class AuthController
             'title' => 'Connexion',
             'error' => $error,
             'csrf' => $this->csrf,
-        ]);
+        ], 'auth');
     }
 
     /** @param array<string, mixed> $post */

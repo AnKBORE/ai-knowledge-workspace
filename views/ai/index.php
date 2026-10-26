@@ -5,12 +5,26 @@ declare(strict_types=1);
 /** @var string $title */
 /** @var array<int, array<string, mixed>> $documents */
 ?>
+<section class="workspace-hero">
+    <div class="container">
+        <p class="eyebrow">Agentic Multimodal Knowledge Workspace</p>
+        <h1>Assistant de connaissances</h1>
+        <p class="hero-lead">Posez une question, générez un résumé ou rédigez une note — l'assistant s'appuie sur vos documents et cite ses sources.</p>
+        <div class="hero-chips">
+            <span class="chip chip-accent">RAG ancré</span>
+            <span class="chip">Sources citées</span>
+            <span class="chip">Tâches agentiques</span>
+            <span class="chip">Versions &amp; audit</span>
+        </div>
+    </div>
+</section>
+
 <section class="container py-5">
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-4">
-                    <h1 class="h4 mb-1">Assistant de connaissances</h1>
+            <div class="workspace-card mb-4">
+                <div class="card-body">
+                    <p class="section-eyebrow">Question</p>
                     <p class="text-muted mb-4">Posez une question sur vos documents — l'assistant répond en citant ses sources.</p>
 
                     <form id="ask-form" class="mb-3">
@@ -31,9 +45,9 @@ declare(strict_types=1);
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <h2 class="h6 text-uppercase text-muted mb-3">Tâche agentique</h2>
+            <div class="workspace-card">
+                <div class="card-body">
+                    <p class="section-eyebrow">Tâche agentique</p>
                     <p class="text-muted small mb-3">Ex. « Prépare une note pour le directeur sur les activités du trimestre » ou « Liste les projets en retard ».</p>
 
                     <form id="task-form">
@@ -53,8 +67,8 @@ declare(strict_types=1);
                 </div>
             </div>
 
-            <div id="summary-card" class="card shadow-sm border-0 mt-4" hidden>
-                <div class="card-body p-4">
+            <div id="summary-card" class="workspace-card mt-4" hidden>
+                <div class="card-body">
                     <strong class="d-block mb-2">Résumé</strong>
                     <div id="summary-text"></div>
                     <div id="summary-sources" class="mt-2 small" hidden>
@@ -67,9 +81,9 @@ declare(strict_types=1);
         </div>
 
         <div class="col-lg-5">
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body p-4">
-                    <h2 class="h6 text-uppercase text-muted mb-3">Ajouter un document</h2>
+            <div class="workspace-card mb-4">
+                <div class="card-body">
+                    <p class="section-eyebrow">Ajouter un document</p>
                     <form id="upload-form" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="title" class="form-label">Titre</label>
@@ -85,22 +99,24 @@ declare(strict_types=1);
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <h2 class="h6 text-uppercase text-muted mb-3">Documents indexés</h2>
+            <div class="workspace-card">
+                <div class="card-body">
+                    <p class="section-eyebrow">Documents indexés</p>
                     <?php if (empty($documents)): ?>
                         <p class="text-muted small mb-0">Aucun document pour l'instant.</p>
                     <?php else: ?>
-                        <ul class="list-group list-group-flush">
+                        <div>
                             <?php foreach ($documents as $doc): ?>
-                                <li class="list-group-item px-0">
-                                    <strong><?= e($doc['title'] ?? '') ?></strong>
-                                    <span class="text-muted small d-block"><?= e($doc['filename'] ?? '') ?></span>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1 summarize-btn"
+                                <div class="doc-row">
+                                    <div class="doc-meta">
+                                        <div class="doc-title"><?= e($doc['title'] ?? '') ?></div>
+                                        <div class="doc-file"><?= e($doc['filename'] ?? '') ?></div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
                                             data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Résumer</button>
-                                </li>
+                                </div>
                             <?php endforeach; ?>
-                        </ul>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
