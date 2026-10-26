@@ -122,6 +122,7 @@ Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
 
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons).
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et journal des résolutions.
+- [docs/DEMO_VIDEO_ET_SOUMISSION.md](docs/DEMO_VIDEO_ET_SOUMISSION.md) — script de la vidéo de démo et checklist de soumission.
 
 ## Tests
 

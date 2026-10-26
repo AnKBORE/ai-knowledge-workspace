@@ -23,8 +23,8 @@
 | ID | Problème | Impact | Priorité | Statut | Résolution |
 |---|---|---|---|---|---|
 | **O4** | Endpoints `transcription` (voix) et `vision` (scan) non confirmés par la doc Meta | Le multimodal voix/scan n'est pas testé | Moyenne | 🔴 | — |
-| **O9** | **Vidéo de démonstration** (3 min) non enregistrée | Élément central de notation | 🔥 Critique | 🔴 | — |
-| **O10** | **Soumission** au hackathon non faite | Sans soumission => pas de prix | 🔥 Critique | 🔴 | — |
+| **O9** | **Vidéo de démonstration** (3 min) non enregistrée | Élément central de notation | 🔥 Critique | 🟡 | Script + checklist prêts (`docs/DEMO_VIDEO_ET_SOUMISSION.md`) |
+| **O10** | **Soumission** au hackathon non faite | Sans soumission => pas de prix | 🔥 Critique | 🟡 | Checklist prête ; formulaire à remplir |
 | **O11** | `php` absent du PATH Windows | Commandes `php …` en erreur | Faible | 🟡 | Contournement : `serve.bat` / chemin complet |
 
 ---
