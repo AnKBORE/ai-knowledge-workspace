@@ -6,47 +6,56 @@ declare(strict_types=1);
 /** @var string|null $error */
 $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
 ?>
-<div class="auth-shell">
-    <aside class="auth-visual">
-        <a class="brand" href="<?= e(url('/')) ?>">
-            <?= brand_mark() ?>
-            <span class="brand-text"><?= e($productName) ?></span>
-        </a>
+<main class="auth">
+    <section class="auth-panel" aria-labelledby="auth-titre">
+        <div class="auth-form-wrap">
+            <a class="auth-brand" href="<?= e(url('/')) ?>">
+                <?= brand_mark() ?>
+                <span><?= e($productName) ?></span>
+            </a>
 
-        <h1>Vos documents, transformés en réponses citées.</h1>
-        <p>Un espace de travail agentique et multimodal : posez une question, générez un résumé ou rédigez une note — chaque réponse s'appuie sur vos documents et cite ses sources.</p>
-
-        <ul class="auth-points">
-            <li><span class="dot">✓</span><span>Réponses ancrées, sources citées</span></li>
-            <li><span class="dot">✓</span><span>Résumés et notes générés</span></li>
-            <li><span class="dot">✓</span><span>Gouvernance : rôles, versions, audit</span></li>
-        </ul>
-
-        <p class="auth-visual-foot">Meta Global AI Developer Hackathon · Build for Your World</p>
-    </aside>
-
-    <main class="auth-panel">
-        <form class="auth-card" method="post" action="<?= e(url('/login')) ?>">
-            <h2>Connexion</h2>
-            <p class="auth-sub">Accédez à votre espace de connaissances.</p>
+            <div class="auth-head">
+                <h1 id="auth-titre">Connexion</h1>
+                <p>Accédez à votre espace de connaissances.</p>
+            </div>
 
             <?php if (!empty($error)): ?>
-                <div class="alert alert-danger" role="alert"><?= e($error) ?></div>
+                <div class="auth-alert" role="status"><?= e($error) ?></div>
             <?php endif; ?>
 
-            <?= $csrf->field() ?>
+            <form class="auth-form" method="post" action="<?= e(url('/login')) ?>">
+                <?= $csrf->field() ?>
 
-            <div class="mb-3">
-                <label for="courriel" class="form-label">Adresse e-mail</label>
-                <input id="courriel" name="courriel" type="email" class="form-control" autocomplete="username" required autofocus>
-            </div>
+                <div class="field">
+                    <label for="courriel">Adresse e-mail</label>
+                    <input class="form-control" id="courriel" name="courriel" type="email"
+                           autocomplete="username" required
+                           placeholder="prenom.nom@organisation.org" autofocus>
+                </div>
 
-            <div class="mb-3">
-                <label for="mot_de_passe" class="form-label">Mot de passe</label>
-                <input id="mot_de_passe" name="mot_de_passe" type="password" class="form-control" autocomplete="current-password" required>
-            </div>
+                <div class="field">
+                    <label for="mot-de-passe">Mot de passe</label>
+                    <div class="field-control">
+                        <input class="form-control field-control-password" id="mot-de-passe" name="mot_de_passe"
+                               type="password" autocomplete="current-password" required placeholder="Votre mot de passe">
+                        <button class="field-toggle" type="button" data-password-toggle="mot-de-passe"
+                                aria-label="Afficher le mot de passe" aria-pressed="false">
+                            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.6"/></svg>
+                            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.2 3.9M6.1 7.4A17 17 0 0 0 2.5 12s3.5 7 9.5 7a10.6 10.6 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+                        </button>
+                    </div>
+                </div>
 
-            <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-        </form>
-    </main>
-</div>
+                <button class="btn btn-block" type="submit">
+                    Se connecter
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+            </form>
+
+            <footer class="auth-legal">
+                <span>© <?= e(date('Y')) ?> <?= e($productName) ?></span>
+                <span>Meta Global AI Developer Hackathon</span>
+            </footer>
+        </div>
+    </section>
+</main>

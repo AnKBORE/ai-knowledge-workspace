@@ -5,124 +5,146 @@ declare(strict_types=1);
 /** @var string $title */
 /** @var array<int, array<string, mixed>> $documents */
 ?>
-<section class="workspace-hero">
-    <div class="container">
-        <p class="eyebrow">Agentic Multimodal Knowledge Workspace</p>
+<section class="dashboard-hero">
+    <div class="dashboard-hero-copy">
+        <p class="dashboard-eyebrow">Espace de connaissances <span aria-hidden="true">/</span> Assistant</p>
         <h1>Assistant de connaissances</h1>
-        <p class="hero-lead">Posez une question, générez un résumé ou rédigez une note — l'assistant s'appuie sur vos documents et cite ses sources.</p>
-        <div class="hero-chips">
-            <span class="chip chip-accent">RAG ancré</span>
-            <span class="chip">Sources citées</span>
-            <span class="chip">Tâches agentiques</span>
-            <span class="chip">Versions &amp; audit</span>
-        </div>
+        <p>Posez une question, générez un résumé ou rédigez une note — l'assistant s'appuie sur vos documents et cite ses sources.</p>
+    </div>
+    <div class="dashboard-hero-actions">
+        <span class="dashboard-date"><?= e(date('d/m/Y')) ?></span>
     </div>
 </section>
 
-<section class="container py-5">
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="workspace-card mb-4">
-                <div class="card-body">
-                    <p class="section-eyebrow">Question</p>
-                    <p class="text-muted mb-4">Posez une question sur vos documents — l'assistant répond en citant ses sources.</p>
-
-                    <form id="ask-form" class="mb-3">
-                        <label for="question" class="form-label">Votre question</label>
-                        <textarea id="question" class="form-control" rows="3" placeholder="Quels sont les principaux risques du dernier trimestre ?" required></textarea>
-                        <button type="submit" class="btn btn-primary mt-3">Demander</button>
-                    </form>
-
-                    <div id="answer" class="border rounded-3 p-3 bg-light" hidden>
-                        <strong class="d-block mb-2">Réponse</strong>
-                        <div id="answer-text" class="mb-0"></div>
-                        <div id="answer-sources" class="mt-3" hidden>
-                            <strong class="d-block mb-1">Sources</strong>
-                            <ul id="answer-sources-list" class="small mb-0"></ul>
-                        </div>
-                    </div>
-                    <div id="answer-error" class="alert alert-danger mt-3" hidden></div>
+<div class="row g-4">
+    <div class="col-lg-7">
+        <section class="panel mb-4">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">Question</h2>
+                    <p class="panel-sub">Interrogez vos documents, l'assistant cite ses sources.</p>
                 </div>
             </div>
+            <div class="panel-body">
+                <form id="ask-form" class="mb-3">
+                    <label for="question" class="form-label">Votre question</label>
+                    <textarea id="question" class="form-control" rows="3" placeholder="Quels sont les principaux risques du dernier trimestre ?" required></textarea>
+                    <button type="submit" class="btn btn-primary mt-3">Demander</button>
+                </form>
 
-            <div class="workspace-card">
-                <div class="card-body">
-                    <p class="section-eyebrow">Tâche agentique</p>
-                    <p class="text-muted small mb-3">Ex. « Prépare une note pour le directeur sur les activités du trimestre » ou « Liste les projets en retard ».</p>
-
-                    <form id="task-form">
-                        <textarea id="instruction" class="form-control" rows="3" placeholder="Décris la tâche à réaliser…" required></textarea>
-                        <button type="submit" class="btn btn-primary mt-3">Générer un brouillon</button>
-                    </form>
-
-                    <div id="draft" class="border rounded-3 p-3 bg-light mt-3" hidden>
-                        <strong class="d-block mb-2">Brouillon</strong>
-                        <div id="draft-text" class="mb-0"></div>
-                        <div id="draft-sources" class="mt-3" hidden>
-                            <strong class="d-block mb-1">Sources</strong>
-                            <ul id="draft-sources-list" class="small mb-0"></ul>
-                        </div>
-                    </div>
-                    <div id="task-error" class="alert alert-danger mt-3" hidden></div>
-                </div>
-            </div>
-
-            <div id="summary-card" class="workspace-card mt-4" hidden>
-                <div class="card-body">
-                    <strong class="d-block mb-2">Résumé</strong>
-                    <div id="summary-text"></div>
-                    <div id="summary-sources" class="mt-2 small" hidden>
+                <div id="answer" class="border rounded-3 p-3 bg-light" hidden>
+                    <strong class="d-block mb-2">Réponse</strong>
+                    <div id="answer-text" class="mb-0"></div>
+                    <div id="answer-sources" class="mt-3" hidden>
                         <strong class="d-block mb-1">Sources</strong>
-                        <ul id="summary-sources-list" class="mb-0"></ul>
+                        <ul id="answer-sources-list" class="small mb-0"></ul>
                     </div>
-                    <div id="summary-error" class="alert alert-danger mt-2" hidden></div>
                 </div>
+                <div id="answer-error" class="alert alert-danger mt-3" hidden></div>
             </div>
-        </div>
+        </section>
 
-        <div class="col-lg-5">
-            <div class="workspace-card mb-4">
-                <div class="card-body">
-                    <p class="section-eyebrow">Ajouter un document</p>
-                    <form id="upload-form" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Titre</label>
-                            <input id="title" name="title" class="form-control" placeholder="Rapport trimestriel" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="file" class="form-label">Fichier (txt, md, pdf, image, audio)</label>
-                            <input id="file" name="file" type="file" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-outline-primary">Indexer</button>
-                    </form>
-                    <div id="upload-status" class="small mt-2"></div>
+        <section class="panel mb-4">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">Tâche agentique</h2>
+                    <p class="panel-sub">Rédigez une note ou un rapport à partir de vos documents.</p>
                 </div>
             </div>
+            <div class="panel-body">
+                <form id="task-form">
+                    <textarea id="instruction" class="form-control" rows="3" placeholder="Ex. « Prépare une note pour le directeur sur les activités du trimestre »" required></textarea>
+                    <button type="submit" class="btn btn-primary mt-3">Générer un brouillon</button>
+                </form>
 
-            <div class="workspace-card">
-                <div class="card-body">
-                    <p class="section-eyebrow">Documents indexés</p>
-                    <?php if (empty($documents)): ?>
-                        <p class="text-muted small mb-0">Aucun document pour l'instant.</p>
-                    <?php else: ?>
-                        <div>
-                            <?php foreach ($documents as $doc): ?>
-                                <div class="doc-row">
-                                    <div class="doc-meta">
-                                        <div class="doc-title"><?= e($doc['title'] ?? '') ?></div>
-                                        <div class="doc-file"><?= e($doc['filename'] ?? '') ?></div>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
-                                            data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Résumer</button>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                <div id="draft" class="border rounded-3 p-3 bg-light mt-3" hidden>
+                    <strong class="d-block mb-2">Brouillon</strong>
+                    <div id="draft-text" class="mb-0"></div>
+                    <div id="draft-sources" class="mt-3" hidden>
+                        <strong class="d-block mb-1">Sources</strong>
+                        <ul id="draft-sources-list" class="small mb-0"></ul>
+                    </div>
+                </div>
+                <div id="task-error" class="alert alert-danger mt-3" hidden></div>
+            </div>
+        </section>
+
+        <section id="summary-card" class="panel" hidden>
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">Résumé</h2>
+                    <p class="panel-sub">Synthèse du document sélectionné.</p>
                 </div>
             </div>
-        </div>
+            <div class="panel-body">
+                <div id="summary-text"></div>
+                <div id="summary-sources" class="mt-2 small" hidden>
+                    <strong class="d-block mb-1">Sources</strong>
+                    <ul id="summary-sources-list" class="mb-0"></ul>
+                </div>
+                <div id="summary-error" class="alert alert-danger mt-2" hidden></div>
+            </div>
+        </section>
     </div>
-</section>
+
+    <div class="col-lg-5">
+        <section class="panel mb-4">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">Ajouter un document</h2>
+                    <p class="panel-sub">Texte, PDF, image ou audio.</p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <form id="upload-form" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Titre</label>
+                        <input id="title" name="title" class="form-control" placeholder="Rapport trimestriel" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Fichier (txt, md, pdf, image, audio)</label>
+                        <input id="file" name="file" type="file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary">Indexer</button>
+                </form>
+                <div id="upload-status" class="small mt-2"></div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <h2 class="panel-title">Documents indexés</h2>
+                    <p class="panel-sub"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?></p>
+                </div>
+            </div>
+            <div class="panel-body">
+                <?php if (empty($documents)): ?>
+                    <div class="dashboard-empty">
+                        <div class="dashboard-empty-copy">
+                            <p class="dashboard-empty-label">Aucun document</p>
+                            <p>Ajoutez un premier document pour commencer.</p>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <?php foreach ($documents as $doc): ?>
+                        <div class="dashboard-document-row">
+                            <span class="doc-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>
+                            </span>
+                            <div class="dashboard-document-copy">
+                                <strong><?= e($doc['title'] ?? '') ?></strong>
+                                <span><?= e($doc['filename'] ?? '') ?></span>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
+                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Résumer</button>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </section>
+    </div>
+</div>
 
 <script>
 (function () {
@@ -155,8 +177,8 @@ declare(strict_types=1);
             .replace(/\n/g, '<br>');
     }
 
-    async function postJson(payload) {
-        var response = await fetch('<?= e(url('/api/ask.php')) ?>', {
+    async function postJson(url, payload) {
+        var response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -180,7 +202,7 @@ declare(strict_types=1);
         if (!question) { return; }
 
         try {
-            var data = await postJson({ question: question, mode: 'answer' });
+            var data = await postJson('<?= e(url('/api/ask.php')) ?>', { question: question, mode: 'answer' });
             if (data.error) {
                 answerError.textContent = data.error;
                 answerError.hidden = false;
@@ -211,7 +233,7 @@ declare(strict_types=1);
         if (!instruction) { return; }
 
         try {
-            var data = await postJson({ instruction: instruction, mode: 'task' });
+            var data = await postJson('<?= e(url('/api/ask.php')) ?>', { instruction: instruction, mode: 'task' });
             if (data.error) {
                 taskError.textContent = data.error;
                 taskError.hidden = false;
@@ -253,6 +275,7 @@ declare(strict_types=1);
             uploadStatus.className = 'small text-danger mt-2';
         }
     });
+
     var summaryCard = document.getElementById('summary-card');
     var summaryText = document.getElementById('summary-text');
     var summarySources = document.getElementById('summary-sources');
@@ -266,12 +289,9 @@ declare(strict_types=1);
             summaryText.textContent = 'Résumé en cours…';
 
             try {
-                var response = await fetch('<?= e(url('/api/summarize.php')) ?>', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ document_id: Number(button.getAttribute('data-document-id')) })
+                var data = await postJson('<?= e(url('/api/summarize.php')) ?>', {
+                    document_id: Number(button.getAttribute('data-document-id'))
                 });
-                var data = await response.json();
                 if (data.error) {
                     summaryError.textContent = data.error;
                     summaryError.hidden = false;

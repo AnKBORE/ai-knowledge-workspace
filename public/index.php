@@ -107,7 +107,7 @@ $documents = $dependencies['document_model']->listRecent();
         'documents' => $documents,
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
-    ]);
+    ], 'app');
     exit;
 }
 
