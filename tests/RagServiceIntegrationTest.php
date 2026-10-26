@@ -73,4 +73,29 @@ final class RagServiceIntegrationTest extends TestCase
 
         $this->assertStringContainsString('No relevant document', $answer);
     }
+
+    public function testAnswerReturnsCitedSources(): void
+    {
+        $documentId = $this->insertDocument('Quarterly report');
+        $this->rag->indexDocument($documentId, 'The quarterly report describes the main risks.');
+
+        $result = $this->rag->answer('What are the main risks?');
+
+        $this->assertSame('Grounded answer from context.', $result['answer']);
+        $this->assertNotEmpty($result['sources']);
+        $this->assertSame('Quarterly report', $result['sources'][0]['title']);
+        $this->assertArrayHasKey('excerpt', $result['sources'][0]);
+    }
+
+    public function testTaskReturnsADraftWithSources(): void
+    {
+        $documentId = $this->insertDocument('Report');
+        $this->rag->indexDocument($documentId, 'The quarterly report describes the main risks.');
+
+        $result = $this->rag->task('Prepare a note about the risks');
+
+        $this->assertSame('Grounded answer from context.', $result['draft']);
+        $this->assertNotEmpty($result['sources']);
+        $this->assertSame('Report', $result['sources'][0]['title']);
+    }
 }

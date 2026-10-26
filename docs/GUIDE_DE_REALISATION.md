@@ -3,6 +3,8 @@
 > Feuille de route d'exécution du projet, de l'état actuel jusqu'à la soumission au **Meta Global AI Developer Hackathon**.
 > Piste : **Indie Developer** · Thème : **Build for Your World** · Deadline : **4 novembre 2026, 21 h ET**.
 
+> **Statut (2026-10-26)** : pipeline **validé de bout en bout** via Baseten (Plan B) ; **sources citées** + **tâche agentique** livrées ; **21 tests verts**.
+
 ---
 
 ## 0. Vision en une phrase

@@ -11,6 +11,7 @@ use PDO;
  *
  * Indexing: document -> chunks -> embeddings -> stored in the database.
  * Querying:  question -> embedding -> similar chunks -> grounded answer.
+ * Tasking:   instruction -> retrieval -> structured draft (agentic).
  */
 final class RagService
 {
@@ -69,20 +70,71 @@ final class RagService
     }
 
     /**
-     * Answer a question grounded in the indexed documents.
+     * Answer a question grounded in the indexed documents (plain string).
      */
     public function query(string $question, int $topK = 4): string
+    {
+        return (string) $this->answer($question, $topK)['answer'];
+    }
+
+    /**
+     * Answer a question grounded in the indexed documents, with cited sources.
+     *
+     * @return array{answer: string, sources: list<array{title: string, excerpt: string}>}
+     */
+    public function answer(string $question, int $topK = 4): array
     {
         $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK);
 
         if ($chunks === []) {
-            return 'No relevant document found. Index documents first.';
+            return ['answer' => 'No relevant document found. Index documents first.', 'sources' => []];
         }
 
-        $system = "You are a knowledge assistant. Answer using ONLY the excerpts below.\n\n"
-            . implode("\n\n---\n\n", $chunks);
+        $system = "You are a knowledge assistant. Answer using ONLY the excerpts below.\n"
+            . "If the answer is not present, say so explicitly. Keep the answer concise and factual.\n\n"
+            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
 
-        return $this->client->chat($question, [['role' => 'system', 'content' => $system]]);
+        $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]]);
+
+        return ['answer' => $answer, 'sources' => $this->sources($chunks)];
+    }
+
+    /**
+     * Agentic task: draft a structured document (note, report) grounded in the
+     * knowledge base.
+     *
+     * @return array{draft: string, sources: list<array{title: string, excerpt: string}>}
+     */
+    public function task(string $instruction, int $topK = 5): array
+    {
+        $chunks = $this->retrieveSimilar($this->embeddings->embed($instruction), $topK);
+
+        if ($chunks === []) {
+            return ['draft' => 'No relevant document found. Index documents first.', 'sources' => []];
+        }
+
+        $system = "You draft documents for an organization, using ONLY the excerpts below.\n"
+            . "Produce a well-structured draft with a title and short sections (bullet points when useful).\n"
+            . "Do not invent facts. If something is missing, add a short 'Information manquante' note.\n\n"
+            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
+
+        $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $system]]);
+
+        return ['draft' => $draft, 'sources' => $this->sources($chunks)];
+    }
+
+    /**
+     * @param list<array{content: string, title: string, score: float}> $chunks
+     * @return list<array{title: string, excerpt: string}>
+     */
+    private function sources(array $chunks): array
+    {
+        return array_map(static function (array $chunk): array {
+            return [
+                'title' => (string) ($chunk['title'] ?? 'Document'),
+                'excerpt' => mb_substr((string) ($chunk['content'] ?? ''), 0, 240),
+            ];
+        }, $chunks);
     }
 
     /**
@@ -92,11 +144,15 @@ final class RagService
      * step can be replaced by a dedicated vector store or a MySQL vector index.
      *
      * @param list<float> $queryVector
-     * @return list<string>
+     * @return list<array{content: string, title: string, score: float}>
      */
     private function retrieveSimilar(array $queryVector, int $topK): array
     {
-        $rows = $this->db->query('SELECT content, embedding FROM document_chunks')->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $this->db->query(
+            'SELECT c.content, c.embedding, d.title
+             FROM document_chunks c
+             JOIN documents d ON d.id = c.document_id'
+        )->fetchAll(PDO::FETCH_ASSOC);
 
         $scored = [];
         foreach ($rows as $row) {
@@ -106,12 +162,13 @@ final class RagService
             }
             $scored[] = [
                 'content' => (string) $row['content'],
+                'title' => (string) ($row['title'] ?? 'Document'),
                 'score' => $this->embeddings->similarity($queryVector, $vector),
             ];
         }
 
         usort($scored, static fn (array $a, array $b): int => $b['score'] <=> $a['score']);
 
-        return array_column(array_slice($scored, 0, $topK), 'content');
+        return array_slice($scored, 0, $topK);
     }
 }

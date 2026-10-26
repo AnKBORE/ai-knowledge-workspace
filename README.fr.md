@@ -112,9 +112,9 @@ curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application
 
 L'espace de travail est une page rendue côté serveur (Bootstrap 5 + le design system du socle) :
 
-- `GET /` — téléverser des documents **et** dialoguer avec l'assistant sur une seule page.
+- `GET /` — téléverser des documents, poser des questions **avec sources citées** et lancer des **tâches agentiques** (rédiger une note/un rapport).
 - `POST /api/upload.php` — indexer un fichier `.txt/.md/.pdf/image/audio`.
-- `POST /api/ask.php` — poser une question (JSON).
+- `POST /api/ask.php` — `{"question": "..."}` → réponse + sources ; `{"instruction": "...", "mode": "task"}` → brouillon + sources.
 
 Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
 

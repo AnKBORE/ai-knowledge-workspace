@@ -24,10 +24,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];
+$mode = (string) ($input['mode'] ?? 'answer');
 
 try {
     $controller = new AiAssistantController($dependencies['rag']);
-    echo json_encode($controller->ask($input), JSON_UNESCAPED_UNICODE);
+    $response = $mode === 'task' ? $controller->task($input) : $controller->ask($input);
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     http_response_code(500);
     $debug = getenv('APP_DEBUG') === '1';

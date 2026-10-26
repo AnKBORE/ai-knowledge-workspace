@@ -8,7 +8,7 @@ declare(strict_types=1);
 <section class="container py-5">
     <div class="row g-4">
         <div class="col-lg-7">
-            <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0 mb-4">
                 <div class="card-body p-4">
                     <h1 class="h4 mb-1">Assistant de connaissances</h1>
                     <p class="text-muted mb-4">Posez une question sur vos documents — l'assistant répond en citant ses sources.</p>
@@ -22,8 +22,34 @@ declare(strict_types=1);
                     <div id="answer" class="border rounded-3 p-3 bg-light" hidden>
                         <strong class="d-block mb-2">Réponse</strong>
                         <div id="answer-text" class="mb-0"></div>
+                        <div id="answer-sources" class="mt-3" hidden>
+                            <strong class="d-block mb-1">Sources</strong>
+                            <ul id="answer-sources-list" class="small mb-0"></ul>
+                        </div>
                     </div>
                     <div id="answer-error" class="alert alert-danger mt-3" hidden></div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="h6 text-uppercase text-muted mb-3">Tâche agentique</h2>
+                    <p class="text-muted small mb-3">Ex. « Prépare une note pour l'évêque sur les activités du trimestre » ou « Liste les projets en retard ».</p>
+
+                    <form id="task-form">
+                        <textarea id="instruction" class="form-control" rows="3" placeholder="Décris la tâche à réaliser…" required></textarea>
+                        <button type="submit" class="btn btn-primary mt-3">Générer un brouillon</button>
+                    </form>
+
+                    <div id="draft" class="border rounded-3 p-3 bg-light mt-3" hidden>
+                        <strong class="d-block mb-2">Brouillon</strong>
+                        <div id="draft-text" class="mb-0"></div>
+                        <div id="draft-sources" class="mt-3" hidden>
+                            <strong class="d-block mb-1">Sources</strong>
+                            <ul id="draft-sources-list" class="small mb-0"></ul>
+                        </div>
+                    </div>
+                    <div id="task-error" class="alert alert-danger mt-3" hidden></div>
                 </div>
             </div>
         </div>
@@ -70,33 +96,68 @@ declare(strict_types=1);
 
 <script>
 (function () {
-    const askForm = document.getElementById('ask-form');
-    const answer = document.getElementById('answer');
-    const answerText = document.getElementById('answer-text');
-    const answerError = document.getElementById('answer-error');
+    function renderSources(listEl, sources) {
+        listEl.innerHTML = '';
+        if (!Array.isArray(sources) || sources.length === 0) {
+            return false;
+        }
+        sources.forEach(function (source) {
+            var li = document.createElement('li');
+            var strong = document.createElement('strong');
+            strong.textContent = source.title || 'Document';
+            var span = document.createElement('span');
+            span.className = 'text-muted d-block';
+            span.textContent = source.excerpt || '';
+            li.appendChild(strong);
+            li.appendChild(span);
+            listEl.appendChild(li);
+        });
+        return true;
+    }
+
+    function escapeThenBold(text) {
+        var escaped = String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        return escaped
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+    }
+
+    async function postJson(payload) {
+        var response = await fetch('<?= e(url('/api/ask.php')) ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        return response.json();
+    }
+
+    var askForm = document.getElementById('ask-form');
+    var answer = document.getElementById('answer');
+    var answerText = document.getElementById('answer-text');
+    var answerSources = document.getElementById('answer-sources');
+    var answerSourcesList = document.getElementById('answer-sources-list');
+    var answerError = document.getElementById('answer-error');
 
     askForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         answer.hidden = true;
         answerError.hidden = true;
-        answerError.textContent = '';
 
-        const question = document.getElementById('question').value.trim();
+        var question = document.getElementById('question').value.trim();
         if (!question) { return; }
 
         try {
-            const response = await fetch('<?= e(url('/api/ask.php')) ?>', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question })
-            });
-            const data = await response.json();
+            var data = await postJson({ question: question, mode: 'answer' });
             if (data.error) {
                 answerError.textContent = data.error;
                 answerError.hidden = false;
                 return;
             }
-            answerText.textContent = data.answer || '';
+            answerText.innerHTML = escapeThenBold(data.answer || '');
+            answerSources.hidden = !renderSources(answerSourcesList, data.sources);
             answer.hidden = false;
         } catch (err) {
             answerError.textContent = 'Erreur réseau. Vérifiez le serveur.';
@@ -104,8 +165,39 @@ declare(strict_types=1);
         }
     });
 
-    const uploadForm = document.getElementById('upload-form');
-    const uploadStatus = document.getElementById('upload-status');
+    var taskForm = document.getElementById('task-form');
+    var draft = document.getElementById('draft');
+    var draftText = document.getElementById('draft-text');
+    var draftSources = document.getElementById('draft-sources');
+    var draftSourcesList = document.getElementById('draft-sources-list');
+    var taskError = document.getElementById('task-error');
+
+    taskForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        draft.hidden = true;
+        taskError.hidden = true;
+
+        var instruction = document.getElementById('instruction').value.trim();
+        if (!instruction) { return; }
+
+        try {
+            var data = await postJson({ instruction: instruction, mode: 'task' });
+            if (data.error) {
+                taskError.textContent = data.error;
+                taskError.hidden = false;
+                return;
+            }
+            draftText.innerHTML = escapeThenBold(data.draft || '');
+            draftSources.hidden = !renderSources(draftSourcesList, data.sources);
+            draft.hidden = false;
+        } catch (err) {
+            taskError.textContent = 'Erreur réseau. Vérifiez le serveur.';
+            taskError.hidden = false;
+        }
+    });
+
+    var uploadForm = document.getElementById('upload-form');
+    var uploadStatus = document.getElementById('upload-status');
 
     uploadForm.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -113,11 +205,11 @@ declare(strict_types=1);
         uploadStatus.className = 'small text-muted mt-2';
 
         try {
-            const response = await fetch('<?= e(url('/api/upload.php')) ?>', {
+            var response = await fetch('<?= e(url('/api/upload.php')) ?>', {
                 method: 'POST',
                 body: new FormData(uploadForm)
             });
-            const data = await response.json();
+            var data = await response.json();
             if (data.error) {
                 uploadStatus.textContent = data.error;
                 uploadStatus.className = 'small text-danger mt-2';

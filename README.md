@@ -112,9 +112,9 @@ curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application
 
 The workspace is a server-rendered page (Bootstrap 5 + the foundation's design system):
 
-- `GET /` — upload documents **and** chat with the assistant in one page.
+- `GET /` — upload documents, ask questions **with cited sources**, and run **agentic tasks** (draft a note/report).
 - `POST /api/upload.php` — index a `.txt/.md/.pdf/image/audio` file.
-- `POST /api/ask.php` — ask a question (JSON).
+- `POST /api/ask.php` — `{"question": "..."}` → answer + sources; `{"instruction": "...", "mode": "task"}` → draft + sources.
 
 Start the server and open <http://127.0.0.1:8080/>.
 
