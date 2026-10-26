@@ -14,6 +14,10 @@ return [
     // API entry point. For a partner (Baseten/Modal/Fireworks) use its base URL.
     'base_url' => getenv('META_MODEL_API_BASE_URL') ?: 'https://api.meta.ai',
 
+    // Long audio is split into chunks shorter than the provider's per-request limit.
+    'audio_max_seconds' => (int) (getenv('META_AUDIO_MAX_SECONDS') ?: 600),
+    'audio_chunk_seconds' => 300,
+
     // "meta" = /v1/responses (Meta) ; "openai" = /v1/chat/completions (partners).
     'api_style' => getenv('META_API_STYLE') ?: 'meta',
 
@@ -43,5 +47,5 @@ return [
     'vision_endpoint' => '/v1/vision',
 
     // Max request time in seconds.
-    'timeout' => 60,
+    'timeout' => 180,
 ];

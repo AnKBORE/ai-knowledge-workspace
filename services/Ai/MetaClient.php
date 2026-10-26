@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Ai;
 
+use App\Services\AudioSplitter;
+
 /**
  * Thin HTTP client for the Meta Model API.
  *
@@ -143,17 +145,16 @@ class MetaClient
      * Transcribe an audio recording.
      *
      * With an OpenAI-compatible partner (Baseten), Muse Spark Open handles the
-     * audio directly; with the Meta Model API, the dedicated endpoint is used.
+     * audio directly; recordings longer than the provider's per-request limit
+     * are split into chunks and concatenated. With the Meta Model API, the
+     * dedicated endpoint is used.
      *
      * @param string $audioPath Path to a local audio file (wav/mp3/m4a/...).
      */
     public function transcribe(string $audioPath): string
     {
         if ((string) ($this->config['api_style'] ?? 'meta') === 'openai') {
-            return $this->chatWithAudio(
-                'Transcribe this audio recording verbatim. Return the full transcript, preserving the speakers\' words.',
-                $audioPath,
-            );
+            return $this->transcribeOpenAi($audioPath);
         }
 
         $payload = $this->requestMultipart(
@@ -162,6 +163,31 @@ class MetaClient
         );
 
         return (string) ($payload['text'] ?? '');
+    }
+
+    /**
+     * Split long audio (MP3/WAV) into chunks shorter than 5 minutes, transcribe
+     * each chunk and concatenate the transcripts.
+     */
+    private function transcribeOpenAi(string $audioPath): string
+    {
+        $chunkSeconds = (int) ($this->config['audio_chunk_seconds'] ?? 300);
+        $splitter = new AudioSplitter();
+        $segments = $splitter->split($audioPath, $chunkSeconds);
+
+        $texts = [];
+        foreach ($segments as $segment) {
+            $texts[] = $this->chatWithAudio(
+                'Transcribe this audio recording verbatim. Return the full transcript, preserving the speakers\' words.',
+                $segment,
+            );
+
+            if ($segment !== $audioPath) {
+                @unlink($segment);
+            }
+        }
+
+        return trim(implode("\n\n", $texts));
     }
 
     /**

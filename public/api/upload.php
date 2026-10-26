@@ -63,7 +63,21 @@ try {
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
     // 1. Extract the text BEFORE moving the uploaded file.
-    if (in_array($extension, ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'], true)) {
+    $audioExtensions = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'];
+
+    if (in_array($extension, $audioExtensions, true)) {
+        $maxAudio = (int) ($dependencies['config']['audio_max_seconds'] ?? 600);
+        $duration = (new \App\Services\AudioSplitter())->duration($tmp);
+
+        if ($duration !== null && $duration > $maxAudio) {
+            http_response_code(422);
+            echo json_encode([
+                'error' => "L'audio dépasse la limite de " . intdiv($maxAudio, 60)
+                    . ' minutes. Découpez-le en morceaux plus courts, puis réessayez.',
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         $content = $dependencies['transcription']->transcribe($tmp);
     } elseif (in_array($extension, ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'], true)) {
         $content = $dependencies['vision']->extractText($tmp);
