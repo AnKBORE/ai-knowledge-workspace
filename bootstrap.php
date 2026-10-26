@@ -15,6 +15,7 @@ use App\Models\VersionDocument;
 use App\Services\Ai\EmbeddingService;
 use App\Services\AuthentificationService;
 use App\Services\DocumentService;
+use App\Services\JournalService;
 use App\Services\PermissionService;
 use App\Services\Ai\MetaClient;
 use App\Services\Ai\RagService;
@@ -63,7 +64,8 @@ $csrf = new Csrf($session);
 $auth = new Auth($session);
 $users = new Utilisateur($pdo);
 $tentatives = new TentativeConnexion($pdo);
-$authService = new AuthentificationService($users, $tentatives, $auth);
+$journal = new JournalService($pdo);
+$authService = new AuthentificationService($users, $tentatives, $auth, $journal);
 $espaces = new Espace($pdo);
 $adhesions = new Adhesion($pdo);
 $permissions = new PermissionService($pdo);
@@ -84,6 +86,7 @@ return [
     'csrf' => $csrf,
     'auth' => $auth,
     'auth_service' => $authService,
+    'journal' => $journal,
     'permissions' => $permissions,
     'espaces' => $espaces,
     'adhesions' => $adhesions,

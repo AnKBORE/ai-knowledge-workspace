@@ -77,6 +77,15 @@ try {
     $chunks = count($dependencies['rag']->chunk($content));
     $dependencies['rag']->indexDocument($result['document_id'], $content, $result['version_id']);
 
+    $dependencies['journal']->log(
+        $dependencies['auth']->id(),
+        'document.depot',
+        'document',
+        $result['document_id'],
+        'succes',
+        ['version' => 1, 'chunks' => $chunks],
+    );
+
     echo json_encode([
         'title' => $title,
         'chunks' => $chunks,

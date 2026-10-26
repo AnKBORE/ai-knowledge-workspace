@@ -35,6 +35,16 @@ $mode = (string) ($input['mode'] ?? 'answer');
 try {
     $controller = new AiAssistantController($dependencies['rag']);
     $response = $mode === 'task' ? $controller->task($input) : $controller->ask($input);
+
+    $dependencies['journal']->log(
+        $dependencies['auth']->id(),
+        'assistant.question',
+        'document',
+        null,
+        'succes',
+        ['mode' => $mode],
+    );
+
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     http_response_code(500);

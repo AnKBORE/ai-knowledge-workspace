@@ -9,6 +9,7 @@ use App\Core\Session;
 use App\Models\TentativeConnexion;
 use App\Models\Utilisateur;
 use App\Services\AuthentificationService;
+use App\Services\JournalService;
 use App\Validators\PolitiqueMotDePasse;
 use PDO;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class AuthentificationServiceTest extends TestCase
 {
+    private PDO $pdo;
     private Auth $auth;
     private AuthentificationService $service;
 
@@ -46,6 +48,18 @@ final class AuthentificationServiceTest extends TestCase
             verrouille_jusqua TEXT NULL,
             maj_le TEXT DEFAULT CURRENT_TIMESTAMP
         )');
+        $pdo->exec('CREATE TABLE journal (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            acteur_id INTEGER NULL,
+            action TEXT NOT NULL,
+            objet_type TEXT NULL,
+            objet_id INTEGER NULL,
+            resultat TEXT NOT NULL DEFAULT "succes",
+            adresse_ip TEXT NOT NULL,
+            details TEXT NULL,
+            horodatage TEXT DEFAULT CURRENT_TIMESTAMP
+        )');
+        $this->pdo = $pdo;
 
         $users = new Utilisateur($pdo);
         $users->create(
@@ -57,7 +71,12 @@ final class AuthentificationServiceTest extends TestCase
         );
 
         $this->auth = new Auth(new Session());
-        $this->service = new AuthentificationService($users, new TentativeConnexion($pdo), $this->auth);
+        $this->service = new AuthentificationService(
+            $users,
+            new TentativeConnexion($pdo),
+            $this->auth,
+            new JournalService($pdo),
+        );
     }
 
     public function testLoginSucceedsWithValidCredentials(): void
@@ -84,6 +103,17 @@ final class AuthentificationServiceTest extends TestCase
 
         $this->assertFalse($this->service->login('admin@example.com', 'Hackathon2026!'));
         $this->assertFalse($this->auth->check());
+    }
+
+    public function testLoginIsJournalised(): void
+    {
+        $this->service->login('admin@example.com', 'Hackathon2026!');
+
+        $count = (int) $this->pdo
+            ->query("SELECT COUNT(*) FROM journal WHERE action = 'connexion' AND resultat = 'succes'")
+            ->fetchColumn();
+
+        $this->assertSame(1, $count);
     }
 
     public function testLogoutClearsSession(): void
