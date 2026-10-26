@@ -23,7 +23,6 @@
 | ID | Problème | Impact | Priorité | Statut | Résolution |
 |---|---|---|---|---|---|
 | **O1** | `META_MODEL_API_KEY` vide dans `.env` | Le chat échoue (« Internal server error ») | 🔥 Critique | 🔴 | — |
-| **O2** | Crédits $150 non visibles dans Facturation | Tout appel API débite la carte | 🔥 Critique | 🔴 | — |
 | **O4** | Endpoints `transcription` (voix) et `vision` (scan) non confirmés par la doc Meta | Le multimodal voix/scan n'est pas testé | Moyenne | 🔴 | — |
 | **O5** | Les **sources citées** ne sont pas affichées dans l'UI | Perte du principal différenciateur → risque « basic RAG » | 🔥 Critique | 🔴 | — |
 | **O6** | **Tâches agentiques** multi-étapes non implémentées | Le projet reste un Q&A → risque « basic RAG » | 🔥 Critique | 🔴 | — |
@@ -53,6 +52,7 @@
 | **R12** | Erreurs API opaques | Mode **`APP_DEBUG=1`** → message d'erreur réel | 2026-10-26 |
 | **O3** | Team ID / formulaire de crédits | Formulaire de crédits **soumis** (Team ID renseigné) | 2026-10-26 |
 | **O8** | Dépôt GitHub privé | Dépôt passé en **public** | 2026-10-26 |
+| **O2** | Crédits $150 non visibles | **Crédits actifs** : « Free credits in use: $150,00 » | 2026-10-26 |
 
 ---
 
@@ -67,6 +67,7 @@
 | 2026-10-26 | — | **Constat** : l'upload fonctionne (150 chunks) ; le chat échoue car `META_MODEL_API_KEY` vide (**O1**). |
 | 2026-10-26 | O3 | Formulaire de crédits **soumis** (Team ID renseigné). |
 | 2026-10-26 | O8 | Dépôt GitHub passé en **public**. |
+| 2026-10-26 | O2 | Crédits $150 activés (« Free credits in use: $150,00 »). |
 
 ---
 
