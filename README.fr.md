@@ -1,77 +1,126 @@
 # Espace de connaissances agentique et multimodal
 
-Un espace de connaissances agentique et multimodal pour les organisations : il ingère des documents texte, des archives papier scannées et des enregistrements vocaux, puis exécute des tâches en plusieurs étapes — répondre avec sources citées, préparer des notes de réunion, rédiger des rapports et signaler les projets en retard.
+> Un espace de travail **agentique et multimodal** pour les organisations : il ingère des documents, des scans et des notes vocales, puis **agit** — répond avec des sources citées, rédige des notes et des rapports, et résume des documents.
+>
+> Réalisé pour le **Meta Global AI Developer Hackathon** — Thème : **Build for Your World** · Piste : **Indie Developer** · Date limite : **4 novembre 2026, 21 h ET**.
 
-Réalisé pour le **Meta Global AI Developer Hackathon** (Thème : *Build for Your World* · Parcours : *développeur indépendant*).
+---
 
-## Vue d'ensemble
+## Pourquoi ce n'est PAS une « basic RAG application »
 
-Les organisations accumulent pendant des années des rapports, des comptes rendus, des procédures, des archives scannées et des enregistrements de réunions. L'information est dispersée et, au bout d'un moment, plus personne ne la retrouve. **Espace de connaissances agentique et multimodal** permet à une équipe de :
+Le hackathon bannit explicitement les *basic RAG applications* (voir le Participant Guide, §4). Ce projet dépasse volontairement la boucle « question → réponse » :
 
-1. Ingérer des documents texte (PDF, rapports, comptes rendus), des archives papier scannées et des enregistrements vocaux.
-2. Laisser l'IA les transformer en une base de connaissances privée et multimodale.
-3. Poser une question ou demander une tâche en langage naturel.
-4. Obtenir une réponse ancrée — ou un brouillon prêt à l'emploi — avec chaque affirmation citée à sa source.
-
-## Fonctionnalités (MVP)
-
-- Authentification sécurisée et contrôle d'accès basé sur les rôles (RBAC)
-- Gestion documentaire avec versionnement
-- Téléversement et indexation de PDF
-- Archives papier scannées via SAM 3.1
-- Notes vocales et transcription de réunions via Muse Voice Transcribe
-- Base de connaissances
-- Assistant agentique : tâches en plusieurs étapes avec sources citées
-- Résumé automatique de documents
-- Génération automatique de rapports
-- Recherche intelligente / sémantique
-- Journalisation des actions (piste d'audit)
-
-## IA (API Meta Model)
-
-| Modèle | Rôle |
+| Un « basic RAG » | Ce projet |
 |---|---|
-| Muse Spark | Assistant conversationnel, questions/réponses, génération de contenu, analyse documentaire |
-| Muse Wonder | Génération de rapports, planification, aide à la décision |
-| Muse Image | Visuels et illustrations de projet |
-| Muse Voice Transcribe | Réunions et notes vocales → texte interrogeable |
-| SAM 3.1 | Traitement des documents scannés, reconnaissance visuelle |
-| Muse Code | Agent de codage |
-| Muse Glimmer / Muse Spark Open | Modèles Meta à pondération ouverte (déploiement privé via Baseten, Modal, Fireworks) |
+| PDF texte uniquement | **Texte + PDF + images scannées + audio** (ingestion multimodale) |
+| Une question → une réponse | **Tâches agentiques** : rédiger une note, un rapport, une fiche pédagogique (multi-étapes) |
+| Aucune traçabilité | **Sources numérotées et citées** sur chaque réponse et chaque brouillon |
+| Aucune gouvernance | **RBAC**, **versions** immuables des documents (SHA-256), **journal d'audit** en ajout seul |
+| Aucun export | **Export PDF / DOCX** de chaque résultat généré |
+| Chatbot générique | **Un domaine réel** : paroisses, ONG et écoles au Burkina Faso |
 
-La génération augmentée par récupération (RAG) ancre chaque réponse dans les documents de l'organisation ; la phase 2 étend cela à la recherche vectorielle sur toutes les modalités.
+---
 
-## Pile technique
+## Construit pendant le hackathon
+
+Le dépôt contient deux couches **clairement séparées** :
+
+- **Nouveau — construit pendant le hackathon**
+  - la couche IA : pipeline RAG (`services/Ai/`), `answer()`, `task()`, `summarize()`, sources citées ;
+  - l'export PDF / DOCX (`ExportService`) ;
+  - l'espace web multi-pages (Question, Tâche agentique, Documents, Ajouter) ;
+  - la couche de gouvernance : comptes, RBAC (`PermissionService`), versions de documents, journal d'audit.
+- **Préexistant — socle réutilisé**
+  - le **design system** visuel (Bootstrap 5 + CSS) et les conventions MVC du projet antérieur `espace_collaboratif` de l'auteur.
+  - Aucun code ou donnée client propriétaire n'est inclus.
+
+> Chaque fonctionnalité montrée dans la vidéo de démonstration a été **écrite pendant le hackathon**.
+
+---
+
+## Ce qui fonctionne aujourd'hui
+
+| Fonctionnalité | Statut |
+|---|---|
+| Ingestion texte / PDF + chunking + indexation | ✅ |
+| Recherche sémantique (similarité cosinus) | ✅ |
+| Réponses ancrées **avec sources citées** | ✅ |
+| Rédaction agentique (notes, rapports, fiches pédagogiques) | ✅ |
+| Résumé automatique de documents | ✅ |
+| Export PDF / DOCX des résultats | ✅ |
+| Authentification par session (CSRF, anti-brute-force) | ✅ |
+| RBAC (rôles globaux + par espace) | ✅ |
+| Versions immuables des documents (SHA-256) | ✅ |
+| Journal d'audit en ajout seul | ✅ |
+| Images scannées via SAM 3.1 | 🔜 feuille de route (endpoint non confirmé) |
+| Voix via Muse Voice Transcribe | 🔜 feuille de route (endpoint non confirmé) |
+
+---
+
+## IA (modèles Meta)
+
+Le modèle de génération est **Muse Spark Open**, servi par un **partenaire d'inférence Meta** (Baseten) via l'API compatible OpenAI. L'architecture laisse la porte ouverte à la Meta Model API (`/v1/responses`) et aux autres modèles Muse.
+
+| Modèle | Rôle | Où |
+|---|---|---|
+| **Muse Spark Open** | Réponses, brouillons, résumés | Baseten (`meta-models/muse-spark-open`) |
+| Muse Wonder | Génération de rapports longs (option) | Meta Model API |
+| Muse Voice Transcribe | Réunions et notes vocales → texte interrogeable | Feuille de route |
+| SAM 3.1 | Traitement des documents scannés | Feuille de route |
+| Muse Glimmer / Muse Spark Open | Modèles open-weight Meta | Baseten / Modal / Fireworks |
+
+Deux styles d'API sont pris en charge :
+
+```dotenv
+# Meta Model API
+META_API_STYLE=meta
+META_MODEL_API_BASE_URL=https://api.meta.ai
+META_MODEL_NAME=muse-wonder-1.0
+
+# Partenaire d'inférence Meta (compatible OpenAI)
+META_API_STYLE=openai
+META_MODEL_API_BASE_URL=https://inference.baseten.co
+META_MODEL_NAME=meta-models/muse-spark-open
+```
+
+---
+
+## Stack technique
 
 | Composant | Version |
 |---|---|
-| PHP | 8.4.27 |
-| MySQL | 8.4.13 (InnoDB, utf8mb4) |
-| Serveur web | Apache 2.4 |
+| PHP | **8.4.27** |
+| MySQL | **8.4.13** (InnoDB, utf8mb4) |
 | Frontend | HTML5, CSS3, Bootstrap 5, JavaScript ES6 |
-| IA | API Meta Model (REST) |
+| IA | Muse Spark Open via Baseten (compatible OpenAI) |
+| PDF | `dompdf` |
+| DOCX | OOXML natif (`ZipArchive`) |
+
+---
 
 ## Structure du projet
 
 ```
-public/       contrôleur frontal + assets (seul dossier exposé)
-config/       configuration par environnement et routes
-core/         HTTP, routage, session, sécurité, PDO
-controllers/  contrôleurs MVC
-models/       accès aux données
-services/     logique métier (+ Ai/ pour l'intégration de l'API Meta)
-validators/   validation des entrées
-views/        gabarits et pages
-storage/      journaux, fichiers, sauvegardes, cache (jamais exposé)
-migrations/   schéma versionné
-tests/        PHPUnit
+public/        contrôleur frontal + assets (seul dossier exposé)
+config/        configuration d'environnement
+core/          HTTP, routage, session, CSRF, auth, PDO
+controllers/   contrôleurs MVC
+models/        accès aux données (utilisateurs, espaces, documents, versions)
+services/      logique métier (+ Ai/ pour l'intégration des modèles)
+validators/    validation des entrées
+views/         gabarits et pages
+storage/       fichiers, journaux, sauvegardes (jamais exposés)
+migrations/    schéma versionné
+tests/         PHPUnit
 ```
+
+---
 
 ## Installation
 
 ```powershell
 # 1. Dépendances
-composer install
+php tools/composer.phar install
 
 # 2. Configuration locale
 Copy-Item .env.example .env
@@ -79,62 +128,43 @@ Copy-Item .env.example .env
 # 3. Base de données
 php tools/migrate.php migrate
 
-# 4. Lancement local
+# 4. Premier administrateur + espace par défaut
+php tools/seed_admin.php
+
+# 5. Lancement local
 php -S 127.0.0.1:8080 -t public
 ```
 
-En production, le document root doit pointer sur `public/`.
+Puis ouvrez <http://127.0.0.1:8080/login>.
+
+En production, la racine web doit pointer vers `public/`.
 
 Sous Windows, `.\setup.ps1` (ou `setup.bat`) exécute ces étapes automatiquement avec PHP 8.4.27.
 
-## Démarrage rapide — démo IA
-
-```powershell
-# 1. Dépendances (crée vendor/autoload.php)
-composer install
-
-# 2. Créer le schéma
-php tools/migrate.php migrate
-
-# 3. Configurer .env avec vos clés API Meta (voir .env.example)
-
-# 4. Indexer un document (.txt, .md, .pdf)
-php tools/index_document.php "Rapport annuel" docs/sample-report.txt
-
-# 5. Lancer le serveur local
-php -S 127.0.0.1:8080 -t public
-
-# 6. Poser une question (dans un autre terminal)
-curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application/json" -d "{\"question\":\"Quels sont les principaux risques ?\"}"
-```
-
-## Authentification
-
-L'espace de travail est protégé par une connexion par session (protection CSRF, verrouillage anti-brute-force, hachage des mots de passe).
-
-Créez le premier compte administrateur :
-
-```bash
-php tools/seed_admin.php
-```
-
-Les identifiants se règlent avec `ADMIN_EMAIL` / `ADMIN_PASSWORD` (voir `tools/seed_admin.php`). Ouvrez ensuite <http://127.0.0.1:8080/login>.
+---
 
 ## Interface web
 
-L'espace de travail est une page rendue côté serveur (Bootstrap 5 + le design system du socle) :
+L'espace est découpé en **quatre pages navigables**, pilotées par le menu vertical :
 
-- `GET /` — téléverser des documents, poser des questions **avec sources citées** et lancer des **tâches agentiques** (rédiger une note/un rapport).
-- `POST /api/upload.php` — indexer un fichier `.txt/.md/.pdf/image/audio`.
-- `POST /api/ask.php` — `{"question": "..."}` → réponse + sources ; `{"instruction": "...", "mode": "task"}` → brouillon + sources.
+| Page | URL | Rôle |
+|---|---|---|
+| **Question** | `/` | Poser une question, obtenir une réponse ancrée avec sources citées |
+| **Tâche agentique** | `/tache` | Demander une note / un rapport / une fiche ; le brouillon s'ouvre dans une modal |
+| **Documents** | `/documents` | Liste des documents indexés, résumé en un clic |
+| **Ajouter** | `/ajouter` | Indexer un fichier texte, PDF, image ou audio |
 
-Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
+Chaque résultat s'ouvre dans une **modal** avec les boutons **PDF** et **DOCX**.
 
-## Documentation
+Endpoints API (protégés par session) :
 
-- [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons).
-- [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et journal des résolutions.
-- [docs/DEMO_VIDEO_ET_SOUMISSION.md](docs/DEMO_VIDEO_ET_SOUMISSION.md) — script de la vidéo de démo et checklist de soumission.
+- `POST /api/upload.php` — indexer un fichier (multipart)
+- `POST /api/ask.php` — `{"question": "..."}` → réponse + sources ; `{"instruction": "...", "mode": "task"}` → brouillon + sources
+- `POST /api/summarize.php` — `{"document_id": 3}` → résumé + sources
+- `POST /api/export.php` — `{"title", "content", "format": "pdf|docx"}` → fichier
+- `GET /api/documents.php` — documents récents (JSON)
+
+---
 
 ## Tests
 
@@ -142,18 +172,33 @@ Lancez le serveur puis ouvrez <http://127.0.0.1:8080/>.
 php vendor/phpunit/phpunit/phpunit
 ```
 
-15 tests couvrent le découpage RAG, la similarité cosinus, le chargeur `.env` et le pipeline RAG complet — sans serveur de base de données ni API.
+**50 tests, 104 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le RAG, les exports et les services multimodaux. Aucun serveur de base ni API requis (SQLite en mémoire + doubles déterministes).
+
+---
 
 ## Sécurité
 
-Requêtes SQL préparées · protection CSRF · hachage des mots de passe · RBAC vérifié sur chaque objet ciblé · refus par défaut · fichiers hors de la racine web · aucun secret dans le code ni les journaux · HTTPS et en-têtes de sécurité · journalisation des opérations sensibles.
+Requêtes préparées · CSRF sur chaque POST · hachage des mots de passe (Argon2/bcrypt) · verrouillage anti-brute-force progressif · RBAC résolu centralement (`PermissionService`) · refus par défaut · fichiers hors racine web · aucun secret dans le code ou les journaux · journal d'audit en ajout seul · en-têtes de sécurité.
+
+---
+
+## Documentation
+
+- [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons)
+- [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et journal des résolutions
+- [docs/DEMO_VIDEO_ET_SOUMISSION.md](docs/DEMO_VIDEO_ET_SOUMISSION.md) — script de la vidéo et checklist de soumission
+
+---
 
 ## Auteur
 
 **Anatole KABORE** — Ingénieur logiciel indépendant et spécialiste en cybersécurité, Burkina Faso.
 
 - LinkedIn : <https://www.linkedin.com/in/anatole-kabore-73b076342>
+- GitHub : <https://github.com/AnKBORE>
+
+---
 
 ## Licence
 
-Propriétaire — projet de démonstration pour le Meta Global AI Developer Hackathon.
+**MIT** — voir [LICENSE](LICENSE).
