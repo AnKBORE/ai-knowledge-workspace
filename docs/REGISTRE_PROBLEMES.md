@@ -61,6 +61,7 @@
 | **R18** | Crédits Baseten (partenaires) | **Demande soumise** (100 $ + 2M TPM) ; sélection par cas d'usage, réponse par e-mail | 2026-10-26 |
 | **R19** | RBAC effectif, documents rattachés, versions, suppression | **Livré** : RBAC appliqué aux 4 endpoints (200 responsable / 403 membre sans adhésion), `espace_id` renseigné, badge versions, suppression + journal, 52 tests | 2026-10-26 |
 | **R20** | Recherche sémantique faible | **Livré** : recherche **hybride** (cosinus 60 % + recouvrement lexical 40 %), `search()` exposé, test de classement, 53 tests | 2026-10-26 |
+| **R21** | Multimodal non démontré | **Livré** : `describeImage()` route vers **Muse Spark Open** (`image_url`) quand `api_style=openai` ; OCR testé en live (« BONJOUR LE MONDE ») ; audio via `input_audio` (code prêt) | 2026-10-26 |
 
 ---
 
@@ -89,6 +90,7 @@
 | 2026-10-26 | R18 | Demande de crédits Baseten soumise (100 $ + 2M TPM) ; réponse par e-mail si sélectionné. |
 | 2026-10-26 | R19 | RBAC appliqué aux endpoints (403 vérifié) ; documents rattachés à un espace ; versions visibles ; suppression de document. |
 | 2026-10-26 | R20 | Recherche hybride (sémantique + lexicale) livrée ; bruit de retrieval supprimé ; 53 tests verts. |
+| 2026-10-26 | R21 | Vision via Muse Spark Open validée en live (OCR) ; audio (`input_audio`) branché. |
 
 ---
 
