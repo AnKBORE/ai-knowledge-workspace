@@ -23,6 +23,7 @@ $root = __DIR__;
 require $root . '/vendor/autoload.php';
 
 Env::load($root . '/.env');
+require $root . '/core/helpers.php';
 
 $config = require $root . '/config/meta.php';
 

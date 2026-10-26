@@ -108,6 +108,16 @@ php -S 127.0.0.1:8080 -t public
 curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application/json" -d "{\"question\":\"What are the main risks?\"}"
 ```
 
+## Web UI
+
+The workspace is a server-rendered page (Bootstrap 5 + the foundation's design system):
+
+- `GET /` — upload documents **and** chat with the assistant in one page.
+- `POST /api/upload.php` — index a `.txt/.md/.pdf/image/audio` file.
+- `POST /api/ask.php` — ask a question (JSON).
+
+Start the server and open <http://127.0.0.1:8080/>.
+
 ## Tests
 
 ```powershell
