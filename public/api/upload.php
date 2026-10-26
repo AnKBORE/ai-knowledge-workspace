@@ -42,8 +42,18 @@ if ($title === '') {
 
 $upload = $_FILES['file'] ?? null;
 if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+    $code = is_array($upload) ? (int) ($upload['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
+    $messages = [
+        UPLOAD_ERR_INI_SIZE => 'Le fichier dépasse la limite du serveur (upload_max_filesize).',
+        UPLOAD_ERR_FORM_SIZE => 'Le fichier dépasse la limite du formulaire.',
+        UPLOAD_ERR_PARTIAL => "L'envoi a été interrompu.",
+        UPLOAD_ERR_NO_FILE => 'Aucun fichier sélectionné.',
+        UPLOAD_ERR_NO_TMP_DIR => 'Dossier temporaire manquant.',
+        UPLOAD_ERR_CANT_WRITE => "Impossible d'écrire sur le disque.",
+        UPLOAD_ERR_EXTENSION => "Envoi bloqué par une extension PHP.",
+    ];
     http_response_code(422);
-    echo json_encode(['error' => 'A valid file is required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $messages[$code] ?? ('Erreur d\'envoi (' . $code . ').')], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

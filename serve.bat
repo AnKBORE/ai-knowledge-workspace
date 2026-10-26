@@ -6,5 +6,5 @@ if not exist "%PHP%" set "PHP=php"
 echo Using PHP: %PHP%
 echo Workspace: http://127.0.0.1:8080/
 echo Press Ctrl+C to stop.
-"%PHP%" -S 127.0.0.1:8080 -t public
+"%PHP%" -d upload_max_filesize=20M -d post_max_size=25M -S 127.0.0.1:8080 -t public
 pause
