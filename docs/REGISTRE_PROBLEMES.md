@@ -57,6 +57,7 @@
 | **R14** | RBAC (espaces & adhésions) | **Phase 2 livrée** : `espace`, `adhesion`, `historique_adhesions`, `journal`, `PermissionService` (global/local, héritage, espaces privés), 37 tests verts | 2026-10-26 |
 | **R15** | Documents & versions | **Phase 3 livrée** : `document` enrichi, `version_document` (SHA-256, numéros uniques), `DocumentService` (stockage hors web), upload live validé, 41 tests verts | 2026-10-26 |
 | **R16** | Journalisation (audit) | **Phase 7 livrée** : `JournalService` append-only + instrumentation (connexion, déconnexion, dépôt, question), journal live validé, 45 tests verts | 2026-10-26 |
+| **R17** | Résumé automatique | **Livré** : `RagService::summarize()` + `/api/summarize.php` + bouton « Résumer » dans l'UI, résumé live validé (sources incluses), 47 tests verts | 2026-10-26 |
 
 ---
 
@@ -81,6 +82,7 @@
 | 2026-10-26 | R14 | Phase 2 (espaces, adhésions, PermissionService) livrée ; 37 tests verts. |
 | 2026-10-26 | R15 | Phase 3 (documents versionnés, SHA-256, stockage hors web) livrée ; 41 tests verts. |
 | 2026-10-26 | R16 | Phase 7 (journal d'audit append-only) livrée ; 45 tests verts. |
+| 2026-10-26 | R17 | Résumé automatique livré (sources incluses) ; 47 tests verts. |
 
 ---
 
