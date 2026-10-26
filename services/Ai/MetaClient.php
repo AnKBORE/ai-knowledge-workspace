@@ -140,12 +140,22 @@ class MetaClient
     }
 
     /**
-     * Transcribe an audio recording with Muse Voice Transcribe.
+     * Transcribe an audio recording.
+     *
+     * With an OpenAI-compatible partner (Baseten), Muse Spark Open handles the
+     * audio directly; with the Meta Model API, the dedicated endpoint is used.
      *
      * @param string $audioPath Path to a local audio file (wav/mp3/m4a/...).
      */
     public function transcribe(string $audioPath): string
     {
+        if ((string) ($this->config['api_style'] ?? 'meta') === 'openai') {
+            return $this->chatWithAudio(
+                'Transcribe this audio recording verbatim. Return the full transcript, preserving the speakers\' words.',
+                $audioPath,
+            );
+        }
+
         $payload = $this->requestMultipart(
             (string) ($this->config['transcription_endpoint'] ?? '/v1/audio/transcriptions'),
             $audioPath
@@ -155,12 +165,22 @@ class MetaClient
     }
 
     /**
-     * Extract text from an image (scanned document, form, table) with SAM 3.1.
+     * Extract text from an image (scanned document, form, table).
+     *
+     * With an OpenAI-compatible partner (Baseten), Muse Spark Open handles the
+     * image directly; with the Meta Model API, the dedicated endpoint is used.
      *
      * @param string $imagePath Path to a local image file (png/jpg/tiff/...).
      */
     public function describeImage(string $imagePath): string
     {
+        if ((string) ($this->config['api_style'] ?? 'meta') === 'openai') {
+            return $this->chatWithImage(
+                'Extract all the text visible in this document image. Return only the extracted text, in reading order, without commentary.',
+                $imagePath,
+            );
+        }
+
         $data = file_get_contents($imagePath);
         if ($data === false) {
             throw new \RuntimeException('Could not read image: ' . $imagePath);
@@ -175,6 +195,65 @@ class MetaClient
         );
 
         return (string) ($payload['text'] ?? $payload['description'] ?? '');
+    }
+
+    /**
+     * OpenAI-compatible multimodal call with an image (base64 data URL).
+     */
+    private function chatWithImage(string $prompt, string $imagePath): string
+    {
+        $data = file_get_contents($imagePath);
+        if ($data === false) {
+            throw new \RuntimeException('Could not read image: ' . $imagePath);
+        }
+
+        $mime = mime_content_type($imagePath) ?: 'image/png';
+        $dataUrl = 'data:' . $mime . ';base64,' . base64_encode($data);
+
+        $payload = $this->request('/v1/chat/completions', [
+            'model' => (string) ($this->config['chat_model'] ?? ''),
+            'messages' => [[
+                'role' => 'user',
+                'content' => [
+                    ['type' => 'text', 'text' => $prompt],
+                    ['type' => 'image_url', 'image_url' => ['url' => $dataUrl]],
+                ],
+            ]],
+            'temperature' => 0.2,
+        ]);
+
+        return (string) ($payload['choices'][0]['message']['content'] ?? '');
+    }
+
+    /**
+     * OpenAI-compatible multimodal call with an audio file (base64 input_audio).
+     */
+    private function chatWithAudio(string $prompt, string $audioPath): string
+    {
+        $data = file_get_contents($audioPath);
+        if ($data === false) {
+            throw new \RuntimeException('Could not read audio: ' . $audioPath);
+        }
+
+        $extension = strtolower(pathinfo($audioPath, PATHINFO_EXTENSION));
+        $format = in_array($extension, ['mp3', 'wav'], true) ? $extension : 'wav';
+
+        $payload = $this->request('/v1/chat/completions', [
+            'model' => (string) ($this->config['chat_model'] ?? ''),
+            'messages' => [[
+                'role' => 'user',
+                'content' => [
+                    ['type' => 'text', 'text' => $prompt],
+                    ['type' => 'input_audio', 'input_audio' => [
+                        'data' => base64_encode($data),
+                        'format' => $format,
+                    ]],
+                ],
+            ]],
+            'temperature' => 0.2,
+        ]);
+
+        return (string) ($payload['choices'][0]['message']['content'] ?? '');
     }
 
     /**

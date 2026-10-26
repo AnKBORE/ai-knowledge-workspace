@@ -52,8 +52,9 @@ Le dépôt contient deux couches **clairement séparées** :
 | RBAC (rôles globaux + par espace) | ✅ |
 | Versions immuables des documents (SHA-256) | ✅ |
 | Journal d'audit en ajout seul | ✅ |
-| Images scannées via SAM 3.1 | 🔜 feuille de route (endpoint non confirmé) |
-| Voix via Muse Voice Transcribe | 🔜 feuille de route (endpoint non confirmé) |
+| Images scannées (OCR via la vision de Muse Spark Open) | ✅ (testé en live) |
+| Voix (audio via Muse Spark Open) | 🔌 code prêt (à tester avec un audio réel) |
+| SAM 3.1 / Muse Voice Transcribe (endpoints dédiés) | 🔜 optionnel (Meta Model API) |
 
 ---
 

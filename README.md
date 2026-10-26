@@ -52,8 +52,9 @@ The repository contains two **clearly separated** layers:
 | RBAC (global + per-space roles) | ✅ |
 | Immutable document versions (SHA-256) | ✅ |
 | Append-only audit journal | ✅ |
-| Scanned images via SAM 3.1 | 🔜 roadmap (endpoint not confirmed) |
-| Voice via Muse Voice Transcribe | 🔜 roadmap (endpoint not confirmed) |
+| Scanned images (OCR via Muse Spark Open vision) | ✅ (live-tested) |
+| Voice (audio via Muse Spark Open) | 🔌 code path ready (to test with a real audio) |
+| SAM 3.1 / Muse Voice Transcribe (dedicated endpoints) | 🔜 optional (Meta Model API) |
 
 ---
 
