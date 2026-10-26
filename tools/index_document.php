@@ -11,8 +11,11 @@ use App\Services\Ai\RagService;
  *   php tools/index_document.php "Title" /path/to/file.txt
  *   php tools/index_document.php "Title" /path/to/file.pdf
  *
- * Plain text (.txt, .md) is read directly. PDF text extraction uses
- * smalot/pdfparser (composer install required).
+ * Supported inputs:
+ *   - text (.txt, .md)        -> read directly
+ *   - PDF (.pdf)              -> smalot/pdfparser
+ *   - audio (wav/mp3/m4a)     -> Muse Voice Transcribe
+ *   - image / scan (png/jpg)  -> SAM 3.1 vision
  */
 
 $dependencies = require dirname(__DIR__) . '/bootstrap.php';
@@ -32,7 +35,14 @@ if (!is_file($file)) {
 
 $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
-if ($extension === 'pdf') {
+$audioExtensions = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'];
+$imageExtensions = ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'];
+
+if (in_array($extension, $audioExtensions, true)) {
+    $content = $dependencies['transcription']->transcribe($file);
+} elseif (in_array($extension, $imageExtensions, true)) {
+    $content = $dependencies['vision']->extractText($file);
+} elseif ($extension === 'pdf') {
     if (!class_exists(\Smalot\PdfParser\Parser::class)) {
         fwrite(STDERR, "PDF extraction requires smalot/pdfparser. Run `composer install` first.\n");
         exit(1);

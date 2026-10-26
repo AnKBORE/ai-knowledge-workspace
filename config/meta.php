@@ -26,6 +26,14 @@ return [
     // Embedding model (open-weight, e.g. hosted via Baseten / Modal).
     'embedding_model' => getenv('META_EMBEDDING_MODEL') ?: 'open-weight-embedding',
 
+    // Speech-to-text model (Muse Voice Transcribe) + endpoint.
+    'transcription_model' => 'muse-voice-transcribe',
+    'transcription_endpoint' => '/v1/audio/transcriptions',
+
+    // Vision model (SAM 3.1) for scanned documents + endpoint.
+    'vision_model' => 'sam-3.1',
+    'vision_endpoint' => '/v1/vision',
+
     // Max request time in seconds.
     'timeout' => 60,
 ];

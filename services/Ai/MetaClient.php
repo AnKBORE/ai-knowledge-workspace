@@ -56,6 +56,44 @@ class MetaClient
     }
 
     /**
+     * Transcribe an audio recording with Muse Voice Transcribe.
+     *
+     * @param string $audioPath Path to a local audio file (wav/mp3/m4a/...).
+     */
+    public function transcribe(string $audioPath): string
+    {
+        $payload = $this->requestMultipart(
+            (string) ($this->config['transcription_endpoint'] ?? '/v1/audio/transcriptions'),
+            $audioPath
+        );
+
+        return (string) ($payload['text'] ?? '');
+    }
+
+    /**
+     * Extract text from an image (scanned document, form, table) with SAM 3.1.
+     *
+     * @param string $imagePath Path to a local image file (png/jpg/tiff/...).
+     */
+    public function describeImage(string $imagePath): string
+    {
+        $data = file_get_contents($imagePath);
+        if ($data === false) {
+            throw new \RuntimeException('Could not read image: ' . $imagePath);
+        }
+
+        $payload = $this->request(
+            (string) ($this->config['vision_endpoint'] ?? '/v1/vision'),
+            [
+                'model' => (string) ($this->config['vision_model'] ?? 'sam-3.1'),
+                'image' => base64_encode($data),
+            ]
+        );
+
+        return (string) ($payload['text'] ?? $payload['description'] ?? '');
+    }
+
+    /**
      * Perform a POST request to the Meta Model API and return the JSON body.
      *
      * @param array<string, mixed> $body
@@ -83,6 +121,42 @@ class MetaClient
 
         if ($response === false) {
             throw new \RuntimeException('Meta API request failed: ' . $error);
+        }
+
+        $decoded = json_decode((string) $response, true);
+        if (!is_array($decoded)) {
+            throw new \RuntimeException('Meta API returned invalid JSON.');
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * Perform a multipart POST (file upload) and return the JSON body.
+     *
+     * @return array<string, mixed>
+     */
+    private function requestMultipart(string $path, string $filePath): array
+    {
+        $url = rtrim((string) ($this->config['base_url'] ?? ''), '/') . $path;
+
+        $handle = curl_init($url);
+        curl_setopt_array($handle, [
+            CURLOPT_POST => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . (string) ($this->config['api_key'] ?? ''),
+            ],
+            CURLOPT_POSTFIELDS => ['file' => new \CURLFile($filePath)],
+            CURLOPT_TIMEOUT => (int) ($this->config['timeout'] ?? 60),
+        ]);
+
+        $response = curl_exec($handle);
+        $error = curl_error($handle);
+        curl_close($handle);
+
+        if ($response === false) {
+            throw new \RuntimeException('Meta API upload failed: ' . $error);
         }
 
         $decoded = json_decode((string) $response, true);

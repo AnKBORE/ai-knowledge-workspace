@@ -85,6 +85,8 @@ php -S 127.0.0.1:8080 -t public
 
 En production, le document root doit pointer sur `public/`.
 
+Sous Windows, `.\setup.ps1` (ou `setup.bat`) exécute ces étapes automatiquement avec PHP 8.4.27.
+
 ## Démarrage rapide — démo IA
 
 ```powershell

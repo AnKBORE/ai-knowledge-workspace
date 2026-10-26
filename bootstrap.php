@@ -6,6 +6,8 @@ use App\Core\Env;
 use App\Services\Ai\EmbeddingService;
 use App\Services\Ai\MetaClient;
 use App\Services\Ai\RagService;
+use App\Services\Ai\TranscriptionService;
+use App\Services\Ai\VisionService;
 
 /**
  * Application bootstrap: load the environment and wire the AI services.
@@ -13,7 +15,7 @@ use App\Services\Ai\RagService;
  * Returns an array of dependencies. Both `public/api/ask.php` and
  * `tools/index_document.php` require this file.
  *
- * @return array{config: array<string, mixed>, pdo: PDO, meta: MetaClient, rag: RagService}
+ * @return array{config: array<string, mixed>, pdo: PDO, meta: MetaClient, rag: RagService, transcription: TranscriptionService, vision: VisionService}
  */
 
 $root = __DIR__;
@@ -43,10 +45,14 @@ $pdo = new PDO(
 $metaClient = new MetaClient($config);
 $embeddings = new EmbeddingService($metaClient);
 $rag = new RagService($metaClient, $embeddings, $pdo);
+$transcription = new TranscriptionService($metaClient);
+$vision = new VisionService($metaClient);
 
 return [
     'config' => $config,
     'pdo' => $pdo,
     'meta' => $metaClient,
     'rag' => $rag,
+    'transcription' => $transcription,
+    'vision' => $vision,
 ];
