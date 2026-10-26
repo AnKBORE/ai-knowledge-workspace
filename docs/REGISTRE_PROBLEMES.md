@@ -58,6 +58,7 @@
 | **R15** | Documents & versions | **Phase 3 livrée** : `document` enrichi, `version_document` (SHA-256, numéros uniques), `DocumentService` (stockage hors web), upload live validé, 41 tests verts | 2026-10-26 |
 | **R16** | Journalisation (audit) | **Phase 7 livrée** : `JournalService` append-only + instrumentation (connexion, déconnexion, dépôt, question), journal live validé, 45 tests verts | 2026-10-26 |
 | **R17** | Résumé automatique | **Livré** : `RagService::summarize()` + `/api/summarize.php` + bouton « Résumer » dans l'UI, résumé live validé (sources incluses), 47 tests verts | 2026-10-26 |
+| **R18** | Crédits Baseten (partenaires) | **Demande soumise** (100 $ + 2M TPM) ; sélection par cas d'usage, réponse par e-mail | 2026-10-26 |
 
 ---
 
@@ -83,6 +84,7 @@
 | 2026-10-26 | R15 | Phase 3 (documents versionnés, SHA-256, stockage hors web) livrée ; 41 tests verts. |
 | 2026-10-26 | R16 | Phase 7 (journal d'audit append-only) livrée ; 45 tests verts. |
 | 2026-10-26 | R17 | Résumé automatique livré (sources incluses) ; 47 tests verts. |
+| 2026-10-26 | R18 | Demande de crédits Baseten soumise (100 $ + 2M TPM) ; réponse par e-mail si sélectionné. |
 
 ---
 
