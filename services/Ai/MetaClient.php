@@ -259,7 +259,12 @@ class MetaClient
             'temperature' => 0.2,
         ]);
 
-        return (string) ($payload['choices'][0]['message']['content'] ?? '');
+        $content = (string) ($payload['choices'][0]['message']['content'] ?? '');
+        if (trim($content) === '') {
+            throw new \RuntimeException('Empty transcription response from the model (unsupported audio format?).');
+        }
+
+        return $content;
     }
 
     /**
@@ -296,6 +301,14 @@ class MetaClient
         $decoded = json_decode((string) $response, true);
         if (!is_array($decoded)) {
             throw new \RuntimeException('Meta API returned invalid JSON.');
+        }
+
+        if (isset($decoded['error'])) {
+            $error = $decoded['error'];
+            $message = is_array($error)
+                ? (string) ($error['message'] ?? json_encode($error, JSON_UNESCAPED_UNICODE))
+                : (string) $error;
+            throw new \RuntimeException('API error: ' . $message);
         }
 
         return $decoded;
