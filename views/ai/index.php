@@ -112,24 +112,28 @@ declare(strict_types=1);
     </div>
 </div>
 
-<div class="modal fade" id="result-modal" tabindex="-1" aria-labelledby="result-modal-title" aria-hidden="true">
+<div class="modal fade doc-modal" id="result-modal" tabindex="-1" aria-labelledby="result-modal-title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title h5" id="result-modal-title">Résultat</h2>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary bg-gradient text-white border-0">
+                <div>
+                    <span class="badge text-bg-light mb-2" id="result-modal-badge">Résultat</span>
+                    <h2 class="modal-title fs-5" id="result-modal-title">Résultat</h2>
+                    <p class="small mb-0 opacity-75" id="result-modal-sub">Généré à partir de vos documents.</p>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <div id="result-content"></div>
-                <div id="result-sources" class="mt-3" hidden>
-                    <strong class="d-block mb-1">Sources</strong>
-                    <ul id="result-sources-list" class="small mb-0"></ul>
+                <div id="result-sources" class="mt-4" hidden>
+                    <p class="text-uppercase small fw-semibold text-muted mb-2">Sources</p>
+                    <ul id="result-sources-list" class="small mb-0 ps-3"></ul>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" id="download-docx">Télécharger DOCX</button>
-                <button type="button" class="btn btn-outline-secondary" id="download-pdf">Télécharger PDF</button>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fermer</button>
+            <div class="modal-footer border-0 px-4 pb-4">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-outline-primary" id="download-docx">Télécharger DOCX</button>
+                <button type="button" class="btn btn-primary" id="download-pdf">Télécharger PDF</button>
             </div>
         </div>
     </div>
@@ -177,18 +181,37 @@ declare(strict_types=1);
 
     var resultModalEl = document.getElementById('result-modal');
     var resultModal = new bootstrap.Modal(resultModalEl);
+    var resultBadge = document.getElementById('result-modal-badge');
     var resultTitle = document.getElementById('result-modal-title');
+    var resultSub = document.getElementById('result-modal-sub');
     var resultContent = document.getElementById('result-content');
     var resultSources = document.getElementById('result-sources');
     var resultSourcesList = document.getElementById('result-sources-list');
     var currentResult = { title: 'Résultat', content: '' };
 
-    function showResult(title, content, sources) {
-        currentResult = { title: title, content: content };
+    function showLoading(badge, title, sub) {
+        resultBadge.textContent = badge;
         resultTitle.textContent = title;
+        resultSub.textContent = sub;
+        resultContent.innerHTML = '<div class="d-flex align-items-center gap-2 text-muted">'
+            + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+            + '<span>Génération en cours…</span></div>';
+        resultSources.hidden = true;
+        resultModal.show();
+    }
+
+    function showResult(badge, title, sub, content, sources) {
+        currentResult = { title: title, content: content };
+        resultBadge.textContent = badge;
+        resultTitle.textContent = title;
+        resultSub.textContent = sub;
         resultContent.innerHTML = escapeThenBold(content);
         resultSources.hidden = !renderSources(resultSourcesList, sources);
-        resultModal.show();
+    }
+
+    function showError(message) {
+        resultContent.innerHTML = '<div class="alert alert-danger mb-0">' + escapeThenBold(message) + '</div>';
+        resultSources.hidden = true;
     }
 
     async function downloadResult(format) {
@@ -228,17 +251,16 @@ declare(strict_types=1);
         var question = document.getElementById('question').value.trim();
         if (!question) { return; }
 
+        showLoading('Réponse', 'Réponse', 'Recherche dans vos documents…');
         try {
             var data = await postJson('<?= e(url('/api/ask.php')) ?>', { question: question, mode: 'answer' });
             if (data.error) {
-                askError.textContent = data.error;
-                askError.hidden = false;
+                showError(data.error);
                 return;
             }
-            showResult('Réponse', data.answer || '', data.sources);
+            showResult('Réponse', 'Réponse', 'Réponse ancrée dans vos documents.', data.answer || '', data.sources);
         } catch (err) {
-            askError.textContent = 'Erreur réseau. Vérifiez le serveur.';
-            askError.hidden = false;
+            showError('Erreur réseau. Vérifiez le serveur.');
         }
     });
 
@@ -252,17 +274,16 @@ declare(strict_types=1);
         var instruction = document.getElementById('instruction').value.trim();
         if (!instruction) { return; }
 
+        showLoading('Brouillon', 'Brouillon', 'Rédaction à partir de vos documents…');
         try {
             var data = await postJson('<?= e(url('/api/ask.php')) ?>', { instruction: instruction, mode: 'task' });
             if (data.error) {
-                taskError.textContent = data.error;
-                taskError.hidden = false;
+                showError(data.error);
                 return;
             }
-            showResult('Brouillon', data.draft || '', data.sources);
+            showResult('Brouillon', 'Brouillon', 'Brouillon prêt à être relu.', data.draft || '', data.sources);
         } catch (err) {
-            taskError.textContent = 'Erreur réseau. Vérifiez le serveur.';
-            taskError.hidden = false;
+            showError('Erreur réseau. Vérifiez le serveur.');
         }
     });
 
@@ -298,17 +319,18 @@ declare(strict_types=1);
         button.addEventListener('click', async function () {
             var documentTitle = button.getAttribute('data-document-title') || 'Document';
 
+            showLoading('Résumé', 'Résumé — ' + documentTitle, 'Synthèse du document…');
             try {
                 var data = await postJson('<?= e(url('/api/summarize.php')) ?>', {
                     document_id: Number(button.getAttribute('data-document-id'))
                 });
                 if (data.error) {
-                    alert(data.error);
+                    showError(data.error);
                     return;
                 }
-                showResult('Résumé — ' + documentTitle, data.summary || '', data.sources);
+                showResult('Résumé', 'Résumé — ' + documentTitle, 'Synthèse générée à partir du document.', data.summary || '', data.sources);
             } catch (err) {
-                alert('Erreur réseau.');
+                showError('Erreur réseau.');
             }
         });
     });
