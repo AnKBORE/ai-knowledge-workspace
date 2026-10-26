@@ -34,7 +34,7 @@ declare(strict_types=1);
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
                     <h2 class="h6 text-uppercase text-muted mb-3">Tâche agentique</h2>
-                    <p class="text-muted small mb-3">Ex. « Prépare une note pour l'évêque sur les activités du trimestre » ou « Liste les projets en retard ».</p>
+                    <p class="text-muted small mb-3">Ex. « Prépare une note pour le directeur sur les activités du trimestre » ou « Liste les projets en retard ».</p>
 
                     <form id="task-form">
                         <textarea id="instruction" class="form-control" rows="3" placeholder="Décris la tâche à réaliser…" required></textarea>

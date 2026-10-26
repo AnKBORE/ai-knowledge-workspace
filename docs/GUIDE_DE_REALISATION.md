@@ -156,7 +156,7 @@ Entrées (multi-modales)
    - Ajouter au retour de `RagService::query()` les sources (titre + extrait).
    - Afficher les sources dans l'UI.
 2. **Tâches multi-étapes** (au moins 2 scénarios) :
-   - « Prépare une note pour l'évêque sur les activités du trimestre » → récupère, synthétise, rédige.
+   - « Prépare une note pour le directeur sur les activités du trimestre » → récupère, synthétise, rédige.
    - « Quels projets sont en retard ? » → croise les documents avec les dates.
 3. **Prompt système** clair : répondre UNIQUEMENT à partir des extraits, citer, ne pas inventer.
 4. Journaliser les actions (audit) si possible.
