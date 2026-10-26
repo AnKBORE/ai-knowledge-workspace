@@ -1,25 +1,27 @@
-# AI Knowledge Workspace
+# Espace de connaissances agentique et multimodal
 
-Un espace de connaissances institutionnelles propulsé par l'IA, qui transforme les documents dispersés d'une organisation en une base de connaissances privée et interrogeable — et en un assistant conversationnel qui répond aux questions, génère des synthèses et rédige des rapports.
+Un espace de connaissances agentique et multimodal pour les organisations : il ingère des documents texte, des archives papier scannées et des enregistrements vocaux, puis exécute des tâches en plusieurs étapes — répondre avec sources citées, préparer des notes de réunion, rédiger des rapports et signaler les projets en retard.
 
 Réalisé pour le **Meta Global AI Developer Hackathon** (Thème : *Build for Your World* · Parcours : *développeur indépendant*).
 
 ## Vue d'ensemble
 
-Les organisations accumulent pendant des années des rapports, des comptes rendus, des procédures et des règlements. L'information est dispersée et, au bout d'un moment, plus personne ne la retrouve. **AI Knowledge Workspace** permet à une équipe de :
+Les organisations accumulent pendant des années des rapports, des comptes rendus, des procédures, des archives scannées et des enregistrements de réunions. L'information est dispersée et, au bout d'un moment, plus personne ne la retrouve. **Espace de connaissances agentique et multimodal** permet à une équipe de :
 
-1. Téléverser des documents (PDF, rapports, comptes rendus).
-2. Laisser l'IA les indexer dans une base de connaissances privée.
-3. Poser des questions en langage naturel.
-4. Obtenir des réponses, des synthèses et des rapports générés directement à partir des propres documents de l'organisation.
+1. Ingérer des documents texte (PDF, rapports, comptes rendus), des archives papier scannées et des enregistrements vocaux.
+2. Laisser l'IA les transformer en une base de connaissances privée et multimodale.
+3. Poser une question ou demander une tâche en langage naturel.
+4. Obtenir une réponse ancrée — ou un brouillon prêt à l'emploi — avec chaque affirmation citée à sa source.
 
 ## Fonctionnalités (MVP)
 
 - Authentification sécurisée et contrôle d'accès basé sur les rôles (RBAC)
 - Gestion documentaire avec versionnement
 - Téléversement et indexation de PDF
+- Archives papier scannées via SAM 3.1
+- Notes vocales et transcription de réunions via Muse Voice Transcribe
 - Base de connaissances
-- Chat IA connecté aux documents (questions/réponses en langage naturel)
+- Assistant agentique : tâches en plusieurs étapes avec sources citées
 - Résumé automatique de documents
 - Génération automatique de rapports
 - Recherche intelligente / sémantique
@@ -32,11 +34,12 @@ Les organisations accumulent pendant des années des rapports, des comptes rendu
 | Muse Spark | Assistant conversationnel, questions/réponses, génération de contenu, analyse documentaire |
 | Muse Wonder | Génération de rapports, planification, aide à la décision |
 | Muse Image | Visuels et illustrations de projet |
-| SAM 3.1 | Vision par ordinateur, traitement des documents scannés |
+| Muse Voice Transcribe | Réunions et notes vocales → texte interrogeable |
+| SAM 3.1 | Traitement des documents scannés, reconnaissance visuelle |
 | Muse Code | Agent de codage |
-| Modèles à pondération ouverte | Auto-hébergés / hébergés par des partenaires (Baseten, Modal, Fireworks) |
+| Muse Glimmer / Muse Spark Open | Modèles Meta à pondération ouverte (déploiement privé via Baseten, Modal, Fireworks) |
 
-Phase 2 : recherche vectorielle et génération augmentée par récupération (RAG).
+La génération augmentée par récupération (RAG) ancre chaque réponse dans les documents de l'organisation ; la phase 2 étend cela à la recherche vectorielle sur toutes les modalités.
 
 ## Pile technique
 
@@ -74,7 +77,7 @@ composer install
 Copy-Item .env.example .env
 
 # 3. Base de données
-php tools/migrate.php fresh --seed
+php tools/migrate.php migrate
 
 # 4. Lancement local
 php -S 127.0.0.1:8080 -t public
@@ -109,7 +112,7 @@ curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application
 php vendor/phpunit/phpunit/phpunit
 ```
 
-12 tests couvrent le découpage RAG, la similarité cosinus et le chargeur `.env` — sans base de données ni API.
+15 tests couvrent le découpage RAG, la similarité cosinus, le chargeur `.env` et le pipeline RAG complet — sans serveur de base de données ni API.
 
 ## Sécurité
 

@@ -1,25 +1,27 @@
-# AI Knowledge Workspace
+# Agentic Multimodal Knowledge Workspace
 
-An AI-powered institutional knowledge workspace that turns an organization's scattered documents into a private, searchable knowledge base — and a conversational assistant that answers questions, generates summaries, and drafts reports.
+An agentic, multimodal knowledge workspace for organizations: it ingests text documents, scanned paper records and voice recordings, then carries out multi-step tasks — answering questions with cited sources, preparing meeting notes, drafting reports and flagging overdue projects.
 
 Built for the **Meta Global AI Developer Hackathon** (Theme: *Build for Your World* · Track: *Indie Developer*).
 
 ## Overview
 
-Organizations accumulate reports, minutes, procedures, and regulations for years. The information is scattered, and after a while nobody can find it. **AI Knowledge Workspace** lets a team:
+Organizations accumulate reports, minutes, procedures, scanned records and meeting recordings for years. The information is scattered, and after a while nobody can find it. **Agentic Multimodal Knowledge Workspace** lets a team:
 
-1. Upload documents (PDF, reports, minutes).
-2. Have the AI index them into a private knowledge base.
-3. Ask questions in natural language.
-4. Get answers, summaries, and generated reports directly from the organization's own documents.
+1. Ingest text documents (PDF, reports, minutes), scanned paper records and voice recordings.
+2. Have the AI turn them into a private, multimodal knowledge base.
+3. Ask a question or request a task in natural language.
+4. Get a grounded answer — or a ready-to-use draft — with every claim cited to its source.
 
 ## Features (MVP)
 
 - Secure authentication and role-based access control (RBAC)
 - Document management with versioning
 - PDF upload and indexing
+- Scanned paper records via SAM 3.1
+- Voice notes and meeting transcription via Muse Voice Transcribe
 - Knowledge base
-- AI chat connected to the documents (natural-language Q&A)
+- Agentic assistant: multi-step tasks with cited sources
 - Automatic document summarization
 - Automatic report generation
 - Intelligent / semantic search
@@ -32,11 +34,12 @@ Organizations accumulate reports, minutes, procedures, and regulations for years
 | Muse Spark | Conversational assistant, Q&A, content generation, document analysis |
 | Muse Wonder | Report generation, planning, decision support |
 | Muse Image | Project visuals and illustrations |
-| SAM 3.1 | Computer vision, scanned-document processing |
+| Muse Voice Transcribe | Meetings and voice notes → searchable text |
+| SAM 3.1 | Scanned-document processing, visual recognition |
 | Muse Code | Coding agent |
-| Open-weight models | Self-hosted / partner-hosted (Baseten, Modal, Fireworks) |
+| Muse Glimmer / Muse Spark Open | Open-weight Meta models (private deployment via Baseten, Modal, Fireworks) |
 
-Phase 2: vector search and Retrieval-Augmented Generation (RAG).
+Retrieval-augmented generation (RAG) grounds every answer in the organization's own documents; phase 2 extends it to full vector search across all modalities.
 
 ## Tech stack
 
@@ -74,7 +77,7 @@ composer install
 Copy-Item .env.example .env
 
 # 3. Database
-php tools/migrate.php fresh --seed
+php tools/migrate.php migrate
 
 # 4. Run locally
 php -S 127.0.0.1:8080 -t public
@@ -109,7 +112,7 @@ curl.exe -X POST http://127.0.0.1:8080/api/ask.php -H "Content-Type: application
 php vendor/phpunit/phpunit/phpunit
 ```
 
-12 tests cover RAG chunking, cosine similarity, and the `.env` loader — no database or API required.
+15 tests cover RAG chunking, cosine similarity, the `.env` loader and the full RAG pipeline — no database server or API required.
 
 ## Security
 
