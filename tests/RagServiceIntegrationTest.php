@@ -99,4 +99,25 @@ final class RagServiceIntegrationTest extends TestCase
         $this->assertNotEmpty($result['sources']);
         $this->assertSame('Report', $result['sources'][0]['title']);
     }
+
+    public function testSummarizeReturnsASummaryWithSources(): void
+    {
+        $documentId = $this->insertDocument('Report');
+        $this->rag->indexDocument($documentId, 'The quarterly report describes the main risks.');
+
+        $result = $this->rag->summarize($documentId);
+
+        $this->assertSame('Grounded answer from context.', $result['summary']);
+        $this->assertSame($documentId, $result['document_id']);
+        $this->assertNotEmpty($result['sources']);
+        $this->assertSame('Report', $result['sources'][0]['title']);
+    }
+
+    public function testSummarizeWithoutChunksFallsBack(): void
+    {
+        $result = $this->rag->summarize(999);
+
+        $this->assertStringContainsString('No content', $result['summary']);
+        $this->assertSame([], $result['sources']);
+    }
 }

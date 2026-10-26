@@ -52,6 +52,18 @@ declare(strict_types=1);
                     <div id="task-error" class="alert alert-danger mt-3" hidden></div>
                 </div>
             </div>
+
+            <div id="summary-card" class="card shadow-sm border-0 mt-4" hidden>
+                <div class="card-body p-4">
+                    <strong class="d-block mb-2">Résumé</strong>
+                    <div id="summary-text"></div>
+                    <div id="summary-sources" class="mt-2 small" hidden>
+                        <strong class="d-block mb-1">Sources</strong>
+                        <ul id="summary-sources-list" class="mb-0"></ul>
+                    </div>
+                    <div id="summary-error" class="alert alert-danger mt-2" hidden></div>
+                </div>
+            </div>
         </div>
 
         <div class="col-lg-5">
@@ -84,6 +96,8 @@ declare(strict_types=1);
                                 <li class="list-group-item px-0">
                                     <strong><?= e($doc['title'] ?? '') ?></strong>
                                     <span class="text-muted small d-block"><?= e($doc['filename'] ?? '') ?></span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1 summarize-btn"
+                                            data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Résumer</button>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -222,6 +236,38 @@ declare(strict_types=1);
             uploadStatus.textContent = 'Erreur réseau.';
             uploadStatus.className = 'small text-danger mt-2';
         }
+    });
+    var summaryCard = document.getElementById('summary-card');
+    var summaryText = document.getElementById('summary-text');
+    var summarySources = document.getElementById('summary-sources');
+    var summarySourcesList = document.getElementById('summary-sources-list');
+    var summaryError = document.getElementById('summary-error');
+
+    document.querySelectorAll('.summarize-btn').forEach(function (button) {
+        button.addEventListener('click', async function () {
+            summaryCard.hidden = false;
+            summaryError.hidden = true;
+            summaryText.textContent = 'Résumé en cours…';
+
+            try {
+                var response = await fetch('<?= e(url('/api/summarize.php')) ?>', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ document_id: Number(button.getAttribute('data-document-id')) })
+                });
+                var data = await response.json();
+                if (data.error) {
+                    summaryError.textContent = data.error;
+                    summaryError.hidden = false;
+                    return;
+                }
+                summaryText.innerHTML = escapeThenBold(data.summary || '');
+                summarySources.hidden = !renderSources(summarySourcesList, data.sources);
+            } catch (err) {
+                summaryError.textContent = 'Erreur réseau.';
+                summaryError.hidden = false;
+            }
+        });
     });
 })();
 </script>

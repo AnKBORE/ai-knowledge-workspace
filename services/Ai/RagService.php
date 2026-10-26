@@ -127,6 +127,67 @@ final class RagService
     }
 
     /**
+     * Summarize a document from its indexed chunks.
+     *
+     * @return array{summary: string, document_id: int, sources: list<array{title: string, excerpt: string}>}
+     */
+    public function summarize(int $documentId, int $maxChunks = 20): array
+    {
+        $chunks = $this->chunksForDocument($documentId, $maxChunks);
+
+        if ($chunks === []) {
+            return [
+                'summary' => 'No content indexed for this document.',
+                'document_id' => $documentId,
+                'sources' => [],
+            ];
+        }
+
+        $system = "You summarize documents. Using ONLY the excerpts below, write a concise summary "
+            . "(5 bullet points max) in the same language as the document. Do not invent facts.\n\n"
+            . implode("\n\n---\n\n", array_map(static fn (array $c): string => (string) $c['content'], $chunks));
+
+        $summary = $this->client->chat('Summarize this document.', [['role' => 'system', 'content' => $system]]);
+
+        return [
+            'summary' => $summary,
+            'document_id' => $documentId,
+            'sources' => $this->sources($chunks),
+        ];
+    }
+
+    /**
+     * @return list<array{content: string, title: string, score: float}>
+     */
+    private function chunksForDocument(int $documentId, int $limit): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT c.content, d.title
+             FROM document_chunks c
+             JOIN documents d ON d.id = c.document_id
+             WHERE c.document_id = :document
+             ORDER BY c.chunk_index
+             LIMIT :limit'
+        );
+        $stmt->bindValue('document', $documentId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $chunks = [];
+
+        foreach ($rows as $row) {
+            $chunks[] = [
+                'content' => (string) $row['content'],
+                'title' => (string) ($row['title'] ?? 'Document'),
+                'score' => 1.0,
+            ];
+        }
+
+        return $chunks;
+    }
+
+    /**
      * @param list<array{content: string, title: string, score: float}> $chunks
      * @return list<array{title: string, excerpt: string}>
      */
