@@ -143,4 +143,15 @@ final class PermissionServiceTest extends TestCase
         $count = (int) $this->pdo->query('SELECT COUNT(*) FROM journal')->fetchColumn();
         $this->assertSame(1, $count);
     }
+
+    public function testPeutAilleursTrueWhenMembershipGrantsAction(): void
+    {
+        $this->assertTrue($this->permissions->peutAilleurs($this->membreId, 'document.consulter'));
+        $this->assertFalse($this->permissions->peutAilleurs($this->membreId, 'document.deposer'));
+    }
+
+    public function testPeutAilleursTrueForGlobalRole(): void
+    {
+        $this->assertTrue($this->permissions->peutAilleurs($this->adminId, 'journal.lire'));
+    }
 }

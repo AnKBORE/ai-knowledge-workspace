@@ -40,7 +40,7 @@ final class PermissionService
         'responsable' => [
             'espace.consulter', 'document.consulter', 'assistant.interroger',
             'document.deposer', 'assistant.tacher', 'fil.moderer', 'annonce.publier',
-            'adhesion.gerer', 'espace.archiver',
+            'adhesion.gerer', 'espace.archiver', 'document.supprimer',
         ],
     ];
 
@@ -83,6 +83,39 @@ final class PermissionService
         }
 
         return in_array($action, self::LOCAL[$resolution['role']] ?? [], true);
+    }
+
+    /**
+     * True when the actor holds the action globally or in at least one space.
+     *
+     * Used by the HTTP endpoints, which are not tied to a single space.
+     */
+    public function peutAilleurs(int $acteurId, string $action): bool
+    {
+        $actor = $this->compteActif($acteurId);
+
+        if ($actor === null) {
+            return false;
+        }
+
+        if (self::roleGlobalPermet((string) $actor['role_global'], $action)) {
+            return true;
+        }
+
+        $stmt = $this->db->prepare(
+            'SELECT DISTINCT espace_id FROM adhesion
+             WHERE utilisateur_id = :utilisateur
+               AND debut_le <= CURRENT_DATE AND (fin_le IS NULL OR fin_le >= CURRENT_DATE)'
+        );
+        $stmt->execute(['utilisateur' => $acteurId]);
+
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $spaceId) {
+            if ($this->peut($acteurId, $action, (int) $spaceId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function roleGlobal(int $userId): ?string

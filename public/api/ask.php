@@ -31,6 +31,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];
 $mode = (string) ($input['mode'] ?? 'answer');
+$required = $mode === 'task' ? 'assistant.tacher' : 'assistant.interroger';
+
+if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), $required)) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 try {
     $controller = new AiAssistantController($dependencies['rag']);

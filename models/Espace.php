@@ -46,4 +46,16 @@ final class Espace
 
         return (int) $this->db->lastInsertId();
     }
+
+    /**
+     * First active space (used as the default space for uploaded documents).
+     */
+    public function firstActive(): ?int
+    {
+        $row = $this->db->query(
+            "SELECT id FROM espace WHERE supprime_le IS NULL AND statut = 'actif' ORDER BY id ASC LIMIT 1"
+        )->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : (int) $row['id'];
+    }
 }

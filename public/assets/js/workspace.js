@@ -218,6 +218,37 @@
         });
     }
 
+    function bindDeleteButtons() {
+        document.querySelectorAll('.delete-btn').forEach(function (button) {
+            if (button.dataset.bound === '1') {
+                return;
+            }
+            button.dataset.bound = '1';
+
+            button.addEventListener('click', async function () {
+                if (!window.confirm('Supprimer ce document ?')) {
+                    return;
+                }
+
+                try {
+                    var response = await fetch(apiUrl('delete_document.php'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ document_id: Number(button.getAttribute('data-document-id')) })
+                    });
+                    var data = await response.json();
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+                    await refreshDocuments();
+                } catch (err) {
+                    alert('Erreur réseau.');
+                }
+            });
+        });
+    }
+
     function renderDocuments(documents) {
         var list = document.getElementById('documents-list');
         if (!list) { return; }
@@ -253,6 +284,12 @@
             copy.appendChild(strong);
             copy.appendChild(span);
 
+            var versionCount = Number(doc.versions || 0);
+            var badge = document.createElement('span');
+            badge.className = 'badge text-bg-light mt-1';
+            badge.textContent = versionCount + ' version' + (versionCount > 1 ? 's' : '');
+            copy.appendChild(badge);
+
             var button = document.createElement('button');
             button.type = 'button';
             button.className = 'btn btn-sm btn-outline-primary summarize-btn';
@@ -260,13 +297,21 @@
             button.setAttribute('data-document-title', doc.title || 'Document');
             button.textContent = 'Résumer';
 
+            var deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-sm btn-outline-danger delete-btn';
+            deleteButton.setAttribute('data-document-id', String(doc.id));
+            deleteButton.textContent = 'Supprimer';
+
             row.appendChild(icon);
             row.appendChild(copy);
             row.appendChild(button);
+            row.appendChild(deleteButton);
             list.appendChild(row);
         });
 
         bindSummarizeButtons();
+        bindDeleteButtons();
     }
 
     async function refreshDocuments() {
@@ -282,4 +327,5 @@
     }
 
     bindSummarizeButtons();
+    bindDeleteButtons();
 })();

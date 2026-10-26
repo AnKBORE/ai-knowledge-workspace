@@ -41,10 +41,13 @@ declare(strict_types=1);
                             <div class="dashboard-document-copy">
                                 <strong><?= e($doc['title'] ?? '') ?></strong>
                                 <span><?= e($doc['filename'] ?? '') ?></span>
+                                <span class="badge text-bg-light mt-1"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span>
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
                                     data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
                                     data-document-title="<?= e($doc['title'] ?? 'Document') ?>">Résumer</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
+                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Supprimer</button>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

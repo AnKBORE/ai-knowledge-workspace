@@ -21,6 +21,12 @@ if (!$dependencies['auth']->check()) {
     exit;
 }
 
+if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.deposer')) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
@@ -68,7 +74,7 @@ try {
     // 2. Store the file and create the document + first immutable version.
     $result = $dependencies['documents_service']->createDocument(
         $title,
-        null,
+        $dependencies['espaces']->firstActive(),
         $dependencies['auth']->id(),
         $upload,
     );
