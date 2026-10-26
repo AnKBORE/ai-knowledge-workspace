@@ -19,7 +19,7 @@ declare(strict_types=1);
             <div class="panel-head">
                 <div>
                     <h2 class="panel-title">Nouveau document</h2>
-                    <p class="panel-sub">Texte, PDF, image ou audio — 20 Mio max.</p>
+                    <p class="panel-sub">Texte, PDF, image ou audio — 20 Mio max (audio : 5 min max).</p>
                 </div>
             </div>
             <div class="panel-body">
