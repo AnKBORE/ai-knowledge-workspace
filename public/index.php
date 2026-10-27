@@ -131,6 +131,7 @@ if ($method === 'GET') {
         'totalPages' => $totalPages,
         'totalDocuments' => $totalDocuments,
         'entries' => $entries,
+        'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
     ], 'app');

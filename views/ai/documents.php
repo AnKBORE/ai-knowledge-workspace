@@ -33,7 +33,7 @@ declare(strict_types=1);
                         </div>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($documents as $doc): ?>
+                    <?php foreach ($documents as $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
                         <div class="dashboard-document-row">
                             <span class="doc-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>
@@ -43,6 +43,10 @@ declare(strict_types=1);
                                 <span><?= e($doc['filename'] ?? '') ?></span>
                                 <span class="badge text-bg-light mt-1"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span>
                             </div>
+                            <?php if ($docVersions !== []): ?>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        data-bs-toggle="modal" data-bs-target="#versions-<?= $docId ?>">Versions (<?= count($docVersions) ?>)</button>
+                            <?php endif; ?>
                             <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
                                     data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
                                     data-document-title="<?= e($doc['title'] ?? 'Document') ?>">Résumer</button>
@@ -64,5 +68,41 @@ declare(strict_types=1);
         </section>
     </div>
 </div>
+
+<?php foreach ($documents as $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
+    <?php if ($docVersions !== []): ?>
+        <div class="modal fade doc-modal" id="versions-<?= $docId ?>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary bg-gradient text-white border-0">
+                        <div>
+                            <span class="badge text-bg-light mb-2">Historique des versions</span>
+                            <h2 class="modal-title fs-5"><?= e($doc['title'] ?? '') ?></h2>
+                            <p class="small mb-0 opacity-75"><?= count($docVersions) ?> version<?= count($docVersions) > 1 ? 's' : '' ?> immuable<?= count($docVersions) > 1 ? 's' : '' ?> · chaque dépôt est daté et signé.</p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($docVersions as $version): ?>
+                                <li class="list-group-item px-4 py-3">
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="badge text-bg-primary">v<?= (int) ($version['numero'] ?? 0) ?></span>
+                                        <strong class="text-break flex-grow-1"><?= e($version['nom_original'] ?? '') ?></strong>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">
+                                        <?= e($version['cree_le'] ?? '') ?> ·
+                                        <?= (int) ($version['taille_octets'] ?? 0) ?> octets ·
+                                        SHA-256 : <code><?= e(substr((string) ($version['empreinte'] ?? ''), 0, 16)) ?>…</code>
+                                    </small>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+<?php endforeach; ?>
 
 <?php require __DIR__ . '/_modal.php'; ?>

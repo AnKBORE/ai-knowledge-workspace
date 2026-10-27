@@ -72,6 +72,23 @@ final class VersionDocument
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** @return array<int, list<array<string, mixed>>> versions grouped by document id */
+    public function allByDocument(): array
+    {
+        $rows = $this->db->query(
+            'SELECT document_id, numero, fichier, nom_original, type_mime, taille_octets, empreinte, cree_le
+             FROM version_document
+             ORDER BY document_id ASC, numero DESC'
+        )->fetchAll(PDO::FETCH_ASSOC);
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $grouped[(int) $row['document_id']][] = $row;
+        }
+
+        return $grouped;
+    }
+
     /** @return array<string, mixed>|null */
     public function latest(int $documentId): ?array
     {
