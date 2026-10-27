@@ -132,8 +132,15 @@ if ($method === 'GET') {
     $page = $pages[$path];
     $pageNum = max(1, (int) ($_GET['page'] ?? 1));
     $perPage = 20;
-    $documents = $dependencies['document_model']->listRecent($perPage, ($pageNum - 1) * $perPage);
-    $totalDocuments = $dependencies['document_model']->count();
+    $search = trim((string) ($_GET['q'] ?? ''));
+
+    $documents = $search !== ''
+        ? $dependencies['document_model']->search($search, $perPage)
+        : $dependencies['document_model']->listRecent($perPage, ($pageNum - 1) * $perPage);
+
+    $totalDocuments = $search !== ''
+        ? $dependencies['document_model']->countSearch($search)
+        : $dependencies['document_model']->count();
     $totalPages = max(1, (int) ceil($totalDocuments / $perPage));
     $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
 
@@ -144,6 +151,7 @@ if ($method === 'GET') {
         'pageNum' => $pageNum,
         'totalPages' => $totalPages,
         'totalDocuments' => $totalDocuments,
+        'search' => $search,
         'entries' => $entries,
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
         'currentUser' => $auth->user(),

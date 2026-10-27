@@ -23,8 +23,15 @@ declare(strict_types=1);
                 <div>
                     <p class="page-eyebrow">Base de connaissances</p>
                     <h2 class="panel-title">Documents</h2>
-                    <p class="panel-sub" id="documents-count"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?></p>
+                    <p class="panel-sub" id="documents-count"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?><?= ($search ?? '') !== '' ? ' · recherche « ' . e($search) . ' »' : '' ?></p>
                 </div>
+                <form class="doc-search" method="get" action="<?= e(url('/documents')) ?>" role="search">
+                    <input type="search" name="q" class="form-control form-control-sm" placeholder="Rechercher un document…" value="<?= e($search ?? '') ?>" aria-label="Rechercher un document">
+                    <button class="btn btn-sm btn-primary" type="submit">Rechercher</button>
+                    <?php if (($search ?? '') !== ''): ?>
+                        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('/documents')) ?>">Effacer</a>
+                    <?php endif; ?>
+                </form>
             </div>
             <div class="panel-body" id="documents-list">
                 <?php if (empty($documents)): ?>

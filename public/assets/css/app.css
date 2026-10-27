@@ -1354,3 +1354,6 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     hyphens: auto;
     -webkit-hyphens: auto;
 }
+/* Document search */
+.doc-search { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+.doc-search .form-control { min-width: 220px; }

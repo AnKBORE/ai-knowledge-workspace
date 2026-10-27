@@ -74,6 +74,38 @@ final class Document
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /** @return list<array<string, mixed>> */
+    public function search(string $query, int $limit = 20): array
+    {
+        $like = '%' . $query . '%';
+
+        $stmt = $this->db->prepare(
+            'SELECT d.id, d.title, d.filename, d.statut,
+                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
+             FROM documents d
+             WHERE d.supprime_le IS NULL
+               AND (d.title LIKE :query OR d.filename LIKE :query)
+             ORDER BY d.id DESC
+             LIMIT :limit'
+        );
+        $stmt->bindValue('query', $like);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countSearch(string $query): int
+    {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM documents
+             WHERE supprime_le IS NULL AND (title LIKE :query OR filename LIKE :query)'
+        );
+        $stmt->execute(['query' => '%' . $query . '%']);
+
+        return (int) $stmt->fetchColumn();
+    }
+
     public function count(): int
     {
         return (int) $this->db->query('SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL')->fetchColumn();
