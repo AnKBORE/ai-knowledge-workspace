@@ -295,12 +295,14 @@
             button.className = 'btn btn-sm btn-outline-primary summarize-btn';
             button.setAttribute('data-document-id', String(doc.id));
             button.setAttribute('data-document-title', doc.title || 'Document');
+            button.setAttribute('aria-label', 'Résumer ' + (doc.title || 'le document'));
             button.textContent = 'Résumer';
 
             var deleteButton = document.createElement('button');
             deleteButton.type = 'button';
             deleteButton.className = 'btn btn-sm btn-outline-danger delete-btn';
             deleteButton.setAttribute('data-document-id', String(doc.id));
+            deleteButton.setAttribute('aria-label', 'Supprimer ' + (doc.title || 'le document'));
             deleteButton.textContent = 'Supprimer';
 
             row.appendChild(icon);

@@ -49,9 +49,11 @@ declare(strict_types=1);
                             <?php endif; ?>
                             <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
                                     data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
-                                    data-document-title="<?= e($doc['title'] ?? 'Document') ?>">Résumer</button>
+                                    data-document-title="<?= e($doc['title'] ?? 'Document') ?>"
+                                    aria-label="Résumer <?= e($doc['title'] ?? 'le document') ?>">Résumer</button>
                             <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
-                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>">Supprimer</button>
+                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
+                                    aria-label="Supprimer <?= e($doc['title'] ?? 'le document') ?>">Supprimer</button>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

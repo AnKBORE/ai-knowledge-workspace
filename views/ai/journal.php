@@ -28,6 +28,7 @@ $labels = [
                     <h2 class="panel-title">Dernières opérations</h2>
                     <p class="panel-sub"><?= count($entries) ?> entrée<?= count($entries) > 1 ? 's' : '' ?></p>
                 </div>
+                <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/api/journal_export.php')) ?>">Exporter CSV</a>
             </div>
             <div class="panel-body">
                 <?php if (empty($entries)): ?>
