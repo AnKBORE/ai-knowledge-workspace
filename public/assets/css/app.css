@@ -1335,3 +1335,22 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .landing-badge { display: inline-flex; align-items: center; padding: .18rem .6rem; border-radius: 999px; font-size: .66rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; vertical-align: middle; }
 .landing-badge-mvp { background: #e8f7ef; color: #176044; border: 1px solid #bfe8d2; }
 .landing-badge-future { background: #fff4e3; color: #8a5a12; border: 1px solid #efd9b3; }
+/* Landing — justified body text */
+.landing-card p,
+.landing-card li,
+.landing-problem-list li,
+.landing-feature p,
+.landing-feature-list li,
+.landing-section-sub,
+.landing-domain p,
+.landing-domain-tags li,
+.landing-author p,
+.landing-hack p,
+.landing-hack-list li,
+.landing-checks li,
+.landing-quote {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+}
