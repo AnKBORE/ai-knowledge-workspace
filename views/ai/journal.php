@@ -44,6 +44,7 @@ $labels = [
                         <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table">
                             <thead>
                                 <tr>
+                                    <th scope="col">N°</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Acteur</th>
                                     <th scope="col">Action</th>
@@ -54,9 +55,10 @@ $labels = [
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($entries as $entry): ?>
+                                <?php foreach ($entries as $index => $entry): ?>
                                     <?php $tone = $labels[(string) ($entry['resultat'] ?? '')] ?? 'secondary'; ?>
                                     <tr>
+                                        <td class="table-row-number"><?= (int) $index + 1 ?></td>
                                         <td class="small text-muted"><?= e($entry['horodatage'] ?? '') ?></td>
                                         <td>
                                             <?= e(trim((string) ($entry['prenom'] ?? '') . ' ' . (string) ($entry['nom'] ?? '')) ?: 'Système') ?>
@@ -107,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     new DataTable('#journal-table', {
         pageLength: 50,
-        order: [[0, 'desc']],
+        order: [[1, 'desc']],
         responsive: true,
         language: {
             search: 'Rechercher :',
