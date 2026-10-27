@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 /** @var array<int, array<string, mixed>> $documents */
+$search = (string) ($search ?? '');
 ?>
 <section class="dashboard-hero">
     <div class="dashboard-hero-copy">
@@ -18,81 +19,81 @@ declare(strict_types=1);
 <div class="row g-4">
     <div class="col-12">
         <div class="space-admin">
-        <section class="panel space-list-panel technical-admin-panel">
-            <div class="panel-head">
-                <div>
-                    <p class="page-eyebrow">Base de connaissances</p>
-                    <h2 class="panel-title">Documents</h2>
-                    <p class="panel-sub" id="documents-count"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?><?= ($search ?? '') !== '' ? ' · recherche « ' . e($search) . ' »' : '' ?></p>
-                </div>
-                <form class="doc-search" method="get" action="<?= e(url('/documents')) ?>" role="search">
-                    <input type="search" name="q" class="form-control form-control-sm" placeholder="Rechercher un document…" value="<?= e($search ?? '') ?>" aria-label="Rechercher un document">
-                    <button class="btn btn-sm btn-primary" type="submit">Rechercher</button>
-                    <?php if (($search ?? '') !== ''): ?>
-                        <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('/documents')) ?>">Effacer</a>
-                    <?php endif; ?>
-                </form>
-            </div>
-            <div class="panel-body" id="documents-list">
-                <?php if (empty($documents)): ?>
-                    <div class="dashboard-empty">
-                        <div class="dashboard-empty-copy">
-                            <p class="dashboard-empty-label">Aucun document</p>
-                            <p>Ajoutez un premier document pour commencer.</p>
-                        </div>
+            <section class="panel space-list-panel technical-admin-panel" aria-labelledby="documents-title">
+                <div class="panel-head">
+                    <div>
+                        <p class="page-eyebrow">Base de connaissances</p>
+                        <h2 class="panel-title" id="documents-title">Documents <span class="technical-admin-count"><?= count($documents) ?></span></h2>
+                        <p class="panel-sub" id="documents-help">Recherche, tri et pagination par lots de 50. Chaque dépôt est versionné (SHA-256) et journalisé.</p>
                     </div>
+                    <form class="doc-search" method="get" action="<?= e(url('/documents')) ?>" role="search">
+                        <input type="search" name="q" class="form-control form-control-sm" placeholder="Rechercher un document…" value="<?= e($search) ?>" aria-label="Rechercher un document">
+                        <button class="btn btn-sm btn-primary" type="submit">Rechercher</button>
+                        <?php if ($search !== ''): ?>
+                            <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('/documents')) ?>">Effacer</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+
+                <?php if (empty($documents)): ?>
+                    <p class="technical-admin-empty">
+                        <?= $search !== '' ? 'Aucun document ne correspond à « ' . e($search) . ' ».' : 'Aucun document : ajoutez un premier fichier pour commencer.' ?>
+                    </p>
                 <?php else: ?>
-                    <?php foreach ($documents as $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
-                        <div class="doc-item">
-                            <span class="doc-item-icon" aria-hidden="true">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>
-                            </span>
-                            <div class="doc-item-body">
-                                <div class="doc-item-title"><?= e($doc['title'] ?? '') ?></div>
-                                <div class="doc-item-meta">
-                                    <span class="doc-item-file"><?= e($doc['filename'] ?? '') ?></span>
-                                    <span class="doc-item-badge"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span>
-                                </div>
-                            </div>
-                            <div class="doc-item-actions">
-                                <a class="doc-action" title="Télécharger la dernière version"
-                                   href="<?= e(url('/api/download_document.php?document_id=' . $docId)) ?>"
-                                   aria-label="Télécharger <?= e($doc['title'] ?? 'le document') ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
-                                </a>
-                                <button type="button" class="doc-action summarize-btn" title="Résumer"
-                                        data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
-                                        data-document-title="<?= e($doc['title'] ?? 'Document') ?>"
-                                        aria-label="Résumer <?= e($doc['title'] ?? 'le document') ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
-                                </button>
-                                <?php if ($docVersions !== []): ?>
-                                    <button type="button" class="doc-action" title="Historique des versions"
-                                            data-bs-toggle="modal" data-bs-target="#versions-<?= $docId ?>"
-                                            aria-label="Historique des versions de <?= e($doc['title'] ?? 'ce document') ?>">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                                    </button>
-                                <?php endif; ?>
-                                <button type="button" class="doc-action doc-action-danger delete-btn" title="Supprimer"
-                                        data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
-                                        aria-label="Supprimer <?= e($doc['title'] ?? 'le document') ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                    <div class="space-table-wrap">
+                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="documents-table" aria-describedby="documents-help">
+                            <thead>
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col">Titre</th>
+                                    <th scope="col">Fichier</th>
+                                    <th scope="col">Versions</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($documents as $index => $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
+                                    <tr>
+                                        <td class="table-row-number"><?= (int) $index + 1 ?></td>
+                                        <td><strong><?= e($doc['title'] ?? '') ?></strong></td>
+                                        <td class="small text-muted"><?= e($doc['filename'] ?? '') ?></td>
+                                        <td><span class="doc-item-badge"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span></td>
+                                        <td>
+                                            <div class="doc-item-actions">
+                                                <a class="doc-action" title="Télécharger la dernière version"
+                                                   href="<?= e(url('/api/download_document.php?document_id=' . $docId)) ?>"
+                                                   aria-label="Télécharger <?= e($doc['title'] ?? 'le document') ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+                                                </a>
+                                                <button type="button" class="doc-action summarize-btn" title="Résumer"
+                                                        data-document-id="<?= $docId ?>"
+                                                        data-document-title="<?= e($doc['title'] ?? 'Document') ?>"
+                                                        aria-label="Résumer <?= e($doc['title'] ?? 'le document') ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+                                                </button>
+                                                <?php if ($docVersions !== []): ?>
+                                                    <button type="button" class="doc-action" title="Historique des versions"
+                                                            data-bs-toggle="modal" data-bs-target="#versions-<?= $docId ?>"
+                                                            aria-label="Historique des versions de <?= e($doc['title'] ?? 'ce document') ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                                    </button>
+                                                <?php endif; ?>
+                                                <button type="button" class="doc-action doc-action-danger delete-btn" title="Supprimer"
+                                                        data-document-id="<?= $docId ?>"
+                                                        aria-label="Supprimer <?= e($doc['title'] ?? 'le document') ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php endif; ?>
-            </div>
-            <?php if (($totalPages ?? 1) > 1): ?>
-                <nav class="d-flex justify-content-between align-items-center px-4 pb-4" aria-label="Pagination des documents">
-                    <a class="btn btn-sm btn-outline-secondary <?= ($pageNum ?? 1) <= 1 ? 'disabled' : '' ?>"
-                       href="<?= e(url('/documents?page=' . max(1, ($pageNum ?? 1) - 1))) ?>">Précédent</a>
-                    <span class="small text-muted">Page <?= (int) ($pageNum ?? 1) ?> / <?= (int) $totalPages ?> · <?= (int) ($totalDocuments ?? 0) ?> document(s)</span>
-                    <a class="btn btn-sm btn-outline-secondary <?= ($pageNum ?? 1) >= $totalPages ? 'disabled' : '' ?>"
-                       href="<?= e(url('/documents?page=' . min($totalPages, ($pageNum ?? 1) + 1))) ?>">Suivant</a>
-                </nav>
-            <?php endif; ?>
-        </section>
+
+                <p class="technical-admin-note technical-admin-footer">Chaque document est stocké hors racine web, haché en SHA-256 et versionné ; les dépôts et consultations sont journalisés.</p>
+            </section>
         </div>
     </div>
 </div>
@@ -134,3 +135,33 @@ declare(strict_types=1);
 <?php endforeach; ?>
 
 <?php require __DIR__ . '/_modal.php'; ?>
+
+<link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
+<script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof DataTable === 'undefined' || !document.getElementById('documents-table')) {
+        return;
+    }
+    new DataTable('#documents-table', {
+        pageLength: 50,
+        order: [[0, 'asc']],
+        responsive: true,
+        language: {
+            search: 'Rechercher :',
+            lengthMenu: 'Afficher _MENU_ entrées',
+            info: 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
+            infoEmpty: 'Aucun résultat',
+            infoFiltered: '(filtré sur _MAX_ entrées)',
+            zeroRecords: 'Aucun résultat',
+            paginate: { first: '«', previous: '‹', next: '›', last: '»' }
+        }
+    });
+});
+</script>

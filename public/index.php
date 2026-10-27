@@ -136,8 +136,8 @@ if ($method === 'GET') {
     $search = trim((string) ($_GET['q'] ?? ''));
 
     $documents = $search !== ''
-        ? $dependencies['document_model']->search($search, $perPage)
-        : $dependencies['document_model']->listRecent($perPage, ($pageNum - 1) * $perPage);
+        ? $dependencies['document_model']->search($search, 200)
+        : $dependencies['document_model']->listRecent(200, 0);
 
     $totalDocuments = $search !== ''
         ? $dependencies['document_model']->countSearch($search)
