@@ -6,46 +6,61 @@ declare(strict_types=1);
 $isFr = $lang === 'fr';
 
 $t = [
-    'eyebrow' => $isFr ? 'IA documentaire · Hackathon Meta' : 'Document AI · Meta Hackathon',
-    'hero_title' => $isFr ? "Votre mémoire d'entreprise, augmentée par l'IA" : 'Your company memory, augmented by AI',
+    'eyebrow' => $isFr ? 'Hackathon Meta · Track Indie Developer' : 'Meta Hackathon · Indie Developer track',
+    'hero_title' => $isFr ? 'Espace de connaissances agentique et multimodal' : 'Agentic, multimodal knowledge workspace',
     'hero_sub' => $isFr
-        ? "Un espace de connaissances qui indexe vos documents, répond avec des sources vérifiables et rédige vos notes — sous gouvernance complète."
-        : 'A knowledge workspace that indexes your documents, answers with verifiable sources and drafts your notes — under full governance.',
+        ? "Il ingère vos documents, vos registres scannés et vos notes vocales, puis agit : il répond avec des sources citées, rédige des notes et des rapports, et résume vos documents."
+        : 'It ingests documents, scanned records and voice notes, then acts: it answers with cited sources, drafts notes and reports, and summarizes documents.',
     'cta_demo' => $isFr ? 'Voir la démonstration' : 'See the demo',
     'cta_login' => $isFr ? 'Se connecter' : 'Sign in',
-    'pill_1' => $isFr ? 'Réponses sourcées' : 'Sourced answers',
+    'pill_1' => $isFr ? 'Sources citées' : 'Cited sources',
     'pill_2' => $isFr ? 'Tâches agentiques' : 'Agentic tasks',
     'pill_3' => $isFr ? 'Multimodal' : 'Multimodal',
-    'pill_4' => $isFr ? 'Journal d’audit' : 'Audit trail',
+    'pill_4' => $isFr ? 'Gouvernance' : 'Governance',
 
-    'problem_title' => $isFr ? 'Le problème' : 'The problem',
-    'problem_text' => $isFr
-        ? 'Les connaissances d’une organisation sont éparpillées : PDF, notes, scans, enregistrements. Les réponses sont lentes, non traçables et vite obsolètes.'
-        : 'An organisation’s knowledge is scattered across PDFs, notes, scans and recordings. Answers are slow, untraceable and quickly outdated.',
-    'solution_title' => $isFr ? 'La réponse' : 'The answer',
-    'solution_text' => $isFr
-        ? 'Un espace unique qui indexe, retrouve et explique : chaque réponse cite ses sources, chaque action est journalisée, chaque document est versionné.'
-        : 'One workspace that indexes, retrieves and explains: every answer cites its sources, every action is logged, every document is versioned.',
+    'why_title' => $isFr ? 'Pas une « application RAG basique »' : 'Not a “basic RAG application”',
+    'why_sub' => $isFr
+        ? 'Le hackathon exclut explicitement les applications RAG basiques. Ce projet va délibérément au-delà de la boucle question → réponse.'
+        : 'The hackathon explicitly rules out basic RAG applications. This project deliberately goes beyond the question → answer loop.',
+    'basic' => $isFr ? 'RAG basique' : 'Basic RAG',
+    'ours' => $isFr ? 'Ce projet' : 'This project',
+    'cmp_1a' => $isFr ? 'PDF texte uniquement' : 'Text PDFs only',
+    'cmp_1b' => $isFr ? 'Texte + PDF + images scannées + audio' : 'Text + PDF + scanned images + audio',
+    'cmp_2a' => $isFr ? 'Une question → une réponse' : 'One question → one answer',
+    'cmp_2b' => $isFr ? 'Tâches agentiques : note, rapport, fiche' : 'Agentic tasks: note, report, brief',
+    'cmp_3a' => $isFr ? 'Aucune traçabilité' : 'No traceability',
+    'cmp_3b' => $isFr ? 'Sources numérotées et citées' : 'Numbered, cited sources',
+    'cmp_4a' => $isFr ? 'Aucune gouvernance' : 'No governance',
+    'cmp_4b' => $isFr ? 'RBAC, versions SHA-256, journal d’audit' : 'RBAC, SHA-256 versions, audit journal',
+    'cmp_5a' => $isFr ? 'Aucun export' : 'No export',
+    'cmp_5b' => $isFr ? 'Export PDF et DOCX' : 'PDF and DOCX export',
+    'cmp_6a' => $isFr ? 'Chatbot générique' : 'Generic chatbot',
+    'cmp_6b' => $isFr ? 'Un vrai terrain : paroisses, ONG, écoles' : 'A real domain: parishes, NGOs, schools',
 
     'features_title' => $isFr ? 'Ce que fait la plateforme' : 'What the platform does',
-    'f1_title' => $isFr ? 'Recherche hybride et réponse citée' : 'Hybrid retrieval and cited answers',
-    'f1_text' => $isFr ? 'Similarité vectorielle + recouvrement lexical, puis réponse strictement extractive avec ses extraits sources.' : 'Vector similarity + lexical overlap, then a strictly extractive answer with its source excerpts.',
+    'f1_title' => $isFr ? 'Réponses sourcées' : 'Grounded answers',
+    'f1_text' => $isFr ? 'Recherche hybride (similarité vectorielle + recouvrement lexical), puis réponse strictement extractive avec ses extraits sources.' : 'Hybrid retrieval (vector similarity + lexical overlap), then a strictly extractive answer with its source excerpts.',
     'f2_title' => $isFr ? 'Tâches agentiques' : 'Agentic tasks',
-    'f2_text' => $isFr ? 'Notes, rapports et fiches structurées générés à partir des documents, avec citations.' : 'Notes, reports and structured briefs generated from documents, with citations.',
+    'f2_text' => $isFr ? 'Notes, rapports et fiches structurées générés à partir des documents, avec citations.' : 'Notes, reports and structured briefs generated from the documents, with citations.',
     'f3_title' => $isFr ? 'Multimodal' : 'Multimodal',
-    'f3_text' => $isFr ? 'OCR des images et transcription audio par Muse Spark Open, puis indexation du texte extrait.' : 'Image OCR and audio transcription with Muse Spark Open, then indexing of the extracted text.',
+    'f3_text' => $isFr ? 'OCR des images scannées et transcription audio (Muse Spark Open), puis indexation du texte extrait.' : 'OCR of scanned images and audio transcription (Muse Spark Open), then indexing of the extracted text.',
     'f4_title' => $isFr ? 'Gouvernance' : 'Governance',
-    'f4_text' => $isFr ? 'RBAC à deux niveaux, permissions par espace, journal d’audit en ajout seul.' : 'Two-level RBAC, per-space permissions, append-only audit journal.',
+    'f4_text' => $isFr ? 'RBAC à deux niveaux (global + par espace), journal d’audit en ajout seul.' : 'Two-level RBAC (global + per space), append-only audit journal.',
     'f5_title' => $isFr ? 'Versions immuables' : 'Immutable versions',
     'f5_text' => $isFr ? 'Chaque dépôt est daté, haché en SHA-256 et conservé : l’historique est complet.' : 'Every upload is dated, hashed with SHA-256 and kept: the history is complete.',
     'f6_title' => $isFr ? 'Export PDF et DOCX' : 'PDF and DOCX export',
-    'f6_text' => $isFr ? 'Les résultats se téléchargent en PDF (dompdf) ou DOCX (OOXML natif), prêts à partager.' : 'Results download as PDF (dompdf) or DOCX (native OOXML), ready to share.',
+    'f6_text' => $isFr ? 'Chaque résultat se télécharge en PDF (dompdf) ou DOCX (OOXML natif), prêt à partager.' : 'Every result downloads as PDF (dompdf) or DOCX (native OOXML), ready to share.',
+
+    'domain_title' => $isFr ? 'Un vrai terrain, pas un jouet' : 'A real domain, not a toy',
+    'domain_text' => $isFr
+        ? 'Conçu pour les paroisses, les ONG et les écoles du Burkina Faso : des équipes qui accumulent des rapports, des registres scannés et des notes vocales sans pouvoir les interroger.'
+        : 'Designed for parishes, NGOs and schools in Burkina Faso: teams that accumulate reports, scanned registers and voice notes without being able to query them.',
 
     'stack_title' => $isFr ? 'Sous le capot' : 'Under the hood',
     'stack_text' => $isFr ? 'Un socle sobre, testé, sans dépendance superflue.' : 'A lean, tested foundation with no unnecessary dependencies.',
     'stack_php' => 'PHP 8.4 · MVC strict, PSR-4',
     'stack_mysql' => 'MySQL 8.4 · InnoDB, utf8mb4',
-    'stack_model' => 'Muse Spark Open · Meta Model API',
+    'stack_model' => 'Muse Spark Open · partenaire Meta',
     'stack_tests' => $isFr ? '57 tests · 122 assertions' : '57 tests · 122 assertions',
     'stack_security' => $isFr ? 'Argon2 · CSRF · CSP · audit' : 'Argon2 · CSRF · CSP · audit',
 
@@ -55,13 +70,14 @@ $t = [
     'gov_3' => $isFr ? 'Journal en ajout seul : rien n’échappe à la traçabilité.' : 'Append-only journal: nothing escapes traceability.',
     'gov_4' => $isFr ? 'Stockage hors racine web, empreintes SHA-256, suppressions logiques.' : 'Storage outside the web root, SHA-256 fingerprints, soft deletes.',
 
-    'hack_title' => $isFr ? 'Hackathon Meta — Indie Developer' : 'Meta Hackathon — Indie Developer',
+    'hack_title' => $isFr ? 'Meta Global AI Developer Hackathon' : 'Meta Global AI Developer Hackathon',
     'hack_text' => $isFr
-        ? 'Construit pour le thème « Build for Your World », avec les modèles open-weight de Meta servis par un partenaire d’inférence.'
-        : 'Built for the “Build for Your World” theme, with Meta open-weight models served by a partner inference provider.',
+        ? 'Thème « Build for Your World » · Track Indie Developer. Les modèles open-weight de Meta sont servis par un partenaire d’inférence.'
+        : '“Build for Your World” theme · Indie Developer track. Meta open-weight models are served by a partner inference provider.',
     'hack_1' => $isFr ? 'Modèle : Muse Spark Open' : 'Model: Muse Spark Open',
-    'hack_2' => $isFr ? 'Track : Indie Developer' : 'Track: Indie Developer',
-    'hack_3' => $isFr ? 'Licence MIT' : 'MIT licence',
+    'hack_2' => $isFr ? 'Thème : Build for Your World' : 'Theme: Build for Your World',
+    'hack_3' => $isFr ? 'Track : Indie Developer' : 'Track: Indie Developer',
+    'hack_4' => $isFr ? 'Licence MIT' : 'MIT licence',
 
     'final_title' => $isFr ? 'Prêt à essayer ?' : 'Ready to try it?',
     'final_text' => $isFr ? 'Connectez-vous et posez votre première question à vos documents.' : 'Sign in and ask your first question to your documents.',
@@ -83,15 +99,28 @@ $t = [
     </ul>
 </section>
 
-<section class="landing-split">
-    <article class="landing-card landing-card-problem">
-        <h2><?= e($t['problem_title']) ?></h2>
-        <p><?= e($t['problem_text']) ?></p>
-    </article>
-    <article class="landing-card landing-card-solution">
-        <h2><?= e($t['solution_title']) ?></h2>
-        <p><?= e($t['solution_text']) ?></p>
-    </article>
+<section class="landing-section">
+    <h2 class="landing-section-title"><?= e($t['why_title']) ?></h2>
+    <p class="landing-section-sub"><?= e($t['why_sub']) ?></p>
+    <div class="landing-compare" role="table" aria-label="<?= e($t['why_title']) ?>">
+        <div class="landing-compare-head" role="row">
+            <span role="columnheader"><?= e($t['basic']) ?></span>
+            <span role="columnheader"><?= e($t['ours']) ?></span>
+        </div>
+        <?php foreach ([
+            ['cmp_1a', 'cmp_1b'],
+            ['cmp_2a', 'cmp_2b'],
+            ['cmp_3a', 'cmp_3b'],
+            ['cmp_4a', 'cmp_4b'],
+            ['cmp_5a', 'cmp_5b'],
+            ['cmp_6a', 'cmp_6b'],
+        ] as [$basicKey, $ourKey]): ?>
+            <div class="landing-compare-row" role="row">
+                <span class="landing-compare-basic" role="cell"><?= e($t[$basicKey]) ?></span>
+                <span class="landing-compare-ours" role="cell"><?= e($t[$ourKey]) ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
 </section>
 
 <section class="landing-section">
@@ -111,6 +140,11 @@ $t = [
             </article>
         <?php endforeach; ?>
     </div>
+</section>
+
+<section class="landing-domain">
+    <h2><?= e($t['domain_title']) ?></h2>
+    <p><?= e($t['domain_text']) ?></p>
 </section>
 
 <section class="landing-section landing-section-alt">
@@ -142,6 +176,7 @@ $t = [
         <li><?= e($t['hack_1']) ?></li>
         <li><?= e($t['hack_2']) ?></li>
         <li><?= e($t['hack_3']) ?></li>
+        <li><?= e($t['hack_4']) ?></li>
     </ul>
 </section>
 

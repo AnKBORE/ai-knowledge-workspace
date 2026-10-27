@@ -1290,3 +1290,19 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .landing-footer p { margin: 0; color: #748097; font-size: .82rem; }
 .landing-footer-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: .5rem; margin-top: .5rem !important; }
 .landing-footer-meta span { padding: .2rem .6rem; border-radius: 999px; background: #f4f6fa; }
+/* Landing — comparison and domain */
+.landing-compare { border: 1px solid #e5e8ee; border-radius: 16px; overflow: hidden; background: #fff; }
+.landing-compare-head { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e5e8ee; }
+.landing-compare-head span { padding: .8rem 1rem; background: #f7f8fb; font-size: .76rem; font-weight: 750; text-transform: uppercase; letter-spacing: .06em; }
+.landing-compare-head span:first-child { color: #b23b3b; }
+.landing-compare-head span:last-child { color: #176044; }
+.landing-compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #eef0f5; }
+.landing-compare-row span { padding: .7rem 1rem; background: #fff; font-size: .9rem; }
+.landing-compare-basic { color: #8a94a8; text-decoration: line-through; text-decoration-color: #e0a3a3; }
+.landing-compare-ours { color: #1f2a44; font-weight: 600; }
+.landing-domain { padding: 1.6rem 1.5rem; border-radius: 18px; background: linear-gradient(135deg, #fff6e8, #fdf1df); border: 1px solid #f0dcc0; }
+.landing-domain h2 { font-size: 1.2rem; margin: 0 0 .4rem; color: #6b4a12; }
+.landing-domain p { margin: 0; color: #7a5a24; }
+@media (max-width: 620px) {
+    .landing-compare-head, .landing-compare-row { grid-template-columns: 1fr; }
+}
