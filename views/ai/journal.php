@@ -21,7 +21,7 @@ $labels = [
 </section>
 
 <div class="row g-4">
-    <div class="col-lg-10 mx-auto">
+    <div class="col-12">
         <div class="space-admin">
             <section class="panel space-list-panel technical-admin-panel" aria-labelledby="journal-title">
                 <div class="panel-head">
