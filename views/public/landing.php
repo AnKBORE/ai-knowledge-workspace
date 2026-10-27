@@ -7,16 +7,44 @@ $isFr = $lang === 'fr';
 
 $t = [
     'eyebrow' => $isFr ? 'Hackathon Meta · Track Indie Developer' : 'Meta Hackathon · Indie Developer track',
-    'hero_title' => $isFr ? 'Un espace de travail collaboratif, augmenté par l’IA' : 'A collaborative workspace, augmented by AI',
+    'hero_title' => $isFr ? 'Gestion collaborative des connaissances, augmentée par l’IA' : 'AI-powered collaborative knowledge management',
     'hero_sub' => $isFr
-        ? "Pour les organisations, établissements d’enseignement, ONG et entreprises : gestion documentaire sécurisée, espaces d’équipe et partage des connaissances — avec une IA qui répond en langage naturel, cite ses sources et rédige vos synthèses."
-        : 'For organizations, educational institutions, NGOs and companies: secure document management, team spaces and knowledge sharing — with an AI that answers in natural language, cites its sources and drafts your summaries.',
+        ? 'Pour les établissements d’enseignement, les ONG, les organisations confessionnelles et les entreprises en Afrique : centralisez vos documents, partagez vos connaissances et interrogez-les en langage naturel.'
+        : 'For educational institutions, NGOs, faith-based organizations and enterprises in Africa: centralize your documents, share your knowledge and query it in natural language.',
     'cta_demo' => $isFr ? 'Voir la démonstration' : 'See the demo',
     'cta_login' => $isFr ? 'Se connecter' : 'Sign in',
     'pill_1' => $isFr ? 'Gestion documentaire' : 'Document management',
-    'pill_2' => $isFr ? 'Espaces d’équipe' : 'Team spaces',
-    'pill_3' => $isFr ? 'IA en langage naturel' : 'Natural-language AI',
-    'pill_4' => $isFr ? 'Gouvernance' : 'Governance',
+    'pill_2' => $isFr ? 'Assistant IA' : 'AI assistant',
+    'pill_3' => $isFr ? 'Recherche intelligente' : 'Smart search',
+    'pill_4' => $isFr ? 'Journal d’audit' : 'Audit trail',
+
+    'problem_title' => $isFr ? 'Le problème' : 'The problem',
+    'problem_1' => $isFr ? 'Les documents sont dispersés entre dossiers, e-mails et papier.' : 'Documents are scattered across folders, emails and paper.',
+    'problem_2' => $isFr ? 'Les connaissances institutionnelles se perdent avec les départs.' : 'Institutional knowledge is lost when people leave.',
+    'problem_3' => $isFr ? 'Les nouveaux membres ont du mal à retrouver l’information.' : 'New members struggle to find the right information.',
+    'problem_4' => $isFr ? 'La recherche d’information prend un temps considérable.' : 'Searching for information takes considerable time.',
+    'solution_title' => $isFr ? 'La réponse' : 'The answer',
+    'solution_text' => $isFr
+        ? 'Une base de connaissances unique, sécurisée et interrogeable par IA : chaque réponse cite ses sources, chaque action est journalisée, chaque document est versionné.'
+        : 'One secure, AI-queryable knowledge base: every answer cites its sources, every action is logged, every document is versioned.',
+
+    'features_title' => $isFr ? 'Ce que fait la plateforme' : 'What the platform does',
+    'f1_title' => $isFr ? 'Authentification sécurisée' : 'Secure authentication',
+    'f1_text' => $isFr ? 'Sessions, CSRF, verrouillage progressif, mots de passe hachés (Argon2).' : 'Sessions, CSRF, progressive lockout, hashed passwords (Argon2).',
+    'f2_title' => $isFr ? 'Rôles et permissions' : 'Roles and permissions',
+    'f2_text' => $isFr ? 'RBAC à deux niveaux : rôles globaux et rôles par espace.' : 'Two-level RBAC: global roles and per-space roles.',
+    'f3_title' => $isFr ? 'Gestion documentaire' : 'Document management',
+    'f3_text' => $isFr ? 'Stockage hors racine web, SHA-256, versions immuables, suppressions logiques.' : 'Storage outside the web root, SHA-256, immutable versions, soft deletes.',
+    'f4_title' => $isFr ? 'Assistant IA' : 'AI assistant',
+    'f4_text' => $isFr ? 'Réponses en langage naturel, strictement fondées sur vos documents, avec sources citées.' : 'Natural-language answers, strictly grounded in your documents, with cited sources.',
+    'f5_title' => $isFr ? 'Recherche intelligente' : 'Smart search',
+    'f5_text' => $isFr ? 'Recherche hybride (vecteurs + lexical), pas seulement par mot-clé.' : 'Hybrid search (vectors + lexical), not just keywords.',
+    'f6_title' => $isFr ? 'Synthèses et rapports' : 'Summaries and reports',
+    'f6_text' => $isFr ? 'Résumé d’un document ou rédaction d’une note structurée, avec citations.' : 'Document summary or structured note drafting, with citations.',
+    'f7_title' => $isFr ? 'Journal d’activité' : 'Activity log',
+    'f7_text' => $isFr ? 'Chaque action est horodatée, attribuée et conservée en ajout seul.' : 'Every action is timestamped, attributed and kept append-only.',
+    'f8_title' => $isFr ? 'Export PDF et DOCX' : 'PDF and DOCX export',
+    'f8_text' => $isFr ? 'Chaque résultat se télécharge, prêt à partager.' : 'Every result downloads, ready to share.',
 
     'why_title' => $isFr ? 'Pas une « application RAG basique »' : 'Not a “basic RAG application”',
     'why_sub' => $isFr
@@ -37,39 +65,25 @@ $t = [
     'cmp_6a' => $isFr ? 'Chatbot générique' : 'Generic chatbot',
     'cmp_6b' => $isFr ? 'Un vrai terrain : paroisses, ONG, écoles' : 'A real domain: parishes, NGOs, schools',
 
-    'features_title' => $isFr ? 'Ce que fait la plateforme aujourd’hui' : 'What the platform does today',
-    'f1_title' => $isFr ? 'Gestion documentaire sécurisée' : 'Secure document management',
-    'f1_text' => $isFr ? 'Stockage hors racine web, empreinte SHA-256, versions immuables et suppressions logiques.' : 'Storage outside the web root, SHA-256 fingerprint, immutable versions and soft deletes.',
-    'f2_title' => $isFr ? 'Espaces d’équipe et rôles' : 'Team spaces and roles',
-    'f2_text' => $isFr ? 'Chaque espace a ses rôles (lecteur, contributeur, animateur, responsable) et ses documents.' : 'Each space has its own roles (reader, contributor, facilitator, owner) and its documents.',
-    'f3_title' => $isFr ? 'IA en langage naturel' : 'Natural-language AI',
-    'f3_text' => $isFr ? 'Posez une question à vos documents : l’assistant répond avec des sources citées, sans inventer.' : 'Ask your documents a question: the assistant answers with cited sources, without inventing.',
-    'f4_title' => $isFr ? 'Synthèses et rapports' : 'Summaries and reports',
-    'f4_text' => $isFr ? 'Résumé d’un document ou rédaction d’une note structurée, avec citations.' : 'Document summary or structured note drafting, with citations.',
-    'f5_title' => $isFr ? 'Multimodal' : 'Multimodal',
-    'f5_text' => $isFr ? 'OCR des images scannées et transcription audio (Muse Spark Open), puis indexation.' : 'OCR of scanned images and audio transcription (Muse Spark Open), then indexing.',
-    'f6_title' => $isFr ? 'Export PDF et DOCX' : 'PDF and DOCX export',
-    'f6_text' => $isFr ? 'Chaque résultat se télécharge en PDF (dompdf) ou DOCX (OOXML natif).' : 'Every result downloads as PDF (dompdf) or DOCX (native OOXML).',
-
     'origin_title' => $isFr ? 'Une vraie histoire : GES-CATECHESE' : 'A real story: GES-CATECHESE',
     'origin_text' => $isFr
         ? 'Cette plateforme prolonge GES-CATECHESE, une application de gestion de la catéchèse catholique dans les paroisses du Burkina Faso : catéchistes, apprenants, activités, rapports et documents. La prochaine étape : des assistants de connaissances alimentés par l’IA, capables de répondre aux questions, de générer des rapports et de synthétiser les documents institutionnels.'
         : 'This platform extends GES-CATECHESE, a Catholic catechesis management application for parishes in Burkina Faso: catechists, learners, activities, reports and documents. The next step: AI-powered knowledge assistants able to answer questions, generate reports and synthesize institutional documents.',
-    'origin_tag_1' => $isFr ? 'Paroisses' : 'Parishes',
-    'origin_tag_2' => $isFr ? 'Écoles' : 'Schools',
-    'origin_tag_3' => $isFr ? 'ONG' : 'NGOs',
-    'origin_tag_4' => $isFr ? 'Entreprises' : 'Companies',
+    'origin_tag_1' => $isFr ? 'Établissements d’enseignement' : 'Educational institutions',
+    'origin_tag_2' => $isFr ? 'ONG' : 'NGOs',
+    'origin_tag_3' => $isFr ? 'Organisations confessionnelles' : 'Faith-based organizations',
+    'origin_tag_4' => $isFr ? 'Entreprises' : 'Enterprises',
 
     'roadmap_title' => $isFr ? 'La suite' : 'What comes next',
-    'roadmap_1' => $isFr ? 'Collaboration d’équipe avancée (fils, mentions, notifications).' : 'Advanced team collaboration (threads, mentions, notifications).',
-    'roadmap_2' => $isFr ? 'Suivi de projet et tableaux de bord décisionnels.' : 'Project tracking and decision dashboards.',
+    'roadmap_1' => $isFr ? 'Suivi de projet et tableaux de bord décisionnels.' : 'Project tracking and decision dashboards.',
+    'roadmap_2' => $isFr ? 'Collaboration avancée : fils, mentions, notifications.' : 'Advanced collaboration: threads, mentions, notifications.',
     'roadmap_3' => $isFr ? 'Recommandations intelligentes et détection des connaissances obsolètes.' : 'Smart recommendations and stale-knowledge detection.',
 
     'stack_title' => $isFr ? 'Sous le capot' : 'Under the hood',
     'stack_text' => $isFr ? 'Un socle sobre, testé, sans dépendance superflue.' : 'A lean, tested foundation with no unnecessary dependencies.',
     'stack_php' => 'PHP 8.4 · MVC strict, PSR-4',
     'stack_mysql' => 'MySQL 8.4 · InnoDB, utf8mb4',
-    'stack_model' => 'Muse Spark Open · partenaire Meta',
+    'stack_model' => 'Muse Spark Open · Meta',
     'stack_tests' => $isFr ? '57 tests · 122 assertions' : '57 tests · 122 assertions',
     'stack_security' => $isFr ? 'Argon2 · CSRF · CSP · audit' : 'Argon2 · CSRF · CSP · audit',
 
@@ -110,6 +124,24 @@ $t = [
 </section>
 
 <section class="landing-section">
+    <div class="landing-split">
+        <article class="landing-card landing-card-problem">
+            <h2><?= e($t['problem_title']) ?></h2>
+            <ul class="landing-problem-list">
+                <li><?= e($t['problem_1']) ?></li>
+                <li><?= e($t['problem_2']) ?></li>
+                <li><?= e($t['problem_3']) ?></li>
+                <li><?= e($t['problem_4']) ?></li>
+            </ul>
+        </article>
+        <article class="landing-card landing-card-solution">
+            <h2><?= e($t['solution_title']) ?></h2>
+            <p><?= e($t['solution_text']) ?></p>
+        </article>
+    </div>
+</section>
+
+<section class="landing-section">
     <h2 class="landing-section-title"><?= e($t['features_title']) ?></h2>
     <div class="landing-grid">
         <?php foreach ([
@@ -119,6 +151,8 @@ $t = [
             ['f4_title', 'f4_text'],
             ['f5_title', 'f5_text'],
             ['f6_title', 'f6_text'],
+            ['f7_title', 'f7_text'],
+            ['f8_title', 'f8_text'],
         ] as [$titleKey, $textKey]): ?>
             <article class="landing-feature">
                 <h3><?= e($t[$titleKey]) ?></h3>
