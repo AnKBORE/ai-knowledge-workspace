@@ -9,8 +9,8 @@ $t = [
     'eyebrow' => $isFr ? 'Hackathon Meta · Track Indie Developer' : 'Meta Hackathon · Indie Developer track',
     'hero_title' => $isFr ? 'Gestion collaborative des connaissances, réinventée par l’IA' : 'Collaborative knowledge management, reinvented by AI',
     'hero_sub' => $isFr
-        ? 'Pour les établissements d’enseignement, les ONG, les organisations confessionnelles et les entreprises africaines. Centralisez vos documents, préservez votre mémoire institutionnelle et transformez vos connaissances en une ressource vivante, consultable en langage naturel grâce à l’intelligence artificielle.'
-        : 'For educational institutions, NGOs, faith-based organizations and African enterprises. Centralize your documents, preserve your institutional memory and turn your knowledge into a living resource, searchable in natural language thanks to artificial intelligence.',
+        ? 'Pour les administrations publiques et privées, les entreprises et les organisations de développement : centralisez vos documents, préservez votre mémoire institutionnelle et transformez vos connaissances en un actif stratégique, interrogeable en langage naturel grâce à l’intelligence artificielle.'
+        : 'For public and private administrations, enterprises and development organizations: centralize your documents, preserve your institutional memory and turn your knowledge into a strategic asset, queryable in natural language thanks to artificial intelligence.',
     'cta_demo' => $isFr ? 'Voir la démonstration' : 'See the demo',
     'cta_login' => $isFr ? 'Se connecter' : 'Sign in',
     'pill_1' => $isFr ? 'Gestion documentaire sécurisée' : 'Secure document management',
