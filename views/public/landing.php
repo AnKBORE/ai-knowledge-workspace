@@ -170,13 +170,18 @@ $t = [
 
     'author_title' => $isFr ? 'À propos de l’auteur' : 'About the author',
     'author_name' => 'Anatole KABORE',
-    'author_role' => $isFr ? 'Ingénieur logiciel indépendant et spécialiste en cybersécurité basé à Ouagadougou, Burkina Faso.' : 'Independent software engineer and cybersecurity specialist based in Ouagadougou, Burkina Faso.',
+    'author_role' => $isFr
+        ? 'Consultant en systèmes d’information • Développeur Full Stack • Spécialiste en cybersécurité'
+        : 'Information systems consultant • Full Stack developer • Cybersecurity specialist',
     'author_text' => $isFr
-        ? 'Je conçois des applications web sécurisées, des systèmes d’information et des plateformes numériques destinées à répondre à des besoins concrets rencontrés par les organisations africaines.'
-        : 'I build secure web applications, information systems and digital platforms designed to meet the concrete needs of African organizations.',
+        ? 'Basé à Ouagadougou (Burkina Faso), je suis un professionnel des technologies de l’information spécialisé dans la conception, l’architecture et le développement de solutions numériques sécurisées. J’accompagne les administrations, entreprises, ONG et organisations confessionnelles dans la transformation digitale de leurs processus métier à travers la mise en œuvre de plateformes web robustes, évolutives et centrées sur les besoins des utilisateurs.'
+        : 'Based in Ouagadougou (Burkina Faso), I am an information technology professional specialized in the design, architecture and development of secure digital solutions. I support administrations, enterprises, NGOs and faith-based organizations in the digital transformation of their business processes through robust, scalable and user-centred web platforms.',
     'author_text2' => $isFr
-        ? 'Agentic Knowledge Workspace est né de cette volonté : rendre les connaissances institutionnelles accessibles, exploitables et durables grâce à l’intelligence artificielle.'
-        : 'Agentic Knowledge Workspace was born from this ambition: to make institutional knowledge accessible, usable and durable thanks to artificial intelligence.',
+        ? 'Mon expertise couvre le développement Full Stack, l’architecture logicielle, la cybersécurité, la gestion des données et l’intégration de solutions d’intelligence artificielle appliquées à des problématiques concrètes. J’accorde une attention particulière à la sécurité, à la gouvernance des données, à la traçabilité des actions et à la pérennisation des connaissances organisationnelles.'
+        : 'My expertise covers Full Stack development, software architecture, cybersecurity, data management and the integration of artificial intelligence solutions applied to concrete problems. I pay particular attention to security, data governance, action traceability and the sustainability of organizational knowledge.',
+    'author_text3' => $isFr
+        ? 'À travers mes réalisations, je cherche à concevoir des outils capables de répondre aux défis réels rencontrés sur le terrain, notamment la gestion de l’information, la collaboration, le suivi-évaluation et la valorisation du patrimoine documentaire des organisations africaines.'
+        : 'Through my work, I strive to design tools that address the real challenges encountered in the field, including information management, collaboration, monitoring and evaluation, and the valorization of the documentary heritage of African organizations.',
 
     'hack_title' => 'Meta Global AI Developer Hackathon',
     'hack_text' => $isFr ? 'Thème « Build for Your World » · Track Indie Developer.' : '“Build for Your World” theme · Indie Developer track.',
@@ -352,6 +357,7 @@ $t = [
         <p class="landing-author-role"><?= e($t['author_role']) ?></p>
         <p><?= e($t['author_text']) ?></p>
         <p><?= e($t['author_text2']) ?></p>
+        <p><?= e($t['author_text3']) ?></p>
     </div>
 </section>
 
