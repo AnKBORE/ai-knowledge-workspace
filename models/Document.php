@@ -57,7 +57,7 @@ final class Document
     }
 
     /** @return list<array<string, mixed>> */
-    public function listRecent(int $limit = 20): array
+    public function listRecent(int $limit = 20, int $offset = 0): array
     {
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.statut,
@@ -65,12 +65,18 @@ final class Document
              FROM documents d
              WHERE d.supprime_le IS NULL
              ORDER BY d.id DESC
-             LIMIT :limit'
+             LIMIT :limit OFFSET :offset'
         );
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function count(): int
+    {
+        return (int) $this->db->query('SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL')->fetchColumn();
     }
 
     public function softDelete(int $id): void

@@ -116,13 +116,20 @@ if ($method === 'GET') {
     }
 
     $page = $pages[$path];
-    $documents = $dependencies['document_model']->listRecent();
+    $pageNum = max(1, (int) ($_GET['page'] ?? 1));
+    $perPage = 20;
+    $documents = $dependencies['document_model']->listRecent($perPage, ($pageNum - 1) * $perPage);
+    $totalDocuments = $dependencies['document_model']->count();
+    $totalPages = max(1, (int) ceil($totalDocuments / $perPage));
     $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render($page['view'], [
         'title' => $page['title'],
         'documents' => $documents,
+        'pageNum' => $pageNum,
+        'totalPages' => $totalPages,
+        'totalDocuments' => $totalDocuments,
         'entries' => $entries,
         'currentUser' => $auth->user(),
         'csrf' => $csrf,

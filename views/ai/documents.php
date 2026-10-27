@@ -52,6 +52,15 @@ declare(strict_types=1);
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+            <?php if (($totalPages ?? 1) > 1): ?>
+                <nav class="d-flex justify-content-between align-items-center px-4 pb-4" aria-label="Pagination des documents">
+                    <a class="btn btn-sm btn-outline-secondary <?= ($pageNum ?? 1) <= 1 ? 'disabled' : '' ?>"
+                       href="<?= e(url('/documents?page=' . max(1, ($pageNum ?? 1) - 1))) ?>">Précédent</a>
+                    <span class="small text-muted">Page <?= (int) ($pageNum ?? 1) ?> / <?= (int) $totalPages ?> · <?= (int) ($totalDocuments ?? 0) ?> document(s)</span>
+                    <a class="btn btn-sm btn-outline-secondary <?= ($pageNum ?? 1) >= $totalPages ? 'disabled' : '' ?>"
+                       href="<?= e(url('/documents?page=' . min($totalPages, ($pageNum ?? 1) + 1))) ?>">Suivant</a>
+                </nav>
+            <?php endif; ?>
         </section>
     </div>
 </div>
