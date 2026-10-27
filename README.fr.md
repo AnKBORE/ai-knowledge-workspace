@@ -1,6 +1,6 @@
 # Espace de travail collaboratif IA
 
-> **Une plateforme collaborative de gestion des connaissances, augmentée par l'IA**, destinée aux **établissements d'enseignement, ONG, organisations confessionnelles et entreprises en Afrique**.
+> **Une plateforme collaborative de gestion des connaissances, propulsée par l'IA**, destinée aux **établissements d'enseignement, ONG, organisations confessionnelles et entreprises en Afrique**.
 >
 > Il ingère des documents, des scans et des notes vocales, puis **agit** — répond avec des sources citées, rédige des notes et des rapports, et résume des documents.
 >

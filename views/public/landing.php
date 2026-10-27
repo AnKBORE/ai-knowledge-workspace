@@ -7,7 +7,7 @@ $isFr = $lang === 'fr';
 
 $t = [
     'eyebrow' => $isFr ? 'Hackathon Meta · Track Indie Developer' : 'Meta Hackathon · Indie Developer track',
-    'hero_title' => $isFr ? 'Gestion collaborative des connaissances, augmentée par l’IA' : 'AI-powered collaborative knowledge management',
+    'hero_title' => $isFr ? 'Gestion collaborative des connaissances, propulsée par l’IA' : 'AI-powered collaborative knowledge management',
     'hero_sub' => $isFr
         ? 'Pour les établissements d’enseignement, les ONG, les organisations confessionnelles et les entreprises en Afrique : centralisez vos documents, partagez vos connaissances et interrogez-les en langage naturel.'
         : 'For educational institutions, NGOs, faith-based organizations and enterprises in Africa: centralize your documents, share your knowledge and query it in natural language.',
