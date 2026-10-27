@@ -111,17 +111,16 @@ $t = [
     'f8_2' => $isFr ? 'DOCX' : 'DOCX',
     'f8_3' => $isFr ? 'Partage simplifié des résultats' : 'Simplified result sharing',
 
-    'origin_title' => $isFr ? 'Une innovation issue du terrain' : 'An innovation rooted in the field',
+    'origin_title' => $isFr ? 'Né d’un besoin réel du terrain' : 'Born from a real field need',
     'origin_text' => $isFr
-        ? 'Ce projet s’appuie sur l’expérience acquise avec GES-CATECHESE, une plateforme de gestion de la catéchèse déjà utilisée dans les paroisses du Burkina Faso.'
-        : 'This project builds on the experience gained with GES-CATECHESE, a catechesis management platform already used in parishes of Burkina Faso.',
+        ? 'Ce projet s’appuie sur l’expérience acquise avec GES-SACREMENTS-KTO-BF, une plateforme de gestion de la formation et du suivi-évaluation des catéchumènes déjà utilisée dans les paroisses du Burkina Faso. Malgré la digitalisation des activités, les documents, rapports et connaissances restent souvent dispersés, difficiles à retrouver et insuffisamment exploités.'
+        : 'This project builds on the experience gained with GES-SACREMENTS-KTO-BF, a platform for managing training and monitoring/evaluating catechumens, already used in parishes of Burkina Faso. Despite the digitalization of activities, documents, reports and knowledge often remain scattered, hard to find and insufficiently exploited.',
     'origin_text2' => $isFr
-        ? 'La prochaine étape consiste à transformer les documents institutionnels en une base de connaissances intelligente capable de :'
-        : 'The next step is to turn institutional documents into an intelligent knowledge base able to:',
-    'origin_1' => $isFr ? 'répondre aux questions ;' : 'answer questions;',
-    'origin_2' => $isFr ? 'assister la prise de décision ;' : 'assist decision-making;',
-    'origin_3' => $isFr ? 'générer automatiquement des rapports ;' : 'generate reports automatically;',
-    'origin_4' => $isFr ? 'préserver durablement la mémoire organisationnelle.' : 'preserve organizational memory over time.',
+        ? 'Le même constat s’observe dans les administrations, les ONG et les entreprises, où la mémoire institutionnelle se trouve fragmentée entre plusieurs systèmes et supports.'
+        : 'The same observation applies to administrations, NGOs and enterprises, where institutional memory is fragmented across several systems and media.',
+    'origin_text3' => $isFr
+        ? 'Agentic Knowledge Workspace répond à ce défi en transformant les documents et les données organisationnelles en une base de connaissances intelligente, centralisée et interrogeable en langage naturel.'
+        : 'Agentic Knowledge Workspace addresses this challenge by turning documents and organizational data into an intelligent, centralized knowledge base that can be queried in natural language.',
 
     'usecases_title' => $isFr ? 'Cas d’usage' : 'Use cases',
     'uc1_title' => $isFr ? 'Établissements d’enseignement' : 'Educational institutions',
@@ -280,12 +279,7 @@ $t = [
     <h2><?= e($t['origin_title']) ?></h2>
     <p><?= e($t['origin_text']) ?></p>
     <p><?= e($t['origin_text2']) ?></p>
-    <ul class="landing-checks">
-        <li><?= e($t['origin_1']) ?></li>
-        <li><?= e($t['origin_2']) ?></li>
-        <li><?= e($t['origin_3']) ?></li>
-        <li><?= e($t['origin_4']) ?></li>
-    </ul>
+    <p class="landing-outro"><?= e($t['origin_text3']) ?></p>
 </section>
 
 <section class="landing-section">
