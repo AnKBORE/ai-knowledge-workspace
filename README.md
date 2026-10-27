@@ -225,6 +225,7 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — execution roadmap (phases, checklists, milestones)
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — issue register & resolution log
+- [docs/SECURITE_DONNEES_API.md](docs/SECURITE_DONNEES_API.md) — API data security and privacy
 - [docs/DEMO_VIDEO_ET_SOUMISSION.md](docs/DEMO_VIDEO_ET_SOUMISSION.md) — demo video script & submission checklist
 
 ---

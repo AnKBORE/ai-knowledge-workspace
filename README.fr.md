@@ -225,6 +225,7 @@ Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots
 
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons)
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et résolutions
+- [docs/SECURITE_DONNEES_API.md](docs/SECURITE_DONNEES_API.md) — sécurité et confidentialité des données de l'API
 - [docs/DEMO_VIDEO_ET_SOUMISSION.md](docs/DEMO_VIDEO_ET_SOUMISSION.md) — script de la vidéo et checklist de soumission
 
 ---
