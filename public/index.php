@@ -28,6 +28,7 @@ try {
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
@@ -104,6 +105,7 @@ if ($method === 'GET') {
         '/tache' => ['view' => 'ai/task', 'title' => 'Tâche agentique'],
         '/ajouter' => ['view' => 'ai/upload', 'title' => 'Ajouter un document'],
         '/documents' => ['view' => 'ai/documents', 'title' => 'Documents indexés'],
+        '/journal' => ['view' => 'ai/journal', 'title' => "Journal d'audit"],
     ];
 
     if (!isset($pages[$path])) {
@@ -115,11 +117,13 @@ if ($method === 'GET') {
 
     $page = $pages[$path];
     $documents = $dependencies['document_model']->listRecent();
+    $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render($page['view'], [
         'title' => $page['title'],
         'documents' => $documents,
+        'entries' => $entries,
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
     ], 'app');

@@ -50,6 +50,28 @@ final class JournalService
         }
     }
 
+    /**
+     * Most recent audit entries (with the actor's name when available).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function recent(int $limit = 50): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT j.id, j.acteur_id, j.action, j.objet_type, j.objet_id, j.resultat,
+                    j.adresse_ip, j.details, j.horodatage,
+                    u.prenom, u.nom
+             FROM journal j
+             LEFT JOIN utilisateur u ON u.id = j.acteur_id
+             ORDER BY j.id DESC
+             LIMIT :limit'
+        );
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     private function ip(?string $ip): string
     {
         $ip ??= (string) ($_SERVER['REMOTE_ADDR'] ?? '');
