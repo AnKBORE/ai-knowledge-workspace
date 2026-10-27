@@ -34,26 +34,37 @@ declare(strict_types=1);
                     </div>
                 <?php else: ?>
                     <?php foreach ($documents as $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
-                        <div class="dashboard-document-row">
-                            <span class="doc-icon" aria-hidden="true">
+                        <div class="doc-item">
+                            <span class="doc-item-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>
                             </span>
-                            <div class="dashboard-document-copy">
-                                <strong><?= e($doc['title'] ?? '') ?></strong>
-                                <span><?= e($doc['filename'] ?? '') ?></span>
-                                <span class="badge text-bg-light mt-1"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span>
+                            <div class="doc-item-body">
+                                <div class="doc-item-title"><?= e($doc['title'] ?? '') ?></div>
+                                <div class="doc-item-meta">
+                                    <span class="doc-item-file"><?= e($doc['filename'] ?? '') ?></span>
+                                    <span class="doc-item-badge"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span>
+                                </div>
                             </div>
-                            <?php if ($docVersions !== []): ?>
-                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                        data-bs-toggle="modal" data-bs-target="#versions-<?= $docId ?>">Versions (<?= count($docVersions) ?>)</button>
-                            <?php endif; ?>
-                            <button type="button" class="btn btn-sm btn-outline-primary summarize-btn"
-                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
-                                    data-document-title="<?= e($doc['title'] ?? 'Document') ?>"
-                                    aria-label="Résumer <?= e($doc['title'] ?? 'le document') ?>">Résumer</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
-                                    data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
-                                    aria-label="Supprimer <?= e($doc['title'] ?? 'le document') ?>">Supprimer</button>
+                            <div class="doc-item-actions">
+                                <button type="button" class="doc-action summarize-btn" title="Résumer"
+                                        data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
+                                        data-document-title="<?= e($doc['title'] ?? 'Document') ?>"
+                                        aria-label="Résumer <?= e($doc['title'] ?? 'le document') ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+                                </button>
+                                <?php if ($docVersions !== []): ?>
+                                    <button type="button" class="doc-action" title="Historique des versions"
+                                            data-bs-toggle="modal" data-bs-target="#versions-<?= $docId ?>"
+                                            aria-label="Historique des versions de <?= e($doc['title'] ?? 'ce document') ?>">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                                    </button>
+                                <?php endif; ?>
+                                <button type="button" class="doc-action doc-action-danger delete-btn" title="Supprimer"
+                                        data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
+                                        aria-label="Supprimer <?= e($doc['title'] ?? 'le document') ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
+                                </button>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>

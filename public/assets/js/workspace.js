@@ -268,47 +268,76 @@
 
         documents.forEach(function (doc) {
             var row = document.createElement('div');
-            row.className = 'dashboard-document-row';
+            row.className = 'doc-item';
 
             var icon = document.createElement('span');
-            icon.className = 'doc-icon';
+            icon.className = 'doc-item-icon';
             icon.setAttribute('aria-hidden', 'true');
             icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6"/></svg>';
 
-            var copy = document.createElement('div');
-            copy.className = 'dashboard-document-copy';
-            var strong = document.createElement('strong');
-            strong.textContent = doc.title || '';
-            var span = document.createElement('span');
-            span.textContent = doc.filename || '';
-            copy.appendChild(strong);
-            copy.appendChild(span);
+            var body = document.createElement('div');
+            body.className = 'doc-item-body';
+
+            var title = document.createElement('div');
+            title.className = 'doc-item-title';
+            title.textContent = doc.title || '';
+
+            var meta = document.createElement('div');
+            meta.className = 'doc-item-meta';
+
+            var file = document.createElement('span');
+            file.className = 'doc-item-file';
+            file.textContent = doc.filename || '';
 
             var versionCount = Number(doc.versions || 0);
             var badge = document.createElement('span');
-            badge.className = 'badge text-bg-light mt-1';
+            badge.className = 'doc-item-badge';
             badge.textContent = versionCount + ' version' + (versionCount > 1 ? 's' : '');
-            copy.appendChild(badge);
 
-            var button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'btn btn-sm btn-outline-primary summarize-btn';
-            button.setAttribute('data-document-id', String(doc.id));
-            button.setAttribute('data-document-title', doc.title || 'Document');
-            button.setAttribute('aria-label', 'Résumer ' + (doc.title || 'le document'));
-            button.textContent = 'Résumer';
+            meta.appendChild(file);
+            meta.appendChild(badge);
+            body.appendChild(title);
+            body.appendChild(meta);
+
+            var actions = document.createElement('div');
+            actions.className = 'doc-item-actions';
+
+            var summarizeButton = document.createElement('button');
+            summarizeButton.type = 'button';
+            summarizeButton.className = 'doc-action summarize-btn';
+            summarizeButton.title = 'Résumer';
+            summarizeButton.setAttribute('data-document-id', String(doc.id));
+            summarizeButton.setAttribute('data-document-title', doc.title || 'Document');
+            summarizeButton.setAttribute('aria-label', 'Résumer ' + (doc.title || 'le document'));
+            summarizeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>';
+
+            var versionsModal = document.getElementById('versions-' + doc.id);
+            if (versionsModal) {
+                var versionsButton = document.createElement('button');
+                versionsButton.type = 'button';
+                versionsButton.className = 'doc-action';
+                versionsButton.title = 'Historique des versions';
+                versionsButton.setAttribute('data-bs-toggle', 'modal');
+                versionsButton.setAttribute('data-bs-target', '#versions-' + doc.id);
+                versionsButton.setAttribute('aria-label', 'Historique des versions de ' + (doc.title || 'ce document'));
+                versionsButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+                actions.appendChild(versionsButton);
+            }
 
             var deleteButton = document.createElement('button');
             deleteButton.type = 'button';
-            deleteButton.className = 'btn btn-sm btn-outline-danger delete-btn';
+            deleteButton.className = 'doc-action doc-action-danger delete-btn';
+            deleteButton.title = 'Supprimer';
             deleteButton.setAttribute('data-document-id', String(doc.id));
             deleteButton.setAttribute('aria-label', 'Supprimer ' + (doc.title || 'le document'));
-            deleteButton.textContent = 'Supprimer';
+            deleteButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>';
+
+            actions.appendChild(summarizeButton);
+            actions.appendChild(deleteButton);
 
             row.appendChild(icon);
-            row.appendChild(copy);
-            row.appendChild(button);
-            row.appendChild(deleteButton);
+            row.appendChild(body);
+            row.appendChild(actions);
             list.appendChild(row);
         });
 
