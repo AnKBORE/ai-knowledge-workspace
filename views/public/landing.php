@@ -50,7 +50,7 @@ $t = [
         : '“Generate a synthesis with the dates, objectives, participants, results obtained and recommendations for those reports.”',
     'solution_task_result' => $isFr
         ? 'Le résultat est un document structuré, exportable en PDF ou DOCX, avec ses sources.'
-        : 'The result is a structured document, exportable to PDF or DOCX, with its sources.'
+        : 'The result is a structured document, exportable to PDF or DOCX, with its sources.',
     'solution_p4' => $isFr
         ? 'Chaque document, chaque réponse et chaque action restent traçables et vérifiables.'
         : 'Every document, every answer and every action remain traceable and verifiable.',
