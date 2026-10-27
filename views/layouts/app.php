@@ -28,6 +28,7 @@ $navItems = [
     ['path' => '/documents', 'label' => 'Documents indexés'],
     ['path' => '/ajouter', 'label' => 'Ajouter un document'],
     ['path' => '/journal', 'label' => "Journal d'audit"],
+    ['path' => '/mon-profil', 'label' => 'Mon profil'],
 ];
 ?>
 <!doctype html>

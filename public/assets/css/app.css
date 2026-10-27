@@ -1357,3 +1357,11 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 /* Document search */
 .doc-search { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
 .doc-search .form-control { min-width: 220px; }
+/* Profile page */
+.profil-details { display: grid; gap: .55rem; margin: 0; }
+.profil-details div { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid var(--line); }
+.profil-details div:last-child { border-bottom: 0; }
+.profil-details dt { color: var(--muted, #748097); font-size: .86rem; margin: 0; }
+.profil-details dd { margin: 0; font-weight: 600; }
+.profil-spaces { list-style: none; display: grid; gap: .5rem; padding: 0; margin: 0; }
+.profil-spaces li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }

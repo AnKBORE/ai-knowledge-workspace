@@ -120,6 +120,7 @@ if ($method === 'GET') {
         '/ajouter' => ['view' => 'ai/upload', 'title' => 'Ajouter un document'],
         '/documents' => ['view' => 'ai/documents', 'title' => 'Documents indexés'],
         '/journal' => ['view' => 'ai/journal', 'title' => "Journal d'audit"],
+        '/mon-profil' => ['view' => 'ai/profil', 'title' => 'Mon profil'],
     ];
 
     if (!isset($pages[$path])) {
@@ -153,6 +154,7 @@ if ($method === 'GET') {
         'totalDocuments' => $totalDocuments,
         'search' => $search,
         'entries' => $entries,
+        'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
         'currentUser' => $auth->user(),
         'csrf' => $csrf,

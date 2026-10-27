@@ -49,6 +49,25 @@ final class Adhesion
         return $row === false ? null : $row;
     }
 
+    /** @return list<array<string, mixed>> */
+    public function listForUser(int $utilisateurId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT a.id, a.espace_id, a.role_local, a.debut_le,
+                    e.nom AS espace_nom, e.statut AS espace_statut
+             FROM adhesion a
+             INNER JOIN espace e ON e.id = a.espace_id
+             WHERE a.utilisateur_id = :utilisateur
+               AND a.debut_le <= CURRENT_DATE
+               AND (a.fin_le IS NULL OR a.fin_le >= CURRENT_DATE)
+               AND e.supprime_le IS NULL
+             ORDER BY e.nom ASC'
+        );
+        $stmt->execute(['utilisateur' => $utilisateurId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function end(int $adhesionId): void
     {
         $stmt = $this->db->prepare(
