@@ -1,8 +1,21 @@
-# Agentic Multimodal Knowledge Workspace
+# AI Collaborative Workspace
 
-> An **agentic, multimodal** knowledge workspace for organizations: it ingests documents, scanned records and voice notes, then **acts** — answering questions with cited sources, drafting notes and reports, and summarizing documents.
+> **An AI-powered collaborative knowledge management platform** for educational institutions, NGOs, faith-based organizations and enterprises in Africa.
+>
+> It ingests documents, scanned records and voice notes, then **acts** — answering questions with cited sources, drafting notes and reports, and summarizing documents.
 >
 > Built for the **Meta Global AI Developer Hackathon** — Theme: **Build for Your World** · Track: **Indie Developer** · Deadline: **November 4, 2026, 9:00 PM ET**.
+
+---
+
+## The problem it solves
+
+- Documents are scattered across folders, emails and paper.
+- Institutional knowledge is lost when people leave.
+- New members struggle to find the right information.
+- Searching for information takes considerable time.
+
+The platform turns all of this into **one secure, AI-queryable knowledge base**: every answer cites its sources, every action is logged, every document is versioned.
 
 ---
 

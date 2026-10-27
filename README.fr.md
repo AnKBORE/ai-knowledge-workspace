@@ -1,8 +1,21 @@
-# Espace de connaissances agentique et multimodal
+# Espace de travail collaboratif IA
 
-> Un espace de travail **agentique et multimodal** pour les organisations : il ingère des documents, des scans et des notes vocales, puis **agit** — répond avec des sources citées, rédige des notes et des rapports, et résume des documents.
+> **Une plateforme collaborative de gestion des connaissances, augmentée par l'IA**, destinée aux **établissements d'enseignement, ONG, organisations confessionnelles et entreprises en Afrique**.
+>
+> Il ingère des documents, des scans et des notes vocales, puis **agit** — répond avec des sources citées, rédige des notes et des rapports, et résume des documents.
 >
 > Réalisé pour le **Meta Global AI Developer Hackathon** — Thème : **Build for Your World** · Piste : **Indie Developer** · Date limite : **4 novembre 2026, 21 h ET**.
+
+---
+
+## Le problème résolu
+
+- Les documents sont dispersés entre dossiers, e-mails et papier.
+- Les connaissances institutionnelles se perdent avec les départs.
+- Les nouveaux membres ont du mal à retrouver l'information.
+- La recherche d'information prend un temps considérable.
+
+La plateforme transforme tout cela en **une base de connaissances unique, sécurisée et interrogeable par IA** : chaque réponse cite ses sources, chaque action est journalisée, chaque document est versionné.
 
 ---
 
