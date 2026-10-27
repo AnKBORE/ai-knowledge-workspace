@@ -18,12 +18,12 @@ $t = [
     'pill_3' => $isFr ? 'Recherche intelligente' : 'Smart search',
     'pill_4' => $isFr ? 'Journal d’audit' : 'Audit trail',
 
-    'problem_title' => $isFr ? 'Le problème' : 'The problem',
+    'problem_title' => $isFr ? 'Problématique' : 'The challenge',
     'problem_1' => $isFr ? 'Les documents sont dispersés entre dossiers, e-mails et papier.' : 'Documents are scattered across folders, emails and paper.',
     'problem_2' => $isFr ? 'Les connaissances institutionnelles se perdent avec les départs.' : 'Institutional knowledge is lost when people leave.',
     'problem_3' => $isFr ? 'Les nouveaux membres ont du mal à retrouver l’information.' : 'New members struggle to find the right information.',
     'problem_4' => $isFr ? 'La recherche d’information prend un temps considérable.' : 'Searching for information takes considerable time.',
-    'solution_title' => $isFr ? 'La réponse' : 'The answer',
+    'solution_title' => $isFr ? 'Solution intelligente' : 'Smart solution',
     'solution_text' => $isFr
         ? 'Une base de connaissances unique, sécurisée et interrogeable par IA : chaque réponse cite ses sources, chaque action est journalisée, chaque document est versionné.'
         : 'One secure, AI-queryable knowledge base: every answer cites its sources, every action is logged, every document is versioned.',
