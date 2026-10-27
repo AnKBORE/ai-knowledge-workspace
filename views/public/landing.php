@@ -142,8 +142,8 @@ $t = [
 
     'stack_title' => $isFr ? 'Sous le capot' : 'Under the hood',
     'stack_sub' => $isFr ? 'Une architecture volontairement sobre, robuste et maîtrisée.' : 'A deliberately lean, robust and controlled architecture.',
-    'stack_1' => 'PHP 8.4 · MVC strict (PSR-4)',
-    'stack_2' => 'MySQL 8.4 · InnoDB / UTF8MB4',
+    'stack_1' => 'PHP 8.4.27 · MVC strict (PSR-4)',
+    'stack_2' => 'MySQL 8.4.13 · InnoDB / UTF8MB4',
     'stack_3' => 'Muse Spark Open (Meta)',
     'stack_4' => $isFr ? '57 tests automatisés · 122 assertions' : '57 automated tests · 122 assertions',
     'stack_5' => 'Argon2 · CSP · CSRF · ' . ($isFr ? 'journal d’audit' : 'audit journal'),
