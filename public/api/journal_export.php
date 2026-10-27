@@ -31,7 +31,7 @@ header('Content-Disposition: attachment; filename="journal-' . date('Ymd-His') .
 header('X-Content-Type-Options: nosniff');
 
 $output = fopen('php://output', 'w');
-fputcsv($output, ['Date', 'Acteur', 'Action', 'Objet', 'Resultat', 'IP', 'Details']);
+fputcsv($output, ['Date', 'Acteur', 'Action', 'Objet', 'Resultat', 'IP', 'Details'], ',', '"', '');
 
 foreach ($entries as $entry) {
     fputcsv($output, [
@@ -42,7 +42,7 @@ foreach ($entries as $entry) {
         (string) ($entry['resultat'] ?? ''),
         (string) ($entry['adresse_ip'] ?? ''),
         (string) ($entry['details'] ?? ''),
-    ]);
+    ], ',', '"', '');
 }
 
 fclose($output);
