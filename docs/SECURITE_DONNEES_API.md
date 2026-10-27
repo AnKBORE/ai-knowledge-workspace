@@ -148,3 +148,76 @@ Le projet utilise un **modèle open-weight de Meta** (Muse Spark Open) **servi p
 - Conditions du **Meta Global AI Developer Hackathon** (§3.8 — modèles open-weight via partenaires).
 - RGPD — règlement (UE) 2016/679 (si données personnelles).
 - [`docs/GUIDE_DE_REALISATION.md`](GUIDE_DE_REALISATION.md) — architecture et sécurité du projet.
+
+---
+
+## 13. Checklist DPA (à vérifier auprès du partenaire)
+
+Avant tout déploiement avec des données sensibles, obtenir et vérifier :
+
+| Point | Question à poser | Réponse attendue |
+|---|---|---|
+| **DPA** | Un Data Processing Agreement est-il disponible ? | ✅ Signé |
+| **Rétention** | Combien de temps les requêtes sont-elles conservées ? | Durée minimale (ex. 30 jours) |
+| **Sous-traitants** | Y a-t-il des sous-traitants ultérieurs ? | Liste fournie |
+| **Localisation** | Où sont hébergés les serveurs ? | UE / US (à documenter) |
+| **Entraînement** | Les données servent-elles à entraîner des modèles ? | Non (par défaut) |
+| **Suppression** | Peut-on demander la suppression des données ? | Oui, sur demande |
+| **Notification de violation** | En cas de fuite, sous quel délai sommes-nous informés ? | 72 h (RGPD) |
+
+> 📌 **Action** : conserver le DPA signé et le joindre au registre des traitements.
+
+---
+
+## 14. Self-host de Muse Spark Open (zéro sortie)
+
+Muse Spark Open est un modèle **open-weight** : il peut être exécuté **sur votre propre infrastructure**, ce qui supprime toute sortie de données.
+
+### Option A — Serveur GPU dédié (recommandé pour la production)
+
+1. Provisionner un serveur GPU (ex. 1× A10G / L4).
+2. Servir le modèle avec **vLLM** ou **TGI** (endpoint compatible OpenAI).
+3. Dans `.env` :
+
+```dotenv
+META_API_STYLE=openai
+META_MODEL_API_BASE_URL=http://localhost:8000/v1
+META_MODEL_NAME=meta-models/muse-spark-open
+META_API_KEY=local
+```
+
+4. Vérifier : `curl http://localhost:8000/v1/models`.
+
+### Option B — Poste de travail (développement)
+
+- Modèle quantifié (4 bits) sur GPU 16 Go.
+- **Données de démonstration uniquement** (performances réduites).
+
+### Ce que ça change
+
+| Élément | Avant (Baseten) | Après (self-host) |
+|---|---|---|
+| **Sortie de données** | ✅ Oui | ❌ **Non** |
+| **Coût** | Par token | **Coût fixe** (GPU) |
+| **Performance** | Optimale | Selon le matériel |
+| **Conformité** | Dépend du partenaire | **Totale** |
+
+> ⚠️ Le self-host nécessite des **compétences GPU** et un **budget matériel** — à réserver aux déploiements avec données critiques.
+
+---
+
+## 15. Configuration d'anonymisation du projet
+
+Le projet intègre un **anonymiseur** (e-mails, téléphones, IBAN, cartes bancaires) appliqué **avant l'indexation** et **avant tout appel API**.
+
+```dotenv
+# .env
+ANONYMISATION=1
+```
+
+| Action | Effet |
+|---|---|
+| `ANONYMISATION=0` (défaut) | Texte indexé tel quel |
+| `ANONYMISATION=1` | Les identifiants directs sont remplacés par `[EMAIL]`, `[TELEPHONE]`, `[IBAN]`, `[CARTE]` |
+
+> ✅ Implémenté dans `services/Anonymiseur.php`, testé par `tests/AnonymiseurTest.php`.

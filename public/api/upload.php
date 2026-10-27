@@ -95,6 +95,11 @@ try {
         throw new \RuntimeException('No text could be extracted from the file.');
     }
 
+    // Optional anonymisation before indexing and before any API call.
+    if (getenv('ANONYMISATION') === '1') {
+        $content = (new \App\Services\Anonymiseur())->anonymiser($content);
+    }
+
     // 2. Store the file and create the document + first immutable version.
     $result = $dependencies['documents_service']->createDocument(
         $title,
