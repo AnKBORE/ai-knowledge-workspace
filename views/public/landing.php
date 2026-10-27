@@ -37,11 +37,20 @@ $t = [
         ? 'Au lieu de rechercher manuellement dans des centaines de documents, les utilisateurs peuvent simplement poser une question :'
         : 'Instead of manually searching hundreds of documents, users simply ask a question:',
     'solution_quote' => $isFr
-        ? '« Quels sont les rapports d’activités de 2025 concernant la formation des catéchistes ? »'
-        : '“What are the 2025 activity reports about catechist training?”',
+        ? '« Peux-tu me présenter les rapports d’activités de 2025 concernant le renforcement des capacités de l’équipe de suivi-évaluation des projets ? »'
+        : '“Can you present the 2025 activity reports about capacity building for the project monitoring and evaluation team?”',
     'solution_p3' => $isFr
         ? 'L’assistant IA analyse les documents autorisés, produit une réponse synthétique et cite précisément ses sources.'
         : 'The AI assistant analyses the authorized documents, produces a synthetic answer and cites its sources precisely.',
+    'solution_task_intro' => $isFr
+        ? 'Puis, pour aller plus loin, l’utilisateur demande une tâche agentique :'
+        : 'Then, to go further, the user requests an agentic task:',
+    'solution_task_quote' => $isFr
+        ? '« Génère une synthèse avec les dates, objectifs, participants, résultats obtenus et recommandations concernant ces dits rapports. »'
+        : '“Generate a synthesis with the dates, objectives, participants, results obtained and recommendations for those reports.”',
+    'solution_task_result' => $isFr
+        ? 'Le résultat est un document structuré, exportable en PDF ou DOCX, avec ses sources.'
+        : 'The result is a structured document, exportable to PDF or DOCX, with its sources.'
     'solution_p4' => $isFr
         ? 'Chaque document, chaque réponse et chaque action restent traçables et vérifiables.'
         : 'Every document, every answer and every action remain traceable and verifiable.',
@@ -208,6 +217,9 @@ $t = [
             <p><?= e($t['solution_p2']) ?></p>
             <blockquote class="landing-quote"><?= e($t['solution_quote']) ?></blockquote>
             <p><?= e($t['solution_p3']) ?></p>
+            <p><?= e($t['solution_task_intro']) ?></p>
+            <blockquote class="landing-quote"><?= e($t['solution_task_quote']) ?></blockquote>
+            <p><?= e($t['solution_task_result']) ?></p>
             <p><?= e($t['solution_p4']) ?></p>
         </article>
     </div>
