@@ -40,7 +40,7 @@ $labels = [
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
+                        <table class="table table-sm align-middle mb-0" id="journal-table">
                             <thead>
                                 <tr>
                                     <th scope="col">Date</th>
@@ -91,3 +91,31 @@ $labels = [
         </section>
     </div>
 </div>
+
+<link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
+<script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof DataTable === 'undefined') {
+        return;
+    }
+    new DataTable('#journal-table', {
+        pageLength: 50,
+        order: [[0, 'desc']],
+        responsive: true,
+        language: {
+            search: 'Rechercher :',
+            lengthMenu: 'Afficher _MENU_ entrées',
+            info: '_START_ à _END_ sur _TOTAL_ entrées',
+            infoEmpty: 'Aucune entrée',
+            infoFiltered: '(filtré sur _MAX_ entrées)',
+            zeroRecords: 'Aucun résultat',
+            paginate: { first: 'Premier', previous: 'Précédent', next: 'Suivant', last: 'Dernier' }
+        }
+    });
+});
+</script>
