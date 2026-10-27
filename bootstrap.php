@@ -93,6 +93,8 @@ return [
     'document_model' => $documentModel,
     'version_model' => $versionModel,
     'documents_service' => $documentService,
+    'users' => $users,
+    'storage_path' => $root . '/storage/files',
     'meta' => $metaClient,
     'rag' => $rag,
     'transcription' => $transcription,

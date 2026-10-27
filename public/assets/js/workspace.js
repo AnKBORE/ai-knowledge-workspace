@@ -311,6 +311,13 @@
             summarizeButton.setAttribute('aria-label', 'Résumer ' + (doc.title || 'le document'));
             summarizeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>';
 
+            var downloadLink = document.createElement('a');
+            downloadLink.className = 'doc-action';
+            downloadLink.title = 'Télécharger la dernière version';
+            downloadLink.href = apiUrl('download_document.php') + '?document_id=' + doc.id;
+            downloadLink.setAttribute('aria-label', 'Télécharger ' + (doc.title || 'le document'));
+            downloadLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
+
             var versionsModal = document.getElementById('versions-' + doc.id);
             if (versionsModal) {
                 var versionsButton = document.createElement('button');
@@ -332,6 +339,7 @@
             deleteButton.setAttribute('aria-label', 'Supprimer ' + (doc.title || 'le document'));
             deleteButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>';
 
+            actions.appendChild(downloadLink);
             actions.appendChild(summarizeButton);
             actions.appendChild(deleteButton);
 

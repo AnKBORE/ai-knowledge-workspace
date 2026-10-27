@@ -43,6 +43,15 @@ if ($documentId < 1) {
 }
 
 try {
+    $document = $dependencies['document_model']->find($documentId);
+    $version = $dependencies['version_model']->latest($documentId);
+    $owner = $document !== null && ($document['proprietaire_id'] ?? null) !== null
+        ? $dependencies['users']->findById((int) $document['proprietaire_id'])
+        : null;
+    $deposant = $owner !== null
+        ? trim((string) ($owner['prenom'] ?? '') . ' ' . (string) ($owner['nom'] ?? ''))
+        : 'Inconnu';
+
     $result = $dependencies['rag']->summarize($documentId);
 
     $dependencies['journal']->log(
@@ -51,6 +60,11 @@ try {
         'document',
         $documentId,
         'succes',
+        [
+            'titre' => (string) ($document['title'] ?? ''),
+            'version' => (int) ($version['numero'] ?? 0),
+            'deposant' => $deposant,
+        ],
     );
 
     echo json_encode($result, JSON_UNESCAPED_UNICODE);

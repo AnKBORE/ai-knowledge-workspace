@@ -47,6 +47,7 @@ $labels = [
                                     <th scope="col">Acteur</th>
                                     <th scope="col">Action</th>
                                     <th scope="col">Objet</th>
+                                    <th scope="col">Détail</th>
                                     <th scope="col">Résultat</th>
                                     <th scope="col">IP</th>
                                 </tr>
@@ -63,6 +64,20 @@ $labels = [
                                         <td class="small">
                                             <?= e($entry['objet_type'] ?? '') ?>
                                             <?= $entry['objet_id'] !== null ? '#' . (int) $entry['objet_id'] : '' ?>
+                                        </td>
+                                        <td class="small text-break" style="max-width: 28rem">
+                                            <?php
+                                            $details = json_decode((string) ($entry['details'] ?? ''), true);
+                                            if (is_array($details)) {
+                                                $parts = [];
+                                                foreach ($details as $key => $value) {
+                                                    if (is_scalar($value)) {
+                                                        $parts[] = $key . ' : ' . (is_bool($value) ? ($value ? 'oui' : 'non') : $value);
+                                                    }
+                                                }
+                                                echo e(implode(' · ', $parts));
+                                            }
+                                            ?>
                                         </td>
                                         <td><span class="badge text-bg-<?= e($tone) ?>"><?= e($entry['resultat'] ?? '') ?></span></td>
                                         <td class="small text-muted"><?= e($entry['adresse_ip'] ?? '') ?></td>

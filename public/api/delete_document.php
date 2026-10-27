@@ -42,6 +42,15 @@ if ($documentId < 1) {
     exit;
 }
 
+$document = $dependencies['document_model']->find($documentId);
+$version = $dependencies['version_model']->latest($documentId);
+$owner = $document !== null && ($document['proprietaire_id'] ?? null) !== null
+    ? $dependencies['users']->findById((int) $document['proprietaire_id'])
+    : null;
+$deposant = $owner !== null
+    ? trim((string) ($owner['prenom'] ?? '') . ' ' . (string) ($owner['nom'] ?? ''))
+    : 'Inconnu';
+
 $dependencies['document_model']->softDelete($documentId);
 
 $dependencies['journal']->log(
@@ -50,6 +59,11 @@ $dependencies['journal']->log(
     'document',
     $documentId,
     'succes',
+    [
+        'titre' => (string) ($document['title'] ?? ''),
+        'version' => (int) ($version['numero'] ?? 0),
+        'deposant' => $deposant,
+    ],
 );
 
 echo json_encode(['deleted' => $documentId], JSON_UNESCAPED_UNICODE);

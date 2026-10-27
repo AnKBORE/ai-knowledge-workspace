@@ -46,6 +46,11 @@ declare(strict_types=1);
                                 </div>
                             </div>
                             <div class="doc-item-actions">
+                                <a class="doc-action" title="Télécharger la dernière version"
+                                   href="<?= e(url('/api/download_document.php?document_id=' . $docId)) ?>"
+                                   aria-label="Télécharger <?= e($doc['title'] ?? 'le document') ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+                                </a>
                                 <button type="button" class="doc-action summarize-btn" title="Résumer"
                                         data-document-id="<?= (int) ($doc['id'] ?? 0) ?>"
                                         data-document-title="<?= e($doc['title'] ?? 'Document') ?>"

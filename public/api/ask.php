@@ -49,7 +49,15 @@ try {
         'document',
         null,
         'succes',
-        ['mode' => $mode],
+        [
+            'mode' => $mode,
+            'question' => mb_substr(
+                $mode === 'task' ? (string) ($input['instruction'] ?? '') : (string) ($input['question'] ?? ''),
+                0,
+                200,
+            ),
+            'sources' => count($response['sources'] ?? []),
+        ],
     );
 
     echo json_encode($response, JSON_UNESCAPED_UNICODE);

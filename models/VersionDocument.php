@@ -90,10 +90,29 @@ final class VersionDocument
     }
 
     /** @return array<string, mixed>|null */
+    public function findByNumero(int $documentId, int $numero): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT id, document_id, numero, fichier, nom_original, type_mime, taille_octets,
+                    empreinte, auteur_id, commentaire, cree_le
+             FROM version_document
+             WHERE document_id = :document AND numero = :numero
+             LIMIT 1'
+        );
+        $stmt->execute(['document' => $documentId, 'numero' => $numero]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
+
+    /** @return array<string, mixed>|null */
     public function latest(int $documentId): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT id, numero, fichier, empreinte FROM version_document
+            'SELECT id, document_id, numero, fichier, nom_original, type_mime, taille_octets,
+                    empreinte, auteur_id, commentaire, cree_le
+             FROM version_document
              WHERE document_id = :document
              ORDER BY numero DESC LIMIT 1'
         );

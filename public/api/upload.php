@@ -113,7 +113,13 @@ try {
         'document',
         $result['document_id'],
         'succes',
-        ['version' => 1, 'chunks' => $chunks],
+        [
+            'titre' => $title,
+            'version' => 1,
+            'chunks' => $chunks,
+            'sha256' => substr($result['sha256'], 0, 16),
+            'taille_octets' => (int) ($upload['size'] ?? 0),
+        ],
     );
 
     echo json_encode([
