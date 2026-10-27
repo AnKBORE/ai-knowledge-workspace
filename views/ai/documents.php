@@ -16,10 +16,12 @@ declare(strict_types=1);
 </section>
 
 <div class="row g-4">
-    <div class="col-lg-8 mx-auto">
-        <section class="panel">
+    <div class="col-12">
+        <div class="space-admin">
+        <section class="panel space-list-panel technical-admin-panel">
             <div class="panel-head">
                 <div>
+                    <p class="page-eyebrow">Base de connaissances</p>
                     <h2 class="panel-title">Documents</h2>
                     <p class="panel-sub" id="documents-count"><?= count($documents) ?> document<?= count($documents) > 1 ? 's' : '' ?></p>
                 </div>
@@ -84,6 +86,7 @@ declare(strict_types=1);
                 </nav>
             <?php endif; ?>
         </section>
+        </div>
     </div>
 </div>
 

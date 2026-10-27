@@ -98,7 +98,6 @@ $labels = [
 
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
-<link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
 <script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>

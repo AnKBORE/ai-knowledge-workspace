@@ -40,6 +40,7 @@ $navItems = [
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>">
+    <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
     <script src="<?= e(url('/assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>"></script>
 </head>
 <body class="app-body">
