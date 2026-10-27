@@ -47,7 +47,7 @@ $navLabel = $isFr ? 'Connexion' : 'Sign in';
     <footer class="landing-footer">
         <p><?= e($productName) ?> — <?= e($isFr ? 'projet open source sous licence MIT.' : 'open-source project under the MIT licence.') ?></p>
         <p class="landing-footer-meta">
-            <span>PHP 8.4</span><span>MySQL 8.4</span><span>Muse Spark Open</span>
+            <span>PHP 8.4.27</span><span>MySQL 8.4.13</span><span>Muse Spark Open</span>
             <span><?= e($isFr ? 'Hackathon Meta — Indie Developer' : 'Meta Hackathon — Indie Developer') ?></span>
         </p>
     </footer>
