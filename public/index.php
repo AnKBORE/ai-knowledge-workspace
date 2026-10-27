@@ -121,6 +121,7 @@ if ($method === 'GET') {
         '/documents' => ['view' => 'ai/documents', 'title' => 'Documents indexés'],
         '/journal' => ['view' => 'ai/journal', 'title' => "Journal d'audit"],
         '/mon-profil' => ['view' => 'ai/profil', 'title' => 'Mon profil'],
+        '/categories' => ['view' => 'ai/categories', 'title' => 'Catégories'],
     ];
 
     if (!isset($pages[$path])) {
@@ -134,10 +135,13 @@ if ($method === 'GET') {
     $pageNum = max(1, (int) ($_GET['page'] ?? 1));
     $perPage = 20;
     $search = trim((string) ($_GET['q'] ?? ''));
+    $filtreCategorie = (int) ($_GET['categorie'] ?? 0);
 
     $documents = $search !== ''
         ? $dependencies['document_model']->search($search, 200)
-        : $dependencies['document_model']->listRecent(200, 0);
+        : ($filtreCategorie > 0
+            ? $dependencies['document_model']->byCategorie($filtreCategorie, 200)
+            : $dependencies['document_model']->listRecent(200, 0));
 
     $totalDocuments = $search !== ''
         ? $dependencies['document_model']->countSearch($search)
@@ -155,6 +159,8 @@ if ($method === 'GET') {
         'search' => $search,
         'entries' => $entries,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
+        'categories' => in_array($path, ['/ajouter', '/documents', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
+        'filtreCategorie' => $filtreCategorie,
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
         'currentUser' => $auth->user(),
         'csrf' => $csrf,

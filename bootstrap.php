@@ -92,6 +92,7 @@ return [
     'adhesions' => $adhesions,
     'document_model' => $documentModel,
     'version_model' => $versionModel,
+    'categorie_model' => new \App\Models\Categorie($pdo),
     'documents_service' => $documentService,
     'users' => $users,
     'storage_path' => $root . '/storage/files',

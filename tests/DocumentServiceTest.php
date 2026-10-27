@@ -23,6 +23,7 @@ final class DocumentServiceTest extends TestCase
     {
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
         $this->pdo->exec('CREATE TABLE documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
@@ -36,9 +37,19 @@ final class DocumentServiceTest extends TestCase
             confidentialite TEXT NOT NULL DEFAULT "restreint",
             statut TEXT NOT NULL DEFAULT "publie",
             proprietaire_id INTEGER NULL,
+            categorie_id INTEGER NULL,
             supprime_le TEXT NULL,
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )');
+
+        $this->pdo->exec('CREATE TABLE categorie (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nom TEXT NOT NULL,
+            slug TEXT NOT NULL,
+            description TEXT NULL,
+            couleur TEXT NOT NULL DEFAULT "#4a63c8"
+        )');
+
         $this->pdo->exec('CREATE TABLE version_document (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             document_id INTEGER NOT NULL,
@@ -99,6 +110,17 @@ final class DocumentServiceTest extends TestCase
 
         $latest = (new VersionDocument($this->pdo))->latest($result['document_id']);
         $this->assertSame(1, (int) $latest['numero']);
+    }
+
+    public function testCreateDocumentWithCategory(): void
+    {
+        $this->pdo->exec("INSERT INTO categorie (nom, slug) VALUES ('Rapports', 'rapports')");
+        $categorieId = (int) $this->pdo->lastInsertId();
+
+        $result = $this->service->createDocument('Rapport', null, null, $this->upload('hello'), $categorieId);
+
+        $document = (new Document($this->pdo))->find($result['document_id']);
+        $this->assertSame($categorieId, (int) $document['categorie_id']);
     }
 
     public function testAddVersionIncrementsNumero(): void

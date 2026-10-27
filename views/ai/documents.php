@@ -26,6 +26,17 @@ $search = (string) ($search ?? '');
                         <h2 class="panel-title" id="documents-title">Documents <span class="technical-admin-count"><?= count($documents) ?></span></h2>
                         <p class="panel-sub" id="documents-help">Recherche, tri et pagination par lots de 50. Chaque dépôt est versionné (SHA-256) et journalisé.</p>
                     </div>
+                    <form class="doc-filter" method="get" action="<?= e(url('/documents')) ?>" role="search">
+                        <label class="visually-hidden" for="filtre-categorie">Filtrer par catégorie</label>
+                        <select id="filtre-categorie" name="categorie" class="form-select form-select-sm" onchange="this.form.submit()">
+                            <option value="">Toutes les catégories</option>
+                            <?php foreach (($categories ?? []) as $categorie): ?>
+                                <option value="<?= (int) ($categorie['id'] ?? 0) ?>" <?= ((int) ($filtreCategorie ?? 0) === (int) ($categorie['id'] ?? 0)) ? 'selected' : '' ?>>
+                                    <?= e((string) ($categorie['nom'] ?? '')) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </form>
                 </div>
 
                 <?php if (empty($documents)): ?>
@@ -39,6 +50,7 @@ $search = (string) ($search ?? '');
                                 <tr>
                                     <th scope="col">N°</th>
                                     <th scope="col">Titre</th>
+                                    <th scope="col">Catégorie</th>
                                     <th scope="col">Fichier</th>
                                     <th scope="col">Versions</th>
                                     <th scope="col">Actions</th>
@@ -52,6 +64,13 @@ $search = (string) ($search ?? '');
                                             <span class="row-number-value"><?= (int) $index + 1 ?></span>
                                         </td>
                                         <td><strong><?= e($doc['title'] ?? '') ?></strong></td>
+                                        <td>
+                                            <?php if (($doc['categorie_nom'] ?? null) !== null): ?>
+                                                <span class="categorie-badge" style="border-color: <?= e((string) $doc['categorie_couleur']) ?>; color: <?= e((string) $doc['categorie_couleur']) ?>"><?= e((string) $doc['categorie_nom']) ?></span>
+                                            <?php else: ?>
+                                                <span class="text-muted small">—</span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td class="small text-muted"><?= e($doc['filename'] ?? '') ?></td>
                                         <td><span class="doc-item-badge"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span></td>
                                         <td>

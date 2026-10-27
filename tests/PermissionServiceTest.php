@@ -36,6 +36,7 @@ final class PermissionServiceTest extends TestCase
             mot_de_passe TEXT NOT NULL,
             role_global TEXT NOT NULL DEFAULT "membre",
             statut TEXT NOT NULL DEFAULT "actif",
+            categorie_id INTEGER NULL,
             supprime_le TEXT NULL
         )');
         $this->pdo->exec('CREATE TABLE espace (
@@ -45,6 +46,7 @@ final class PermissionServiceTest extends TestCase
             nom TEXT NOT NULL,
             visibilite TEXT NOT NULL DEFAULT "restreint",
             statut TEXT NOT NULL DEFAULT "actif",
+            categorie_id INTEGER NULL,
             supprime_le TEXT NULL
         )');
         $this->pdo->exec('CREATE TABLE adhesion (

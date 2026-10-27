@@ -36,7 +36,7 @@ final class DocumentService
      * @param array{tmp_name: string, name: string, type?: string, size?: int, error?: int} $upload
      * @return array{document_id: int, version_id: int, sha256: string, stored_path: string}
      */
-    public function createDocument(string $titre, ?int $espaceId, ?int $proprietaireId, array $upload): array
+    public function createDocument(string $titre, ?int $espaceId, ?int $proprietaireId, array $upload, ?int $categorieId = null): array
     {
         $this->validate($upload);
         [$sha, $stored] = $this->store($upload);
@@ -47,6 +47,8 @@ final class DocumentService
             $proprietaireId,
             (string) $upload['name'],
             (string) ($upload['type'] ?? ''),
+            'autre',
+            $categorieId,
         );
 
         $versionId = $this->versions->create(

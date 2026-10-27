@@ -1365,3 +1365,11 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .profil-details dd { margin: 0; font-weight: 600; }
 .profil-spaces { list-style: none; display: grid; gap: .5rem; padding: 0; margin: 0; }
 .profil-spaces li { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .55rem .7rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+/* Categories */
+.categorie-list { list-style: none; display: grid; gap: .55rem; padding: 0; margin: 0; }
+.categorie-list li { display: flex; align-items: center; gap: .7rem; padding: .6rem .75rem; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+.categorie-dot { width: 14px; height: 14px; flex: 0 0 14px; border-radius: 50%; }
+.categorie-copy { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.categorie-copy small { color: var(--muted, #748097); font-size: .76rem; }
+.categorie-badge { display: inline-block; padding: .18rem .55rem; border-radius: 999px; border: 1px solid currentColor; font-size: .72rem; font-weight: 700; }
+.doc-filter .form-select { min-width: 190px; }

@@ -31,6 +31,15 @@ declare(strict_types=1);
                             <input id="title" name="title" class="form-control" placeholder="Rapport trimestriel" required>
                         </div>
                         <div class="mb-3">
+                            <label for="categorie_id" class="form-label">Catégorie</label>
+                            <select id="categorie_id" name="categorie_id" class="form-select">
+                                <option value="">— Sans catégorie —</option>
+                                <?php foreach (($categories ?? []) as $categorie): ?>
+                                    <option value="<?= (int) ($categorie['id'] ?? 0) ?>"><?= e((string) ($categorie['nom'] ?? '')) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
                             <label for="file" class="form-label">Fichier (txt, md, pdf, image, audio)</label>
                             <input id="file" name="file" type="file" class="form-control" required>
                         </div>

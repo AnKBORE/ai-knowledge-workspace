@@ -20,7 +20,7 @@ final class Document
     public function find(int $id): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT id, title, filename, mime_type, espace_id, proprietaire_id, type, statut, confidentialite
+            'SELECT id, title, filename, mime_type, espace_id, proprietaire_id, type, statut, confidentialite, categorie_id
              FROM documents
              WHERE id = :id AND supprime_le IS NULL
              LIMIT 1'
@@ -39,10 +39,11 @@ final class Document
         string $filename,
         string $mimeType,
         string $type = 'autre',
+        ?int $categorieId = null,
     ): int {
         $stmt = $this->db->prepare(
-            'INSERT INTO documents (title, filename, mime_type, espace_id, proprietaire_id, type)
-             VALUES (:title, :filename, :mime, :espace, :proprietaire, :type)'
+            'INSERT INTO documents (title, filename, mime_type, espace_id, proprietaire_id, type, categorie_id)
+             VALUES (:title, :filename, :mime, :espace, :proprietaire, :type, :categorie)'
         );
         $stmt->execute([
             'title' => $titre,
@@ -51,6 +52,7 @@ final class Document
             'espace' => $espaceId,
             'proprietaire' => $proprietaireId,
             'type' => $type,
+            'categorie' => $categorieId,
         ]);
 
         return (int) $this->db->lastInsertId();
@@ -60,9 +62,11 @@ final class Document
     public function listRecent(int $limit = 20, int $offset = 0): array
     {
         $stmt = $this->db->prepare(
-            'SELECT d.id, d.title, d.filename, d.statut,
+            'SELECT d.id, d.title, d.filename, d.statut, d.categorie_id,
+                    c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
+             LEFT JOIN categorie c ON c.id = d.categorie_id
              WHERE d.supprime_le IS NULL
              ORDER BY d.id DESC
              LIMIT :limit OFFSET :offset'
@@ -75,14 +79,36 @@ final class Document
     }
 
     /** @return list<array<string, mixed>> */
+    public function byCategorie(int $categorieId, int $limit = 200): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT d.id, d.title, d.filename, d.statut, d.categorie_id,
+                    c.nom AS categorie_nom, c.couleur AS categorie_couleur,
+                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
+             FROM documents d
+             LEFT JOIN categorie c ON c.id = d.categorie_id
+             WHERE d.supprime_le IS NULL AND d.categorie_id = :categorie
+             ORDER BY d.id DESC
+             LIMIT :limit'
+        );
+        $stmt->bindValue('categorie', $categorieId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** @return list<array<string, mixed>> */
     public function search(string $query, int $limit = 20): array
     {
         $like = '%' . $query . '%';
 
         $stmt = $this->db->prepare(
-            'SELECT d.id, d.title, d.filename, d.statut,
+            'SELECT d.id, d.title, d.filename, d.statut, d.categorie_id,
+                    c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
+             LEFT JOIN categorie c ON c.id = d.categorie_id
              WHERE d.supprime_le IS NULL
                AND (d.title LIKE :query OR d.filename LIKE :query)
              ORDER BY d.id DESC

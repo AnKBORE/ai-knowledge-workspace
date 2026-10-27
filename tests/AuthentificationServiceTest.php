@@ -40,6 +40,7 @@ final class AuthentificationServiceTest extends TestCase
             derniere_connexion_le TEXT NULL,
             cree_le TEXT DEFAULT CURRENT_TIMESTAMP,
             maj_le TEXT DEFAULT CURRENT_TIMESTAMP,
+            categorie_id INTEGER NULL,
             supprime_le TEXT NULL
         )');
         $pdo->exec('CREATE TABLE tentative_connexion (

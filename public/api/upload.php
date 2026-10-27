@@ -40,6 +40,14 @@ if ($title === '') {
     exit;
 }
 
+$categorieId = isset($_POST['categorie_id']) && $_POST['categorie_id'] !== ''
+    ? (int) $_POST['categorie_id']
+    : null;
+
+if ($categorieId !== null && $dependencies['categorie_model']->find($categorieId) === null) {
+    $categorieId = null;
+}
+
 $upload = $_FILES['file'] ?? null;
 if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     $code = is_array($upload) ? (int) ($upload['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
@@ -106,6 +114,7 @@ try {
         $dependencies['espaces']->firstActive(),
         $dependencies['auth']->id(),
         $upload,
+        $categorieId,
     );
 
     // 3. Index the extracted text, attached to the version.
