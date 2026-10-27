@@ -26,13 +26,6 @@ $search = (string) ($search ?? '');
                         <h2 class="panel-title" id="documents-title">Documents <span class="technical-admin-count"><?= count($documents) ?></span></h2>
                         <p class="panel-sub" id="documents-help">Recherche, tri et pagination par lots de 50. Chaque dépôt est versionné (SHA-256) et journalisé.</p>
                     </div>
-                    <form class="doc-search" method="get" action="<?= e(url('/documents')) ?>" role="search">
-                        <input type="search" name="q" class="form-control form-control-sm" placeholder="Rechercher un document…" value="<?= e($search) ?>" aria-label="Rechercher un document">
-                        <button class="btn btn-sm btn-primary" type="submit">Rechercher</button>
-                        <?php if ($search !== ''): ?>
-                            <a class="btn btn-sm btn-outline-secondary" href="<?= e(url('/documents')) ?>">Effacer</a>
-                        <?php endif; ?>
-                    </form>
                 </div>
 
                 <?php if (empty($documents)): ?>
@@ -41,7 +34,7 @@ $search = (string) ($search ?? '');
                     </p>
                 <?php else: ?>
                     <div class="space-table-wrap">
-                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="documents-table" aria-describedby="documents-help">
+                        <table class="spaces-data-table technical-admin-table documents-table table table-hover align-middle w-100" id="documents-table" aria-describedby="documents-help">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
@@ -54,7 +47,10 @@ $search = (string) ($search ?? '');
                             <tbody>
                                 <?php foreach ($documents as $index => $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
                                     <tr>
-                                        <td class="table-row-number"><?= (int) $index + 1 ?></td>
+                                        <td class="table-row-number dtr-control">
+                                            <button class="dtr-control-btn" type="button" aria-label="Afficher les informations complémentaires" aria-expanded="false"><span aria-hidden="true">+</span></button>
+                                            <span class="row-number-value"><?= (int) $index + 1 ?></span>
+                                        </td>
                                         <td><strong><?= e($doc['title'] ?? '') ?></strong></td>
                                         <td class="small text-muted"><?= e($doc['filename'] ?? '') ?></td>
                                         <td><span class="doc-item-badge"><?= (int) ($doc['versions'] ?? 0) ?> version<?= ((int) ($doc['versions'] ?? 0)) > 1 ? 's' : '' ?></span></td>
@@ -144,24 +140,4 @@ $search = (string) ($search ?? '');
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof DataTable === 'undefined' || !document.getElementById('documents-table')) {
-        return;
-    }
-    new DataTable('#documents-table', {
-        pageLength: 50,
-        order: [[0, 'asc']],
-        responsive: true,
-        language: {
-            search: 'Rechercher :',
-            lengthMenu: 'Afficher _MENU_ entrées',
-            info: 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
-            infoEmpty: 'Aucun résultat',
-            infoFiltered: '(filtré sur _MAX_ entrées)',
-            zeroRecords: 'Aucun résultat',
-            paginate: { first: '«', previous: '‹', next: '›', last: '»' }
-        }
-    });
-});
-</script>
+<script src="<?= e(url('/assets/js/spaces-tables.js')) ?>"></script>

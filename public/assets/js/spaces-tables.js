@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var isSpacesTable = table.classList.contains('spaces-data-table');
         var isTechnicalTable = table.classList.contains('technical-admin-table');
         var isJournalTable = table.classList.contains('journal-table');
+        var isDocumentsTable = table.classList.contains('documents-table');
         var finalColumn = table.rows[0].cells.length - 1;
 
         var dataTable = new window.DataTable(table, {
@@ -16,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
             searchDelay: 250,
             pageLength: 50,
             lengthMenu: [10, 25, 50, 100],
-            order: isJournalTable ? [[1, 'desc']] : (isTechnicalTable ? [[2, 'asc'], [1, 'asc']] : (isSpacesTable ? [[2, 'asc']] : [[3, 'desc']])),
+            order: isDocumentsTable ? [[0, 'asc']] : (isJournalTable ? [[1, 'desc']] : (isTechnicalTable ? [[2, 'asc'], [1, 'asc']] : (isSpacesTable ? [[2, 'asc']] : [[3, 'desc']]))),
             columnDefs: [
                 { targets: 0, orderable: false, searchable: false, className: 'table-row-number dtr-control all' },
                 { targets: finalColumn, orderable: false, searchable: false }
