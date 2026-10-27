@@ -1271,11 +1271,11 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .landing-feature { padding: 1.2rem 1.3rem; background: #fff; border: 1px solid #e5e8ee; border-radius: 14px; }
 .landing-feature h3 { font-size: .98rem; margin: 0 0 .4rem; }
 .landing-feature p { margin: 0; color: #4a5670; font-size: .9rem; }
-.landing-section-alt { padding: 1.6rem 1.5rem; border-radius: 18px; background: linear-gradient(135deg, #5470cf, #7b97e8); color: #fff; }
+.landing-section-alt { padding: 1.6rem 1.5rem; border-radius: 18px; background: #4a63c8; color: #fff; }
 .landing-section-alt .landing-section-title { color: #fff; }
 .landing-section-alt .landing-section-sub { color: rgb(255 255 255 / 88%); }
 .landing-stack { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: 0; }
-.landing-stack li { padding: .4rem .8rem; border-radius: 9px; background: rgb(255 255 255 / 12%); border: 1px solid rgb(255 255 255 / 22%); font-size: .82rem; }
+.landing-stack li { padding: .4rem .8rem; border-radius: 9px; background: rgb(255 255 255 / 16%); border: 1px solid rgb(255 255 255 / 34%); font-size: .82rem; }
 .landing-checks { list-style: none; display: grid; gap: .6rem; padding: 0; margin: 0; }
 .landing-checks li { position: relative; padding-left: 1.8rem; color: #33405a; }
 .landing-checks li::before { content: "\2713"; position: absolute; left: 0; top: -.05rem; width: 1.25rem; height: 1.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #e8f7ef; color: #176044; font-size: .8rem; font-weight: 800; }
