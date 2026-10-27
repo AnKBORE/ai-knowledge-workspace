@@ -40,7 +40,7 @@ $labels = [
                         </div>
                     </div>
                 <?php else: ?>
-                    <div class="table-responsive">
+                    <div class="space-table-wrap space-admin">
                         <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table">
                             <thead>
                                 <tr>
@@ -93,9 +93,9 @@ $labels = [
     </div>
 </div>
 
-<link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
+<link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
