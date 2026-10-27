@@ -411,3 +411,9 @@
         font-size: 1.5rem;
     }
 }
+
+/* Login -> presentation link */
+.auth-presentation { display: flex; align-items: center; justify-content: center; gap: .35rem; margin: 1rem 0 0; font-size: .88rem; }
+.auth-presentation a { color: var(--primary, #4b34e8); font-weight: 600; text-decoration: none; }
+.auth-presentation a:hover { text-decoration: underline; }
+.auth-presentation span { color: var(--muted, #748097); }

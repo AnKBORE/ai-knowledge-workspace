@@ -9,7 +9,7 @@ $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
 <main class="auth">
     <section class="auth-panel" aria-labelledby="auth-titre">
         <div class="auth-form-wrap">
-            <a class="auth-brand" href="<?= e(url('/')) ?>">
+            <a class="auth-brand" href="<?= e(url('/presentation?lang=fr')) ?>">
                 <?= brand_mark() ?>
                 <span><?= e($productName) ?></span>
             </a>
@@ -51,6 +51,11 @@ $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </button>
             </form>
+
+            <p class="auth-presentation">
+                <a href="<?= e(url('/presentation?lang=fr')) ?>">Découvrir le projet</a>
+                <span aria-hidden="true">→</span>
+            </p>
 
             <footer class="auth-legal">
                 <span>© <?= e(date('Y')) ?> <?= e($productName) ?></span>
