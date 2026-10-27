@@ -123,14 +123,22 @@ $t = [
         : 'Agentic Knowledge Workspace addresses this challenge by turning documents and organizational data into an intelligent, centralized knowledge base that can be queried in natural language.',
 
     'usecases_title' => $isFr ? 'Cas d’usage' : 'Use cases',
-    'uc1_title' => $isFr ? 'Établissements d’enseignement' : 'Educational institutions',
-    'uc1_text' => $isFr ? 'Retrouver rapidement règlements, procédures, archives académiques et supports pédagogiques.' : 'Quickly find regulations, procedures, academic archives and teaching materials.',
-    'uc2_title' => $isFr ? 'ONG' : 'NGOs',
-    'uc2_text' => $isFr ? 'Capitaliser les connaissances des projets et faciliter le transfert d’expérience.' : 'Capitalize project knowledge and ease experience transfer.',
-    'uc3_title' => $isFr ? 'Organisations confessionnelles' : 'Faith-based organizations',
-    'uc3_text' => $isFr ? 'Préserver les archives pastorales, administratives et de formation.' : 'Preserve pastoral, administrative and training archives.',
-    'uc4_title' => $isFr ? 'Entreprises' : 'Enterprises',
-    'uc4_text' => $isFr ? 'Réduire le temps de recherche documentaire et améliorer le partage du savoir.' : 'Reduce document search time and improve knowledge sharing.',
+    'uc1_title' => $isFr ? 'Administrations publiques et privées' : 'Public and private administrations',
+    'uc1_text' => $isFr
+        ? 'Retrouver rapidement règlements, procédures, archives administratives et rapports officiels, sans dépendre d’une personne clé.'
+        : 'Quickly find regulations, procedures, administrative archives and official reports, without depending on a key person.',
+    'uc2_title' => $isFr ? 'Entreprises' : 'Enterprises',
+    'uc2_text' => $isFr
+        ? 'Réduire le temps de recherche documentaire, capitaliser les savoir-faire et améliorer le partage des connaissances entre équipes.'
+        : 'Reduce document search time, capitalize know-how and improve knowledge sharing across teams.',
+    'uc3_title' => $isFr ? 'Organisations de développement' : 'Development organizations',
+    'uc3_text' => $isFr
+        ? 'Capitaliser les connaissances des projets, faciliter le transfert d’expérience et produire des rapports fiables et sourcés.'
+        : 'Capitalize project knowledge, ease experience transfer and produce reliable, sourced reports.',
+    'uc4_title' => $isFr ? 'Organisations confessionnelles' : 'Faith-based organizations',
+    'uc4_text' => $isFr
+        ? 'Préserver les archives pastorales, administratives et de formation, comme le fait déjà GES-SACREMENTS-KTO-BF dans les paroisses.'
+        : 'Preserve pastoral, administrative and training archives, as GES-SACREMENTS-KTO-BF already does in parishes.',
 
     'stack_title' => $isFr ? 'Sous le capot' : 'Under the hood',
     'stack_sub' => $isFr ? 'Une architecture volontairement sobre, robuste et maîtrisée.' : 'A deliberately lean, robust and controlled architecture.',
