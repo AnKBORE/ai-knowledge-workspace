@@ -81,6 +81,20 @@ if ($method === 'POST' && $path === '/logout') {
     exit;
 }
 
+// Public presentation page (bilingual, no authentication required).
+if ($method === 'GET' && $path === '/presentation') {
+    $lang = (($_GET['lang'] ?? 'fr') === 'en') ? 'en' : 'fr';
+
+    header('Content-Type: text/html; charset=utf-8');
+    echo $view->render('public/landing', [
+        'title' => $lang === 'fr'
+            ? 'Agentic Knowledge Workspace — présentation'
+            : 'Agentic Knowledge Workspace — presentation',
+        'lang' => $lang,
+    ], 'public');
+    exit;
+}
+
 // Everything below requires an authenticated user.
 if (!$auth->check()) {
     header('Location: ' . url('/login'));
