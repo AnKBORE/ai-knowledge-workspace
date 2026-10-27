@@ -13,7 +13,7 @@ $labels = [
     <div class="dashboard-hero-copy">
         <p class="dashboard-eyebrow">Espace de connaissances <span aria-hidden="true">/</span> Journal</p>
         <h1>Journal d'audit</h1>
-        <p>Traçabilité des actions : connexions, dépôts de documents, questions, refus de permission et suppressions. Le journal est en <strong>ajout seul</strong>.</p>
+        <p>Traçabilité des actions : connexions, dépôts de documents, consultations, résumés, questions, refus de permission et suppressions. Le journal est en <strong>ajout seul</strong>.</p>
     </div>
     <div class="dashboard-hero-actions">
         <span class="dashboard-date"><?= e(date('d/m/Y')) ?></span>
@@ -22,26 +22,22 @@ $labels = [
 
 <div class="row g-4">
     <div class="col-lg-10 mx-auto">
-        <section class="panel">
-            <div class="panel-head">
-                <div>
-                    <p class="page-eyebrow">Traçabilité</p>
-                    <h2 class="panel-title">Dernières opérations <span class="technical-admin-count"><?= count($entries) ?></span></h2>
-                    <p class="panel-sub">Connexions, dépôts, consultations, résumés, questions et suppressions — recherche, tri et pagination par lots de 50.</p>
-                </div>
-                <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/api/journal_export.php')) ?>">Exporter CSV</a>
-            </div>
-            <div class="panel-body">
-                <?php if (empty($entries)): ?>
-                    <div class="dashboard-empty">
-                        <div class="dashboard-empty-copy">
-                            <p class="dashboard-empty-label">Journal vide</p>
-                            <p>Les actions seront tracées ici au fur et à mesure.</p>
-                        </div>
+        <div class="space-admin">
+            <section class="panel space-list-panel technical-admin-panel" aria-labelledby="journal-title">
+                <div class="panel-head">
+                    <div>
+                        <p class="page-eyebrow">Traçabilité</p>
+                        <h2 class="panel-title" id="journal-title">Dernières opérations <span class="technical-admin-count"><?= count($entries) ?></span></h2>
+                        <p class="panel-sub" id="journal-help">Connexions, dépôts, consultations, résumés, questions et suppressions — recherche, tri et pagination par lots de 50.</p>
                     </div>
+                    <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/api/journal_export.php')) ?>">Exporter CSV</a>
+                </div>
+
+                <?php if (empty($entries)): ?>
+                    <p class="technical-admin-empty">Journal vide : les actions seront tracées ici au fur et à mesure.</p>
                 <?php else: ?>
-                    <div class="space-table-wrap space-admin">
-                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table">
+                    <div class="space-table-wrap">
+                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table" aria-describedby="journal-help">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
@@ -59,7 +55,7 @@ $labels = [
                                     <?php $tone = $labels[(string) ($entry['resultat'] ?? '')] ?? 'secondary'; ?>
                                     <tr>
                                         <td class="table-row-number"><?= (int) $index + 1 ?></td>
-                                        <td class="small text-muted"><?= e($entry['horodatage'] ?? '') ?></td>
+                                        <td class="small text-muted" data-order="<?= e((string) ($entry['horodatage'] ?? '')) ?>"><?= e($entry['horodatage'] ?? '') ?></td>
                                         <td>
                                             <?= e(trim((string) ($entry['prenom'] ?? '') . ' ' . (string) ($entry['nom'] ?? '')) ?: 'Système') ?>
                                         </td>
@@ -68,7 +64,7 @@ $labels = [
                                             <?= e($entry['objet_type'] ?? '') ?>
                                             <?= $entry['objet_id'] !== null ? '#' . (int) $entry['objet_id'] : '' ?>
                                         </td>
-                                        <td class="small text-break" style="max-width: 28rem">
+                                        <td class="small text-break">
                                             <?php
                                             $details = json_decode((string) ($entry['details'] ?? ''), true);
                                             if (is_array($details)) {
@@ -90,8 +86,10 @@ $labels = [
                         </table>
                     </div>
                 <?php endif; ?>
-            </div>
-        </section>
+
+                <p class="technical-admin-note technical-admin-footer">Chaque action est horodatée, associée à son auteur et conservée en ajout seul — rien n'est modifiable ni supprimable.</p>
+            </section>
+        </div>
     </div>
 </div>
 
@@ -114,11 +112,11 @@ document.addEventListener('DOMContentLoaded', function () {
         language: {
             search: 'Rechercher :',
             lengthMenu: 'Afficher _MENU_ entrées',
-            info: '_START_ à _END_ sur _TOTAL_ entrées',
-            infoEmpty: 'Aucune entrée',
+            info: 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
+            infoEmpty: 'Aucun résultat',
             infoFiltered: '(filtré sur _MAX_ entrées)',
             zeroRecords: 'Aucun résultat',
-            paginate: { first: 'Premier', previous: 'Précédent', next: 'Suivant', last: 'Dernier' }
+            paginate: { first: '«', previous: '‹', next: '›', last: '»' }
         }
     });
 });
