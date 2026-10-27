@@ -37,7 +37,7 @@ $labels = [
                     <p class="technical-admin-empty">Journal vide : les actions seront tracées ici au fur et à mesure.</p>
                 <?php else: ?>
                     <div class="space-table-wrap">
-                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table" aria-describedby="journal-help">
+                        <table class="spaces-data-table technical-admin-table journal-table table table-hover align-middle w-100" id="journal-table" aria-describedby="journal-help">
                             <thead>
                                 <tr>
                                     <th scope="col">N°</th>
@@ -54,7 +54,10 @@ $labels = [
                                 <?php foreach ($entries as $index => $entry): ?>
                                     <?php $tone = $labels[(string) ($entry['resultat'] ?? '')] ?? 'secondary'; ?>
                                     <tr>
-                                        <td class="table-row-number"><?= (int) $index + 1 ?></td>
+                                        <td class="table-row-number dtr-control">
+                                            <button class="dtr-control-btn" type="button" aria-label="Afficher les informations complémentaires" aria-expanded="false"><span aria-hidden="true">+</span></button>
+                                            <span class="row-number-value"><?= (int) $index + 1 ?></span>
+                                        </td>
                                         <td class="small text-muted" data-order="<?= e((string) ($entry['horodatage'] ?? '')) ?>"><?= e($entry['horodatage'] ?? '') ?></td>
                                         <td>
                                             <?= e(trim((string) ($entry['prenom'] ?? '') . ' ' . (string) ($entry['nom'] ?? '')) ?: 'Système') ?>
@@ -96,28 +99,9 @@ $labels = [
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
+<script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.bootstrap5.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    if (typeof DataTable === 'undefined') {
-        return;
-    }
-    new DataTable('#journal-table', {
-        pageLength: 50,
-        order: [[1, 'desc']],
-        responsive: true,
-        language: {
-            search: 'Rechercher :',
-            lengthMenu: 'Afficher _MENU_ entrées',
-            info: 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
-            infoEmpty: 'Aucun résultat',
-            infoFiltered: '(filtré sur _MAX_ entrées)',
-            zeroRecords: 'Aucun résultat',
-            paginate: { first: '«', previous: '‹', next: '›', last: '»' }
-        }
-    });
-});
-</script>
+<script src="<?= e(url('/assets/js/spaces-tables.js')) ?>"></script>
