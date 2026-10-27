@@ -25,8 +25,9 @@ $labels = [
         <section class="panel">
             <div class="panel-head">
                 <div>
-                    <h2 class="panel-title">Dernières opérations</h2>
-                    <p class="panel-sub"><?= count($entries) ?> entrée<?= count($entries) > 1 ? 's' : '' ?></p>
+                    <p class="page-eyebrow">Traçabilité</p>
+                    <h2 class="panel-title">Dernières opérations <span class="technical-admin-count"><?= count($entries) ?></span></h2>
+                    <p class="panel-sub">Connexions, dépôts, consultations, résumés, questions et suppressions — recherche, tri et pagination par lots de 50.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-primary" href="<?= e(url('/api/journal_export.php')) ?>">Exporter CSV</a>
             </div>
@@ -40,7 +41,7 @@ $labels = [
                     </div>
                 <?php else: ?>
                     <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0" id="journal-table">
+                        <table class="spaces-data-table technical-admin-table table table-hover align-middle w-100" id="journal-table">
                             <thead>
                                 <tr>
                                     <th scope="col">Date</th>
@@ -92,6 +93,7 @@ $labels = [
     </div>
 </div>
 
+<link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/dataTables.bootstrap5.min.css')) ?>">
 <link rel="stylesheet" href="<?= e(url('/assets/vendor/datatables/css/responsive.bootstrap5.min.css')) ?>">
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.min.js')) ?>"></script>
