@@ -1321,3 +1321,12 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .landing-problem-list { list-style: none; display: grid; gap: .45rem; padding: 0; margin: .6rem 0 0; }
 .landing-problem-list li { position: relative; padding-left: 1.5rem; color: #4a5670; font-size: .92rem; }
 .landing-problem-list li::before { content: "\2715"; position: absolute; left: 0; top: .05rem; color: #c05252; font-weight: 800; font-size: .8rem; }
+/* Landing — rich content */
+.landing-brand-line { font-size: .82rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #17223a; margin: 0 0 .7rem; }
+.landing-lead { margin: .7rem 0 .3rem !important; font-weight: 700; color: #33405a; }
+.landing-outro { margin: .9rem 0 0 !important; font-weight: 700; color: #b23b3b; }
+.landing-quote { margin: .8rem 0; padding: .8rem 1rem; border-left: 3px solid #4b34e8; background: #f4f6fd; border-radius: 0 10px 10px 0; color: #26304a; font-style: italic; }
+.landing-grid-features { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.landing-feature-list { list-style: none; display: grid; gap: .3rem; padding: 0; margin: .6rem 0 0; }
+.landing-feature-list li { position: relative; padding-left: 1.15rem; color: #4a5670; font-size: .86rem; }
+.landing-feature-list li::before { content: "\2713"; position: absolute; left: 0; color: #17752d; font-weight: 800; font-size: .74rem; }
