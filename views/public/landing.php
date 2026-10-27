@@ -148,7 +148,10 @@ $t = [
     'stack_4' => $isFr ? '57 tests automatisés · 122 assertions' : '57 automated tests · 122 assertions',
     'stack_5' => 'Argon2 · CSP · CSRF · ' . ($isFr ? 'journal d’audit' : 'audit journal'),
 
-    'roadmap_title' => $isFr ? 'Feuille de route' : 'Roadmap',
+    'roadmap_title' => $isFr ? 'Feuille de route — après le hackathon' : 'Roadmap — after the hackathon',
+    'roadmap_note' => $isFr
+        ? 'Ces fonctionnalités ne font pas partie du MVP soumis : elles prolongent la plateforme et s’appuient sur ses fondations existantes (espaces et RBAC, documents et journal, RAG et tâches agentiques).'
+        : 'These features are not part of the submitted MVP: they extend the platform and build on its existing foundations (spaces and RBAC, documents and journal, RAG and agentic tasks).',
     'rm1_title' => $isFr ? 'Collaboration avancée' : 'Advanced collaboration',
     'rm1_1' => $isFr ? 'Mentions' : 'Mentions',
     'rm1_2' => $isFr ? 'Commentaires' : 'Comments',
@@ -321,6 +324,7 @@ $t = [
 
 <section class="landing-section">
     <h2 class="landing-section-title"><?= e($t['roadmap_title']) ?></h2>
+    <p class="landing-section-sub"><?= e($t['roadmap_note']) ?></p>
     <div class="landing-grid">
         <?php foreach ([
             ['rm1_title', ['rm1_1', 'rm1_2', 'rm1_3', 'rm1_4']],
