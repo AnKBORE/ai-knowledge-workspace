@@ -52,7 +52,9 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 | Réponse à une question | Exécution de tâches documentaires complètes |
 | PDF textuels uniquement | PDF, images scannées et contenus multimédias |
 | Réponse unique | Rapports, fiches, synthèses et notes structurées |
-| Faible traçabilité | Sources citées et vérifiables |
+| Faible traçabilité | Citations numérotées liées aux extraits exacts |
+| Contexte limité au top-K | Expansion voisins + premier chunk, intention catalogue |
+| Sortie monolingue | Réponses dans la langue de la question, sources traduites |
 | Aucun contrôle organisationnel | RBAC, versions et audit |
 | Chatbot générique | Solution métier adaptée au terrain africain |
 
@@ -86,6 +88,16 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Recherche hybride vectorielle et lexicale
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
+
+### Moteur de récupération de précision (RAG++)
+- **Retrieval filtré par permissions** — chaque chunk scoré appartient à un document que l'acteur est autorisé à lire (tenant, adhésion d'espace, confidentialité, propriété, suppression logique), résolu en une passe par requête
+- **Scoring hybride** — `0,6 × similarité cosinus + 0,4 × recouvrement lexical` conserve un bon rappel même avec les embeddings locaux
+- **Découpage à la limite de mot** — les coupes à taille fixe reculent au dernier espace : aucun extrait ne se termine en plein mot
+- **Expansion de contexte** — chaque extrait retenu est enrichi de ses chunks voisins ±1 **et du premier chunk du document**, là où vivent titres et en-têtes ; une question sur un titre est donc toujours répondable
+- **Détection d'intention catalogue** — « liste tous les documents » contourne le retrieval de chunks et alimente le modèle avec l'inventaire réel filtré par permissions (titre · catégorie · date d'indexation · fichier)
+- **Citations vérifiables** — le modèle cite `[n]` ; seuls les extraits **cités** sont affichés comme sources, avec leur numéro exact de contexte (`Sources : [3]` ⇢ entrée *3*). Pas de citation, pas de liste de sources
+- **Pipeline multilingue complet** — la réponse suit la **langue de la question** ; les citations littérales sont traduites avec l'original entre parenthèses ; les **extraits de sources sont traduits** aussi via une passe dédiée à basse température
+- **Téléchargement direct** — chaque source citée porte un lien `document_id` vers sa dernière version
 
 ### Génération de contenu
 - Résumés automatiques
@@ -137,8 +149,9 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **57 tests automatisés · 122 assertions** |
+| **Tests** | **68 tests automatisés · 143 assertions** |
 | **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
+| **UI** | Bilingue EN/FR (EN par défaut), Bootstrap + DataTables + Select2 |
 
 ---
 
@@ -181,15 +194,17 @@ En production, la racine web doit pointer vers `public/`.
 
 ## Interface web
 
-L'espace de travail est découpé en **cinq pages navigables**, pilotées par le menu vertical :
+L'espace de travail est découpé en **sept pages navigables**, pilotées par le menu vertical — toutes bilingues EN/FR (EN par défaut, bascule par session) :
 
 | Page | URL | Rôle |
 |---|---|---|
-| **Question** | `/` | Poser une question, obtenir une réponse sourcée |
+| **Question** | `/` | Poser une question, obtenir une réponse sourcée à citations numérotées (téléchargeables) |
 | **Tâche agentique** | `/tache` | Demander une note / un rapport / une fiche ; le brouillon s'ouvre en modal |
-| **Documents** | `/documents` | Liste des documents indexés (versions, résumé, téléchargement, suppression) |
-| **Ajouter un document** | `/ajouter` | Indexer un texte, un PDF, une image ou un audio |
-| **Journal d'audit** | `/journal` | Traçabilité en ajout seul (DataTables, export CSV) |
+| **Documents** | `/documents` | Liste des documents indexés (versions, résumé, téléchargement, suppression par mot de passe) |
+| **Ajouter un document** | `/ajouter` | Indexer un texte, un PDF, une image ou un audio (catégorie requise) |
+| **Catégories** | `/categories` | Créer et gérer les catégories documentaires |
+| **Journal d'audit** | `/journal` | Traçabilité (DataTables, export CSV, purge de période ≥10 jours par mot de passe) |
+| **Mon profil** | `/mon-profil` | Identité, adhésions ; modifications confirmées par mot de passe |
 
 Chaque résultat s'ouvre dans un **modal** avec téléchargement **PDF** et **DOCX**.
 
@@ -202,6 +217,7 @@ Endpoints API (protégés par session) :
 - `GET /api/documents.php` — documents récents (JSON)
 - `GET /api/download_document.php` — télécharger une version (journalisé)
 - `GET /api/journal_export.php` — journal d'audit en CSV
+- `POST /api/journal_purge.php` — purge du journal confirmée par mot de passe (entrées de plus de 10 jours ; la purge est elle-même journalisée)
 
 ---
 
@@ -211,7 +227,7 @@ Endpoints API (protégés par session) :
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**57 tests, 122 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le RAG, les exports et les services multimodaux. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**68 tests, 143 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports et les services multimodaux. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 

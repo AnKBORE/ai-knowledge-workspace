@@ -37,6 +37,7 @@ require $root . '/vendor/autoload.php';
 
 Env::load($root . '/.env');
 require $root . '/core/helpers.php';
+require $root . '/core/i18n.php';
 
 $config = require $root . '/config/meta.php';
 
@@ -75,7 +76,7 @@ $documentService = new DocumentService($documentModel, $versionModel, $root . '/
 
 $metaClient = new MetaClient($config);
 $embeddings = new EmbeddingService($metaClient, (string) ($config['embedding_mode'] ?? 'local'));
-$rag = new RagService($metaClient, $embeddings, $pdo);
+$rag = new RagService($metaClient, $embeddings, $pdo, $permissions, (string) $session->get('lang', 'en'));
 $transcription = new TranscriptionService($metaClient);
 $vision = new VisionService($metaClient);
 

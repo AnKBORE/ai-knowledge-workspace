@@ -10,25 +10,27 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.consulter')) {
     http_response_code(403);
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -38,7 +40,7 @@ $documentId = (int) ($input['document_id'] ?? 0);
 
 if ($documentId < 1) {
     http_response_code(422);
-    echo json_encode(['error' => 'A document_id is required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['document_id_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -52,7 +54,7 @@ try {
         ? trim((string) ($owner['prenom'] ?? '') . ' ' . (string) ($owner['nom'] ?? ''))
         : 'Inconnu';
 
-    $result = $dependencies['rag']->summarize($documentId);
+    $result = $dependencies['rag']->summarize($documentId, 20, $dependencies['auth']->id());
 
     $dependencies['journal']->log(
         $dependencies['auth']->id(),
@@ -71,5 +73,5 @@ try {
 } catch (Throwable $e) {
     http_response_code(500);
     $debug = getenv('APP_DEBUG') === '1';
-    echo json_encode(['error' => $debug ? $e->getMessage() : 'Summarization failed.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $debug ? $e->getMessage() : $T['summarize_failed']], JSON_UNESCAPED_UNICODE);
 }

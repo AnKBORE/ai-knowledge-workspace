@@ -14,23 +14,25 @@ use App\Services\Ai\RagService;
  */
 final class AiAssistantController
 {
-    public function __construct(private readonly RagService $rag)
-    {
+    public function __construct(
+        private readonly RagService $rag,
+        private readonly string $lang = 'en',
+    ) {
     }
 
     /**
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
-    public function ask(array $input): array
+    public function ask(array $input, ?int $userId = null): array
     {
         $question = trim((string) ($input['question'] ?? ''));
 
         if ($question === '') {
-            return ['error' => 'A question is required.'];
+            return ['error' => app_i18n($this->lang)['api']['question_required']];
         }
 
-        return $this->rag->answer($question);
+        return $this->rag->answer($question, 6, $userId);
     }
 
     /**
@@ -39,14 +41,14 @@ final class AiAssistantController
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
-    public function task(array $input): array
+    public function task(array $input, ?int $userId = null): array
     {
         $instruction = trim((string) ($input['instruction'] ?? ''));
 
         if ($instruction === '') {
-            return ['error' => 'An instruction is required.'];
+            return ['error' => app_i18n($this->lang)['api']['instruction_required']];
         }
 
-        return $this->rag->task($instruction);
+        return $this->rag->task($instruction, 8, $userId);
     }
 }

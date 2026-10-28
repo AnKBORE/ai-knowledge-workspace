@@ -10,25 +10,27 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.consulter')) {
     http_response_code(403);
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed. Use GET.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['method_get']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

@@ -9,18 +9,20 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'journal.lire')) {
     http_response_code(403);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

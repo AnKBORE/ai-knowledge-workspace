@@ -52,7 +52,9 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 | Answer to a question | Execution of complete document tasks |
 | Text PDFs only | PDFs, scanned images and multimedia content |
 | Single answer | Reports, briefs, summaries and structured notes |
-| Weak traceability | Cited and verifiable sources |
+| Weak traceability | Numbered citations bound to exact retrieved extracts |
+| Top-K only context | Neighbour + first-chunk expansion, catalogue intent |
+| Single-language output | Question-language answers, translated cited sources |
 | No organizational control | RBAC, versions and audit |
 | Generic chatbot | Business solution adapted to the African context |
 
@@ -86,6 +88,16 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Hybrid vector and lexical search
 - Understanding of user context
 - Semantic search beyond keywords
+
+### Precision retrieval engine (RAG++)
+- **Permission-aware retrieval** — every scored chunk belongs to a document the actor is allowed to read (tenant, workspace membership, confidentiality, ownership, soft-delete), resolved once per query
+- **Hybrid scoring** — `0.6 × semantic cosine + 0.4 × lexical overlap` keeps recall strong even with local hashing embeddings
+- **Word-boundary chunking** — fixed-size splits backtrack to the last space, so excerpts never end mid-word
+- **Context expansion** — each hit is enriched with its ±1 neighbour chunks **and the document's first chunk**, where titles and headings live; a question about a title/heading is therefore always answerable
+- **Catalogue intent detection** — "list all documents" bypasses chunk retrieval and feeds the real, permission-scoped document inventory (title · category · indexed date · file) to the model
+- **Verifiable citations** — the model cites `[n]`; only the **cited** extracts are shown as sources, with their exact context number (`Sources: [3]` ⇢ entry *3*). No citation, no source list
+- **Full multilingual pipeline** — the answer follows the **question's language**; literal quotes are translated with the original kept in parentheses; cited **source excerpts are translated** too via a dedicated low-temperature pass
+- **Direct download** — every cited source carries a `document_id` download link to its latest version
 
 ### Content generation
 - Automatic summaries
@@ -137,7 +149,8 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **57 automated tests · 122 assertions** |
+| **Tests** | **68 automated tests · 143 assertions** |
+| **UI** | Bilingual EN/FR (EN default), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · CSP · CSRF · audit journal |
 
 ---
@@ -181,15 +194,17 @@ In production the document root must point to `public/`.
 
 ## Web UI
 
-The workspace is split into **five navigable pages**, driven by the vertical menu:
+The workspace is split into **seven navigable pages**, driven by the vertical menu — all bilingual EN/FR (EN default, per-session switch):
 
 | Page | URL | What it does |
 |---|---|---|
-| **Question** | `/` | Ask a question, get a grounded answer with cited sources |
+| **Question** | `/` | Ask a question, get a grounded answer with numbered cited sources (downloadable) |
 | **Agentic task** | `/tache` | Ask for a note / report / brief; the draft opens in a modal |
-| **Documents** | `/documents` | List of indexed documents (version history, summary, download, delete) |
-| **Upload** | `/ajouter` | Index a text, PDF, image or audio file |
-| **Audit journal** | `/journal` | Append-only traceability of every action (DataTables, CSV export) |
+| **Documents** | `/documents` | List of indexed documents (version history, summary, download, password-gated delete) |
+| **Upload** | `/ajouter` | Index a text, PDF, image or audio file (category required) |
+| **Categories** | `/categories` | Create and manage document categories |
+| **Audit journal** | `/journal` | Traceability of every action (DataTables, CSV export, password-gated period purge ≥10 days) |
+| **My profile** | `/mon-profil` | Identity, memberships; password-confirmed profile & password changes |
 
 Every result opens in a **modal** with **PDF** and **DOCX** download buttons.
 
@@ -202,6 +217,7 @@ API endpoints (session-protected):
 - `GET /api/documents.php` — recent documents (JSON)
 - `GET /api/download_document.php` — download a document version (logged)
 - `GET /api/journal_export.php` — audit journal as CSV
+- `POST /api/journal_purge.php` — password-confirmed purge of journal entries older than 10 days (the purge itself is logged)
 
 ---
 
@@ -211,7 +227,7 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**57 tests, 122 assertions** — covering authentication, RBAC, document versions, audit, RAG, exports and the multimodal services. No database server or API required (SQLite in memory + deterministic fakes).
+**68 tests, 143 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports and the multimodal services. No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 

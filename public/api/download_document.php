@@ -10,20 +10,22 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.consulter')) {
     http_response_code(403);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -34,7 +36,7 @@ $document = $documentId > 0 ? $dependencies['document_model']->find($documentId)
 if ($document === null) {
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Document not found.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['document_not_found']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -45,7 +47,7 @@ $version = $versionNumero !== null
 if ($version === null) {
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Version not found.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['document_not_found']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -53,7 +55,7 @@ $path = $dependencies['storage_path'] . '/' . (string) $version['fichier'];
 if (!is_file($path)) {
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'File not found on disk.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['download_failed']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 

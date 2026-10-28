@@ -3,15 +3,19 @@
 declare(strict_types=1);
 
 /** @var list<array<string, mixed>> $categories */
+/** @var string $lang */
+$T = app_i18n($lang ?? 'en');
+$S = $T['shared'];
+$P = $T['categories'];
 ?>
 <section class="dashboard-hero">
     <div class="dashboard-hero-copy">
-        <p class="dashboard-eyebrow">Espace de connaissances <span aria-hidden="true">/</span> Catégories</p>
-        <h1>Catégories</h1>
-        <p>Classez vos documents par catégorie (identifiant unique automatique). Les catégories sont réutilisables à l'indexation.</p>
+        <p class="dashboard-eyebrow"><?= e($S['eyebrow_root']) ?> <span aria-hidden="true">/</span> <?= e($T['pages']['/categories']) ?></p>
+        <h1><?= e($T['pages']['/categories']) ?></h1>
+        <p><?= e($P['hero_sub']) ?></p>
     </div>
     <div class="dashboard-hero-actions">
-        <span class="dashboard-date"><?= e(date('d/m/Y')) ?></span>
+        <span class="dashboard-date"><?= e(lang_date($lang ?? 'en')) ?></span>
     </div>
 </section>
 
@@ -19,47 +23,52 @@ declare(strict_types=1);
     <div class="col-12">
         <div class="space-admin">
             <div class="landing-grid">
-                <section class="panel space-list-panel technical-admin-panel" aria-labelledby="categorie-form-title">
+                <section class="panel space-list-panel technical-admin-panel panel-accent-green" aria-labelledby="categorie-form-title">
                     <div class="panel-head">
                         <div>
-                            <p class="page-eyebrow">Nouvelle catégorie</p>
-                            <h2 class="panel-title" id="categorie-form-title">Ajouter une catégorie</h2>
-                            <p class="panel-sub">Le nom, la description et la couleur seront utilisés comme badge sur la liste des documents.</p>
+                            <p class="page-eyebrow"><?= e($P['form_eyebrow']) ?></p>
+                            <h2 class="panel-title" id="categorie-form-title"><?= e($P['form_title']) ?></h2>
+                            <p class="panel-sub"><?= e($P['form_sub']) ?></p>
                         </div>
                     </div>
                     <div class="panel-body">
-                        <form id="categorie-form" method="post" action="<?= e(url('/api/categorie_save.php')) ?>">
+                        <form id="categorie-form" class="category-form form-card" method="post" action="<?= e(url('/api/categorie_save.php')) ?>">
                             <input type="hidden" name="_csrf" value="<?= e($csrf->token()) ?>">
                             <div class="mb-3">
-                                <label for="categorie-nom" class="form-label">Nom</label>
-                                <input id="categorie-nom" name="nom" class="form-control" placeholder="Rapports" required maxlength="120">
+                                <label for="categorie-nom" class="form-label fw-semibold"><?= e($P['label_name']) ?></label>
+                                <input id="categorie-nom" name="nom" class="form-control" placeholder="<?= e($P['placeholder_name']) ?>" required maxlength="120">
                             </div>
                             <div class="mb-3">
-                                <label for="categorie-description" class="form-label">Description (optionnelle)</label>
-                                <input id="categorie-description" name="description" class="form-control" placeholder="Rapports d'activité, bilans…" maxlength="255">
+                                <label for="categorie-description" class="form-label fw-semibold"><?= e($P['label_desc']) ?></label>
+                                <input id="categorie-description" name="description" class="form-control" placeholder="<?= e($P['placeholder_desc']) ?>" maxlength="255">
                             </div>
                             <div class="mb-3">
-                                <label for="categorie-couleur" class="form-label">Couleur</label>
-                                <input id="categorie-couleur" name="couleur" type="color" class="form-control form-control-color" value="#4a63c8">
+                                <label for="categorie-couleur" class="form-label fw-semibold"><?= e($P['label_color']) ?></label>
+                                <input id="categorie-couleur" name="couleur" type="color" class="form-control form-control-color categorie-color" value="#4a63c8">
                             </div>
-                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary form-submit">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                                    <?= e($P['submit']) ?>
+                                </button>
+                            </div>
                         </form>
                         <div id="categorie-status" class="small mt-2"></div>
                     </div>
-                    <p class="technical-admin-note technical-admin-footer">Chaque création ou suppression de catégorie est journalisée.</p>
+                    <p class="technical-admin-note technical-admin-footer"><?= e($P['form_footer']) ?></p>
                 </section>
 
-                <section class="panel space-list-panel technical-admin-panel" aria-labelledby="categories-title">
+                <section class="panel space-list-panel technical-admin-panel panel-accent-violet" aria-labelledby="categories-title">
                     <div class="panel-head">
                         <div>
-                            <p class="page-eyebrow">Classification</p>
-                            <h2 class="panel-title" id="categories-title">Catégories <span class="technical-admin-count"><?= count($categories) ?></span></h2>
-                            <p class="panel-sub">Identifiant unique automatique · réutilisables à l'indexation.</p>
+                            <p class="page-eyebrow"><?= e($P['list_eyebrow']) ?></p>
+                            <h2 class="panel-title" id="categories-title"><?= e($P['list_title']) ?> <span class="technical-admin-count"><?= count($categories) ?></span></h2>
+                            <p class="panel-sub"><?= e($P['list_sub']) ?></p>
                         </div>
                     </div>
                     <div class="panel-body">
                         <?php if ($categories === []): ?>
-                            <p class="text-muted">Aucune catégorie pour l'instant.</p>
+                            <p class="text-muted"><?= e($P['empty']) ?></p>
                         <?php else: ?>
                             <ul class="categorie-list" id="categorie-list">
                                 <?php foreach ($categories as $categorie): ?>
@@ -67,9 +76,9 @@ declare(strict_types=1);
                                         <span class="categorie-dot" style="background: <?= e((string) ($categorie['couleur'] ?? '#4a63c8')) ?>"></span>
                                         <div class="categorie-copy">
                                             <strong><?= e((string) ($categorie['nom'] ?? '')) ?></strong>
-                                            <small><?= (int) ($categorie['documents'] ?? 0) ?> document<?= ((int) ($categorie['documents'] ?? 0)) > 1 ? 's' : '' ?> · <?= e((string) ($categorie['slug'] ?? '')) ?></small>
+                                            <small><?= e(sprintf($P['doc_count'], (int) ($categorie['documents'] ?? 0), ((int) ($categorie['documents'] ?? 0)) > 1 ? 's' : '', (string) ($categorie['slug'] ?? ''))) ?></small>
                                         </div>
-                                        <button type="button" class="doc-action doc-action-danger categorie-delete" data-categorie-id="<?= (int) ($categorie['id'] ?? 0) ?>" title="Supprimer" aria-label="Supprimer <?= e((string) ($categorie['nom'] ?? 'la catégorie')) ?>">
+                                        <button type="button" class="doc-action doc-action-danger categorie-delete" data-categorie-id="<?= (int) ($categorie['id'] ?? 0) ?>" title="<?= e($P['delete_label']) ?>" aria-label="<?= e($P['delete_label']) ?> <?= e((string) ($categorie['nom'] ?? '')) ?>">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
                                         </button>
                                     </li>
@@ -91,21 +100,21 @@ declare(strict_types=1);
 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        status.textContent = 'Enregistrement…';
+        status.textContent = <?= json_encode($P['saving'], JSON_UNESCAPED_UNICODE) ?>;
         fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' })
             .then(function (r) { return r.json(); })
             .then(function (data) {
                 if (data.error) { status.textContent = data.error; status.className = 'small mt-2 text-danger'; return; }
-                status.textContent = 'Catégorie enregistrée.';
+                status.textContent = <?= json_encode($P['saved'], JSON_UNESCAPED_UNICODE) ?>;
                 status.className = 'small mt-2 text-success';
                 window.location.reload();
             })
-            .catch(function () { status.textContent = 'Erreur réseau.'; status.className = 'small mt-2 text-danger'; });
+            .catch(function () { status.textContent = <?= json_encode($P['network_error'], JSON_UNESCAPED_UNICODE) ?>; status.className = 'small mt-2 text-danger'; });
     });
 
     document.querySelectorAll('.categorie-delete').forEach(function (button) {
         button.addEventListener('click', function () {
-            if (!window.confirm('Supprimer cette catégorie ? Les documents liés seront déclassés.')) { return; }
+            if (!window.confirm(<?= json_encode($P['delete_confirm'], JSON_UNESCAPED_UNICODE) ?>)) { return; }
             var body = new FormData();
             body.append('_csrf', <?= json_encode($csrf->token(), JSON_UNESCAPED_UNICODE) ?>);
             body.append('categorie_id', button.getAttribute('data-categorie-id'));

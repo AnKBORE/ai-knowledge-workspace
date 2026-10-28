@@ -3,6 +3,15 @@
     'use strict';
 
     var base = (window.WORKSPACE_BASE || '').replace(/\/+$/, '');
+    var I18N = window.WORKSPACE_I18N || {};
+
+    function t(key, fallback) {
+        return I18N[key] || fallback || key;
+    }
+
+    function sprintf(template, a, b) {
+        return String(template).replace('%s', a).replace('%s', b);
+    }
 
     function apiUrl(path) {
         return base + '/api/' + path;
@@ -13,15 +22,22 @@
         if (!Array.isArray(sources) || sources.length === 0) {
             return false;
         }
-        sources.forEach(function (source) {
+        sources.forEach(function (source, i) {
             var li = document.createElement('li');
             var strong = document.createElement('strong');
-            strong.textContent = source.title || 'Document';
+            strong.textContent = (source.num || (i + 1)) + '. ' + (source.title || 'Document');
             var span = document.createElement('span');
             span.className = 'text-muted d-block';
             span.textContent = source.excerpt || '';
             li.appendChild(strong);
             li.appendChild(span);
+            if (source.document_id) {
+                var link = document.createElement('a');
+                link.href = apiUrl('download_document.php?document_id=' + encodeURIComponent(source.document_id));
+                link.className = 'small d-inline-block mt-1';
+                link.textContent = t('download_source');
+                li.appendChild(link);
+            }
             listEl.appendChild(li);
         });
         return true;
@@ -65,7 +81,7 @@
         resultSub.textContent = sub;
         resultContent.innerHTML = '<div class="d-flex align-items-center gap-2 text-muted">'
             + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
-            + '<span>Génération en cours…</span></div>';
+            + '<span>' + t('generating', 'Génération en cours…') + '</span></div>';
         resultSources.hidden = true;
         modal.show();
     }
@@ -109,7 +125,7 @@
             link.remove();
             URL.revokeObjectURL(url);
         } catch (err) {
-            alert('Export impossible.');
+            alert(t('export_failed', 'Export impossible.'));
         }
     }
 
@@ -127,13 +143,13 @@
             var question = document.getElementById('question').value.trim();
             if (!question) { return; }
 
-            showLoading('Réponse', 'Réponse', 'Recherche dans vos documents…');
+            showLoading(t('answer_badge'), t('answer_badge'), t('answer_loading'));
             try {
                 var data = await postJson(apiUrl('ask.php'), { question: question, mode: 'answer' });
                 if (data.error) { showError(data.error); return; }
-                showResult('Réponse', 'Réponse', 'Réponse ancrée dans vos documents.', data.answer || '', data.sources);
+                showResult(t('answer_badge'), t('answer_badge'), t('answer_sub'), data.answer || '', data.sources);
             } catch (err) {
-                showError('Erreur réseau. Vérifiez le serveur.');
+                showError(t('network_error_long'));
             }
         });
     }
@@ -147,13 +163,13 @@
             var instruction = document.getElementById('instruction').value.trim();
             if (!instruction) { return; }
 
-            showLoading('Brouillon', 'Brouillon', 'Rédaction à partir de vos documents…');
+            showLoading(t('draft_badge'), t('draft_badge'), t('draft_loading'));
             try {
                 var data = await postJson(apiUrl('ask.php'), { instruction: instruction, mode: 'task' });
                 if (data.error) { showError(data.error); return; }
-                showResult('Brouillon', 'Brouillon', 'Brouillon prêt à être relu.', data.draft || '', data.sources);
+                showResult(t('draft_badge'), t('draft_badge'), t('draft_sub'), data.draft || '', data.sources);
             } catch (err) {
-                showError('Erreur réseau. Vérifiez le serveur.');
+                showError(t('network_error_long'));
             }
         });
     }
@@ -162,10 +178,22 @@
 
     var uploadForm = document.getElementById('upload-form');
     if (uploadForm) {
+        var fileInput = document.getElementById('file');
+        var dropzone = fileInput ? fileInput.closest('.upload-dropzone') : null;
+        var hint = dropzone ? dropzone.querySelector('.upload-dropzone-hint') : null;
+
+        if (fileInput && hint) {
+            fileInput.addEventListener('change', function () {
+                var name = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : '';
+                hint.textContent = name !== '' ? name : 'Glissez un fichier ou cliquez pour parcourir';
+                dropzone.classList.toggle('has-file', name !== '');
+            });
+        }
+
         uploadForm.addEventListener('submit', async function (event) {
             event.preventDefault();
             var status = document.getElementById('upload-status');
-            status.textContent = 'Envoi en cours…';
+            status.textContent = t('sending');
             status.className = 'small text-muted mt-2';
 
             try {
@@ -179,14 +207,18 @@
                     status.className = 'small text-danger mt-2';
                     return;
                 }
-                status.textContent = 'Indexé : ' + data.title + ' (' + data.chunks + ' segments).';
+                status.textContent = sprintf(t('indexed'), data.title, data.chunks);
                 status.className = 'small text-success mt-2';
                 uploadForm.reset();
+                if (hint) {
+                    hint.textContent = t('dropzone_hint');
+                    dropzone.classList.remove('has-file');
+                }
                 if (document.getElementById('documents-list')) {
                     await refreshDocuments();
                 }
             } catch (err) {
-                status.textContent = 'Erreur réseau.';
+                status.textContent = t('network_error');
                 status.className = 'small text-danger mt-2';
             }
         });
@@ -194,57 +226,135 @@
 
     /* ---------------- Documents list ---------------- */
 
+    async function runSummarize(documentId, documentTitle) {
+        showLoading(t('summary_badge'), t('summary_prefix') + documentTitle, t('summary_loading'));
+
+        try {
+            var data = await postJson(apiUrl('summarize.php'), {
+                document_id: Number(documentId)
+            });
+            if (data.error) { showError(data.error); return; }
+            showResult(t('summary_badge'), t('summary_prefix') + documentTitle, t('summary_sub'), data.summary || '', data.sources);
+        } catch (err) {
+            showError(t('network_error'));
+        }
+    }
+
+    /* Generic confirmation modal: buttons/links with .doc-confirm declare
+       data-confirm-action (download|summarize) and data-confirm-* texts. */
+    function bindDocConfirm() {
+        var modalEl = document.getElementById('doc-confirm-modal');
+        if (!modalEl) { return; }
+
+        var titleEl = document.getElementById('doc-confirm-title');
+        var textEl = document.getElementById('doc-confirm-text');
+        var confirmBtn = document.getElementById('doc-confirm-btn');
+        var pending = null;
+
+        confirmBtn.addEventListener('click', async function () {
+            if (pending === null) { return; }
+            var action = pending;
+            pending = null;
+            bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+
+            if (action.type === 'download') {
+                window.location.href = action.href;
+            } else if (action.type === 'summarize') {
+                await runSummarize(action.id, action.title);
+            }
+        });
+
+        document.querySelectorAll('.doc-confirm').forEach(function (el) {
+            if (el.dataset.confirmBound === '1') { return; }
+            el.dataset.confirmBound = '1';
+
+            el.addEventListener('click', function (event) {
+                event.preventDefault();
+                titleEl.textContent = el.getAttribute('data-confirm-title') || t('confirm_default_title');
+                textEl.textContent = el.getAttribute('data-confirm-text') || t('confirm_default_text');
+                pending = el.getAttribute('data-confirm-action') === 'download'
+                    ? { type: 'download', href: el.getAttribute('href') }
+                    : { type: 'summarize', id: el.getAttribute('data-document-id'), title: el.getAttribute('data-document-title') || 'Document' };
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            });
+        });
+    }
+
     function bindSummarizeButtons() {
         document.querySelectorAll('.summarize-btn').forEach(function (button) {
-            if (button.dataset.bound === '1') {
+            if (button.dataset.bound === '1' || button.classList.contains('doc-confirm')) {
                 return;
             }
             button.dataset.bound = '1';
 
             button.addEventListener('click', async function () {
                 var documentTitle = button.getAttribute('data-document-title') || 'Document';
-                showLoading('Résumé', 'Résumé — ' + documentTitle, 'Synthèse du document…');
-
-                try {
-                    var data = await postJson(apiUrl('summarize.php'), {
-                        document_id: Number(button.getAttribute('data-document-id'))
-                    });
-                    if (data.error) { showError(data.error); return; }
-                    showResult('Résumé', 'Résumé — ' + documentTitle, 'Synthèse générée à partir du document.', data.summary || '', data.sources);
-                } catch (err) {
-                    showError('Erreur réseau.');
-                }
+                await runSummarize(button.getAttribute('data-document-id'), documentTitle);
             });
         });
     }
 
     function bindDeleteButtons() {
+        var modalEl = document.getElementById('doc-delete-modal');
+        var form = document.getElementById('doc-delete-form');
+        var passwordInput = document.getElementById('doc-delete-password');
+        var errorSlot = document.getElementById('doc-delete-error');
+        var nameSlot = document.getElementById('doc-delete-name');
+        var pendingId = null;
+
+        if (form) {
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                if (pendingId === null) { return; }
+
+                errorSlot.hidden = true;
+                try {
+                    var response = await fetch(apiUrl('delete_document.php'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ document_id: pendingId, password: passwordInput.value })
+                    });
+                    var data = await response.json();
+                    if (data.error) {
+                        errorSlot.textContent = data.error;
+                        errorSlot.hidden = false;
+                        passwordInput.select();
+                        return;
+                    }
+                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    if (document.getElementById('documents-list')) {
+                        await refreshDocuments();
+                    } else {
+                        window.location.reload();
+                    }
+                } catch (err) {
+                    errorSlot.textContent = t('network_error');
+                    errorSlot.hidden = false;
+                }
+            });
+        }
+
         document.querySelectorAll('.delete-btn').forEach(function (button) {
             if (button.dataset.bound === '1') {
                 return;
             }
             button.dataset.bound = '1';
 
-            button.addEventListener('click', async function () {
-                if (!window.confirm('Supprimer ce document ?')) {
+            button.addEventListener('click', function () {
+                if (!modalEl) {
                     return;
                 }
-
-                try {
-                    var response = await fetch(apiUrl('delete_document.php'), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ document_id: Number(button.getAttribute('data-document-id')) })
-                    });
-                    var data = await response.json();
-                    if (data.error) {
-                        alert(data.error);
-                        return;
-                    }
-                    await refreshDocuments();
-                } catch (err) {
-                    alert('Erreur réseau.');
-                }
+                pendingId = Number(button.getAttribute('data-document-id'));
+                var title = button.getAttribute('data-document-title') || t('this_document');
+                nameSlot.textContent = sprintf(t('delete_text'), title);
+                passwordInput.value = '';
+                errorSlot.hidden = true;
+                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                modal.show();
+                modalEl.addEventListener('shown.bs.modal', function focusPassword() {
+                    modalEl.removeEventListener('shown.bs.modal', focusPassword);
+                    passwordInput.focus();
+                });
             });
         });
     }
@@ -351,6 +461,7 @@
 
         bindSummarizeButtons();
         bindDeleteButtons();
+        bindDocConfirm();
     }
 
     async function refreshDocuments() {
@@ -367,4 +478,5 @@
 
     bindSummarizeButtons();
     bindDeleteButtons();
+    bindDocConfirm();
 })();

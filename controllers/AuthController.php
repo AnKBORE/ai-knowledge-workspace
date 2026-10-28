@@ -20,12 +20,13 @@ final class AuthController
     ) {
     }
 
-    public function showLogin(?string $error = null): string
+    public function showLogin(?string $error = null, string $lang = 'en'): string
     {
         return $this->view->render('auth/login', [
-            'title' => 'Connexion',
+            'title' => app_i18n($lang)['login']['title'],
             'error' => $error,
             'csrf' => $this->csrf,
+            'lang' => $lang,
         ], 'auth');
     }
 

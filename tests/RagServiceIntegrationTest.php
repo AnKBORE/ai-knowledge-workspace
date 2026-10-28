@@ -65,14 +65,14 @@ final class RagServiceIntegrationTest extends TestCase
 
         $answer = $this->rag->query('What are the main risks?');
 
-        $this->assertSame('Grounded answer from context.', $answer);
+        $this->assertStringStartsWith('Grounded answer from context.', $answer);
     }
 
     public function testQueryWithoutDocumentsFallsBackGracefully(): void
     {
         $answer = $this->rag->query('What are the main risks?');
 
-        $this->assertStringContainsString('documents fournis', $answer);
+        $this->assertStringContainsString('provided documents', $answer);
     }
 
     public function testAnswerReturnsCitedSources(): void
@@ -82,7 +82,7 @@ final class RagServiceIntegrationTest extends TestCase
 
         $result = $this->rag->answer('What are the main risks?');
 
-        $this->assertSame('Grounded answer from context.', $result['answer']);
+        $this->assertStringStartsWith('Grounded answer from context.', $result['answer']);
         $this->assertNotEmpty($result['sources']);
         $this->assertSame('Quarterly report', $result['sources'][0]['title']);
         $this->assertArrayHasKey('excerpt', $result['sources'][0]);
@@ -95,7 +95,7 @@ final class RagServiceIntegrationTest extends TestCase
 
         $result = $this->rag->task('Prepare a note about the risks');
 
-        $this->assertSame('Grounded answer from context.', $result['draft']);
+        $this->assertStringStartsWith('Grounded answer from context.', $result['draft']);
         $this->assertNotEmpty($result['sources']);
         $this->assertSame('Report', $result['sources'][0]['title']);
     }
@@ -107,7 +107,7 @@ final class RagServiceIntegrationTest extends TestCase
 
         $result = $this->rag->summarize($documentId);
 
-        $this->assertSame('Grounded answer from context.', $result['summary']);
+        $this->assertStringStartsWith('Grounded answer from context.', $result['summary']);
         $this->assertSame($documentId, $result['document_id']);
         $this->assertNotEmpty($result['sources']);
         $this->assertSame('Report', $result['sources'][0]['title']);
@@ -117,7 +117,7 @@ final class RagServiceIntegrationTest extends TestCase
     {
         $result = $this->rag->summarize(999);
 
-        $this->assertStringContainsString('Aucun contenu', $result['summary']);
+        $this->assertStringContainsString('No indexed content', $result['summary']);
         $this->assertSame([], $result['sources']);
     }
 

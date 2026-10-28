@@ -15,21 +15,24 @@ final class PolitiqueMotDePasse
     public const MIN_LENGTH = 12;
 
     /** @return list<string> */
-    public static function validate(string $motDePasse): array
+    public static function validate(string $motDePasse, string $lang = 'en'): array
     {
+        $en = $lang === 'en';
         $errors = [];
 
         if (mb_strlen($motDePasse) < self::MIN_LENGTH) {
-            $errors[] = 'Le mot de passe doit contenir au moins ' . self::MIN_LENGTH . ' caractères.';
+            $errors[] = $en
+                ? 'The password must be at least ' . self::MIN_LENGTH . ' characters.'
+                : 'Le mot de passe doit contenir au moins ' . self::MIN_LENGTH . ' caractères.';
         }
         if (preg_match('/[A-Z]/', $motDePasse) !== 1) {
-            $errors[] = 'Le mot de passe doit contenir une majuscule.';
+            $errors[] = $en ? 'The password must contain an uppercase letter.' : 'Le mot de passe doit contenir une majuscule.';
         }
         if (preg_match('/[a-z]/', $motDePasse) !== 1) {
-            $errors[] = 'Le mot de passe doit contenir une minuscule.';
+            $errors[] = $en ? 'The password must contain a lowercase letter.' : 'Le mot de passe doit contenir une minuscule.';
         }
         if (preg_match('/[0-9]/', $motDePasse) !== 1) {
-            $errors[] = 'Le mot de passe doit contenir un chiffre.';
+            $errors[] = $en ? 'The password must contain a digit.' : 'Le mot de passe doit contenir un chiffre.';
         }
 
         return $errors;

@@ -11,57 +11,61 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.deposer')) {
     http_response_code(403);
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 $title = trim((string) ($_POST['title'] ?? ''));
 if ($title === '') {
     http_response_code(422);
-    echo json_encode(['error' => 'A title is required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['title_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 $categorieId = isset($_POST['categorie_id']) && $_POST['categorie_id'] !== ''
     ? (int) $_POST['categorie_id']
-    : null;
+    : 0;
 
-if ($categorieId !== null && $dependencies['categorie_model']->find($categorieId) === null) {
-    $categorieId = null;
+if ($categorieId < 1 || $dependencies['categorie_model']->find($categorieId) === null) {
+    http_response_code(422);
+    echo json_encode(['error' => $T['category_required']], JSON_UNESCAPED_UNICODE);
+    exit;
 }
 
 $upload = $_FILES['file'] ?? null;
 if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
     $code = is_array($upload) ? (int) ($upload['error'] ?? UPLOAD_ERR_NO_FILE) : UPLOAD_ERR_NO_FILE;
     $messages = [
-        UPLOAD_ERR_INI_SIZE => 'Le fichier dépasse la limite du serveur (upload_max_filesize = ' . ini_get('upload_max_filesize') . ', post_max_size = ' . ini_get('post_max_size') . ').',
-        UPLOAD_ERR_FORM_SIZE => 'Le fichier dépasse la limite du formulaire.',
-        UPLOAD_ERR_PARTIAL => "L'envoi a été interrompu.",
-        UPLOAD_ERR_NO_FILE => 'Aucun fichier sélectionné.',
-        UPLOAD_ERR_NO_TMP_DIR => 'Dossier temporaire manquant.',
-        UPLOAD_ERR_CANT_WRITE => "Impossible d'écrire sur le disque.",
-        UPLOAD_ERR_EXTENSION => "Envoi bloqué par une extension PHP.",
+        UPLOAD_ERR_INI_SIZE => $T['file_ini_size'] . ' (upload_max_filesize = ' . ini_get('upload_max_filesize') . ', post_max_size = ' . ini_get('post_max_size') . ').',
+        UPLOAD_ERR_FORM_SIZE => $T['file_form_size'],
+        UPLOAD_ERR_PARTIAL => $T['file_partial'],
+        UPLOAD_ERR_NO_FILE => $T['file_none'],
+        UPLOAD_ERR_NO_TMP_DIR => $T['file_no_tmp'],
+        UPLOAD_ERR_CANT_WRITE => $T['file_cant_write'],
+        UPLOAD_ERR_EXTENSION => $T['file_extension'],
     ];
     http_response_code(422);
-    echo json_encode(['error' => $messages[$code] ?? ('Erreur d\'envoi (' . $code . ').')], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $messages[$code] ?? ($T['internal_error'] . ' (' . $code . ').')], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -79,10 +83,7 @@ try {
 
         if ($duration !== null && $duration > $maxAudio) {
             http_response_code(422);
-            echo json_encode([
-                'error' => "L'audio dépasse la limite de " . intdiv($maxAudio, 60)
-                    . ' minutes. Découpez-le en morceaux plus courts, puis réessayez.',
-            ], JSON_UNESCAPED_UNICODE);
+            echo json_encode(['error' => sprintf($T['audio_too_long'], intdiv($maxAudio, 60))], JSON_UNESCAPED_UNICODE);
             exit;
         }
 
@@ -100,7 +101,7 @@ try {
     }
 
     if (trim($content) === '') {
-        throw new \RuntimeException('No text could be extracted from the file.');
+        throw new \RuntimeException($T['file_empty']);
     }
 
     // Optional anonymisation before indexing and before any API call.

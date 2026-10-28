@@ -10,18 +10,20 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -35,7 +37,7 @@ $format = strtolower((string) ($input['format'] ?? 'pdf'));
 if (trim($content) === '') {
     http_response_code(422);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'The content is empty.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['export_content']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -65,5 +67,5 @@ try {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
     $debug = getenv('APP_DEBUG') === '1';
-    echo json_encode(['error' => $debug ? $e->getMessage() : 'Export failed.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $debug ? $e->getMessage() : $T['export_failed']], JSON_UNESCAPED_UNICODE);
 }

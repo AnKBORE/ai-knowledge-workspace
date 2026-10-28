@@ -5,18 +5,25 @@ declare(strict_types=1);
 /** @var \App\Core\Csrf $csrf */
 /** @var string|null $error */
 $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
+$lang = ($lang ?? 'en') === 'fr' ? 'fr' : 'en';
+$L = app_i18n($lang)['login'];
 ?>
 <main class="auth">
     <section class="auth-panel" aria-labelledby="auth-titre">
         <div class="auth-form-wrap">
-            <a class="auth-brand" href="<?= e(url('/presentation?lang=fr')) ?>">
+            <div class="landing-lang auth-lang" role="group" aria-label="<?= e($L['lang_label']) ?>">
+                <a class="landing-lang-link <?= $lang === 'fr' ? 'is-active' : '' ?>" href="<?= e(url('/login?lang=fr')) ?>">FR</a>
+                <a class="landing-lang-link <?= $lang === 'en' ? 'is-active' : '' ?>" href="<?= e(url('/login?lang=en')) ?>">EN</a>
+            </div>
+
+            <a class="auth-brand" href="<?= e(url('/presentation?lang=' . $lang)) ?>">
                 <?= brand_mark() ?>
                 <span><?= e($productName) ?></span>
             </a>
 
             <div class="auth-head">
-                <h1 id="auth-titre">Connexion</h1>
-                <p>Accédez à votre espace de connaissances.</p>
+                <h1 id="auth-titre"><?= e($L['title']) ?></h1>
+                <p><?= e($L['sub']) ?></p>
             </div>
 
             <?php if (!empty($error)): ?>
@@ -27,19 +34,19 @@ $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
                 <?= $csrf->field() ?>
 
                 <div class="field">
-                    <label for="courriel">Adresse e-mail</label>
+                    <label for="courriel"><?= e($L['email']) ?></label>
                     <input class="form-control" id="courriel" name="courriel" type="email"
                            autocomplete="username" required
                            placeholder="prenom.nom@organisation.org" autofocus>
                 </div>
 
                 <div class="field">
-                    <label for="mot-de-passe">Mot de passe</label>
+                    <label for="mot-de-passe"><?= e($L['password']) ?></label>
                     <div class="field-control">
                         <input class="form-control field-control-password" id="mot-de-passe" name="mot_de_passe"
-                               type="password" autocomplete="current-password" required placeholder="Votre mot de passe">
+                               type="password" autocomplete="current-password" required placeholder="<?= e($L['password_ph']) ?>">
                         <button class="field-toggle" type="button" data-password-toggle="mot-de-passe"
-                                aria-label="Afficher le mot de passe" aria-pressed="false">
+                                aria-label="<?= e($L['show_password']) ?>" aria-pressed="false">
                             <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.6"/></svg>
                             <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4l16 16"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-3.2 3.9M6.1 7.4A17 17 0 0 0 2.5 12s3.5 7 9.5 7a10.6 10.6 0 0 0 4.2-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
                         </button>
@@ -47,13 +54,13 @@ $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
                 </div>
 
                 <button class="btn btn-block" type="submit">
-                    Se connecter
+                    <?= e($L['submit']) ?>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
                 </button>
             </form>
 
             <p class="auth-presentation">
-                <a href="<?= e(url('/presentation?lang=fr')) ?>">Découvrir le projet</a>
+                <a href="<?= e(url('/presentation?lang=' . $lang)) ?>"><?= e($L['discover']) ?></a>
                 <span aria-hidden="true">→</span>
             </p>
 

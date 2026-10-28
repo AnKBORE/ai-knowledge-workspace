@@ -9,27 +9,29 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+$lang = (string) $dependencies['session']->get('lang', 'en');
+$T = app_i18n($lang)['api'];
 
 header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.creer')) {
     http_response_code(403);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (!$dependencies['csrf']->validate($_POST['_csrf'] ?? null)) {
     http_response_code(419);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Session expirée. Rechargez la page.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['session_expired']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -41,7 +43,7 @@ $categorieId = (int) ($_POST['categorie_id'] ?? 0);
 if ($nom === '') {
     http_response_code(422);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Le nom de la catégorie est requis.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['category_name']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -65,5 +67,5 @@ try {
 } catch (\Throwable $e) {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => getenv('APP_DEBUG') === '1' ? $e->getMessage() : 'Enregistrement impossible.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => getenv('APP_DEBUG') === '1' ? $e->getMessage() : $T['internal_error']], JSON_UNESCAPED_UNICODE);
 }

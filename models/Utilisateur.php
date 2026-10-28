@@ -74,6 +74,62 @@ final class Utilisateur
         return (int) $this->db->lastInsertId();
     }
 
+    /**
+     * Password hash of an account (for sensitive-action verification).
+     */
+    public function motDePasseHash(int $id): ?string
+    {
+        $stmt = $this->db->prepare(
+            'SELECT mot_de_passe FROM utilisateur
+             WHERE id = :id AND supprime_le IS NULL LIMIT 1'
+        );
+        $stmt->execute(['id' => $id]);
+
+        $hash = $stmt->fetch(PDO::FETCH_COLUMN);
+
+        return $hash === false ? null : (string) $hash;
+    }
+
+    /**
+     * Whether an email is already used by another active account.
+     */
+    public function courrielPris(string $courriel, int $excludeId): bool
+    {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM utilisateur
+             WHERE courriel = :courriel AND id <> :id AND supprime_le IS NULL'
+        );
+        $stmt->execute(['courriel' => strtolower(trim($courriel)), 'id' => $excludeId]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    /**
+     * Update identity fields of an account.
+     */
+    public function updateProfil(int $id, string $prenom, string $nom, string $courriel): void
+    {
+        $this->db->prepare(
+            'UPDATE utilisateur
+             SET prenom = :prenom, nom = :nom, courriel = :courriel
+             WHERE id = :id'
+        )->execute([
+            'prenom' => $prenom,
+            'nom' => $nom,
+            'courriel' => strtolower(trim($courriel)),
+            'id' => $id,
+        ]);
+    }
+
+    /**
+     * Update the password hash of an account.
+     */
+    public function updateMotDePasse(int $id, string $hash): void
+    {
+        $this->db->prepare('UPDATE utilisateur SET mot_de_passe = :hash WHERE id = :id')
+            ->execute(['hash' => $hash, 'id' => $id]);
+    }
+
     public function updateLastLogin(int $id): void
     {
         $this->db->prepare('UPDATE utilisateur SET derniere_connexion_le = CURRENT_TIMESTAMP WHERE id = :id')

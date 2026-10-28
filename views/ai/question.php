@@ -1,37 +1,42 @@
 <?php
 
 declare(strict_types=1);
+
+/** @var string $lang */
+$T = app_i18n($lang ?? 'en');
+$S = $T['shared'];
+$P = $T['question'];
 ?>
 <section class="dashboard-hero">
     <div class="dashboard-hero-copy">
-        <p class="dashboard-eyebrow">Espace de connaissances <span aria-hidden="true">/</span> Question</p>
-        <h1>Question</h1>
-        <p>Interrogez vos documents : l'assistant répond à partir de vos sources et les cite.</p>
+        <p class="dashboard-eyebrow"><?= e($S['eyebrow_root']) ?> <span aria-hidden="true">/</span> <?= e($T['pages']['/']) ?></p>
+        <h1><?= e($T['pages']['/']) ?></h1>
+        <p><?= e($P['hero_sub']) ?></p>
     </div>
     <div class="dashboard-hero-actions">
-        <span class="dashboard-date"><?= e(date('d/m/Y')) ?></span>
+        <span class="dashboard-date"><?= e(lang_date($lang ?? 'en')) ?></span>
     </div>
 </section>
 
 <div class="row g-4">
     <div class="col-12">
         <div class="space-admin">
-            <section class="panel space-list-panel technical-admin-panel" aria-labelledby="question-title">
+            <section class="panel space-list-panel technical-admin-panel panel-accent-blue" aria-labelledby="question-title">
                 <div class="panel-head">
                     <div>
-                        <p class="page-eyebrow">Assistant documentaire</p>
-                        <h2 class="panel-title" id="question-title">Votre question</h2>
-                        <p class="panel-sub">L'assistant répond en citant ses sources. Reformulez si la réponse manque de précision.</p>
+                        <p class="page-eyebrow"><?= e($S['assistant']) ?></p>
+                        <h2 class="panel-title" id="question-title"><?= e($P['panel_title']) ?></h2>
+                        <p class="panel-sub"><?= e($P['panel_sub']) ?></p>
                     </div>
                 </div>
                 <div class="panel-body">
                     <form id="ask-form">
-                        <label for="question" class="form-label">Votre question</label>
-                        <textarea id="question" class="form-control" rows="4" placeholder="Quels sont les principaux risques du dernier trimestre ?" required></textarea>
-                        <button type="submit" class="btn btn-primary mt-3">Demander</button>
+                        <label for="question" class="form-label"><?= e($P['label']) ?></label>
+                        <textarea id="question" class="form-control" rows="4" placeholder="<?= e($P['placeholder']) ?>" required></textarea>
+                        <button type="submit" class="btn btn-primary mt-3"><?= e($P['submit']) ?></button>
                     </form>
                 </div>
-                <p class="technical-admin-note technical-admin-footer">Chaque question est journalisée (mode, question, nombre de sources) et la réponse cite ses sources.</p>
+                <p class="technical-admin-note technical-admin-footer"><?= e($P['footer']) ?></p>
             </section>
         </div>
     </div>

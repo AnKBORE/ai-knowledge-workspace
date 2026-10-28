@@ -72,6 +72,22 @@ final class JournalService
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Delete audit entries within a period (admin operation, caller must
+     * log the purge itself afterwards to keep a trace).
+     *
+     * @return int number of deleted rows
+     */
+    public function purge(string $from, string $to): int
+    {
+        $stmt = $this->db->prepare(
+            'DELETE FROM journal WHERE horodatage >= :debut AND horodatage <= :fin'
+        );
+        $stmt->execute(['debut' => $from, 'fin' => $to]);
+
+        return $stmt->rowCount();
+    }
+
     private function ip(?string $ip): string
     {
         $ip ??= (string) ($_SERVER['REMOTE_ADDR'] ?? '');

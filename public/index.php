@@ -30,6 +30,8 @@ header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
 header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 
+$uiLang = (string) $dependencies['session']->get('lang', 'en');
+$apiT = app_i18n($uiLang)['api'];
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $path = '/' . trim($path, '/');
@@ -47,7 +49,7 @@ if ($method === 'GET' && $path === '/login') {
     }
 
     header('Content-Type: text/html; charset=utf-8');
-    echo $authController->showLogin();
+    echo $authController->showLogin(null, $uiLang);
     exit;
 }
 
@@ -56,7 +58,7 @@ if ($method === 'POST' && $path === '/login') {
     if (!$csrf->validate($_POST['_csrf'] ?? null)) {
         http_response_code(419);
         header('Content-Type: text/html; charset=utf-8');
-        echo $authController->showLogin('Session expirée. Rechargez la page et réessayez.');
+        echo $authController->showLogin($apiT['session_expired'], $uiLang);
         exit;
     }
 
@@ -67,7 +69,7 @@ if ($method === 'POST' && $path === '/login') {
 
     http_response_code(401);
     header('Content-Type: text/html; charset=utf-8');
-    echo $authController->showLogin('Identifiants invalides.');
+    echo $authController->showLogin($apiT['invalid_credentials'], $uiLang);
     exit;
 }
 
@@ -81,9 +83,21 @@ if ($method === 'POST' && $path === '/logout') {
     exit;
 }
 
+// Language switch — persisted in session, applied to the whole app.
+// (/presentation handles its own ?lang= to stay shareable without a session redirect.)
+if ($method === 'GET' && isset($_GET['lang']) && $path !== '/presentation') {
+    $lang = $_GET['lang'] === 'fr' ? 'fr' : 'en';
+    $dependencies['session']->set('lang', $lang);
+    header('Location: ' . url($path));
+    exit;
+}
+
 // Public presentation page (bilingual, no authentication required).
 if ($method === 'GET' && $path === '/presentation') {
-    $lang = (($_GET['lang'] ?? 'fr') === 'en') ? 'en' : 'fr';
+    $lang = (($_GET['lang'] ?? 'en') === 'fr') ? 'fr' : 'en';
+    if (isset($_GET['lang'])) {
+        $dependencies['session']->set('lang', $lang);
+    }
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render('public/landing', [
@@ -103,31 +117,150 @@ if (!$auth->check()) {
 
 // JSON API (also available under Apache rewriting).
 if ($method === 'POST' && $path === '/api/ask') {
-    $controller = new AiAssistantController($dependencies['rag']);
+    header('Content-Type: application/json; charset=utf-8');
+
     $input = json_decode((string) file_get_contents('php://input'), true);
     $input = is_array($input) ? $input : [];
+    $mode = (string) ($input['mode'] ?? 'answer');
+    $required = $mode === 'task' ? 'assistant.tacher' : 'assistant.interroger';
 
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($controller->ask($input), JSON_UNESCAPED_UNICODE);
+    if (!$dependencies['permissions']->peutAilleurs($auth->id(), $required)) {
+        http_response_code(403);
+        echo json_encode(['error' => $apiT['permission_denied']], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $controller = new AiAssistantController($dependencies['rag'], $uiLang);
+    $response = $mode === 'task'
+        ? $controller->task($input, $auth->id())
+        : $controller->ask($input, $auth->id());
+
+    $dependencies['journal']->log(
+        $auth->id(),
+        'assistant.question',
+        'document',
+        null,
+        'succes',
+        [
+            'mode' => $mode,
+            'question' => mb_substr(
+                $mode === 'task' ? (string) ($input['instruction'] ?? '') : (string) ($input['question'] ?? ''),
+                0,
+                200,
+            ),
+            'sources' => count($response['sources'] ?? []),
+        ],
+    );
+
+    echo json_encode($response, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// Profile update — requires the current password as confirmation.
+if ($method === 'POST' && $path === '/mon-profil') {
+    $session = $dependencies['session'];
+    $flash = static function (string $type, string $text) use ($session): void {
+        $session->set('profil_flash', ['type' => $type, 'text' => $text]);
+    };
+
+    if (!$csrf->validate($_POST['_csrf'] ?? null)) {
+        $flash('error', $apiT['session_expired']);
+        header('Location: ' . url('/mon-profil'));
+        exit;
+    }
+
+    $userId = (int) $auth->id();
+    $prenom = trim((string) ($_POST['prenom'] ?? ''));
+    $nom = trim((string) ($_POST['nom'] ?? ''));
+    $courriel = strtolower(trim((string) ($_POST['courriel'] ?? '')));
+    $motDePasse = (string) ($_POST['mot_de_passe_actuel'] ?? '');
+    $users = $dependencies['users'];
+
+    $hash = $users->motDePasseHash($userId);
+    if ($hash === null || !\App\Validators\PolitiqueMotDePasse::verify($motDePasse, $hash)) {
+        $dependencies['journal']->log($userId, 'profil.maj', 'utilisateur', $userId, 'refus', ['raison' => 'mot_de_passe_incorrect']);
+        $flash('error', $apiT['profil_wrong_password']);
+    } elseif ($prenom === '' || $nom === '') {
+        $flash('error', $apiT['profil_name_required']);
+    } elseif (filter_var($courriel, FILTER_VALIDATE_EMAIL) === false) {
+        $flash('error', $apiT['profil_email_invalid']);
+    } elseif ($users->courrielPris($courriel, $userId)) {
+        $flash('error', $apiT['profil_email_taken']);
+    } else {
+        $users->updateProfil($userId, $prenom, $nom, $courriel);
+        $auth->login((array) $users->findById($userId));
+        $dependencies['journal']->log($userId, 'profil.maj', 'utilisateur', $userId, 'succes');
+        $flash('success', $apiT['profil_saved']);
+    }
+
+    header('Location: ' . url('/mon-profil'));
+    exit;
+}
+
+// Password change — requires the current password and the password policy.
+if ($method === 'POST' && $path === '/mon-profil/mot-de-passe') {
+    $session = $dependencies['session'];
+    $flash = static function (string $type, string $text) use ($session): void {
+        $session->set('profil_flash', ['type' => $type, 'text' => $text]);
+    };
+
+    if (!$csrf->validate($_POST['_csrf'] ?? null)) {
+        $flash('error', $apiT['session_expired']);
+        header('Location: ' . url('/mon-profil'));
+        exit;
+    }
+
+    $userId = (int) $auth->id();
+    $users = $dependencies['users'];
+    $actuel = (string) ($_POST['mot_de_passe_actuel'] ?? '');
+    $nouveau = (string) ($_POST['nouveau_mot_de_passe'] ?? '');
+    $confirmation = (string) ($_POST['confirmation_mot_de_passe'] ?? '');
+
+    $hash = $users->motDePasseHash($userId);
+    $policyErrors = \App\Validators\PolitiqueMotDePasse::validate($nouveau, $uiLang);
+
+    if ($hash === null || !\App\Validators\PolitiqueMotDePasse::verify($actuel, $hash)) {
+        $dependencies['journal']->log($userId, 'profil.mot_de_passe', 'utilisateur', $userId, 'refus', ['raison' => 'mot_de_passe_incorrect']);
+        $flash('error', $apiT['pwd_current_wrong']);
+    } elseif ($policyErrors !== []) {
+        $flash('error', implode(' ', $policyErrors));
+    } elseif ($nouveau !== $confirmation) {
+        $flash('error', $apiT['pwd_mismatch']);
+    } elseif ($nouveau === $actuel) {
+        $flash('error', $apiT['pwd_same']);
+    } else {
+        $users->updateMotDePasse($userId, \App\Validators\PolitiqueMotDePasse::hash($nouveau));
+        $dependencies['journal']->log($userId, 'profil.mot_de_passe', 'utilisateur', $userId, 'succes');
+        $flash('success', $apiT['pwd_saved']);
+    }
+
+    header('Location: ' . url('/mon-profil'));
     exit;
 }
 
 // Workspace pages: each section is its own navigable page.
 if ($method === 'GET') {
+    $lang = (string) $dependencies['session']->get('lang', 'en');
+    $pageTitles = app_i18n($lang)['pages'];
     $pages = [
-        '/' => ['view' => 'ai/question', 'title' => 'Question'],
-        '/tache' => ['view' => 'ai/task', 'title' => 'Tâche agentique'],
-        '/ajouter' => ['view' => 'ai/upload', 'title' => 'Ajouter un document'],
-        '/documents' => ['view' => 'ai/documents', 'title' => 'Documents indexés'],
-        '/journal' => ['view' => 'ai/journal', 'title' => "Journal d'audit"],
-        '/mon-profil' => ['view' => 'ai/profil', 'title' => 'Mon profil'],
-        '/categories' => ['view' => 'ai/categories', 'title' => 'Catégories'],
+        '/' => ['view' => 'ai/question'],
+        '/tache' => ['view' => 'ai/task'],
+        '/ajouter' => ['view' => 'ai/upload'],
+        '/documents' => ['view' => 'ai/documents'],
+        '/journal' => ['view' => 'ai/journal'],
+        '/mon-profil' => ['view' => 'ai/profil'],
+        '/categories' => ['view' => 'ai/categories'],
     ];
+
+    foreach ($pages as $pagePath => &$pageDef) {
+        $pageDef['title'] = $pageTitles[$pagePath] ?? $pageDef['view'];
+    }
+    unset($pageDef);
 
     if (!isset($pages[$path])) {
         http_response_code(404);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['error' => 'Not found.'], JSON_UNESCAPED_UNICODE);
+        echo json_encode(['error' => app_i18n($uiLang)['pages']['__not_found__'] ?? ($uiLang === 'en' ? 'Not found.' : 'Introuvable.')], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
@@ -135,19 +268,18 @@ if ($method === 'GET') {
     $pageNum = max(1, (int) ($_GET['page'] ?? 1));
     $perPage = 20;
     $search = trim((string) ($_GET['q'] ?? ''));
-    $filtreCategorie = (int) ($_GET['categorie'] ?? 0);
 
     $documents = $search !== ''
         ? $dependencies['document_model']->search($search, 200)
-        : ($filtreCategorie > 0
-            ? $dependencies['document_model']->byCategorie($filtreCategorie, 200)
-            : $dependencies['document_model']->listRecent(200, 0));
+        : $dependencies['document_model']->listRecent(200, 0);
 
     $totalDocuments = $search !== ''
         ? $dependencies['document_model']->countSearch($search)
         : $dependencies['document_model']->count();
     $totalPages = max(1, (int) ceil($totalDocuments / $perPage));
     $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
+    $flashMessage = $dependencies['session']->get('profil_flash');
+    $dependencies['session']->remove('profil_flash');
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render($page['view'], [
@@ -159,15 +291,16 @@ if ($method === 'GET') {
         'search' => $search,
         'entries' => $entries,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
-        'categories' => in_array($path, ['/ajouter', '/documents', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
-        'filtreCategorie' => $filtreCategorie,
+        'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
+        'flash' => $flashMessage,
+        'lang' => $lang,
     ], 'app');
     exit;
 }
 
 http_response_code(404);
 header('Content-Type: application/json; charset=utf-8');
-echo json_encode(['error' => 'Not found.'], JSON_UNESCAPED_UNICODE);
+echo json_encode(['error' => app_i18n($uiLang)['pages']['__not_found__'] ?? ($uiLang === 'en' ? 'Not found.' : 'Introuvable.')], JSON_UNESCAPED_UNICODE);
