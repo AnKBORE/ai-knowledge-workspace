@@ -26,7 +26,7 @@ $respond = static function (array $data, int $code = 200) use ($dependencies): n
         $flash = isset($data['error'])
             ? ['type' => 'error', 'text' => (string) $data['error']]
             : ['type' => 'success', 'text' => (string) ($data['nom'] ?? $data['deleted'] ?? '') . ' — OK'];
-        $dependencies['session']->set('flash', $flash);
+        $dependencies['session']->set('profil_flash', $flash);
         $appBase = rtrim(str_replace('\\', '/', dirname(dirname(str_replace('\\', '/', (string) $_SERVER['SCRIPT_NAME'])))), '/');
         header('Location: ' . $appBase . '/categories');
         exit;

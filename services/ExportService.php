@@ -41,6 +41,7 @@ final class ExportService
         $zip->addFromString('_rels/.rels', $this->relsXml());
         $zip->addFromString('word/_rels/document.xml.rels', $this->documentRelsXml());
         $zip->addFromString('word/styles.xml', $this->stylesXml());
+        $zip->addFromString('word/footer1.xml', $this->footerXml());
         $zip->addFromString('word/document.xml', $this->documentXml($title, $content));
         $zip->close();
 
@@ -115,20 +116,35 @@ final class ExportService
         $safeTitle = htmlspecialchars($title, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
         return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>
-            body { font-family: "DejaVu Sans", sans-serif; font-size: 12px; color: #0f172a; }
-            h1, h2, h3 { color: #1e3a8a; margin: 14px 0 6px; }
-            h1 { font-size: 18px; } h2 { font-size: 15px; } h3 { font-size: 13px; }
-            p { margin: 0 0 8px; line-height: 1.5; }
+            @page { margin: 22mm 20mm 24mm; }
+            body { font-family: "DejaVu Sans", sans-serif; font-size: 11.5px; color: #0f172a; }
+            .doc-eyebrow { font-size: 8.5px; letter-spacing: 1.6px; text-transform: uppercase;
+                           color: #4a63c8; font-weight: bold; margin-bottom: 4px; }
+            .doc-title { font-size: 23px; font-weight: bold; color: #1e3a8a; margin: 0 0 6px; }
+            .doc-rule { border-bottom: 2.5px solid #4a63c8; width: 64px; margin-bottom: 10px; }
+            .doc-meta { font-size: 9px; color: #64748b; margin-bottom: 20px; }
+            h1, h2, h3 { color: #1e3a8a; margin: 16px 0 6px; page-break-after: avoid; }
+            h1 { font-size: 17px; border-bottom: 1px solid #dbe3f5; padding-bottom: 4px; }
+            h2 { font-size: 14px; }
+            h3 { font-size: 12.5px; }
+            p { margin: 0 0 8px; line-height: 1.55; text-align: justify; }
             ul { margin: 4px 0 10px 18px; padding: 0; }
-            li { margin: 2px 0; line-height: 1.45; }
+            li { margin: 3px 0; line-height: 1.5; text-align: justify; }
+            li::marker { color: #4a63c8; }
             strong { font-weight: bold; }
-            .doc-title { font-size: 22px; font-weight: bold; color: #1e3a8a; margin-bottom: 16px; }
-            .doc-footer { margin-top: 28px; font-size: 9px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 6px; }
+            .doc-footer { position: fixed; bottom: -14mm; left: 0; right: 0;
+                          font-size: 8px; color: #64748b; border-top: 1px solid #e2e8f0;
+                          padding-top: 5px; }
+            .doc-footer .right { float: right; }
         </style></head><body>'
+            . '<div class="doc-eyebrow">Agentic Knowledge Workspace</div>'
             . '<div class="doc-title">' . $safeTitle . '</div>'
+            . '<div class="doc-rule"></div>'
+            . '<div class="doc-meta">Generated on ' . date('d/m/Y \a\t H:i') . '</div>'
             . $this->markdownToHtml($content)
-            . '<div class="doc-footer">Agentic Multimodal Knowledge Workspace · '
-            . date('d/m/Y H:i') . '</div>'
+            . '<div class="doc-footer">Agentic Knowledge Workspace'
+            . '<span class="right">Page {PAGE_NUM} / {PAGE_COUNT}</span></div>'
+            . '<script type="text/php">if (isset($pdf)) { $text = "Page " . $PAGE_NUM . " / " . $PAGE_COUNT; }</script>'
             . '</body></html>';
     }
 
@@ -153,9 +169,12 @@ final class ExportService
         }
 
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            . '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             . '<w:body>' . $paragraphs
-            . '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/></w:sectPr>'
+            . '<w:sectPr>'
+            . '<w:footerReference w:type="default" r:id="rId2"/>'
+            . '<w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134"/>'
+            . '</w:sectPr>'
             . '</w:body></w:document>';
     }
 
@@ -194,6 +213,7 @@ final class ExportService
             . '<Default Extension="xml" ContentType="application/xml"/>'
             . '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'
             . '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'
+            . '<Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/>'
             . '</Types>';
     }
 
@@ -210,17 +230,49 @@ final class ExportService
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             . '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
             . '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
+            . '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/>'
             . '</Relationships>';
     }
 
     private function stylesXml(): string
     {
+        $font = '<w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:cs="Calibri"/>';
+
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             . '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
-            . '<w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>'
-            . '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/><w:rPr><w:b/><w:sz w:val="40"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
-            . '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:rPr><w:b/><w:sz w:val="32"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
-            . '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
+            . '<w:docDefaults><w:rPrDefault><w:rPr>' . $font . '<w:sz w:val="23"/><w:color w:val="0F172A"/></w:rPr></w:rPrDefault>'
+            . '<w:pPrDefault><w:pPr><w:spacing w:after="160" w:line="276" w:lineRule="auto"/><w:jc w:val="both"/></w:pPr></w:pPrDefault></w:docDefaults>'
+            . '<w:style w:type="paragraph" w:styleId="Title"><w:name w:val="Title"/>'
+            . '<w:pPr><w:spacing w:after="120"/><w:pBdr><w:bottom w:val="single" w:sz="18" w:space="6" w:color="4A63C8"/></w:pBdr></w:pPr>'
+            . '<w:rPr>' . $font . '<w:b/><w:sz w:val="48"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
+            . '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/>'
+            . '<w:pPr><w:spacing w:before="320" w:after="120"/><w:keepNext/><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="3" w:color="DBE3F5"/></w:pBdr></w:pPr>'
+            . '<w:rPr>' . $font . '<w:b/><w:sz w:val="34"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
+            . '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/>'
+            . '<w:pPr><w:spacing w:before="240" w:after="80"/><w:keepNext/></w:pPr>'
+            . '<w:rPr>' . $font . '<w:b/><w:sz w:val="28"/><w:color w:val="1E3A8A"/></w:rPr></w:style>'
             . '</w:styles>';
+    }
+
+    private function footerXml(): string
+    {
+        $date = htmlspecialchars(date('d/m/Y'), ENT_XML1, 'UTF-8');
+
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            . '<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            . '<w:p><w:pPr><w:pBdr><w:top w:val="single" w:sz="4" w:space="4" w:color="E2E8F0"/></w:pBdr>'
+            . '<w:tabs><w:tab w:val="right" w:pos="9638"/></w:tabs><w:jc w:val="both"/></w:pPr>'
+            . '<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="64748B"/></w:rPr>'
+            . '<w:t xml:space="preserve">Agentic Knowledge Workspace · ' . $date . '</w:t></w:r>'
+            . '<w:r><w:tab/></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="64748B"/></w:rPr><w:t xml:space="preserve">Page </w:t></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="64748B"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/></w:rPr><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r>'
+            . '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/><w:color w:val="64748B"/></w:rPr><w:t xml:space="preserve"> / </w:t></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/></w:rPr><w:fldChar w:fldCharType="begin"/></w:r>'
+            . '<w:r><w:rPr><w:sz w:val="16"/></w:rPr><w:instrText xml:space="preserve"> NUMPAGES </w:instrText></w:r>'
+            . '<w:r><w:fldChar w:fldCharType="end"/></w:r>'
+            . '</w:p></w:ftr>';
     }
 }

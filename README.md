@@ -105,6 +105,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - **Verifiable citations** — the model cites `[n]`; only the **cited** extracts are shown as sources, with their exact context number (`Sources: [3]` ⇢ entry *3*). No citation, no source list
 - **Full multilingual pipeline** — the answer follows the **question's language**; literal quotes are translated with the original kept in parentheses; cited **source excerpts are translated** too via a dedicated low-temperature pass
 - **Direct download** — every cited source carries a `document_id` download link to its latest version
+- **Query-term highlighting** — words from the question are highlighted in the displayed source excerpts
 
 ### Content generation
 - Automatic summaries

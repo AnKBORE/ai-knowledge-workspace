@@ -12,6 +12,13 @@ $P = $T['question'];
         <p class="dashboard-eyebrow"><?= e($S['eyebrow_root']) ?> <span aria-hidden="true">/</span> <?= e($T['pages']['/']) ?></p>
         <h1><?= e($T['pages']['/']) ?></h1>
         <p><?= e($P['hero_sub']) ?></p>
+        <?php if (is_array($stats ?? null)): ?>
+            <div class="stat-row">
+                <span class="stat-pill"><strong><?= (int) $stats['documents'] ?></strong> <?= e($P['stat_docs']) ?></span>
+                <span class="stat-pill"><strong><?= (int) $stats['chunks'] ?></strong> <?= e($P['stat_chunks']) ?></span>
+                <span class="stat-pill"><strong><?= (int) $stats['categories'] ?></strong> <?= e($P['stat_categories']) ?></span>
+            </div>
+        <?php endif; ?>
     </div>
     <div class="dashboard-hero-actions">
         <span class="dashboard-date"><?= e(lang_date($lang ?? 'en')) ?></span>

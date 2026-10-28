@@ -105,6 +105,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - **Citations vérifiables** — le modèle cite `[n]` ; seuls les extraits **cités** sont affichés comme sources, avec leur numéro exact de contexte (`Sources : [3]` ⇢ entrée *3*). Pas de citation, pas de liste de sources
 - **Pipeline multilingue complet** — la réponse suit la **langue de la question** ; les citations littérales sont traduites avec l'original entre parenthèses ; les **extraits de sources sont traduits** aussi via une passe dédiée à basse température
 - **Téléchargement direct** — chaque source citée porte un lien `document_id` vers sa dernière version
+- **Surlignage des termes** — les mots de la question sont surlignés dans les extraits de sources affichés
 
 ### Génération de contenu
 - Résumés automatiques

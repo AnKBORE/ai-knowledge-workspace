@@ -7,11 +7,15 @@
 ## 1. Avant d'enregistrer (préparation)
 
 ### Environnement
-- [ ] `serve.bat` lancé → UI ouverte sur **http://127.0.0.1:8080/**
-- [ ] Base nettoyée : ne garder qu'un **document neutre** (ex. « Rapport annuel »)
-- [ ] Question de démo prête : **« Quels sont les principaux risques ? »**
-- [ ] Tâche de démo prête : **« Prépare une note pour le directeur sur les activités du trimestre »**
-- [ ] Clé API configurée et **testée** (Baseten ou Meta)
+- [ ] `serve.bat` lancé → UI ouverte sur **http://127.0.0.1:8080/** (interface en **anglais** par défaut — le sélecteur FR/EN est visible en haut)
+- [ ] Base nettoyée : garder 2-3 documents variés (un rapport PDF, un audio, un doc simple)
+- [ ] Questions de démo prêtes :
+  - **« What are the main risks? »** → réponse + sources numérotées
+  - **« List all documents »** → démontre le catalogue intent
+  - Une question sur l'**audio transcrit** → montre l'ASR local
+- [ ] Tâche de démo prête : **« Prepare a note for the director on this quarter's activities »**
+- [ ] Clé API configurée et **testée** (Baseten) — whisper.cpp local actif (zéro crédit pour l'audio)
+- [ ] Préparer l'export **PDF + DOCX** pour montrer la mise en forme pro (titre, pagination, justifié)
 
 ### Matériel
 - Enregistreur : **OBS Studio**, **Loom**, ou Game Bar (`Win + G`)
@@ -30,8 +34,8 @@
 | **0:00–0:15** | Intro | Logo + titre du projet | *"Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Multimodal Knowledge Workspace — it turns an organization's documents into answers, with sources."* |
 | **0:15–0:45** | Problème | Slide « The problem » | *"Every organization drowns in documents: reports, policies, meeting notes. Finding the right answer takes hours, and generic chatbots hallucinate. The knowledge is there — but it's unusable."* |
 | **0:45–1:15** | Solution | Slide « The solution » | *"The Agentic Multimodal Knowledge Workspace indexes your documents, retrieves the relevant passages and generates grounded answers — with the exact sources cited. And it goes beyond Q&A: it drafts notes and reports from your own knowledge base."* |
-| **1:15–2:15** | **Démo** | Écran réel | 1) Upload d'un fichier → *"Indexed."* 2) Question → **réponse + sources** : *"See the answer, and the sources it is grounded in."* 3) Tâche → **brouillon structuré** : *"And here is a full draft, generated from the same knowledge base."* |
-| **2:15–2:45** | Technique | Slide « Under the hood » | *"Built with PHP 8.4.27 and MySQL 8.4.13, a strict MVC architecture, and Meta's open-weight models — Muse Spark Open via Baseten, with Muse Wonder as an option. Embeddings run locally."* |
+| **1:15–2:15** | **Démo** | Écran réel | 1) Upload → *"Indexed."* 2) Question → **réponse + sources numérotées** : *"See the answer — and the exact extracts it cites, numbered."* 3) Tâche → **brouillon** : *"A full draft, generated from the same knowledge base."* 4) Export PDF : *"…exported with professional formatting."* 5) (si le temps) audio transcrit ou bascule FR/EN |
+| **2:15–2:45** | Technique | Slide « Under the hood » | *"PHP 8.4.27, MySQL 8.4.13, strict MVC, permission-scoped retrieval, numbered verifiable citations — and audio transcription running locally on whisper.cpp, with the Baseten API pipeline wired as an interchangeable backend."* |
 | **2:45–3:00** | Clôture | Slide final | *"This is Build for Your World: real domain knowledge, amplified by Meta's models. Thank you."* |
 
 ### Version française (si tu préfères enregistrer en français)
@@ -41,7 +45,7 @@
 | 0:00–0:15 | « Bonjour, je suis Anatole KABORE, développeur indépendant au Burkina Faso. Voici l'Agentic Multimodal Knowledge Workspace : il transforme les documents d'une organisation en réponses, avec leurs sources. » |
 | 0:15–0:45 | « Chaque organisation croule sous les documents : rapports, procédures, comptes rendus. Trouver la bonne réponse prend des heures, et les chatbots génériques hallucinent. Le savoir est là, mais inexploitable. » |
 | 0:45–1:15 | « La plateforme indexe vos documents, retrouve les passages pertinents et génère des réponses ancrées, avec les sources citées. Et elle va plus loin : elle rédige des notes et des rapports à partir de votre base de connaissances. » |
-| 1:15–2:15 | Démo : téléverser → « Indexé. » ; poser une question → « La réponse, et ses sources. » ; lancer une tâche → « Un brouillon complet, généré depuis la même base. » |
+| 1:15–2:15 | Démo : téléverser → « Indexé. » ; question → « La réponse, et les extraits exacts cités, numérotés. » ; tâche → « Un brouillon complet. » ; export PDF → « …exporté avec une mise en page professionnelle. » |
 | 2:15–2:45 | « PHP 8.4.27, MySQL 8.4.13, architecture MVC stricte, et les modèles open-weight de Meta — Muse Spark Open via Baseten, avec Muse Wonder en option. Les embeddings tournent en local. » |
 | 2:45–3:00 | « C'est Build for Your World : une connaissance métier réelle, amplifiée par les modèles de Meta. Merci. » |
 
@@ -70,7 +74,7 @@
 - [ ] Lien copié
 
 ### Formulaire
-- [ ] Nom du projet : **Agentic Multimodal Knowledge Workspace**
+- [ ] Nom du projet : **Agentic Knowledge Workspace**
 - [ ] Piste : **Indie Developer**
 - [ ] Thème : **Build for Your World**
 - [ ] Description courte (2–3 phrases)
@@ -78,6 +82,25 @@
 - [ ] URL de la vidéo
 - [ ] Membres de l'équipe (toi seul)
 - [ ] Identifiants de démo (si demandé — **pas** de vraie clé)
+
+---
+
+## 5. Chiffres à citer (description / vidéo)
+
+Des mesures concrètes pèsent plus que les adjectifs :
+
+| Métrique | Valeur à citer |
+|---|---|
+| **Tests automatisés** | **68 tests, 143 assertions** (SQLite en mémoire + doubles déterministes) |
+| **Couverture sécurité** | Argon2 · CSRF · RBAC deny-by-default (permissions globales + par espace) · confidentialité `prive` · soft-delete · journalisation de chaque action |
+| **Retrieval** | Scoring hybride `0.6 sémantique + 0.4 lexical + boost titre` · expansion voisins ±1 + chunk 0 · détection d'intention catalogue · retry « not found » (topK ×2) |
+| **Citations** | Seuls les extraits **réellement cités** sont affichés, avec leur numéro exact de contexte — traçabilité 1:1 |
+| **Multilingue** | FR/EN complet : 7 pages, erreurs API, fallbacks RAG, extraits de sources traduits (passe dédiée t°0.1) |
+| **Audio** | whisper.cpp local (verbatim, 0 crédit) **+** pipeline Baseten interchangeable — audios > 10 min auto-découpés |
+| **Exports** | PDF (dompdf) + DOCX OOXML natif : titre, styles, pagination, texte justifié |
+| **Origine terrain** | Né de **GES-SACREMENTS-KTO-BF**, déjà déployé dans plusieurs paroisses du Burkina Faso |
+
+> Astuce vidéo : cite **2–3** de ces chiffres au moment « Under the hood » (0:15 dans le script), pas tous — le reste va dans la description de la soumission.
 
 ---
 

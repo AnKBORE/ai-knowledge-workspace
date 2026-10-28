@@ -296,6 +296,11 @@ if ($method === 'GET') {
         'currentUser' => $auth->user(),
         'csrf' => $csrf,
         'flash' => $flashMessage,
+        'stats' => $path === '/' ? [
+            'documents' => $totalDocuments,
+            'chunks' => (int) $dependencies['pdo']->query('SELECT COUNT(*) FROM document_chunks')->fetchColumn(),
+            'categories' => $dependencies['categorie_model']->count(),
+        ] : null,
         'lang' => $lang,
     ], 'app');
     exit;

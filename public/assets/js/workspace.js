@@ -17,7 +17,20 @@
         return base + '/api/' + path;
     }
 
-    function renderSources(listEl, sources) {
+    function highlightTerms(text, query) {
+        var escaped = String(text || '').replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+        var terms = String(query || '').split(/[^\p{L}\p{N}]+/u)
+            .filter(function (w) { return w.length >= 4; });
+        terms.forEach(function (w) {
+            var re = new RegExp('(' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'giu');
+            escaped = escaped.replace(re, '<mark>$1</mark>');
+        });
+        return escaped;
+    }
+
+    function renderSources(listEl, sources, query) {
         listEl.innerHTML = '';
         if (!Array.isArray(sources) || sources.length === 0) {
             return false;
@@ -28,7 +41,7 @@
             strong.textContent = (source.num || (i + 1)) + '. ' + (source.title || 'Document');
             var span = document.createElement('span');
             span.className = 'text-muted d-block';
-            span.textContent = source.excerpt || '';
+            span.innerHTML = query ? highlightTerms(source.excerpt || '', query) : highlightTerms(source.excerpt || '', '');
             li.appendChild(strong);
             li.appendChild(span);
             if (source.document_id) {
@@ -93,7 +106,8 @@
         resultTitle.textContent = title;
         resultSub.textContent = sub;
         resultContent.innerHTML = escapeThenBold(content);
-        resultSources.hidden = !renderSources(resultSourcesList, sources);
+        var qInput = document.getElementById('question');
+        resultSources.hidden = !renderSources(resultSourcesList, sources, qInput ? qInput.value : '');
     }
 
     function showError(message) {

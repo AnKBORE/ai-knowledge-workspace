@@ -423,3 +423,11 @@
 .field-required { margin-left: .15rem; color: #dc2626; font-weight: 700; }
 .doc-delete-error { margin: .7rem 0 0; padding: .55rem .75rem; border-radius: 8px; background: #fef2f2; color: #b91c1c; font-size: .82rem; font-weight: 600; }
 .field-hint { display: block; margin-top: .15rem; color: #8a94a8; font-size: .72rem; font-weight: 500; }
+
+/* Stat pills (question hero) */
+.stat-row{display:flex;gap:.55rem;flex-wrap:wrap;margin-top:.9rem}
+.stat-pill{display:inline-flex;align-items:baseline;gap:.35rem;padding:.32rem .8rem;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#e8edff;font-size:.78rem;backdrop-filter:blur(6px)}
+.stat-pill strong{font-size:.95rem;color:#fff}
+
+/* Query-term highlighting inside source excerpts */
+.text-muted mark{background:#fde68a;color:#78350f;padding:0 .1rem;border-radius:2px}
