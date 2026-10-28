@@ -22,6 +22,11 @@ $P = $T['categories'];
 <div class="row g-4">
     <div class="col-12">
         <div class="space-admin">
+            <?php if (is_array($flash ?? null)): ?>
+                <div class="alert alert-<?= ($flash['type'] ?? '') === 'success' ? 'success' : 'danger' ?> profil-flash" role="alert">
+                    <?= e((string) ($flash['text'] ?? '')) ?>
+                </div>
+            <?php endif; ?>
             <div class="landing-grid">
                 <section class="panel space-list-panel technical-admin-panel panel-accent-green" aria-labelledby="categorie-form-title">
                     <div class="panel-head">
@@ -78,9 +83,13 @@ $P = $T['categories'];
                                             <strong><?= e((string) ($categorie['nom'] ?? '')) ?></strong>
                                             <small><?= e(sprintf($P['doc_count'], (int) ($categorie['documents'] ?? 0), ((int) ($categorie['documents'] ?? 0)) > 1 ? 's' : '', (string) ($categorie['slug'] ?? ''))) ?></small>
                                         </div>
-                                        <button type="button" class="doc-action doc-action-danger categorie-delete" data-categorie-id="<?= (int) ($categorie['id'] ?? 0) ?>" title="<?= e($P['delete_label']) ?>" aria-label="<?= e($P['delete_label']) ?> <?= e((string) ($categorie['nom'] ?? '')) ?>">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
-                                        </button>
+                                        <form method="post" action="<?= e(url('/api/categorie_delete.php')) ?>" class="categorie-delete-form" onsubmit="return confirm(<?= json_encode($P['delete_confirm'], JSON_UNESCAPED_UNICODE) ?>)">
+                                            <?= $csrf->field() ?>
+                                            <input type="hidden" name="categorie_id" value="<?= (int) ($categorie['id'] ?? 0) ?>">
+                                            <button type="submit" class="doc-action doc-action-danger categorie-delete" title="<?= e($P['delete_label']) ?>" aria-label="<?= e($P['delete_label']) ?> <?= e((string) ($categorie['nom'] ?? '')) ?>">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
+                                            </button>
+                                        </form>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -93,38 +102,6 @@ $P = $T['categories'];
 </div>
 
 <script>
-(function () {
-    var form = document.getElementById('categorie-form');
-    var status = document.getElementById('categorie-status');
-    if (!form) { return; }
-
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        status.textContent = <?= json_encode($P['saving'], JSON_UNESCAPED_UNICODE) ?>;
-        fetch(form.action, { method: 'POST', body: new FormData(form), credentials: 'same-origin' })
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                if (data.error) { status.textContent = data.error; status.className = 'small mt-2 text-danger'; return; }
-                status.textContent = <?= json_encode($P['saved'], JSON_UNESCAPED_UNICODE) ?>;
-                status.className = 'small mt-2 text-success';
-                window.location.reload();
-            })
-            .catch(function () { status.textContent = <?= json_encode($P['network_error'], JSON_UNESCAPED_UNICODE) ?>; status.className = 'small mt-2 text-danger'; });
-    });
-
-    document.querySelectorAll('.categorie-delete').forEach(function (button) {
-        button.addEventListener('click', function () {
-            if (!window.confirm(<?= json_encode($P['delete_confirm'], JSON_UNESCAPED_UNICODE) ?>)) { return; }
-            var body = new FormData();
-            body.append('_csrf', <?= json_encode($csrf->token(), JSON_UNESCAPED_UNICODE) ?>);
-            body.append('categorie_id', button.getAttribute('data-categorie-id'));
-            fetch(<?= json_encode(url('/api/categorie_delete.php'), JSON_UNESCAPED_UNICODE) ?>, { method: 'POST', body: body, credentials: 'same-origin' })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    if (data.error) { window.alert(data.error); return; }
-                    window.location.reload();
-                });
-        });
-    });
-})();
+// Save and delete forms post natively: the API redirects back here with a
+// session flash, so every action reloads the page automatically.
 </script>

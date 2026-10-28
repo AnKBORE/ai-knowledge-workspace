@@ -28,6 +28,9 @@ final class RagService
     ) {
     }
 
+    /** @var array<string, list<float>> decoded embedding cache (per process) */
+    private static array $vectorCache = [];
+
     /**
      * Split a text into small, overlapping chunks.
      *
@@ -77,6 +80,8 @@ final class RagService
      */
     public function indexDocument(int $documentId, string $content, ?int $versionId = null): void
     {
+        self::$vectorCache = []; // new chunks make cached vectors stale
+
         $stmt = $this->db->prepare(
             'INSERT INTO document_chunks (document_id, version_document_id, chunk_index, content, embedding)
              VALUES (:document_id, :version_id, :chunk_index, :content, :embedding)'
@@ -141,9 +146,28 @@ final class RagService
 
         $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
         $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
+
+        // Recall retry: a "not found" answer may hide a retrieval miss —
+        // widen top-K once before conceding.
+        if (str_contains($answer, $this->notFoundPhrase())) {
+            $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId);
+            if (count($wider) > count($chunks)) {
+                $chunks = $wider;
+                $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+                $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
+            }
+        }
+
         $sources = $this->sources($this->citedChunks($answer, $chunks));
 
         return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
+    }
+
+    private function notFoundPhrase(): string
+    {
+        return $this->lang === 'en'
+            ? 'This information is not in the provided documents.'
+            : 'Cette information ne figure pas dans les documents fournis.';
     }
 
     /**
@@ -215,7 +239,9 @@ final class RagService
      */
     private function translateSources(array $sources, string $query): array
     {
-        if ($sources === []) {
+        // Optional (one extra LLM call per answer): META_TRANSLATE_SOURCES=0
+        // to keep original excerpts and save latency + credits.
+        if ($sources === [] || getenv('META_TRANSLATE_SOURCES') === '0') {
             return $sources;
         }
 
@@ -364,9 +390,7 @@ final class RagService
     private function answerPrompt(): string
     {
         $langRule = '5. Réponds dans la langue de la question : si la question est posée en anglais, réponds en anglais ; en coréen, en coréen, etc. Cette règle prime sur toute autre considération de langue.';
-        $notFound = $this->lang === 'en'
-            ? 'This information is not in the provided documents.'
-            : 'Cette information ne figure pas dans les documents fournis.';
+        $notFound = $this->notFoundPhrase();
 
         return <<<PROMPT
 Tu es un assistant documentaire expert, rigoureux et professionnel.
@@ -521,12 +545,26 @@ PROMPT;
              JOIN documents d ON d.id = c.document_id'
         )->fetchAll(PDO::FETCH_ASSOC);
 
+        // Decoded-vector cache: avoid re-parsing every chunk's JSON embedding
+        // on each query (built-in server keeps this process across requests).
+        $vectorCache = &self::$vectorCache;
+
         $scored = [];
         foreach ($rows as $row) {
             if (is_array($allowed) && !isset($allowed[(int) $row['document_id']])) {
                 continue;
             }
-            $vector = json_decode((string) $row['embedding'], true);
+            $key = $row['document_id'] . '|' . (int) ($row['version_document_id'] ?? 0) . '|' . $row['chunk_index'];
+            $vector = $vectorCache[$key] ?? null;
+            if ($vector === null) {
+                $vector = json_decode((string) $row['embedding'], true);
+                if (is_array($vector)) {
+                    if (count($vectorCache) > 50000) {
+                        $vectorCache = [];
+                    }
+                    $vectorCache[$key] = $vector;
+                }
+            }
             if (!is_array($vector)) {
                 continue;
             }
@@ -534,13 +572,18 @@ PROMPT;
             $semantic = $this->embeddings->similarity($queryVector, $vector);
             $lexical = $query !== '' ? $this->lexicalScore($query, (string) $row['content']) : 0.0;
 
+            // Title boost: when the question names a document ("the audio",
+            // "the announcement"…), its chunks must rank first — a generic
+            // wording otherwise drowns under higher-scoring documents.
+            $titleHit = $query !== '' ? $this->lexicalScore($query, (string) ($row['title'] ?? '')) : 0.0;
+
             $scored[] = [
                 'document_id' => (int) $row['document_id'],
                 'version_id' => (int) ($row['version_document_id'] ?? 0),
                 'chunk_index' => (int) $row['chunk_index'],
                 'content' => (string) $row['content'],
                 'title' => (string) ($row['title'] ?? 'Document'),
-                'score' => 0.6 * $semantic + 0.4 * $lexical,
+                'score' => 0.6 * $semantic + 0.4 * $lexical + $titleHit,
             ];
         }
 

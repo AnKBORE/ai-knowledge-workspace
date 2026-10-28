@@ -11,6 +11,10 @@ declare(strict_types=1);
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
+
+// Local whisper.cpp transcription can take several minutes on CPU —
+// lift the default 30 s PHP limit for this endpoint.
+set_time_limit(0);
 $lang = (string) $dependencies['session']->get('lang', 'en');
 $T = app_i18n($lang)['api'];
 
@@ -79,15 +83,42 @@ try {
 
     if (in_array($extension, $audioExtensions, true)) {
         $maxAudio = (int) ($dependencies['config']['audio_max_seconds'] ?? 600);
-        $duration = (new \App\Services\AudioSplitter())->duration($tmp);
+        $splitter = new \App\Services\AudioSplitter();
+
+        // $tmp has no extension (phpXXXX.tmp) — work on a copy named with the
+        // real extension so duration() and split() can recognise the format.
+        $workPath = $tmp . '.' . $extension;
+        copy($tmp, $workPath);
+        $duration = $splitter->duration($workPath);
 
         if ($duration !== null && $duration > $maxAudio) {
-            http_response_code(422);
-            echo json_encode(['error' => sprintf($T['audio_too_long'], intdiv($maxAudio, 60))], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
+            // Long audio: split into ≤$maxAudio segments (WAV/MP3), transcribe
+            // each one and concatenate — the file is never rejected outright.
+            $parts = $splitter->split($workPath, $maxAudio);
 
-        $content = $dependencies['transcription']->transcribe($tmp);
+            if ($parts === []) {
+                // Format the splitter cannot cut (m4a/ogg/…): keep the guard.
+                http_response_code(422);
+                echo json_encode(['error' => sprintf($T['audio_too_long'], intdiv($maxAudio, 60))], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            $segments = [];
+            foreach ($parts as $i => $partPath) {
+                $segments[] = '[Segment ' . ($i + 1) . ' / ' . count($parts) . "]\n"
+                    . $dependencies['transcription']->transcribe($partPath);
+                if (!in_array($partPath, [$tmp, $workPath], true)) {
+                    @unlink($partPath);
+                }
+            }
+            @unlink($workPath);
+            $content = implode("\n\n", $segments);
+        } else {
+            $content = $dependencies['transcription']->transcribe($workPath);
+        }
+        if (file_exists($workPath)) {
+            @unlink($workPath);
+        }
     } elseif (in_array($extension, ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'], true)) {
         $content = $dependencies['vision']->extractText($tmp);
     } elseif ($extension === 'pdf') {
@@ -147,11 +178,11 @@ try {
     $message = $e->getMessage();
 
     if (str_contains($message, 'Audio too long')) {
-        $error = "L'audio dépasse la limite de 5 minutes. Découpez-le en segments de 5 minutes maximum, puis réessayez.";
+        $error = sprintf($T['audio_too_long'], intdiv(($dependencies['config']['audio_max_seconds'] ?? 600), 60));
     } elseif (str_contains($message, 'Media could not be processed')) {
-        $error = "Le média n'a pas pu être traité (format audio non pris en charge ou fichier trop lourd).";
+        $error = $T['media_failed'];
     } else {
-        $error = getenv('APP_DEBUG') === '1' ? $message : 'Indexing failed.';
+        $error = getenv('APP_DEBUG') === '1' ? $message : $T['upload_failed'];
     }
 
     http_response_code(500);

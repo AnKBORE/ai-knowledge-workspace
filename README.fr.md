@@ -89,6 +89,13 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
 
+### Transcription audio — double pipeline
+- **ASR fournisseur (Baseten)** — conçu pour un endpoint de transcription dédié (`/v1/audio/transcriptions`, multipart `file` + `model` façon Whisper), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **whisper.cpp local** — `whisper-cli.exe` + un modèle GGML tourne entièrement hors ligne : paroles/paroles verbatim, sans limite de débit, **zéro consommation de crédit**
+- Les audios longs sont découpés automatiquement en segments calibrés fournisseur (`AudioSplitter`, MP3 aligné sur les frames / WAV à en-tête régénéré), chacun transcrit puis concaténé avec des marqueurs `[Segment n/N]`
+- *Pourquoi le local pendant le développement :* les crédits Baseten gratuits du hackathon sont presque épuisés — `META_WHISPER_BIN`/`META_WHISPER_MODEL` routent donc la transcription en local, tandis que le pipeline API reste câblé et prêt pour la production (un retour = une variable d'env)
+- *Repli :* sans ASR configuré, le modèle de chat multimodal décrit l'audio (ses garde-fous copyright peuvent refuser les paroles verbatim)
+
 ### Moteur de récupération de précision (RAG++)
 - **Retrieval filtré par permissions** — chaque chunk scoré appartient à un document que l'acteur est autorisé à lire (tenant, adhésion d'espace, confidentialité, propriété, suppression logique), résolu en une passe par requête
 - **Scoring hybride** — `0,6 × similarité cosinus + 0,4 × recouvrement lexical` conserve un bon rappel même avec les embeddings locaux

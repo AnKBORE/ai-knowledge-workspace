@@ -89,6 +89,13 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Understanding of user context
 - Semantic search beyond keywords
 
+### Audio transcription — dual pipeline
+- **Provider ASR (Baseten)** — designed for a dedicated speech-to-text endpoint (`/v1/audio/transcriptions`, Whisper-style multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **Local whisper.cpp** — `whisper-cli.exe` + a GGML model runs entirely offline: verbatim lyrics/speech, no rate limit, **zero credit consumption**
+- Long audio is auto-split into provider-sized segments (`AudioSplitter`, frame-aligned MP3 / header-correct WAV), each segment transcribed and concatenated with `[Segment n/N]` markers
+- *Why local during development:* the hackathon free-tier Baseten credits are nearly exhausted, so `META_WHISPER_BIN`/`META_WHISPER_MODEL` route transcription locally while the API pipeline remains wired and production-ready — switching back only takes an env variable
+- *Fallback:* when no ASR is configured, the multimodal chat model describes the audio (its copyright guardrails can refuse verbatim lyrics)
+
 ### Precision retrieval engine (RAG++)
 - **Permission-aware retrieval** — every scored chunk belongs to a document the actor is allowed to read (tenant, workspace membership, confidentiality, ownership, soft-delete), resolved once per query
 - **Hybrid scoring** — `0.6 × semantic cosine + 0.4 × lexical overlap` keeps recall strong even with local hashing embeddings

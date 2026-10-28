@@ -38,9 +38,17 @@ return [
     'embedding_model' => getenv('META_EMBEDDING_MODEL') ?: 'open-weight-embedding',
     'embedding_mode' => getenv('META_EMBEDDING_MODE') ?: 'local',
 
-    // Speech-to-text model (Muse Voice Transcribe) + endpoint.
-    'transcription_model' => 'muse-voice-transcribe',
-    'transcription_endpoint' => '/v1/audio/transcriptions',
+    // Speech-to-text model + endpoint. Default '' = no dedicated ASR, so the
+    // api_style path is used (chat multimodal). Set META_TRANSCRIPTION_MODEL
+    // (e.g. a Whisper deployment) to force the /v1/audio/transcriptions path.
+    'transcription_model' => getenv('META_TRANSCRIPTION_MODEL') ?: '',
+    'transcription_endpoint' => getenv('META_TRANSCRIPTION_ENDPOINT') ?: '/v1/audio/transcriptions',
+
+    // Local whisper.cpp (free, offline). Set META_WHISPER_BIN + META_WHISPER_MODEL
+    // to use it; whisper_args can add -l fr, -t 4, etc. '-nt' = no timestamps.
+    'whisper_binary' => getenv('META_WHISPER_BIN') ?: '',
+    'whisper_model' => getenv('META_WHISPER_MODEL') ?: '',
+    'whisper_args' => getenv('META_WHISPER_ARGS') ?: '-nt',
 
     // Vision model (SAM 3.1) for scanned documents + endpoint.
     'vision_model' => 'sam-3.1',
