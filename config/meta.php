@@ -44,6 +44,14 @@ return [
     'transcription_model' => getenv('META_TRANSCRIPTION_MODEL') ?: '',
     'transcription_endpoint' => getenv('META_TRANSCRIPTION_ENDPOINT') ?: '/v1/audio/transcriptions',
 
+    // Baseten dedicated Whisper deployment (e.g. Whisper Large V3 Turbo):
+    // https://model-{id}.api.baseten.co/environments/production/predict.
+    // Needs a key from the organisation that owns the deployment (the
+    // hackathon key only serves muse-spark-open-1026). '' = disabled.
+    'baseten_whisper_url' => getenv('META_BASETEN_WHISPER_URL') ?: '',
+    'baseten_whisper_key' => getenv('META_BASETEN_WHISPER_KEY') ?: '',
+    'baseten_whisper_language' => getenv('META_BASETEN_WHISPER_LANGUAGE') ?: '',
+
     // Local whisper.cpp (free, offline). Set META_WHISPER_BIN + META_WHISPER_MODEL
     // to use it; whisper_args can add -l fr, -t 4, etc. '-nt' = no timestamps.
     'whisper_binary' => getenv('META_WHISPER_BIN') ?: '',

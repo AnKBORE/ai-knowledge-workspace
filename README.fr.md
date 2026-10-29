@@ -91,9 +91,11 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Transcription audio — double pipeline
 - **Baseten — Muse Spark Open (par défaut)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` (partie `audio_url`) avec un prompt ASR strict ; fonctionne directement avec la clé hackathon
-- **Endpoint ASR dédié (optionnel)** — `/v1/audio/transcriptions` façon Whisper (multipart `file` + `model`), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **Déploiement Baseten Whisper Large V3 Turbo (optionnel)** — déploiement GPU dédié appelé via l'API predict de Baseten (`whisper_input.audio.audio_b64` → `segments[].text`) ; verbatim, sans garde-fous LLM (paroles chantées comprises). Activé via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`) ; facturé à la minute GPU sur l'organisation propriétaire
+- **Endpoint ASR façon OpenAI (optionnel)** — `/v1/audio/transcriptions` façon Whisper (multipart `file` + `model`), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
 - **whisper.cpp local (optionnel)** — `whisper-cli.exe` + un modèle GGML, entièrement hors ligne et verbatim ; prioritaire dès que `META_WHISPER_BIN`/`META_WHISPER_MODEL` sont définis
 - Les audios longs sont découpés automatiquement en segments calibrés fournisseur (`AudioSplitter`, MP3 aligné sur les frames / WAV à en-tête régénéré), chacun transcrit puis concaténé avec des marqueurs `[Segment n/N]`
+- **Cascade résiliente :** whisper.cpp local → déploiement Whisper Baseten → endpoint façon OpenAI → Muse Spark Open. Un backend verbatim en échec (binaire absent, crash, sortie vide) est journalisé puis ignoré automatiquement : un upload n'échoue jamais parce qu'un seul backend est indisponible
 - *Historique :* whisper.cpp local a servi pendant le développement, faute de crédits Baseten gratuits ; avec les crédits hackathon (100 $ sur Muse Spark Open), la transcription repasse sur Baseten et le backend local reste disponible comme option hors ligne
 - *Sécurité garde-fous :* le modèle peut refuser de transcrire mot à mot des paroles chantées protégées. Les refus sont détectés et rejetés avec un message clair et traduit — ils ne sont **jamais indexés** comme contenu du document (les enregistrements parlés ne sont pas concernés)
 

@@ -91,9 +91,11 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 
 ### Audio transcription — dual pipeline
 - **Baseten — Muse Spark Open (default)** — the audio is sent to `meta-models/muse-spark-open-1026` through `/v1/chat/completions` (`audio_url` content part) with a strict ASR prompt; works out of the box with the hackathon key
-- **Optional dedicated ASR endpoint** — Whisper-style `/v1/audio/transcriptions` (multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **Optional Baseten Whisper Large V3 Turbo deployment** — dedicated GPU deployment called through the Baseten predict API (`whisper_input.audio.audio_b64` → `segments[].text`); verbatim, no LLM guardrails (sung lyrics included). Enabled via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`); billed per GPU minute to the owning organisation
+- **Optional OpenAI-style ASR endpoint** — Whisper-style `/v1/audio/transcriptions` (multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
 - **Optional local whisper.cpp** — `whisper-cli.exe` + a GGML model, entirely offline and verbatim; takes priority when `META_WHISPER_BIN`/`META_WHISPER_MODEL` are set
 - Long audio is auto-split into provider-sized segments (`AudioSplitter`, frame-aligned MP3 / header-correct WAV), each segment transcribed and concatenated with `[Segment n/N]` markers
+- **Resilient cascade:** local whisper.cpp → Baseten Whisper deployment → OpenAI-style endpoint → Muse Spark Open. A verbatim backend that fails (missing binary, crash, empty output) is logged and skipped automatically, so an upload never fails just because one backend is unavailable
 - *History:* local whisper.cpp was used during development while the free-tier Baseten credits were exhausted; with the hackathon credits ($100 on Muse Spark Open) transcription is back on Baseten, and the local backend stays available as an offline option
 - *Guardrail safety:* the model may decline verbatim transcription of copyrighted sung lyrics. Refusals are detected and rejected with a clear, localized message — they are **never indexed** as document content (speech recordings are unaffected)
 

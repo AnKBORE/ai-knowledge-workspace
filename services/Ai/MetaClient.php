@@ -155,9 +155,25 @@ class MetaClient
      */
     public function transcribe(string $audioPath): string
     {
-        // Local whisper.cpp binary: free, offline, verbatim — no guardrails.
-        if (($this->config['whisper_binary'] ?? '') !== '') {
-            return $this->transcribeLocal($audioPath);
+        // Verbatim backends first (local whisper.cpp, Baseten Whisper deployment):
+        // on failure or empty output, fall through to the next backend instead
+        // of failing the upload.
+        $backends = [
+            'whisper_binary' => fn () => $this->transcribeLocal($audioPath),
+            'baseten_whisper_url' => fn () => $this->transcribeBasetenWhisper($audioPath),
+        ];
+        foreach ($backends as $key => $backend) {
+            if (($this->config[$key] ?? '') === '') {
+                continue;
+            }
+            try {
+                $text = $backend();
+                if (trim($text) !== '') {
+                    return $text;
+                }
+            } catch (\Throwable $e) {
+                error_log('[transcription] ' . $key . ' failed, falling back: ' . $e->getMessage());
+            }
         }
 
         // Dedicated ASR endpoint (Whisper-style /v1/audio/transcriptions):
@@ -204,6 +220,45 @@ class MetaClient
         }
 
         return trim(implode("\n\n", $texts));
+    }
+
+    /**
+     * Baseten dedicated Whisper deployment (predict API):
+     * {"whisper_input": {"audio": {"audio_b64"}, "whisper_params"}} → segments[].text.
+     */
+    private function transcribeBasetenWhisper(string $audioPath): string
+    {
+        $data = file_get_contents($audioPath);
+        if ($data === false) {
+            throw new \RuntimeException('Could not read audio: ' . $audioPath);
+        }
+
+        $input = ['audio' => ['audio_b64' => base64_encode($data)]];
+        $language = (string) ($this->config['baseten_whisper_language'] ?? '');
+        if ($language !== '') {
+            $input['whisper_params'] = ['audio_language' => $language];
+        }
+
+        $payload = $this->request(
+            '',
+            ['whisper_input' => $input],
+            (string) $this->config['baseten_whisper_url'],
+            (string) (($this->config['baseten_whisper_key'] ?? '') ?: ($this->config['api_key'] ?? '')),
+        );
+
+        $texts = [];
+        foreach (($payload['segments'] ?? []) as $segment) {
+            if (is_array($segment) && trim((string) ($segment['text'] ?? '')) !== '') {
+                $texts[] = trim((string) $segment['text']);
+            }
+        }
+        $text = trim(implode(' ', $texts)) ?: trim((string) ($payload['text'] ?? ''));
+
+        if ($text === '') {
+            throw new \RuntimeException('Empty transcription response from the Whisper deployment.');
+        }
+
+        return $text;
     }
 
     /**
@@ -394,9 +449,9 @@ class MetaClient
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
-    private function request(string $path, array $body): array
+    private function request(string $path, array $body, ?string $url = null, ?string $apiKey = null): array
     {
-        $url = rtrim((string) ($this->config['base_url'] ?? ''), '/') . $path;
+        $url ??= rtrim((string) ($this->config['base_url'] ?? ''), '/') . $path;
 
         $handle = curl_init($url);
         curl_setopt_array($handle, [
@@ -404,7 +459,7 @@ class MetaClient
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . (string) ($this->config['api_key'] ?? ''),
+                'Authorization: Bearer ' . ($apiKey ?? (string) ($this->config['api_key'] ?? '')),
             ],
             CURLOPT_POSTFIELDS => json_encode($body, JSON_THROW_ON_ERROR),
             CURLOPT_TIMEOUT => (int) ($this->config['timeout'] ?? 60),
