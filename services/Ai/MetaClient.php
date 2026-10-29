@@ -91,7 +91,9 @@ class MetaClient
             'temperature' => $temperature ?? 0.2,
         ]);
 
-        return (string) ($payload['choices'][0]['message']['content'] ?? '');
+        $content = (string) ($payload['choices'][0]['message']['content'] ?? '');
+
+        return trim((string) preg_replace('/<think>.*?<\/think>/s', '', $content));
     }
 
     /**
