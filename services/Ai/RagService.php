@@ -176,27 +176,192 @@ final class RagService
     }
 
     /**
-     * Agentic task: draft a structured document (note, report) grounded in the
-     * knowledge base.
+     * Agentic task — plan → retrieve → draft → verify → revise.
      *
-     * @return array{draft: string, sources: list<array{title: string, excerpt: string}>}
+     *  1. Plan: the model decomposes the instruction into targeted search
+     *     queries, knowing the titles of the documents the user may access.
+     *  2. Retrieve: each query runs through the permission-scoped retriever;
+     *     results are merged and de-duplicated.
+     *  3. Draft: the document is written from the merged, numbered extracts.
+     *  4. Verify: every sourced claim is checked against its cited extract.
+     *  5. Revise: unsupported claims are corrected or removed (one pass).
+     *
+     * Each step is reported in `steps` so the reasoning is auditable in the UI.
+     *
+     * @return array{draft: string, sources: list<array<string, mixed>>, steps: list<array<string, mixed>>}
      */
     public function task(string $instruction, int $topK = 8, ?int $userId = null): array
     {
-        $chunks = $this->retrieveSimilar($this->embeddings->embed($instruction), $topK, $instruction, $userId);
+        $steps = [];
+
+        $queries = $this->planQueries($instruction, $userId);
+        $steps[] = ['step' => 'plan', 'queries' => $queries];
+
+        $merged = [];
+        $trace = [];
+        foreach ($queries as $query) {
+            $found = $this->retrieveSimilar($this->embeddings->embed($query), max(3, intdiv($topK, 2)), $query, $userId);
+            $new = 0;
+            foreach ($found as $chunk) {
+                $key = ($chunk['document_id'] ?? 0) . '|' . ($chunk['version_id'] ?? 0) . '|' . ($chunk['chunk_index'] ?? md5((string) $chunk['content']));
+                if (!isset($merged[$key]) || $merged[$key]['score'] < $chunk['score']) {
+                    $new += isset($merged[$key]) ? 0 : 1;
+                    $merged[$key] = $chunk;
+                }
+            }
+            $trace[] = ['query' => $query, 'found' => count($found), 'new' => $new];
+        }
+        $chunks = array_values($merged);
+        usort($chunks, static fn (array $a, array $b): int => $b['score'] <=> $a['score']);
+        $chunks = array_slice($chunks, 0, $topK + 4);
+        $steps[] = [
+            'step' => 'retrieve',
+            'queries' => $trace,
+            'extracts' => count($chunks),
+            'documents' => count(array_unique(array_column($chunks, 'document_id'))),
+        ];
 
         if ($chunks === []) {
-            return [
-                'draft' => $this->msg('no_chunks'),
-                'sources' => [],
-            ];
+            return ['draft' => $this->msg('no_chunks'), 'sources' => [], 'steps' => $steps];
         }
 
-        $system = $this->taskPrompt() . "\n\n" . $this->labeledContext($chunks);
-        $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $system]], null, 0.2);
+        $context = $this->labeledContext($chunks);
+        $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $this->taskPrompt() . "\n\n" . $context]], null, 0.2);
+        $steps[] = ['step' => 'draft', 'citations' => count($this->citedChunks($draft, $chunks))];
+
+        $verdict = $this->verifyDraft($draft, $context);
+        $revised = false;
+        if ($verdict['unsupported'] !== []) {
+            $revision = $this->reviseDraft($instruction, $draft, $verdict['unsupported'], $context);
+            if ($revision !== '') {
+                $draft = $revision;
+                $revised = true;
+            }
+        }
+        $steps[] = [
+            'step' => 'verify',
+            'checked' => $verdict['checked'],
+            'unsupported' => count($verdict['unsupported']),
+            'revised' => $revised,
+            'available' => $verdict['available'],
+        ];
+
         $sources = $this->sources($this->citedChunks($draft, $chunks));
 
-        return ['draft' => $draft, 'sources' => $this->translateSources($sources, $instruction)];
+        return ['draft' => $draft, 'sources' => $this->translateSources($sources, $instruction), 'steps' => $steps];
+    }
+
+    /**
+     * Planning step: 2–4 targeted search queries for the instruction. The
+     * original instruction is always kept; any planner failure degrades to it.
+     *
+     * @return list<string>
+     */
+    private function planQueries(string $instruction, ?int $userId): array
+    {
+        $queries = [$instruction];
+        try {
+            $titles = array_slice(array_map(
+                static fn (array $chunk): string => '- ' . $chunk['title'],
+                $this->catalogChunks($userId),
+            ), 0, 60);
+
+            $raw = $this->client->chat(
+                "INSTRUCTION:\n" . $instruction . "\n\nAVAILABLE DOCUMENTS:\n" . ($titles !== [] ? implode("\n", $titles) : '(none)'),
+                [['role' => 'system', 'content' =>
+                    "You plan the research for a document-drafting agent. Break the INSTRUCTION into 2 to 4 short, "
+                    . "complementary search queries that together retrieve everything needed from the knowledge base. "
+                    . "Use the key terms and document titles that are likely to appear in the documents (the documents may be in French: "
+                    . "when the instruction is in another language, write the queries in French). "
+                    . 'Reply ONLY with JSON: {"queries": ["...", "..."]}']],
+                null,
+                0.0,
+            );
+            $plan = $this->decodeJson($raw);
+            foreach ((array) ($plan['queries'] ?? []) as $query) {
+                if (is_string($query) && trim($query) !== '') {
+                    $queries[] = mb_substr(trim($query), 0, 200);
+                }
+            }
+        } catch (\Throwable) {
+        }
+
+        return array_slice(array_values(array_unique($queries)), 0, 5);
+    }
+
+    /**
+     * Verification step: which sourced claims of the draft are not supported by
+     * the extract they cite? Proposals explicitly presented as suggestions are
+     * out of scope. A verifier failure is reported, never blocking.
+     *
+     * @return array{checked: int, unsupported: list<string>, available: bool}
+     */
+    private function verifyDraft(string $draft, string $context): array
+    {
+        try {
+            $raw = $this->client->chat(
+                "EXTRACTS:\n" . $context . "\n\nDRAFT:\n" . $draft,
+                [['role' => 'system', 'content' =>
+                    'You are a strict fact-checker. Check every factual statement of the DRAFT that cites an extract [n] '
+                    . 'or states a specific fact (figure, date, name, title, quotation, rule) against the EXTRACTS. '
+                    . 'Ignore content explicitly presented as a proposal or suggestion. '
+                    . 'A statement is unsupported if the cited extract does not say it, contradicts it, or if the number cited is wrong. '
+                    . 'Reply ONLY with JSON: {"checked": <number of statements checked>, "unsupported": ["<statement> — <why>", ...]}']],
+                null,
+                0.0,
+            );
+            $verdict = $this->decodeJson($raw);
+            if (!isset($verdict['checked'])) {
+                return ['checked' => 0, 'unsupported' => [], 'available' => false];
+            }
+
+            return [
+                'checked' => (int) $verdict['checked'],
+                'unsupported' => array_values(array_filter(
+                    array_map(static fn ($item): string => is_string($item) ? trim($item) : '', (array) ($verdict['unsupported'] ?? [])),
+                    static fn (string $item): bool => $item !== '',
+                )),
+                'available' => true,
+            ];
+        } catch (\Throwable) {
+            return ['checked' => 0, 'unsupported' => [], 'available' => false];
+        }
+    }
+
+    /**
+     * Revision step: correct or remove the unsupported claims, keep the rest.
+     *
+     * @param list<string> $unsupported
+     */
+    private function reviseDraft(string $instruction, string $draft, array $unsupported, string $context): string
+    {
+        try {
+            return trim($this->client->chat(
+                "INSTRUCTION:\n" . $instruction . "\n\nDRAFT:\n" . $draft . "\n\nUNSUPPORTED STATEMENTS:\n- " . implode("\n- ", $unsupported),
+                [['role' => 'system', 'content' => $this->taskPrompt() . "\n\n" . $context
+                    . "\n\nREVISION: rewrite the DRAFT so that each UNSUPPORTED STATEMENT is corrected to match the extracts or removed. "
+                    . 'Keep everything else unchanged: structure, language, formatting and the [n] citations. Output only the revised document.']],
+                null,
+                0.1,
+            ));
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    /**
+     * Decode the first JSON object of a model reply (tolerates code fences).
+     *
+     * @return array<string, mixed>
+     */
+    private function decodeJson(string $raw): array
+    {
+        if (preg_match('/\{.*\}/s', $raw, $match) !== 1) {
+            return [];
+        }
+        $decoded = json_decode($match[0], true);
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     /**
@@ -424,26 +589,26 @@ PROMPT;
         $langRule = "7. Rédige le document dans la langue de l'instruction : instruction en anglais → document en anglais ; en coréen → en coréen, etc.";
 
         return <<<PROMPT
-Tu es un rédacteur pédagogique expérimenté, spécialiste de l'Approche Par les Compétences / Pédagogie de l'Intégration (APC/PI).
+Tu es un rédacteur professionnel expérimenté. Pour les leçons et supports de cours, tu es spécialiste de l'Approche Par les Compétences / Pédagogie de l'Intégration (APC/PI).
 
-Mission : à partir du programme fourni dans les extraits, rédige le document demandé (leçon détaillée, note, rapport…).
+Mission : à partir des extraits fournis, rédige le document demandé (note, rapport, compte rendu, courrier, synthèse, leçon…).
 
 RÈGLES :
-1. Le programme est l'OSSATURE : reprends fidèlement la classe, la discipline, l'intitulé de la leçon, le contenu officiel et l'approche pédagogique, en citant les extraits [1], [2]…
-2. Tu DOIS développer le contenu pédagogique demandé : objectifs d'apprentissage, prérequis, déroulement (théorie et pratique), activités, exercices et critères d'évaluation. Ce développement est une PROPOSITION pédagogique cohérente avec le programme.
-3. N'invente aucun fait factuel externe (noms de personnes, chiffres, références bibliographiques) non justifié par les extraits ou par une pratique pédagogique standard.
-4. Distingue clairement ce qui provient du programme (cité) de ce qui est proposé.
+1. Les extraits sont l'OSSATURE : reprends fidèlement les faits, intitulés, chiffres, dates et noms qu'ils contiennent, en citant les extraits [1], [2]…
+2. Tu peux développer ce que le type de document exige (mise en forme, transitions, recommandations, activités pédagogiques…), comme une PROPOSITION cohérente avec les extraits.
+3. N'invente aucun fait factuel externe (noms de personnes, chiffres, dates, références) non justifié par les extraits.
+4. Distingue clairement ce qui provient des extraits (cité) de ce qui est proposé.
 4b. Mets en gras (**…**) le titre du document, les intitulés de sections et les données clés (dates, chiffres, noms propres).
 4c. Toute citation littérale entre guillemets DOIT être traduite dans la langue de rédaction ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage du document ne doit rester dans une autre langue que celle de l'instruction.
-5. Structure :
-   - titre et identification (classe, discipline, durée) ;
-   - objectifs d'apprentissage ;
-   - prérequis ;
-   - déroulement détaillé (séances, théorie/pratique) ;
-   - exercices / activité pratique ;
-   - évaluation ;
-   - sources [1], [2]…
-6. Ton professionnel, prêt à être utilisé en classe.
+5. Structure ADAPTÉE au type de document demandé — n'impose jamais une structure étrangère au genre :
+   - note / mémo : titre, destinataires et objet, points essentiels, actions ou recommandations ;
+   - rapport / synthèse : titre, contexte, constats, analyse, conclusions et recommandations ;
+   - compte rendu : titre, date et participants (si connus), points abordés, décisions, suites à donner ;
+   - courrier : objet, formule d'appel, corps, formule de politesse ;
+   - leçon / cours (APC/PI) : identification (classe, discipline, durée), objectifs d'apprentissage, prérequis, déroulement détaillé (théorie/pratique), exercices, évaluation ;
+   - autre : la structure professionnelle usuelle pour ce genre.
+   Termine toujours par « Sources : [1], [2]… ».
+6. Ton professionnel, document prêt à l'emploi.
 $langRule
 PROMPT;
     }
@@ -675,6 +840,8 @@ PROMPT;
 
             return [
                 'document_id' => $item['document_id'],
+                'version_id' => $item['version_id'],
+                'chunk_index' => $item['chunk_index'],
                 'content' => $content,
                 'title' => $item['title'],
                 'score' => $item['score'],

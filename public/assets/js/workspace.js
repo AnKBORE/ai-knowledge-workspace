@@ -96,10 +96,56 @@
             + '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
             + '<span>' + t('generating', 'Génération en cours…') + '</span></div>';
         resultSources.hidden = true;
+        if (resultSteps) { resultSteps.hidden = true; }
         modal.show();
     }
 
-    function showResult(badge, title, sub, content, sources) {
+    var resultSteps = document.getElementById('result-steps');
+    var resultStepsList = document.getElementById('result-steps-list');
+
+    // Agent trace (plan → retrieve → draft → verify): makes the agent's work
+    // auditable instead of a black box.
+    function renderSteps(steps) {
+        if (!resultSteps) { return; }
+        resultStepsList.innerHTML = '';
+        if (!Array.isArray(steps) || steps.length === 0) {
+            resultSteps.hidden = true;
+            return;
+        }
+        steps.forEach(function (step) {
+            var li = document.createElement('li');
+            var text = '';
+            var details = [];
+            if (step.step === 'plan') {
+                text = sprintf(t('step_plan'), (step.queries || []).length);
+                details = (step.queries || []).slice(1);
+            } else if (step.step === 'retrieve') {
+                text = sprintf(t('step_retrieve'), step.extracts, step.documents);
+            } else if (step.step === 'draft') {
+                text = sprintf(t('step_draft'), step.citations);
+            } else if (step.step === 'verify') {
+                text = !step.available ? t('step_verify_na')
+                    : step.unsupported > 0 ? sprintf(t('step_verify_fixed'), step.checked, step.unsupported)
+                    : sprintf(t('step_verify_ok'), step.checked);
+            }
+            li.textContent = text;
+            if (details.length) {
+                var ul = document.createElement('ul');
+                ul.className = 'text-muted';
+                details.forEach(function (d) {
+                    var item = document.createElement('li');
+                    item.textContent = '« ' + d + ' »';
+                    ul.appendChild(item);
+                });
+                li.appendChild(ul);
+            }
+            resultStepsList.appendChild(li);
+        });
+        document.getElementById('result-steps-summary').textContent = t('agent_trace');
+        resultSteps.hidden = false;
+    }
+
+    function showResult(badge, title, sub, content, sources, steps) {
         if (!modal) { return; }
         currentResult = { title: title, content: content };
         resultBadge.textContent = badge;
@@ -108,6 +154,7 @@
         resultContent.innerHTML = escapeThenBold(content);
         var qInput = document.getElementById('question');
         resultSources.hidden = !renderSources(resultSourcesList, sources, qInput ? qInput.value : '');
+        renderSteps(steps);
     }
 
     function showError(message) {
@@ -160,7 +207,7 @@
                 var data = await postJson(apiUrl('ask.php'), lastRequest.payload);
                 if (data.error) { showError(data.error); return; }
                 showResult(lastRequest.badge, lastRequest.badge, lastRequest.sub,
-                    data.answer || data.draft || '', data.sources);
+                    data.answer || data.draft || '', data.sources, data.steps);
             } catch (err) {
                 showError(t('network_error_long'));
             }
@@ -208,7 +255,7 @@
             try {
                 var data = await postJson(apiUrl('ask.php'), { instruction: instruction, mode: 'task' });
                 if (data.error) { showError(data.error); return; }
-                showResult(t('draft_badge'), t('draft_badge'), t('draft_sub'), data.draft || '', data.sources);
+                showResult(t('draft_badge'), t('draft_badge'), t('draft_sub'), data.draft || '', data.sources, data.steps);
             } catch (err) {
                 showError(t('network_error_long'));
             }

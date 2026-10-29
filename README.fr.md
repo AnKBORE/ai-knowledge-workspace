@@ -89,6 +89,21 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
 
+### Boucle d'agent — planifier → rechercher → rédiger → vérifier → corriger
+Le mode tâche n'est pas une simple recherche suivie d'une génération. `RagService::task()` exécute une boucle d'agent, et chaque étape est montrée à l'utilisateur (panneau « Étapes de l'agent » dans la fenêtre de résultat) :
+
+| Étape | Ce que fait l'agent |
+|---|---|
+| **1. Planifier** | Muse Spark Open découpe la consigne en 2 à 4 recherches ciblées, en connaissant **les titres des documents que l'utilisateur a le droit de consulter** (il traduit les recherches dans la langue des documents : consigne en anglais → recherches en français) |
+| **2. Rechercher** | Chaque recherche passe par le moteur filtré par permissions ; les résultats sont fusionnés et dédoublonnés par extrait |
+| **3. Rédiger** | Le document est rédigé à partir des extraits fusionnés et numérotés, avec une structure adaptée au genre demandé (note, rapport, compte rendu, courrier, leçon…) |
+| **4. Vérifier** | Une passe de vérification contrôle chaque affirmation sourcée (chiffre, date, nom, citation) contre l'extrait cité |
+| **5. Corriger** | Les affirmations non étayées sont corrigées ou retirées automatiquement (une passe) ; la trace indique combien ont été corrigées |
+
+Mesuré sur la vraie base : consigne en anglais → 4 recherches planifiées (3 en français, dont une ciblant le bon titre de document) → 12 extraits issus de 2 documents → rédaction → **14 affirmations contrôlées, 1 non étayée, corrigée automatiquement** (~50 s de bout en bout). Si la planification ou la vérification échoue, l'agent revient au comportement à recherche unique : la tâche n'échoue jamais à cause d'elles. Couvert par `AgentTaskTest` avec un modèle scripté.
+
+*Limite connue :* la vérification contrôle que les affirmations correspondent aux extraits ; elle ne peut pas garantir la qualité d'une traduction depuis une langue peu dotée comme le mooré — ces passages traduits doivent être relus par un locuteur.
+
 ### Ingestion en arrière-plan — uploads non bloquants
 Les fichiers lents demandent plusieurs minutes de traitement IA (ASR pour l'audio, OCR pour les images et PDF scannés). Au lieu de garder la requête HTTP ouverte, ils sont mis en file d'attente :
 
@@ -186,7 +201,7 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **76 tests automatisés · 166 assertions** |
+| **Tests** | **79 tests automatisés · 179 assertions** |
 | **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
 | **UI** | Bilingue EN/FR (EN par défaut), Bootstrap + DataTables + Select2 |
 
@@ -272,7 +287,7 @@ Endpoints API (protégés par session) :
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**76 tests, 166 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux et le pipeline d'ingestion en arrière-plan. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**79 tests, 179 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan et la boucle d'agent. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 

@@ -89,6 +89,21 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Understanding of user context
 - Semantic search beyond keywords
 
+### Agentic task loop — plan → retrieve → draft → verify → revise
+The task mode is not a single search followed by a generation. `RagService::task()` runs an agent loop, and every step is shown to the user ("Agent steps" panel in the result modal):
+
+| Step | What the agent does |
+|---|---|
+| **1. Plan** | Muse Spark Open decomposes the instruction into 2–4 targeted search queries, knowing the **titles of the documents the user may access** (it translates queries into the documents' language, e.g. English instruction → French queries) |
+| **2. Retrieve** | Each query runs through the permission-scoped retriever; results are merged and de-duplicated per chunk |
+| **3. Draft** | The document is written from the merged, numbered extracts, with a structure adapted to the requested genre (note, report, minutes, letter, lesson…) |
+| **4. Verify** | A fact-checking pass checks every sourced statement (figure, date, name, quotation) against the extract it cites |
+| **5. Revise** | Unsupported statements are corrected or removed automatically (one pass); the trace reports how many were fixed |
+
+Measured on the real knowledge base: English instruction → 4 planned queries (3 in French, one targeting the right document title) → 12 extracts from 2 documents → draft → **14 statements checked, 1 unsupported, corrected automatically** (~50 s end to end). Planner or verifier failures degrade gracefully to the single-search behaviour — the task never fails because of them. Covered by `AgentTaskTest` with a scripted model.
+
+*Known limit:* the verifier checks that statements match the extracts; it cannot guarantee the quality of a translation from a low-resource language such as Mooré — translations of such passages should be reviewed by a speaker.
+
 ### Background ingestion — non-blocking uploads
 Slow files need minutes of AI processing (ASR for audio, OCR for images and scanned PDFs). Instead of holding the HTTP request open, they are queued:
 
@@ -186,7 +201,7 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **76 automated tests · 166 assertions** |
+| **Tests** | **79 automated tests · 179 assertions** |
 | **UI** | Bilingual EN/FR (EN default), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · CSP · CSRF · audit journal |
 
@@ -272,7 +287,7 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**76 tests, 166 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services and the background ingestion pipeline. No database server or API required (SQLite in memory + deterministic fakes).
+**79 tests, 179 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 

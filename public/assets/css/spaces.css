@@ -435,3 +435,19 @@
 /* Icon buttons (result modal footer) */
 .btn-icon{display:inline-flex;align-items:center;gap:.45rem;font-weight:600}
 .btn-icon svg{width:16px;height:16px;flex:0 0 auto}
+
+/* Agent trace (plan → retrieve → draft → verify) in the result modal */
+.agent-steps {
+    background: #f4f7fd;
+    border: 1px solid #dbe4f5;
+    border-left: 3px solid #2f6fdf;
+    border-radius: .6rem;
+    padding: .6rem .9rem;
+}
+.agent-steps summary {
+    cursor: pointer;
+    color: #1d3c78;
+}
+.agent-steps ol { padding-left: 1.2rem; }
+.agent-steps ol > li { margin-bottom: .2rem; }
+.agent-steps ul { padding-left: 1rem; margin: .15rem 0 .3rem; }

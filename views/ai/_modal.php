@@ -13,6 +13,10 @@ $S ??= app_i18n($lang ?? 'en')['shared'];
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?= e($S['close']) ?>"></button>
             </div>
             <div class="modal-body p-4">
+                <details id="result-steps" class="agent-steps mb-3" hidden>
+                    <summary class="small fw-semibold" id="result-steps-summary"></summary>
+                    <ol id="result-steps-list" class="small mb-0 mt-2"></ol>
+                </details>
                 <div id="result-content"></div>
                 <div id="result-sources" class="mt-4" hidden>
                     <p class="text-uppercase small fw-semibold text-muted mb-2"><?= e($S['sources']) ?></p>
