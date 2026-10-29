@@ -89,6 +89,12 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
 
+### Documents scannés — pipeline OCR
+- Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open
+- Un PDF dont l'extraction de texte est vide est détecté automatiquement : ses images de pages JPEG sont extraites et passées à l'OCR, puis concaténées avec des marqueurs `[Page n / N]` — vérifié sur un recueil de chants scanné de 4 pages en mooré
+- Les pages sont envoyées **en parallèle** (`curl_multi`) : le temps total est à peu près celui de la page la plus lente ; une page en échec est relancée seule sans perdre les autres
+- Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses
+
 ### Transcription audio — double pipeline
 - **Baseten — Muse Spark Open (par défaut)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` (partie `audio_url`) avec un prompt ASR strict ; fonctionne directement avec la clé hackathon
 - **Déploiement Baseten Whisper Large V3 Turbo (optionnel)** — déploiement GPU dédié appelé via l'API predict de Baseten (`whisper_input.audio.audio_b64` → `segments[].text`) ; verbatim, sans garde-fous LLM (paroles chantées comprises). Activé via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`) ; facturé à la minute GPU sur l'organisation propriétaire

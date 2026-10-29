@@ -345,10 +345,7 @@ class MetaClient
     public function describeImage(string $imagePath): string
     {
         if ((string) ($this->config['api_style'] ?? 'meta') === 'openai') {
-            return $this->chatWithImage(
-                'Extract all the text visible in this document image. Return only the extracted text, in reading order, without commentary.',
-                $imagePath,
-            );
+            return $this->chatWithImage(self::OCR_PROMPT, $imagePath);
         }
 
         $data = file_get_contents($imagePath);
@@ -368,9 +365,73 @@ class MetaClient
     }
 
     /**
-     * OpenAI-compatible multimodal call with an image (base64 data URL).
+     * OCR several images (e.g. the pages of a scanned PDF). With an
+     * OpenAI-compatible partner the requests run in parallel (curl_multi), so
+     * total latency ≈ the slowest page instead of the sum of all pages.
+     *
+     * @param list<string> $imagePaths
+     * @return list<string> extracted text, in the same order
      */
-    private function chatWithImage(string $prompt, string $imagePath): string
+    public function describeImages(array $imagePaths): array
+    {
+        if ((string) ($this->config['api_style'] ?? 'meta') !== 'openai' || count($imagePaths) < 2) {
+            return array_map(fn (string $path) => $this->describeImage($path), $imagePaths);
+        }
+
+        $url = rtrim((string) ($this->config['base_url'] ?? ''), '/') . '/v1/chat/completions';
+        $multi = curl_multi_init();
+        $handles = [];
+        foreach ($imagePaths as $i => $path) {
+            $handles[$i] = curl_init($url);
+            curl_setopt_array($handles[$i], [
+                CURLOPT_POST => true,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . (string) ($this->config['api_key'] ?? ''),
+                ],
+                CURLOPT_POSTFIELDS => json_encode($this->imageChatBody(self::OCR_PROMPT, $path), JSON_THROW_ON_ERROR),
+                CURLOPT_TIMEOUT => (int) ($this->config['vision_timeout'] ?? 300),
+            ]);
+            $this->applyCaBundle($handles[$i]);
+            curl_multi_add_handle($multi, $handles[$i]);
+        }
+
+        do {
+            $status = curl_multi_exec($multi, $running);
+            if ($running) {
+                curl_multi_select($multi);
+            }
+        } while ($running && $status === CURLM_OK);
+
+        $texts = [];
+        foreach ($handles as $i => $handle) {
+            $payload = json_decode((string) curl_multi_getcontent($handle), true);
+            $error = curl_error($handle);
+            curl_multi_remove_handle($multi, $handle);
+            curl_close($handle);
+
+            $content = is_array($payload) ? (string) ($payload['choices'][0]['message']['content'] ?? '') : '';
+            if ($content === '') {
+                // One failed page must not lose the others: retry it sequentially.
+                error_log('[vision] parallel OCR failed for page ' . ($i + 1) . ': ' . ($error ?: 'empty response') . ' — retrying');
+                $content = $this->describeImage($imagePaths[$i]);
+            }
+            $texts[] = trim((string) preg_replace('/<think>.*?<\/think>/s', '', $content));
+        }
+        curl_multi_close($multi);
+
+        return $texts;
+    }
+
+    private const OCR_PROMPT = 'Extract all the text visible in this document image. Return only the extracted text, in reading order, without commentary.';
+
+    /**
+     * Chat-completions body carrying one image (downscaled, base64 data URL).
+     *
+     * @return array<string, mixed>
+     */
+    private function imageChatBody(string $prompt, string $imagePath): array
     {
         $data = file_get_contents($imagePath);
         if ($data === false) {
@@ -378,21 +439,55 @@ class MetaClient
         }
 
         $mime = mime_content_type($imagePath) ?: 'image/png';
-        $dataUrl = 'data:' . $mime . ';base64,' . base64_encode($data);
+        [$data, $mime] = $this->downscaleImage($data, $mime);
 
-        $payload = $this->request('/v1/chat/completions', [
+        return [
             'model' => (string) ($this->config['chat_model'] ?? ''),
             'messages' => [[
                 'role' => 'user',
                 'content' => [
                     ['type' => 'text', 'text' => $prompt],
-                    ['type' => 'image_url', 'image_url' => ['url' => $dataUrl]],
+                    ['type' => 'image_url', 'image_url' => ['url' => 'data:' . $mime . ';base64,' . base64_encode($data)]],
                 ],
             ]],
             'temperature' => 0.2,
-        ]);
+        ];
+    }
 
-        return (string) ($payload['choices'][0]['message']['content'] ?? '');
+    /**
+     * OpenAI-compatible multimodal call with an image (base64 data URL).
+     */
+    private function chatWithImage(string $prompt, string $imagePath): string
+    {
+        $payload = $this->request('/v1/chat/completions', $this->imageChatBody($prompt, $imagePath), timeout: (int) ($this->config['vision_timeout'] ?? 300));
+        $content = (string) ($payload['choices'][0]['message']['content'] ?? '');
+
+        return trim((string) preg_replace('/<think>.*?<\/think>/s', '', $content));
+    }
+
+    /**
+     * Full-resolution scans (e.g. 1920×2560) make the vision model time out;
+     * 1600 px on the long side keeps text perfectly legible for OCR (~10× faster).
+     *
+     * @return array{0: string, 1: string} [bytes, mime]
+     */
+    private function downscaleImage(string $data, string $mime, int $maxSide = 1600): array
+    {
+        if (!extension_loaded('gd') || ($image = @imagecreatefromstring($data)) === false) {
+            return [$data, $mime];
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        if (max($width, $height) <= $maxSide) {
+            return [$data, $mime];
+        }
+
+        $scaled = imagescale($image, (int) round($width * $maxSide / max($width, $height)));
+        ob_start();
+        imagejpeg($scaled, null, 85);
+
+        return [(string) ob_get_clean(), 'image/jpeg'];
     }
 
     /**
@@ -449,7 +544,7 @@ class MetaClient
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
-    private function request(string $path, array $body, ?string $url = null, ?string $apiKey = null): array
+    private function request(string $path, array $body, ?string $url = null, ?string $apiKey = null, ?int $timeout = null): array
     {
         $url ??= rtrim((string) ($this->config['base_url'] ?? ''), '/') . $path;
 
@@ -462,7 +557,7 @@ class MetaClient
                 'Authorization: Bearer ' . ($apiKey ?? (string) ($this->config['api_key'] ?? '')),
             ],
             CURLOPT_POSTFIELDS => json_encode($body, JSON_THROW_ON_ERROR),
-            CURLOPT_TIMEOUT => (int) ($this->config['timeout'] ?? 60),
+            CURLOPT_TIMEOUT => $timeout ?? (int) ($this->config['timeout'] ?? 60),
         ]);
         $this->applyCaBundle($handle);
 

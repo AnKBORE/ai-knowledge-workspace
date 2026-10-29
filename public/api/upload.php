@@ -126,7 +126,12 @@ try {
             throw new \RuntimeException('PDF extraction requires smalot/pdfparser.');
         }
         $parser = new \Smalot\PdfParser\Parser();
-        $content = $parser->parseFile($tmp)->getText();
+        $pdf = $parser->parseFile($tmp);
+        $content = $pdf->getText();
+        // Scanned PDF (images only, no text layer): OCR each page image.
+        if (trim($content) === '') {
+            $content = $dependencies['vision']->extractTextFromScannedPdf($pdf);
+        }
     } else {
         $content = (string) file_get_contents($tmp);
     }

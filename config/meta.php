@@ -64,4 +64,6 @@ return [
 
     // Max request time in seconds.
     'timeout' => 180,
+    // OCR of dense scans: the reasoning model can take 2–3 min per page.
+    'vision_timeout' => (int) (getenv('META_VISION_TIMEOUT') ?: 300),
 ];
