@@ -82,6 +82,11 @@ final class RagService
     {
         self::$vectorCache = []; // new chunks make cached vectors stale
 
+        // Replace, never stack: a re-index must not leave stale chunks from
+        // previous versions searchable (wrong stats, outdated matches).
+        $this->db->prepare('DELETE FROM document_chunks WHERE document_id = :id')
+            ->execute(['id' => $documentId]);
+
         $stmt = $this->db->prepare(
             'INSERT INTO document_chunks (document_id, version_document_id, chunk_index, content, embedding)
              VALUES (:document_id, :version_id, :chunk_index, :content, :embedding)'

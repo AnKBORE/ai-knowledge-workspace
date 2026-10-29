@@ -298,7 +298,11 @@ if ($method === 'GET') {
         'flash' => $flashMessage,
         'stats' => $path === '/' ? [
             'documents' => $totalDocuments,
-            'chunks' => (int) $dependencies['pdo']->query('SELECT COUNT(*) FROM document_chunks')->fetchColumn(),
+            'chunks' => (int) $dependencies['pdo']->query(
+                'SELECT COUNT(*) FROM document_chunks c
+                 JOIN documents d ON d.id = c.document_id
+                 WHERE d.supprime_le IS NULL'
+            )->fetchColumn(),
             'categories' => $dependencies['categorie_model']->count(),
         ] : null,
         'lang' => $lang,

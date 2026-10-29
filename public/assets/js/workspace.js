@@ -148,6 +148,25 @@
         document.getElementById('download-docx').addEventListener('click', function () { downloadResult('docx'); });
     }
 
+    /* ---------------- Retry (replays the last question/instruction) ---------------- */
+
+    var lastRequest = null;
+    var retryBtn = document.getElementById('retry-result');
+    if (retryBtn) {
+        retryBtn.addEventListener('click', async function () {
+            if (lastRequest === null) { return; }
+            showLoading(lastRequest.badge, lastRequest.badge, lastRequest.loading);
+            try {
+                var data = await postJson(apiUrl('ask.php'), lastRequest.payload);
+                if (data.error) { showError(data.error); return; }
+                showResult(lastRequest.badge, lastRequest.badge, lastRequest.sub,
+                    data.answer || data.draft || '', data.sources);
+            } catch (err) {
+                showError(t('network_error_long'));
+            }
+        });
+    }
+
     /* ---------------- Question ---------------- */
 
     var askForm = document.getElementById('ask-form');
@@ -157,6 +176,10 @@
             var question = document.getElementById('question').value.trim();
             if (!question) { return; }
 
+            lastRequest = {
+                payload: { question: question, mode: 'answer' },
+                badge: t('answer_badge'), loading: t('answer_loading'), sub: t('answer_sub')
+            };
             showLoading(t('answer_badge'), t('answer_badge'), t('answer_loading'));
             try {
                 var data = await postJson(apiUrl('ask.php'), { question: question, mode: 'answer' });
@@ -177,6 +200,10 @@
             var instruction = document.getElementById('instruction').value.trim();
             if (!instruction) { return; }
 
+            lastRequest = {
+                payload: { instruction: instruction, mode: 'task' },
+                badge: t('draft_badge'), loading: t('draft_loading'), sub: t('draft_sub')
+            };
             showLoading(t('draft_badge'), t('draft_badge'), t('draft_loading'));
             try {
                 var data = await postJson(apiUrl('ask.php'), { instruction: instruction, mode: 'task' });

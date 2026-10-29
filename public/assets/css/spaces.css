@@ -431,3 +431,7 @@
 
 /* Query-term highlighting inside source excerpts */
 .text-muted mark{background:#fde68a;color:#78350f;padding:0 .1rem;border-radius:2px}
+
+/* Icon buttons (result modal footer) */
+.btn-icon{display:inline-flex;align-items:center;gap:.45rem;font-weight:600}
+.btn-icon svg{width:16px;height:16px;flex:0 0 auto}
