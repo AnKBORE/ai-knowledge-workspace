@@ -90,11 +90,12 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Semantic search beyond keywords
 
 ### Audio transcription — dual pipeline
-- **Provider ASR (Baseten)** — designed for a dedicated speech-to-text endpoint (`/v1/audio/transcriptions`, Whisper-style multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
-- **Local whisper.cpp** — `whisper-cli.exe` + a GGML model runs entirely offline: verbatim lyrics/speech, no rate limit, **zero credit consumption**
+- **Baseten — Muse Spark Open (default)** — the audio is sent to `meta-models/muse-spark-open-1026` through `/v1/chat/completions` (`audio_url` content part) with a strict ASR prompt; works out of the box with the hackathon key
+- **Optional dedicated ASR endpoint** — Whisper-style `/v1/audio/transcriptions` (multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **Optional local whisper.cpp** — `whisper-cli.exe` + a GGML model, entirely offline and verbatim; takes priority when `META_WHISPER_BIN`/`META_WHISPER_MODEL` are set
 - Long audio is auto-split into provider-sized segments (`AudioSplitter`, frame-aligned MP3 / header-correct WAV), each segment transcribed and concatenated with `[Segment n/N]` markers
-- *Why local during development:* the hackathon free-tier Baseten credits are nearly exhausted, so `META_WHISPER_BIN`/`META_WHISPER_MODEL` route transcription locally while the API pipeline remains wired and production-ready — switching back only takes an env variable
-- *Fallback:* when no ASR is configured, the multimodal chat model describes the audio (its copyright guardrails can refuse verbatim lyrics)
+- *History:* local whisper.cpp was used during development while the free-tier Baseten credits were exhausted; with the hackathon credits ($100 on Muse Spark Open) transcription is back on Baseten, and the local backend stays available as an offline option
+- *Guardrail safety:* the model may decline verbatim transcription of copyrighted sung lyrics. Refusals are detected and rejected with a clear, localized message — they are **never indexed** as document content (speech recordings are unaffected)
 
 ### Precision retrieval engine (RAG++)
 - **Permission-aware retrieval** — every scored chunk belongs to a document the actor is allowed to read (tenant, workspace membership, confidentiality, ownership, soft-delete), resolved once per query

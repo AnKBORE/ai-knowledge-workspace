@@ -181,6 +181,8 @@ try {
         $error = sprintf($T['audio_too_long'], intdiv(($dependencies['config']['audio_max_seconds'] ?? 600), 60));
     } elseif (str_contains($message, 'Media could not be processed')) {
         $error = $T['media_failed'];
+    } elseif (str_contains($message, 'Transcription refused')) {
+        $error = $T['transcription_refused'];
     } else {
         $error = getenv('APP_DEBUG') === '1' ? $message : $T['upload_failed'];
     }

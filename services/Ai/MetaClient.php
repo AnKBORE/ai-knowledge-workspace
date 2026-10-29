@@ -379,7 +379,13 @@ class MetaClient
             throw new \RuntimeException('Empty transcription response from the model (unsupported audio format?).');
         }
 
-        return $content;
+        // Guardrail refusals (e.g. sung lyrics flagged as copyrighted) must never
+        // be indexed as if they were the audio content.
+        if (preg_match('/\b(I\s+(can\'?t|cannot|can’t|am\s+unable\s+to|won\'?t)\s+(provide|transcribe|share|help\s+with)|verbatim\s+transcript\s+of\s+(these|this|copyrighted)|copyrighted\s+(song|lyrics|material)|je\s+ne\s+(peux|suis)\s+pas\s+(en\s+mesure\s+de\s+)?(fournir|transcrire))/iu', $content) === 1) {
+            throw new \RuntimeException('Transcription refused by the model guardrails (likely copyrighted sung lyrics). Speech recordings are supported; for songs, configure the local whisper.cpp backend.');
+        }
+
+        return trim((string) preg_replace('/<think>.*?<\/think>/s', '', $content));
     }
 
     /**

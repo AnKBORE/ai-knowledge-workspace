@@ -90,11 +90,12 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Recherche sémantique au-delà des mots-clés
 
 ### Transcription audio — double pipeline
-- **ASR fournisseur (Baseten)** — conçu pour un endpoint de transcription dédié (`/v1/audio/transcriptions`, multipart `file` + `model` façon Whisper), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
-- **whisper.cpp local** — `whisper-cli.exe` + un modèle GGML tourne entièrement hors ligne : paroles/paroles verbatim, sans limite de débit, **zéro consommation de crédit**
+- **Baseten — Muse Spark Open (par défaut)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` (partie `audio_url`) avec un prompt ASR strict ; fonctionne directement avec la clé hackathon
+- **Endpoint ASR dédié (optionnel)** — `/v1/audio/transcriptions` façon Whisper (multipart `file` + `model`), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
+- **whisper.cpp local (optionnel)** — `whisper-cli.exe` + un modèle GGML, entièrement hors ligne et verbatim ; prioritaire dès que `META_WHISPER_BIN`/`META_WHISPER_MODEL` sont définis
 - Les audios longs sont découpés automatiquement en segments calibrés fournisseur (`AudioSplitter`, MP3 aligné sur les frames / WAV à en-tête régénéré), chacun transcrit puis concaténé avec des marqueurs `[Segment n/N]`
-- *Pourquoi le local pendant le développement :* les crédits Baseten gratuits du hackathon sont presque épuisés — `META_WHISPER_BIN`/`META_WHISPER_MODEL` routent donc la transcription en local, tandis que le pipeline API reste câblé et prêt pour la production (un retour = une variable d'env)
-- *Repli :* sans ASR configuré, le modèle de chat multimodal décrit l'audio (ses garde-fous copyright peuvent refuser les paroles verbatim)
+- *Historique :* whisper.cpp local a servi pendant le développement, faute de crédits Baseten gratuits ; avec les crédits hackathon (100 $ sur Muse Spark Open), la transcription repasse sur Baseten et le backend local reste disponible comme option hors ligne
+- *Sécurité garde-fous :* le modèle peut refuser de transcrire mot à mot des paroles chantées protégées. Les refus sont détectés et rejetés avec un message clair et traduit — ils ne sont **jamais indexés** comme contenu du document (les enregistrements parlés ne sont pas concernés)
 
 ### Moteur de récupération de précision (RAG++)
 - **Retrieval filtré par permissions** — chaque chunk scoré appartient à un document que l'acteur est autorisé à lire (tenant, adhésion d'espace, confidentialité, propriété, suppression logique), résolu en une passe par requête
