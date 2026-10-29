@@ -91,7 +91,7 @@ Des mesures concrètes pèsent plus que les adjectifs :
 
 | Métrique | Valeur à citer |
 |---|---|
-| **Tests automatisés** | **68 tests, 143 assertions** (SQLite en mémoire + doubles déterministes) |
+| **Tests automatisés** | **76 tests, 166 assertions** (SQLite en mémoire + doubles déterministes) |
 | **Couverture sécurité** | Argon2 · CSRF · RBAC deny-by-default (permissions globales + par espace) · confidentialité `prive` · soft-delete · journalisation de chaque action |
 | **Retrieval** | Scoring hybride `0.6 sémantique + 0.4 lexical + boost titre` · expansion voisins ±1 + chunk 0 · détection d'intention catalogue · retry « not found » (topK ×2) |
 | **Citations** | Seuls les extraits **réellement cités** sont affichés, avec leur numéro exact de contexte — traçabilité 1:1 |

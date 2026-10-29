@@ -89,19 +89,39 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Understanding of user context
 - Semantic search beyond keywords
 
+### Background ingestion — non-blocking uploads
+Slow files need minutes of AI processing (ASR for audio, OCR for images and scanned PDFs). Instead of holding the HTTP request open, they are queued:
+
+```
+upload.php ──(text / text PDF)──► extract → store → index → 200        (synchronous, unchanged)
+     │
+     └─(audio / image / scanned PDF)──► ingestion_jobs row + detached worker → 202 {job_id}   (~1 s)
+                                            │
+                tools/ingest_worker.php ◄───┘  claim (atomic) → ASR/OCR → store → index → audit
+                                            │
+     upload_status.php?job_id ◄── UI polls every 3 s (elapsed time, then "Indexed: N chunks" or a localized error)
+```
+
+- **The app stays responsive**: the worker is a separate process, so the single-threaded `php -S` server keeps serving pages (measured 20–80 ms per page during a 105 s OCR job)
+- **No half-documents**: the `documents` row is created only after extraction succeeds, so retrieval and listings never expose unprocessed content
+- **Safe by design**: atomic `claim()` (a job is never processed twice), status readable only by the uploader, queued files deleted after processing, stalled jobs (> 30 min) marked failed, success and failure both journaled
+- **Resumable UX**: pending jobs are kept in `sessionStorage`, so tracking resumes if the user leaves and comes back to the upload page
+- Shared `IngestionService` for both paths (extraction, storage, indexing, localized error mapping) — covered by unit tests
+
 ### Scanned documents — OCR pipeline
 - **Images** (png/jpg/tiff/webp) and **scanned PDFs** (no text layer) are read by Muse Spark Open vision
 - A PDF whose text extraction is empty is detected automatically: its embedded JPEG page images are extracted and OCR'd, then concatenated with `[Page n / N]` markers — verified on a 4-page scanned hymn booklet in Mooré
 - Pages are sent **in parallel** (`curl_multi`), so the total time is roughly that of the slowest page; a failed page is retried on its own without losing the others
 - Large scans are downscaled to 1600 px (GD) before sending: text stays legible while avoiding provider timeouts; `META_VISION_TIMEOUT` (default 300 s) covers dense pages
+- **Measured bottleneck:** on a dense page, 82 % of the generated tokens were the model's internal reasoning (2 466 of 2 996). OCR calls therefore use `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`): −64 % completion tokens for an equivalent transcript, i.e. fewer credits
 
 ### Audio transcription — dual pipeline
-- **Baseten — Muse Spark Open (default)** — the audio is sent to `meta-models/muse-spark-open-1026` through `/v1/chat/completions` (`audio_url` content part) with a strict ASR prompt; works out of the box with the hackathon key
+- **Baseten — Muse Spark Open (default, first in line)** — the audio is sent to `meta-models/muse-spark-open-1026` through `/v1/chat/completions` as a standard `input_audio` part (raw base64 + format). Measured on a French meeting recording: **exact transcript (figures, proper names) in 8–21 s, 5/5 runs**, vs ~2 min for whisper.cpp on CPU. The earlier `audio_url` data-URL format took 56 s and returned empty messages
 - **Optional Baseten Whisper Large V3 Turbo deployment** — dedicated GPU deployment called through the Baseten predict API (`whisper_input.audio.audio_b64` → `segments[].text`); verbatim, no LLM guardrails (sung lyrics included). Enabled via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`); billed per GPU minute to the owning organisation
 - **Optional OpenAI-style ASR endpoint** — Whisper-style `/v1/audio/transcriptions` (multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
-- **Optional local whisper.cpp** — `whisper-cli.exe` + a GGML model, entirely offline and verbatim; takes priority when `META_WHISPER_BIN`/`META_WHISPER_MODEL` are set
+- **Optional local whisper.cpp** — `whisper-cli.exe` + a GGML model, entirely offline and verbatim (sung lyrics included); used as fallback when `META_WHISPER_BIN`/`META_WHISPER_MODEL` are set
 - Long audio is auto-split into provider-sized segments (`AudioSplitter`, frame-aligned MP3 / header-correct WAV), each segment transcribed and concatenated with `[Segment n/N]` markers
-- **Resilient cascade:** local whisper.cpp → Baseten Whisper deployment → OpenAI-style endpoint → Muse Spark Open. A verbatim backend that fails (missing binary, crash, empty output) is logged and skipped automatically, so an upload never fails just because one backend is unavailable
+- **Resilient cascade:** Muse Spark Open → local whisper.cpp → Baseten Whisper deployment → OpenAI-style endpoint (`META_ASR_PRIORITY=local` reverses it). A backend that fails (refusal, missing binary, crash, empty output) is logged and the next one is tried. The model is non-deterministic (1 assistant-style reply out of 3 identical calls was measured), so such replies are retried up to `META_AUDIO_ATTEMPTS` (3) at temperature 0 — except copyright refusals, which are deliberate and handed straight to whisper.cpp (sung lyrics still get transcribed)
 - *History:* local whisper.cpp was used during development while the free-tier Baseten credits were exhausted; with the hackathon credits ($100 on Muse Spark Open) transcription is back on Baseten, and the local backend stays available as an offline option
 - *Guardrail safety:* the model may decline verbatim transcription of copyrighted sung lyrics. Refusals are detected and rejected with a clear, localized message — they are **never indexed** as document content (speech recordings are unaffected)
 
@@ -166,7 +186,7 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **68 automated tests · 143 assertions** |
+| **Tests** | **76 automated tests · 166 assertions** |
 | **UI** | Bilingual EN/FR (EN default), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · CSP · CSRF · audit journal |
 
@@ -209,7 +229,7 @@ php tools/seed_admin.php
 
 The administrator is created from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (optional env variables, otherwise the defaults defined in `tools/seed_admin.php`) — **change the password after the first login**.
 
-*Verified on a fresh `git clone` against an empty database: dependencies, migrations, seeding, 68 tests and login all pass.*
+*Verified on a fresh `git clone` against an empty database: dependencies, migrations, seeding, the full test suite and login all pass.*
 
 Then open <http://127.0.0.1:8080/presentation?lang=en> (public presentation) or <http://127.0.0.1:8080/login>.
 
@@ -252,7 +272,7 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**68 tests, 143 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports and the multimodal services. No database server or API required (SQLite in memory + deterministic fakes).
+**76 tests, 166 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services and the background ingestion pipeline. No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 

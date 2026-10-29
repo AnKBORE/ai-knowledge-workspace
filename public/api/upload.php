@@ -73,125 +73,53 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
     exit;
 }
 
+$ingestion = $dependencies['ingestion'];
+
 try {
     $tmp = (string) $upload['tmp_name'];
     $originalName = (string) ($upload['name'] ?? 'document');
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
-    // 1. Extract the text BEFORE moving the uploaded file.
-    $audioExtensions = ['mp3', 'wav', 'm4a', 'ogg', 'webm', 'aac', 'flac'];
-
-    if (in_array($extension, $audioExtensions, true)) {
-        $maxAudio = (int) ($dependencies['config']['audio_max_seconds'] ?? 600);
-        $splitter = new \App\Services\AudioSplitter();
-
-        // $tmp has no extension (phpXXXX.tmp) — work on a copy named with the
-        // real extension so duration() and split() can recognise the format.
-        $workPath = $tmp . '.' . $extension;
-        copy($tmp, $workPath);
-        $duration = $splitter->duration($workPath);
-
-        if ($duration !== null && $duration > $maxAudio) {
-            // Long audio: split into ≤$maxAudio segments (WAV/MP3), transcribe
-            // each one and concatenate — the file is never rejected outright.
-            $parts = $splitter->split($workPath, $maxAudio);
-
-            if ($parts === []) {
-                // Format the splitter cannot cut (m4a/ogg/…): keep the guard.
-                http_response_code(422);
-                echo json_encode(['error' => sprintf($T['audio_too_long'], intdiv($maxAudio, 60))], JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-
-            $segments = [];
-            foreach ($parts as $i => $partPath) {
-                $segments[] = '[Segment ' . ($i + 1) . ' / ' . count($parts) . "]\n"
-                    . $dependencies['transcription']->transcribe($partPath);
-                if (!in_array($partPath, [$tmp, $workPath], true)) {
-                    @unlink($partPath);
-                }
-            }
-            @unlink($workPath);
-            $content = implode("\n\n", $segments);
-        } else {
-            $content = $dependencies['transcription']->transcribe($workPath);
+    // Slow files (audio, image, scanned PDF) need minutes of ASR/OCR: queue
+    // them for a detached worker and answer immediately (202 + job id).
+    if ($ingestion->isSlow($tmp, $extension)) {
+        $queueDir = $dependencies['root'] . '/storage/cache/ingestion';
+        if (!is_dir($queueDir)) {
+            mkdir($queueDir, 0775, true);
         }
-        if (file_exists($workPath)) {
-            @unlink($workPath);
+        $queued = $queueDir . '/' . bin2hex(random_bytes(16)) . '.' . $extension;
+        if (!move_uploaded_file($tmp, $queued)) {
+            throw new \RuntimeException('Could not queue the upload.');
         }
-    } elseif (in_array($extension, ['png', 'jpg', 'jpeg', 'tif', 'tiff', 'webp'], true)) {
-        $content = $dependencies['vision']->extractText($tmp);
-    } elseif ($extension === 'pdf') {
-        if (!class_exists(\Smalot\PdfParser\Parser::class)) {
-            throw new \RuntimeException('PDF extraction requires smalot/pdfparser.');
-        }
-        $parser = new \Smalot\PdfParser\Parser();
-        $pdf = $parser->parseFile($tmp);
-        $content = $pdf->getText();
-        // Scanned PDF (images only, no text layer): OCR each page image.
-        if (trim($content) === '') {
-            $content = $dependencies['vision']->extractTextFromScannedPdf($pdf);
-        }
-    } else {
-        $content = (string) file_get_contents($tmp);
-    }
 
-    if (trim($content) === '') {
-        throw new \RuntimeException($T['file_empty']);
-    }
-
-    // Optional anonymisation before indexing and before any API call.
-    if (getenv('ANONYMISATION') === '1') {
-        $content = (new \App\Services\Anonymiseur())->anonymiser($content);
-    }
-
-    // 2. Store the file and create the document + first immutable version.
-    $result = $dependencies['documents_service']->createDocument(
-        $title,
-        $dependencies['espaces']->firstActive(),
-        $dependencies['auth']->id(),
-        $upload,
-        $categorieId,
-    );
-
-    // 3. Index the extracted text, attached to the version.
-    $chunks = count($dependencies['rag']->chunk($content));
-    $dependencies['rag']->indexDocument($result['document_id'], $content, $result['version_id']);
-
-    $dependencies['journal']->log(
-        $dependencies['auth']->id(),
-        'document.depot',
-        'document',
-        $result['document_id'],
-        'succes',
-        [
+        $jobId = $dependencies['ingestion_jobs']->create([
+            'utilisateur_id' => (int) $dependencies['auth']->id(),
             'titre' => $title,
-            'version' => 1,
-            'chunks' => $chunks,
-            'sha256' => substr($result['sha256'], 0, 16),
+            'categorie_id' => $categorieId,
+            'nom_original' => $originalName,
+            'type_mime' => (string) ($upload['type'] ?? ''),
             'taille_octets' => (int) ($upload['size'] ?? 0),
-        ],
-    );
+            'chemin_tmp' => $queued,
+            'langue' => $lang,
+        ]);
+        \App\Services\BackgroundWorker::spawn($dependencies['root'] . '/tools/ingest_worker.php', [(string) $jobId]);
+
+        http_response_code(202);
+        echo json_encode(['job_id' => $jobId, 'status' => 'en_attente', 'title' => $title], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // Fast files (text, PDF with a text layer): processed synchronously.
+    $content = $ingestion->extract($tmp, $extension);
+    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content);
 
     echo json_encode([
         'title' => $title,
-        'chunks' => $chunks,
+        'chunks' => $result['chunks'],
         'version' => 1,
         'sha256' => substr($result['sha256'], 0, 12),
     ], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
-    $message = $e->getMessage();
-
-    if (str_contains($message, 'Audio too long')) {
-        $error = sprintf($T['audio_too_long'], intdiv(($dependencies['config']['audio_max_seconds'] ?? 600), 60));
-    } elseif (str_contains($message, 'Media could not be processed')) {
-        $error = $T['media_failed'];
-    } elseif (str_contains($message, 'Transcription refused')) {
-        $error = $T['transcription_refused'];
-    } else {
-        $error = getenv('APP_DEBUG') === '1' ? $message : $T['upload_failed'];
-    }
-
-    http_response_code(500);
-    echo json_encode(['error' => $error], JSON_UNESCAPED_UNICODE);
+    http_response_code(str_contains($e->getMessage(), 'File empty or unreadable') ? 422 : 500);
+    echo json_encode(['error' => $ingestion->errorMessage($e, $T)], JSON_UNESCAPED_UNICODE);
 }

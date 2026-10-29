@@ -52,6 +52,11 @@ return [
     'baseten_whisper_key' => getenv('META_BASETEN_WHISPER_KEY') ?: '',
     'baseten_whisper_language' => getenv('META_BASETEN_WHISPER_LANGUAGE') ?: '',
 
+    // ASR order: 'cloud' = Muse Spark Open first, verbatim backends (local
+    // whisper.cpp, Whisper deployment) as fallback; 'local' = the reverse.
+    'asr_priority' => getenv('META_ASR_PRIORITY') ?: 'cloud',
+    'audio_attempts' => (int) (getenv('META_AUDIO_ATTEMPTS') ?: 3),
+
     // Local whisper.cpp (free, offline). Set META_WHISPER_BIN + META_WHISPER_MODEL
     // to use it; whisper_args can add -l fr, -t 4, etc. '-nt' = no timestamps.
     'whisper_binary' => getenv('META_WHISPER_BIN') ?: '',
@@ -66,4 +71,6 @@ return [
     'timeout' => 180,
     // OCR of dense scans: the reasoning model can take 2–3 min per page.
     'vision_timeout' => (int) (getenv('META_VISION_TIMEOUT') ?: 300),
+    // Reasoning budget for OCR calls (low | medium | high | '' = provider default).
+    'vision_reasoning_effort' => getenv('META_VISION_REASONING_EFFORT') !== false ? (string) getenv('META_VISION_REASONING_EFFORT') : 'low',
 ];

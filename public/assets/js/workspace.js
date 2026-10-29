@@ -231,11 +231,72 @@
             });
         }
 
+        var uploadStatus = document.getElementById('upload-status');
+        var JOBS_KEY = 'akw_ingestion_jobs';
+
+        function setUploadStatus(text, tone) {
+            uploadStatus.textContent = text;
+            uploadStatus.className = 'small mt-2 text-' + tone;
+        }
+
+        function resetUploadForm() {
+            uploadForm.reset();
+            if (hint) {
+                hint.textContent = t('dropzone_hint');
+                dropzone.classList.remove('has-file');
+            }
+        }
+
+        function pendingJobs() {
+            try { return JSON.parse(sessionStorage.getItem(JOBS_KEY) || '[]'); } catch (e) { return []; }
+        }
+
+        function setPendingJobs(ids) {
+            sessionStorage.setItem(JOBS_KEY, JSON.stringify(ids));
+        }
+
+        function formatElapsed(seconds) {
+            var m = Math.floor(seconds / 60);
+            var s = seconds % 60;
+            return (m > 0 ? m + ' min ' : '') + s + ' s';
+        }
+
+        // Background ingestion (audio / image / scanned PDF): poll the job until
+        // it is indexed or fails; the user can keep working in the meantime.
+        async function trackJob(jobId) {
+            while (true) {
+                var data;
+                try {
+                    var response = await fetch(apiUrl('upload_status.php?job_id=' + encodeURIComponent(jobId)), { cache: 'no-store' });
+                    data = await response.json();
+                } catch (err) {
+                    await new Promise(function (r) { setTimeout(r, 5000); });
+                    continue;
+                }
+
+                if (data.status === 'termine' || data.status === 'echec' || data.error && !data.status) {
+                    setPendingJobs(pendingJobs().filter(function (id) { return id !== jobId; }));
+                    if (data.status === 'termine') {
+                        setUploadStatus(sprintf(t('indexed'), data.title, data.chunks), 'success');
+                        if (document.getElementById('documents-list')) {
+                            await refreshDocuments();
+                        }
+                    } else {
+                        setUploadStatus(data.error || t('network_error'), 'danger');
+                    }
+                    return;
+                }
+
+                setUploadStatus(sprintf(t('processing_bg'), data.title, formatElapsed(data.elapsed || 0)), 'muted');
+                await new Promise(function (r) { setTimeout(r, 3000); });
+            }
+        }
+
+        pendingJobs().forEach(trackJob);
+
         uploadForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            var status = document.getElementById('upload-status');
-            status.textContent = t('sending');
-            status.className = 'small text-muted mt-2';
+            setUploadStatus(t('sending'), 'muted');
 
             try {
                 var response = await fetch(apiUrl('upload.php'), {
@@ -244,23 +305,21 @@
                 });
                 var data = await response.json();
                 if (data.error) {
-                    status.textContent = data.error;
-                    status.className = 'small text-danger mt-2';
+                    setUploadStatus(data.error, 'danger');
                     return;
                 }
-                status.textContent = sprintf(t('indexed'), data.title, data.chunks);
-                status.className = 'small text-success mt-2';
-                uploadForm.reset();
-                if (hint) {
-                    hint.textContent = t('dropzone_hint');
-                    dropzone.classList.remove('has-file');
+                resetUploadForm();
+                if (data.job_id) {
+                    setPendingJobs(pendingJobs().concat([data.job_id]));
+                    trackJob(data.job_id);
+                    return;
                 }
+                setUploadStatus(sprintf(t('indexed'), data.title, data.chunks), 'success');
                 if (document.getElementById('documents-list')) {
                     await refreshDocuments();
                 }
             } catch (err) {
-                status.textContent = t('network_error');
-                status.className = 'small text-danger mt-2';
+                setUploadStatus(t('network_error'), 'danger');
             }
         });
     }

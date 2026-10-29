@@ -155,43 +155,43 @@ class MetaClient
      */
     public function transcribe(string $audioPath): string
     {
-        // Verbatim backends first (local whisper.cpp, Baseten Whisper deployment):
-        // on failure or empty output, fall through to the next backend instead
-        // of failing the upload.
-        $backends = [
+        // Ordered cascade: each backend that fails (refusal, missing binary,
+        // empty output) is logged and the next one is tried; the last error is
+        // rethrown only if every configured backend failed.
+        $verbatim = [
             'whisper_binary' => fn () => $this->transcribeLocal($audioPath),
             'baseten_whisper_url' => fn () => $this->transcribeBasetenWhisper($audioPath),
+            'transcription_model' => fn () => $this->transcribeDedicated($audioPath),
         ];
-        foreach ($backends as $key => $backend) {
-            if (($this->config[$key] ?? '') === '') {
-                continue;
-            }
+        $cloud = (string) ($this->config['api_style'] ?? 'meta') === 'openai'
+            ? fn () => $this->transcribeOpenAi($audioPath)
+            : fn () => (string) ($this->requestMultipart(
+                (string) ($this->config['transcription_endpoint'] ?? '/v1/audio/transcriptions'),
+                $audioPath,
+            )['text'] ?? '');
+
+        $backends = array_filter($verbatim, fn (string $key) => ($this->config[$key] ?? '') !== '', ARRAY_FILTER_USE_KEY);
+        // 'cloud' (default): Muse Spark Open first — measured 8–18 s with exact
+        // transcripts vs ~2 min for whisper.cpp on CPU; verbatim backends then
+        // cover what the model declines (sung lyrics). 'local': the reverse.
+        $backends = (string) ($this->config['asr_priority'] ?? 'cloud') === 'local'
+            ? $backends + ['muse' => $cloud]
+            : ['muse' => $cloud] + $backends;
+
+        $lastError = null;
+        foreach ($backends as $name => $backend) {
             try {
-                $text = $backend();
-                if (trim($text) !== '') {
+                $text = trim($backend());
+                if ($text !== '') {
                     return $text;
                 }
             } catch (\Throwable $e) {
-                error_log('[transcription] ' . $key . ' failed, falling back: ' . $e->getMessage());
+                $lastError = $e;
+                error_log('[transcription] ' . $name . ' failed, trying next backend: ' . $e->getMessage());
             }
         }
 
-        // Dedicated ASR endpoint (Whisper-style /v1/audio/transcriptions):
-        // verbatim transcription without LLM copyright guardrails.
-        if (($this->config['transcription_model'] ?? '') !== '') {
-            return $this->transcribeDedicated($audioPath);
-        }
-
-        if ((string) ($this->config['api_style'] ?? 'meta') === 'openai') {
-            return $this->transcribeOpenAi($audioPath);
-        }
-
-        $payload = $this->requestMultipart(
-            (string) ($this->config['transcription_endpoint'] ?? '/v1/audio/transcriptions'),
-            $audioPath
-        );
-
-        return (string) ($payload['text'] ?? '');
+        throw $lastError ?? new \RuntimeException('Empty transcription response from every backend.');
     }
 
     /**
@@ -207,10 +207,7 @@ class MetaClient
         $texts = [];
         foreach ($segments as $segment) {
             $texts[] = $this->chatWithAudio(
-                'You are an automatic speech recognition (ASR) engine, not a conversational assistant. '
-                    . 'Transcribe the exact words heard in this audio (speech or sung lyrics), in their original language. '
-                    . 'Output ONLY the transcript text: no commentary, no description, no refusal, no disclaimer. '
-                    . 'This recording was uploaded by its owner for personal documentation.',
+                'Transcribe the exact words spoken in this audio, in their original language. Output only the transcript.',
                 $segment,
             );
 
@@ -451,7 +448,9 @@ class MetaClient
                 ],
             ]],
             'temperature' => 0.2,
-        ];
+            // Transcribing visible text needs little reasoning: measured −64 %
+            // completion tokens for an equivalent transcript ('' = provider default).
+        ] + (($effort = (string) ($this->config['vision_reasoning_effort'] ?? '')) !== '' ? ['reasoning_effort' => $effort] : []);
     }
 
     /**
@@ -491,9 +490,11 @@ class MetaClient
     }
 
     /**
-     * OpenAI-compatible multimodal call with an audio file (base64 data URL).
+     * OpenAI-compatible multimodal call with an audio file.
      *
-     * Baseten expects the `audio_url` content type (WAV/MP3/FLAC/OGG/M4A).
+     * Uses the standard `input_audio` content part (raw base64 + format):
+     * measured 8 s with an exact transcript, whereas `audio_url` data URLs took
+     * 56 s and returned an empty message.
      */
     private function chatWithAudio(string $prompt, string $audioPath): string
     {
@@ -502,40 +503,64 @@ class MetaClient
             throw new \RuntimeException('Could not read audio: ' . $audioPath);
         }
 
-        $extension = strtolower(pathinfo($audioPath, PATHINFO_EXTENSION));
-        $mime = match ($extension) {
-            'mp3' => 'audio/mpeg',
-            'flac' => 'audio/flac',
-            'ogg' => 'audio/ogg',
-            'm4a', 'aac' => 'audio/mp4',
-            default => 'audio/wav',
-        };
-        $dataUrl = 'data:' . $mime . ';base64,' . base64_encode($data);
-
-        $payload = $this->request('/v1/chat/completions', [
+        $body = [
             'model' => (string) ($this->config['chat_model'] ?? ''),
             'messages' => [[
                 'role' => 'user',
                 'content' => [
                     ['type' => 'text', 'text' => $prompt],
-                    ['type' => 'audio_url', 'audio_url' => ['url' => $dataUrl]],
+                    ['type' => 'input_audio', 'input_audio' => [
+                        'data' => base64_encode($data),
+                        'format' => strtolower(pathinfo($audioPath, PATHINFO_EXTENSION)) ?: 'wav',
+                    ]],
                 ],
             ]],
-            'temperature' => 0.2,
-        ]);
+            'temperature' => 0.0,
+        ];
 
-        $content = (string) ($payload['choices'][0]['message']['content'] ?? '');
-        if (trim($content) === '') {
+        // The model is non-deterministic: measured 1 assistant-style reply out
+        // of 3 identical calls. Retry such replies; never index them.
+        $attempts = max(1, (int) ($this->config['audio_attempts'] ?? 3));
+        for ($attempt = 1; $attempt <= $attempts; $attempt++) {
+            $payload = $this->request('/v1/chat/completions', $body);
+            $content = trim((string) preg_replace('/<think>.*?<\/think>/s', '', (string) ($payload['choices'][0]['message']['content'] ?? '')));
+
+            if ($content !== '' && !self::isNotATranscript($content)) {
+                return $content;
+            }
+            error_log('[transcription] attempt ' . $attempt . '/' . $attempts . ' returned no transcript: ' . mb_substr($content, 0, 120));
+            // A copyright refusal is deliberate and reproducible: retrying only
+            // wastes minutes — hand over to the verbatim backends at once.
+            if (preg_match('/copyright|droit\s+d.auteur/iu', $content) === 1) {
+                break;
+            }
+        }
+
+        if ($content === '') {
             throw new \RuntimeException('Empty transcription response from the model (unsupported audio format?).');
         }
 
-        // Guardrail refusals (e.g. sung lyrics flagged as copyrighted) must never
-        // be indexed as if they were the audio content.
-        if (preg_match('/\b(I\s+(can\'?t|cannot|can’t|am\s+unable\s+to|won\'?t)\s+(provide|transcribe|share|help\s+with)|verbatim\s+transcript\s+of\s+(these|this|copyrighted)|copyrighted\s+(song|lyrics|material)|je\s+ne\s+(peux|suis)\s+pas\s+(en\s+mesure\s+de\s+)?(fournir|transcrire))/iu', $content) === 1) {
-            throw new \RuntimeException('Transcription refused by the model guardrails (likely copyrighted sung lyrics). Speech recordings are supported; for songs, configure the local whisper.cpp backend.');
-        }
+        throw new \RuntimeException('Transcription refused by the model guardrails (likely copyrighted sung lyrics). Speech recordings are supported; for songs, configure the local whisper.cpp backend.');
+    }
 
-        return trim((string) preg_replace('/<think>.*?<\/think>/s', '', $content));
+    /**
+     * Detect assistant-style replies that are not a transcript (guardrail
+     * refusals, "I don't have access to audio", offers of help) so they are
+     * never indexed as if they were the recording's content.
+     */
+    public static function isNotATranscript(string $content): bool
+    {
+        return preg_match(
+            '/\b(I\s+(can\'?t|cannot|can’t|am\s+unable\s+to|won\'?t)\s+(provide|transcribe|share|help\s+with|access|listen)'
+            . '|I\s+(don\'?t|do\s+not|don’t)\s+have\s+(access|the\s+ability)'
+            . '|(can|could)\s+only\s+work\s+with\s+text'
+            . '|share\s+the\s+(text|transcript)'
+            . '|I\'?m\s+(Muse|an?\s+AI)'
+            . '|verbatim\s+transcript\s+of\s+(these|this|copyrighted)|copyrighted\s+(song|lyrics|material)'
+            . '|je\s+ne\s+(peux|suis)\s+pas\s+(en\s+mesure\s+de\s+)?(fournir|transcrire|écouter|accéder)'
+            . '|je\s+n\'?ai\s+pas\s+accès)/iu',
+            $content,
+        ) === 1;
     }
 
     /**

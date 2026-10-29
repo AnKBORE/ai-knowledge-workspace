@@ -79,6 +79,15 @@ $embeddings = new EmbeddingService($metaClient, (string) ($config['embedding_mod
 $rag = new RagService($metaClient, $embeddings, $pdo, $permissions, (string) $session->get('lang', 'en'));
 $transcription = new TranscriptionService($metaClient);
 $vision = new VisionService($metaClient);
+$ingestion = new \App\Services\IngestionService(
+    $transcription,
+    $vision,
+    $documentService,
+    $espaces,
+    $rag,
+    $journal,
+    (int) ($config['audio_max_seconds'] ?? 600),
+);
 
 return [
     'config' => $config,
@@ -101,4 +110,7 @@ return [
     'rag' => $rag,
     'transcription' => $transcription,
     'vision' => $vision,
+    'ingestion' => $ingestion,
+    'ingestion_jobs' => new \App\Models\IngestionJob($pdo),
+    'root' => $root,
 ];

@@ -89,19 +89,39 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
 
+### Ingestion en arrière-plan — uploads non bloquants
+Les fichiers lents demandent plusieurs minutes de traitement IA (ASR pour l'audio, OCR pour les images et PDF scannés). Au lieu de garder la requête HTTP ouverte, ils sont mis en file d'attente :
+
+```
+upload.php ──(texte / PDF texte)──► extraction → stockage → index → 200        (synchrone, inchangé)
+     │
+     └─(audio / image / PDF scanné)──► ligne ingestion_jobs + worker détaché → 202 {job_id}   (~1 s)
+                                            │
+                tools/ingest_worker.php ◄───┘  claim (atomique) → ASR/OCR → stockage → index → audit
+                                            │
+     upload_status.php?job_id ◄── l'interface interroge toutes les 3 s (temps écoulé, puis « Indexé : N segments » ou une erreur traduite)
+```
+
+- **L'application reste fluide** : le worker est un processus séparé, donc le serveur `php -S` (mono-thread) continue de servir les pages (mesuré : 20–80 ms par page pendant un OCR de 105 s)
+- **Pas de demi-documents** : la ligne `documents` n'est créée qu'après une extraction réussie — le retrieval et les listes n'exposent jamais un contenu non traité
+- **Sûr par conception** : `claim()` atomique (une tâche n'est jamais traitée deux fois), statut lisible uniquement par l'auteur de l'upload, fichiers en file supprimés après traitement, tâches bloquées (> 30 min) marquées en échec, succès et échecs journalisés
+- **Suivi repris** : les tâches en cours sont gardées dans `sessionStorage` — le suivi reprend si l'utilisateur quitte puis revient sur la page d'upload
+- `IngestionService` partagé par les deux chemins (extraction, stockage, indexation, messages d'erreur traduits) — couvert par des tests unitaires
+
 ### Documents scannés — pipeline OCR
 - Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open
 - Un PDF dont l'extraction de texte est vide est détecté automatiquement : ses images de pages JPEG sont extraites et passées à l'OCR, puis concaténées avec des marqueurs `[Page n / N]` — vérifié sur un recueil de chants scanné de 4 pages en mooré
 - Les pages sont envoyées **en parallèle** (`curl_multi`) : le temps total est à peu près celui de la page la plus lente ; une page en échec est relancée seule sans perdre les autres
 - Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses
+- **Goulot mesuré :** sur une page dense, 82 % des tokens générés étaient le raisonnement interne du modèle (2 466 sur 2 996). Les appels OCR utilisent donc `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`) : −64 % de tokens générés pour une transcription équivalente, donc moins de crédits
 
 ### Transcription audio — double pipeline
-- **Baseten — Muse Spark Open (par défaut)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` (partie `audio_url`) avec un prompt ASR strict ; fonctionne directement avec la clé hackathon
+- **Baseten — Muse Spark Open (par défaut, en premier)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` sous forme de partie standard `input_audio` (base64 brut + format). Mesuré sur un compte rendu de réunion en français : **transcription exacte (chiffres, noms propres) en 8 à 21 s, 5 essais sur 5**, contre ~2 min pour whisper.cpp sur CPU. L'ancien format `audio_url` (data URL) prenait 56 s et renvoyait des messages vides
 - **Déploiement Baseten Whisper Large V3 Turbo (optionnel)** — déploiement GPU dédié appelé via l'API predict de Baseten (`whisper_input.audio.audio_b64` → `segments[].text`) ; verbatim, sans garde-fous LLM (paroles chantées comprises). Activé via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`) ; facturé à la minute GPU sur l'organisation propriétaire
 - **Endpoint ASR façon OpenAI (optionnel)** — `/v1/audio/transcriptions` façon Whisper (multipart `file` + `model`), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
-- **whisper.cpp local (optionnel)** — `whisper-cli.exe` + un modèle GGML, entièrement hors ligne et verbatim ; prioritaire dès que `META_WHISPER_BIN`/`META_WHISPER_MODEL` sont définis
+- **whisper.cpp local (optionnel)** — `whisper-cli.exe` + un modèle GGML, entièrement hors ligne et verbatim (chants compris) ; utilisé en secours dès que `META_WHISPER_BIN`/`META_WHISPER_MODEL` sont définis
 - Les audios longs sont découpés automatiquement en segments calibrés fournisseur (`AudioSplitter`, MP3 aligné sur les frames / WAV à en-tête régénéré), chacun transcrit puis concaténé avec des marqueurs `[Segment n/N]`
-- **Cascade résiliente :** whisper.cpp local → déploiement Whisper Baseten → endpoint façon OpenAI → Muse Spark Open. Un backend verbatim en échec (binaire absent, crash, sortie vide) est journalisé puis ignoré automatiquement : un upload n'échoue jamais parce qu'un seul backend est indisponible
+- **Cascade résiliente :** Muse Spark Open → whisper.cpp local → déploiement Whisper Baseten → endpoint façon OpenAI (`META_ASR_PRIORITY=local` inverse l'ordre). Un backend en échec (refus, binaire absent, crash, sortie vide) est journalisé et le suivant est essayé. Le modèle n'est pas déterministe (1 réponse de type assistant sur 3 appels identiques, mesuré) : ces réponses sont relancées jusqu'à `META_AUDIO_ATTEMPTS` (3) fois à température 0 — sauf les refus pour droit d'auteur, délibérés, transmis directement à whisper.cpp (les chants restent transcrits)
 - *Historique :* whisper.cpp local a servi pendant le développement, faute de crédits Baseten gratuits ; avec les crédits hackathon (100 $ sur Muse Spark Open), la transcription repasse sur Baseten et le backend local reste disponible comme option hors ligne
 - *Sécurité garde-fous :* le modèle peut refuser de transcrire mot à mot des paroles chantées protégées. Les refus sont détectés et rejetés avec un message clair et traduit — ils ne sont **jamais indexés** comme contenu du document (les enregistrements parlés ne sont pas concernés)
 
@@ -166,7 +186,7 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **68 tests automatisés · 143 assertions** |
+| **Tests** | **76 tests automatisés · 166 assertions** |
 | **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
 | **UI** | Bilingue EN/FR (EN par défaut), Bootstrap + DataTables + Select2 |
 
@@ -209,7 +229,7 @@ php tools/seed_admin.php
 
 L'administrateur est créé à partir de `ADMIN_EMAIL` / `ADMIN_PASSWORD` (variables d'environnement optionnelles, sinon les valeurs par défaut de `tools/seed_admin.php`) — **changer le mot de passe après la première connexion**.
 
-*Vérifié sur un `git clone` neuf avec une base vide : dépendances, migrations, seed, 68 tests et connexion OK.*
+*Vérifié sur un `git clone` neuf avec une base vide : dépendances, migrations, seed, toute la suite de tests et connexion OK.*
 
 Puis ouvrir <http://127.0.0.1:8080/presentation?lang=fr> (présentation publique) ou <http://127.0.0.1:8080/login>.
 
@@ -252,7 +272,7 @@ Endpoints API (protégés par session) :
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**68 tests, 143 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports et les services multimodaux. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**76 tests, 166 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux et le pipeline d'ingestion en arrière-plan. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 
