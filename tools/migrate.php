@@ -55,21 +55,21 @@ function applyPending(PDO $pdo, array $upFiles): int
     return $count;
 }
 
+$database = getenv('DB_DATABASE') ?: 'ai_knowledge_workspace';
+$charset = getenv('DB_CHARSET') ?: 'utf8mb4';
+$server = sprintf('mysql:host=%s;port=%s;charset=%s', getenv('DB_HOST') ?: '127.0.0.1', getenv('DB_PORT') ?: '3306', $charset);
+$options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION];
+
 try {
-    $pdo = new PDO(
-        sprintf(
-            'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-            getenv('DB_HOST') ?: '127.0.0.1',
-            getenv('DB_PORT') ?: '3306',
-            getenv('DB_DATABASE') ?: 'ai_knowledge_workspace',
-            getenv('DB_CHARSET') ?: 'utf8mb4',
-        ),
-        getenv('DB_USERNAME') ?: 'root',
-        getenv('DB_PASSWORD') ?: '',
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION],
-    );
+    // Create the database on first install (fresh clone), then connect to it.
+    $pdo = new PDO($server, getenv('DB_USERNAME') ?: 'root', getenv('DB_PASSWORD') ?: '', $options);
+    if (!preg_match('/^[A-Za-z0-9_]+$/', $database)) {
+        throw new PDOException('Invalid DB_DATABASE name: ' . $database);
+    }
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $pdo->exec("USE `{$database}`");
 } catch (PDOException $e) {
-    fwrite(STDERR, "Database connection failed. Create the database first, then retry.\n" . $e->getMessage() . "\n");
+    fwrite(STDERR, "Database connection failed. Check DB_* settings in .env and that MySQL is running.\n" . $e->getMessage() . "\n");
     exit(1);
 }
 

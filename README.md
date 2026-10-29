@@ -180,22 +180,30 @@ A deliberately lean, robust and controlled architecture.
 
 ## Installation
 
-```powershell
-# 1. Dependencies
-php tools/composer.phar install
+**Prerequisites:** PHP 8.4 (extensions `pdo_mysql`, `curl`, `zip`, `mbstring`), MySQL 8 running, [Composer](https://getcomposer.org/).
 
-# 2. Local configuration
+**One-click (Windows/WAMP):** `setup.bat` runs every step below (it downloads `composer.phar` if Composer is not installed).
+
+```powershell
+# 1. Dependencies (composer.phar is not versioned: use a global Composer)
+composer install
+
+# 2. Local configuration — then set DB_* and META_MODEL_API_KEY
 Copy-Item .env.example .env
 
-# 3. Database
+# 3. Database — created automatically if missing, then all migrations applied
 php tools/migrate.php migrate
 
-# 4. First administrator + default space
+# 4. First administrator + default space (idempotent)
 php tools/seed_admin.php
 
 # 5. Run locally
 .\serve.bat
 ```
+
+The administrator is created from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (optional env variables, otherwise the defaults defined in `tools/seed_admin.php`) — **change the password after the first login**.
+
+*Verified on a fresh `git clone` against an empty database: dependencies, migrations, seeding, 68 tests and login all pass.*
 
 Then open <http://127.0.0.1:8080/presentation?lang=en> (public presentation) or <http://127.0.0.1:8080/login>.
 

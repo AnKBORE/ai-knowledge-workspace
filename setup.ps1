@@ -40,15 +40,17 @@ Write-Host "PHP: $php" -ForegroundColor Cyan
 
 # -- 2. Composer -------------------------------------------------------------
 $composer = Join-Path $root 'tools\composer.phar'
-if (-not (Test-Path $composer)) {
-    $composer = 'C:\wamp64\www\espace_collaboratif\tools\composer.phar'
-}
-if (-not (Test-Path $composer)) {
-    throw 'composer.phar not found. Place it in tools/composer.phar and retry.'
+if (-not (Test-Path $composer) -and -not (Get-Command composer -ErrorAction SilentlyContinue)) {
+    Write-Host 'composer.phar not found: downloading it from getcomposer.org...' -ForegroundColor Yellow
+    Invoke-WebRequest 'https://getcomposer.org/download/latest-stable/composer.phar' -OutFile $composer
 }
 
-Write-Host "`n[1/3] Installing Composer dependencies..." -ForegroundColor Yellow
-& $php $composer install --working-dir=$root --no-interaction
+Write-Host "`n[1/4] Installing Composer dependencies..." -ForegroundColor Yellow
+if (Test-Path $composer) {
+    & $php $composer install --working-dir=$root --no-interaction
+} else {
+    composer install --working-dir=$root --no-interaction
+}
 if ($LASTEXITCODE -ne 0) {
     throw "composer install failed (exit $LASTEXITCODE)."
 }
@@ -57,16 +59,23 @@ if ($LASTEXITCODE -ne 0) {
 $envFile = Join-Path $root '.env'
 if (-not (Test-Path $envFile)) {
     Copy-Item (Join-Path $root '.env.example') $envFile
-    Write-Host '[2/3] Created .env from .env.example — add your Meta API keys.' -ForegroundColor Yellow
+    Write-Host '[2/4] Created .env from .env.example — add your Meta API keys.' -ForegroundColor Yellow
 } else {
-    Write-Host '[2/3] .env already exists.' -ForegroundColor DarkGray
+    Write-Host '[2/4] .env already exists.' -ForegroundColor DarkGray
 }
 
-# -- 4. Migrations ------------------------------------------------------------
-Write-Host '[3/3] Applying database migrations...' -ForegroundColor Yellow
+# -- 4. Migrations (creates the database if missing) --------------------------
+Write-Host '[3/4] Applying database migrations...' -ForegroundColor Yellow
 & $php (Join-Path $root 'tools\migrate.php') migrate
 if ($LASTEXITCODE -ne 0) {
-    throw 'Migrations failed. Create the ai_knowledge_workspace database first, then retry.'
+    throw 'Migrations failed. Check DB_* settings in .env and that MySQL is running.'
+}
+
+# -- 5. First administrator + default space -----------------------------------
+Write-Host '[4/4] Creating the first administrator...' -ForegroundColor Yellow
+& $php (Join-Path $root 'tools\seed_admin.php')
+if ($LASTEXITCODE -ne 0) {
+    throw 'Administrator seeding failed.'
 }
 
 Write-Host "`nSetup complete." -ForegroundColor Green
