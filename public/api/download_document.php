@@ -85,8 +85,38 @@ $dependencies['journal']->log(
 $filename = (string) ($version['nom_original'] ?? ('document-' . $documentId));
 $mime = (string) ($version['type_mime'] ?? '');
 
-header('Content-Type: ' . ($mime !== '' ? $mime : 'application/octet-stream'));
-header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
-header('Content-Length: ' . (string) filesize($path));
+$inline = ($_GET['inline'] ?? '') === '1'
+    && preg_match('#^(audio|video|image)/|application/pdf$#', $mime) === 1;
 
+$size = filesize($path);
+header('Content-Type: ' . ($mime !== '' ? $mime : 'application/octet-stream'));
+header('Content-Disposition: ' . ($inline ? 'inline' : 'attachment') . '; filename="' . basename($filename) . '"');
+header('Accept-Ranges: bytes');
+
+// Byte-range support so <audio> can seek within the recording.
+if ($inline && isset($_SERVER['HTTP_RANGE']) && preg_match('/bytes=(\d*)-(\d*)/', (string) $_SERVER['HTTP_RANGE'], $m)) {
+    $start = $m[1] === '' ? 0 : (int) $m[1];
+    $end = $m[2] === '' ? $size - 1 : min((int) $m[2], $size - 1);
+    if ($m[1] === '' && $m[2] !== '') { // suffix range: last N bytes
+        $start = max(0, $size - (int) $m[2]);
+    }
+    if ($start <= $end && $start < $size) {
+        http_response_code(206);
+        header('Content-Range: bytes ' . $start . '-' . $end . '/' . $size);
+        header('Content-Length: ' . (string) ($end - $start + 1));
+        $fh = fopen($path, 'rb');
+        fseek($fh, $start);
+        $remaining = $end - $start + 1;
+        while ($remaining > 0 && !feof($fh)) {
+            $chunk = fread($fh, min(8192, $remaining));
+            if ($chunk === false) break;
+            echo $chunk;
+            $remaining -= strlen($chunk);
+        }
+        fclose($fh);
+        exit;
+    }
+}
+
+header('Content-Length: ' . (string) $size);
 readfile($path);

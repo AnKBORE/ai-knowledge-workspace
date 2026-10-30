@@ -51,7 +51,11 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($documents as $index => $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? []; ?>
+                                <?php foreach ($documents as $index => $doc): $docId = (int) ($doc['id'] ?? 0); $docVersions = $versions[$docId] ?? [];
+                                    $docMime = (string) ($doc['mime_type'] ?? '');
+                                    $docExt = strtolower((string) pathinfo((string) ($doc['filename'] ?? ''), PATHINFO_EXTENSION));
+                                    $docIsAudio = str_starts_with($docMime, 'audio/')
+                                        || in_array($docExt, ['wav', 'mp3', 'm4a', 'ogg', 'oga', 'webm', 'flac', 'aac'], true); ?>
                                     <tr>
                                         <td class="table-row-number dtr-control">
                                             <button class="dtr-control-btn" type="button" aria-label="<?= e($P['expand_row']) ?>" aria-expanded="false"><span aria-hidden="true">+</span></button>
@@ -69,6 +73,15 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                         <td><span class="doc-item-badge"><?= e($versionsLabel((int) ($doc['versions'] ?? 0))) ?></span></td>
                                         <td>
                                             <div class="doc-item-actions">
+                                                <?php if ($docIsAudio): ?>
+                                                    <button type="button" class="doc-action audio-play-btn" title="<?= e($P['play_title']) ?>"
+                                                            data-bs-toggle="modal" data-bs-target="#doc-audio-modal"
+                                                            data-document-id="<?= $docId ?>"
+                                                            data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
+                                                            aria-label="<?= e($P['play_title']) ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+                                                    </button>
+                                                <?php endif; ?>
                                                 <a class="doc-action doc-confirm" title="<?= e($P['dl_title']) ?>"
                                                    href="<?= e(url('/api/download_document.php?document_id=' . $docId)) ?>"
                                                    data-confirm-action="download"
@@ -149,6 +162,45 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
         </div>
     <?php endif; ?>
 <?php endforeach; ?>
+
+<div class="modal fade space-create-modal profil-modal" id="doc-audio-modal" tabindex="-1" aria-labelledby="doc-audio-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered profil-modal-dialog">
+        <div class="modal-content">
+            <div class="space-form">
+                <div class="modal-header space-create-header text-bg-primary border-bottom border-2 border-primary">
+                    <span class="space-create-head-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+                    </span>
+                    <div class="space-create-head-copy">
+                        <p class="space-modal-eyebrow"><?= e($P['play_modal_title']) ?></p>
+                        <h2 class="modal-title" id="doc-audio-title"><?= e($P['play_modal_title']) ?></h2>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?= e($S['close']) ?>"></button>
+                </div>
+                <div class="modal-body space-create-body">
+                    <audio id="doc-audio-player" controls preload="metadata" class="w-100"></audio>
+                    <div class="doc-live-translate mt-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label for="doc-audio-lang" class="small fw-semibold mb-0"><?= e($P['translate_to']) ?></label>
+                            <select id="doc-audio-lang" class="form-select form-select-sm" style="width:auto">
+                                <option value="">—</option>
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                                <option value="mo">Mooré</option>
+                            </select>
+                            <div class="ms-auto" id="doc-audio-exports" hidden>
+                                <button type="button" class="btn btn-sm btn-outline-primary doc-audio-export" data-format="pdf"><?= e($S['download_pdf'] ?? 'PDF') ?></button>
+                                <button type="button" class="btn btn-sm btn-outline-primary doc-audio-export" data-format="docx"><?= e($S['download_docx'] ?? 'DOCX') ?></button>
+                            </div>
+                        </div>
+                        <div id="doc-audio-translate-status" class="small text-muted"></div>
+                        <div id="doc-audio-translation" class="doc-live-translation" hidden></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade space-create-modal profil-modal" id="doc-delete-modal" tabindex="-1" aria-labelledby="doc-delete-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered profil-modal-dialog">

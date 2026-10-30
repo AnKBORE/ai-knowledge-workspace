@@ -371,6 +371,271 @@
         });
     }
 
+    /* ---------------- Translation (fr / en / mooré) ---------------- */
+
+    var translateForm = document.getElementById('translate-form');
+    if (translateForm) {
+        var trStatus = document.getElementById('translate-status');
+        var trResult = document.getElementById('translate-result');
+        var trCopy = document.getElementById('translate-copy');
+
+        var trFrom = document.getElementById('translate-from');
+        var trTo = document.getElementById('translate-to');
+        var trSource = document.getElementById('translate-source');
+        var trBusy = false;
+        var prevFrom = trFrom.value, prevTo = trTo.value;
+
+        function retranslateIfShown() {
+            if (trResult.value && trSource.value.trim()) {
+                translateForm.requestSubmit();
+            }
+        }
+
+        // Select2 wraps these selects: programmatic changes must go through
+        // jQuery .trigger('change') so the widget redraws. trBusy prevents the
+        // change listeners below from reacting to our own updates.
+        function setLang(sel, val) {
+            if (window.jQuery && jQuery(sel).hasClass('select2-hidden-accessible')) {
+                jQuery(sel).val(val).trigger('change');
+            } else {
+                sel.value = val;
+            }
+        }
+
+        function applyLang(fromVal, toVal) {
+            trBusy = true;
+            setLang(trFrom, fromVal);
+            setLang(trTo, toVal);
+            prevFrom = fromVal;
+            prevTo = toVal;
+            trBusy = false;
+            retranslateIfShown();
+        }
+
+        // Keep From ≠ To in real time: choosing the same language on one side
+        // swaps the other to the side's previous value (a true swap).
+        // These selects are Select2-wrapped: bind via jQuery so Select2's
+        // programmatic 'change' events reach the handlers too.
+        var trOnFrom = function () {
+            if (trBusy) return;
+            if (trFrom.value === trTo.value) {
+                var altFrom = prevFrom !== trFrom.value ? prevFrom : (trFrom.value === 'fr' ? 'en' : 'fr');
+                applyLang(trFrom.value, altFrom);
+                return;
+            }
+            prevFrom = trFrom.value;
+            retranslateIfShown();
+        };
+        var trOnTo = function () {
+            if (trBusy) return;
+            if (trTo.value === trFrom.value) {
+                var altTo = prevTo !== trTo.value ? prevTo : (trTo.value === 'fr' ? 'en' : 'fr');
+                applyLang(altTo, trTo.value);
+                return;
+            }
+            prevTo = trTo.value;
+            retranslateIfShown();
+        };
+        if (window.jQuery) {
+            jQuery(trFrom).on('change', trOnFrom);
+            jQuery(trTo).on('change', trOnTo);
+        } else {
+            trFrom.addEventListener('change', trOnFrom);
+            trTo.addEventListener('change', trOnTo);
+        }
+
+        document.getElementById('translate-swap').addEventListener('click', function () {
+            applyLang(trTo.value, trFrom.value);
+        });
+
+        // Live translation: debounce typing so the result refreshes without
+        // pressing the Translate button.
+        var trDebounce = null;
+        trSource.addEventListener('input', function () {
+            clearTimeout(trDebounce);
+            if (!trSource.value.trim()) {
+                trResult.value = '';
+                trCopy.hidden = true;
+                trStatus.textContent = '';
+                return;
+            }
+            trDebounce = setTimeout(function () { translateForm.requestSubmit(); }, 700);
+        });
+
+        translateForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            trStatus.textContent = t('translating', 'Translating…');
+            trStatus.className = 'small mt-2 text-muted';
+            try {
+                var data = await postJson(apiUrl('translate.php'), {
+                    text: document.getElementById('translate-source').value,
+                    from: document.getElementById('translate-from').value,
+                    to: document.getElementById('translate-to').value
+                });
+                if (data.error) {
+                    trStatus.textContent = data.error;
+                    trStatus.className = 'small mt-2 text-danger';
+                    return;
+                }
+                trResult.value = data.translation || '';
+                trStatus.textContent = '';
+                trCopy.hidden = !trResult.value;
+            } catch (err) {
+                trStatus.textContent = t('network_error');
+                trStatus.className = 'small mt-2 text-danger';
+            }
+        });
+
+        trCopy.addEventListener('click', async function () {
+            await navigator.clipboard.writeText(trResult.value);
+            trCopy.textContent = t('copied', 'Copied');
+            setTimeout(function () { trCopy.textContent = t('copy', 'Copy'); }, 1500);
+        });
+    }
+
+    /* ---------------- Meeting recorder (microphone → WAV → upload) ---------------- */
+
+    var recBtn = document.getElementById('record-btn');
+    if (recBtn) {
+        var recStop = document.getElementById('record-stop');
+        var recTimer = document.getElementById('record-timer');
+        var recStatus = document.getElementById('record-status');
+        var mediaRecorder = null, streamRef = null, chunks = [], recInterval = null, recStart = 0;
+        var analyserCtx = null, analyser = null, levelEl = document.getElementById('record-level');
+
+        function updateLevel() {
+            if (!analyser || !levelEl) { return; }
+            var data = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteTimeDomainData(data);
+            var peak = 0;
+            for (var i = 0; i < data.length; i++) { peak = Math.max(peak, Math.abs(data[i] - 128) / 128); }
+            levelEl.style.width = Math.min(100, Math.round(peak * 250)) + '%';
+        }
+
+        // PCM Float32 → 16-bit mono WAV blob
+        function wavBlob(pcm, rate) {
+            var buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
+            function str(o, s) { for (var i = 0; i < s.length; i++) { v.setUint8(o + i, s.charCodeAt(i)); } }
+            str(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); str(8, 'WAVEfmt ');
+            v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+            v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
+            v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+            str(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+            for (var i = 0; i < pcm.length; i++) {
+                var s = Math.max(-1, Math.min(1, pcm[i]));
+                v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            }
+            return new Blob([buf], { type: 'audio/wav' });
+        }
+
+        // Decode the MediaRecorder output, downmix to mono, resample to 16 kHz
+        // (whisper's native rate, ~2 MB/min).
+        function toMono16k(audioBuffer) {
+            var channels = audioBuffer.numberOfChannels;
+            var ratio = audioBuffer.sampleRate / 16000;
+            var outLen = Math.floor(audioBuffer.length / ratio);
+            var out = new Float32Array(outLen);
+            for (var i = 0; i < outLen; i++) {
+                var idx = Math.floor(i * ratio), sum = 0;
+                for (var c = 0; c < channels; c++) { sum += audioBuffer.getChannelData(c)[idx]; }
+                out[i] = sum / channels;
+            }
+            return out;
+        }
+
+        function recTick() {
+            var s = Math.floor((Date.now() - recStart) / 1000);
+            recTimer.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+        }
+
+        recBtn.addEventListener('click', async function () {
+            try {
+                if (!window.MediaRecorder) { throw new Error('MediaRecorder'); }
+                streamRef = await navigator.mediaDevices.getUserMedia({ audio: true });
+                var mime = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg']
+                    .find(function (m) { return MediaRecorder.isTypeSupported(m); }) || '';
+                mediaRecorder = new MediaRecorder(streamRef, mime ? { mimeType: mime } : {});
+                // Live level meter: if it stays flat while you speak, the mic
+                // is physically silent (wrong device / muted / OS privacy).
+                analyserCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (analyserCtx.state === 'suspended') { await analyserCtx.resume(); }
+                analyser = analyserCtx.createAnalyser();
+                analyserCtx.createMediaStreamSource(streamRef).connect(analyser);
+                // An unconnected analyser never processes audio in Chrome —
+                // pull it through a muted gain so the meter is truthful.
+                var pull = analyserCtx.createGain();
+                pull.gain.value = 0;
+                analyser.connect(pull);
+                pull.connect(analyserCtx.destination);
+                chunks = [];
+                mediaRecorder.ondataavailable = function (e) { if (e.data && e.data.size) { chunks.push(e.data); } };
+                mediaRecorder.start();
+                var track = streamRef.getAudioTracks()[0];
+                if (track && track.muted) {
+                    recStatus.textContent = t('rec_muted');
+                    recStatus.className = 'small mt-2 text-warning';
+                }
+                recStart = Date.now();
+                recInterval = setInterval(function () { recTick(); updateLevel(); }, 300);
+                recBtn.hidden = true; recStop.hidden = false;
+                recStatus.textContent = '';
+            } catch (err) {
+                recStatus.textContent = t('rec_mic');
+                recStatus.className = 'small mt-2 text-danger';
+            }
+        });
+
+        recStop.addEventListener('click', function () {
+            clearInterval(recInterval);
+            recBtn.hidden = false; recStop.hidden = true;
+            var duration = recTimer.textContent;
+
+            mediaRecorder.onstop = async function () {
+                streamRef.getTracks().forEach(function (trk) { trk.stop(); });
+                if (analyserCtx) { analyserCtx.close(); analyserCtx = null; analyser = null; }
+                if (levelEl) { levelEl.style.width = '0'; }
+                try {
+                    var blob = new Blob(chunks, { type: chunks[0] ? chunks[0].type : 'audio/webm' });
+                    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    var decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+                    ctx.close();
+
+                    // Silence check: a flat recording means a device problem —
+                    // attaching it would index an empty transcript.
+                    var mono = toMono16k(decoded);
+                    var peak = 0;
+                    for (var i = 0; i < mono.length; i++) { peak = Math.max(peak, Math.abs(mono[i])); }
+                    if (peak < 0.01) {
+                        recStatus.textContent = t('rec_silent');
+                        recStatus.className = 'small mt-2 text-danger';
+                        recTimer.textContent = '';
+                        return;
+                    }
+                    var wav = wavBlob(mono, 16000);
+                    var stamp = new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-');
+                    var file = new File([wav], 'enregistrement-' + stamp + '.wav', { type: 'audio/wav' });
+                    var dt = new DataTransfer();
+                    dt.items.add(file);
+                    var input = document.getElementById('file');
+                    input.files = dt.files;
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    var title = document.getElementById('title');
+                    if (title && title.value.trim() === '') {
+                        title.value = sprintf(t('rec_title'), new Date().toLocaleString());
+                    }
+                    recStatus.textContent = sprintf(t('rec_done'), duration);
+                    recStatus.className = 'small mt-2 text-success';
+                } catch (err) {
+                    recStatus.textContent = t('rec_mic');
+                    recStatus.className = 'small mt-2 text-danger';
+                }
+                recTimer.textContent = '';
+            };
+            mediaRecorder.stop();
+        });
+    }
+
     /* ---------------- Documents list ---------------- */
 
     async function runSummarize(documentId, documentTitle) {
@@ -621,6 +886,282 @@
         } catch (err) {
             // Silent: the list keeps its previous state.
         }
+    }
+
+    /* -------- Audio playback + live transcript translation in documents -------- */
+
+    var audioModal = document.getElementById('doc-audio-modal');
+    if (audioModal) {
+        var audioPlayer = document.getElementById('doc-audio-player');
+        var ltLang = document.getElementById('doc-audio-lang');
+        var ltStatus = document.getElementById('doc-audio-translate-status');
+        var ltBox = document.getElementById('doc-audio-translation');
+        var ltExports = document.getElementById('doc-audio-exports');
+        var ltDocId = null, ltDocTitle = '', ltRun = 0, ltText = '';
+
+        function ltReset() {
+            ltRun++;
+            ltTimed = false;
+            ltSegs = [];
+            ltLines = [];
+            if (ltBox) { ltBox.hidden = true; ltBox.innerHTML = ''; }
+            ltText = '';
+            if (ltExports) ltExports.hidden = true;
+            if (ltStatus) ltStatus.textContent = '';
+        }
+
+        function appendLtSegment(text) {
+            if (!ltBox) return;
+            var p = document.createElement('p');
+            p.className = 'lt-segment';
+            p.textContent = text;
+            ltBox.appendChild(p);
+            ltBox.scrollTop = ltBox.scrollHeight;
+        }
+
+        var ltLines = [];       // <p> per timed segment
+        var ltSegs = [];        // {start,end,text|null}
+        var ltTimed = false;
+
+        // Karaoke reveal: on each playback tick, finished segments show fully
+        // (dimmed), the current one reveals words proportionally to position.
+        function renderSubtitles() {
+            if (!ltTimed) return;
+            var pos = (audioPlayer.currentTime || 0) * 1000;
+            for (var i = 0; i < ltSegs.length; i++) {
+                var seg = ltSegs[i], line = ltLines[i];
+                if (!seg || !line) continue;
+                if (seg.text === null) {
+                    line.textContent = '…';
+                    line.className = 'lt-segment lt-pending';
+                } else if (pos >= seg.end) {
+                    line.textContent = seg.text;
+                    line.className = 'lt-segment lt-done';
+                } else if (pos >= seg.start) {
+                    var words = seg.text.split(/\s+/);
+                    var frac = Math.min(1, (pos - seg.start) / Math.max(1, seg.end - seg.start));
+                    var n = Math.max(1, Math.ceil(frac * words.length));
+                    line.textContent = words.slice(0, n).join(' ');
+                    line.className = 'lt-segment lt-active';
+                } else {
+                    line.textContent = '…';
+                    line.className = 'lt-segment lt-pending';
+                }
+            }
+        }
+        audioPlayer.addEventListener('timeupdate', renderSubtitles);
+        audioPlayer.addEventListener('seeked', renderSubtitles);
+
+        // Timed mode: whisper timestamps + per-segment Muse translations,
+        // fetched in parallel batches so segments arrive fast, with one retry
+        // per segment — a single failure never stops the stream.
+        async function fetchTimedSegment(docId, lang, i) {
+            for (var attempt = 0; attempt < 2; attempt++) {
+                try {
+                    var r = await fetch(apiUrl('translate_document.php')
+                        + '?document_id=' + encodeURIComponent(docId)
+                        + '&to=' + encodeURIComponent(lang)
+                        + '&mode=timed&segment=' + i, { headers: { 'Accept': 'application/json' } });
+                    var data = await r.json();
+                    if (!data.error) return data;
+                    if (data.error === 'timed_unavailable') return data;
+                } catch (err) { /* retry */ }
+            }
+            return { error: 'failed' };
+        }
+
+        async function runTimed(docId, lang, run, timings, total) {
+            ltTimed = true;
+            ltSegs = timings.map(function (tm) { return { start: tm.start, end: tm.end, text: null }; });
+            ltLines = ltSegs.map(function () {
+                var p = document.createElement('p');
+                p.className = 'lt-segment lt-pending';
+                p.textContent = '…';
+                ltBox.appendChild(p);
+                return p;
+            });
+            renderSubtitles();
+
+            var received = 0, failed = 0, next = 0;
+            var workers = [];
+            var CONCURRENCY = 3;
+
+            async function worker() {
+                while (next < total) {
+                    var i = next++;
+                    var data = await fetchTimedSegment(docId, lang, i);
+                    if (run !== ltRun) return;
+                    if (data.error) {
+                        failed++;
+                        ltSegs[i].text = null;
+                        ltLines[i].className = 'lt-segment lt-pending';
+                    } else {
+                        received++;
+                        ltSegs[i].text = data.translation;
+                        ltText += data.translation + '\n\n';
+                    }
+                    renderSubtitles();
+                    ltStatus.textContent = sprintf(t('lt_progress'), received, total);
+                    ltStatus.className = 'small text-muted';
+                }
+            }
+
+            for (var w = 0; w < CONCURRENCY; w++) workers.push(worker());
+            await Promise.all(workers);
+            if (run !== ltRun) return;
+
+            if (failed > 0) {
+                ltStatus.textContent = sprintf(t('lt_done'), received) + ' (' + failed + ' ' + t('lt_error') + ')';
+                ltStatus.className = 'small text-warning';
+            } else {
+                ltStatus.textContent = sprintf(t('lt_done'), total);
+                ltStatus.className = 'small text-success';
+            }
+            if (ltExports) ltExports.hidden = received === 0;
+        }
+
+        // Fetch and display the translation — timed (karaoke) when whisper
+        // timestamps are available, otherwise progressive text segments.
+        // ltRun guards against stale replies after a language change or close.
+        async function translateLive(docId, lang, run) {
+            if (!ltBox || !ltStatus) return;
+            ltBox.hidden = false;
+            ltStatus.textContent = t('lt_preparing');
+            ltStatus.className = 'small text-muted';
+
+            try {
+                var probe = await fetch(apiUrl('translate_document.php')
+                    + '?document_id=' + encodeURIComponent(docId)
+                    + '&to=' + encodeURIComponent(lang) + '&mode=timed',
+                    { headers: { 'Accept': 'application/json' } });
+                var pd = await probe.json();
+                if (run !== ltRun) return;
+                if (pd.mode === 'timed' && pd.total > 0) {
+                    await runTimed(docId, lang, run, pd.timings, pd.total);
+                    return;
+                }
+            } catch (err) { /* fall through to text mode */ }
+
+            // Text mode fallback (no timestamps available): parallel batches,
+            // one retry per segment, failures never stop the stream.
+            var total = 0, next = 0, received = 0, failed = 0;
+            async function textWorker() {
+                for (;;) {
+                    var i = next++;
+                    if (total > 0 && i >= total) return;
+                    var data = null;
+                    for (var attempt = 0; attempt < 2; attempt++) {
+                        try {
+                            var r = await fetch(apiUrl('translate_document.php')
+                                + '?document_id=' + encodeURIComponent(docId)
+                                + '&to=' + encodeURIComponent(lang)
+                                + '&segment=' + i, { headers: { 'Accept': 'application/json' } });
+                            var d = await r.json();
+                            if (!d.error) { data = d; break; }
+                        } catch (err) { /* retry */ }
+                    }
+                    if (run !== ltRun) return;
+                    if (data === null) {
+                        failed++;
+                        if (total === 0 || (failed + received) >= total) return;
+                        continue;
+                    }
+                    if (total === 0) total = data.total || 1;
+                    received++;
+                    appendLtSegment(data.translation);
+                    ltText += data.translation + '\n\n';
+                    ltStatus.textContent = sprintf(t('lt_progress'), received, total);
+                    ltStatus.className = 'small text-muted';
+                    if (received + failed >= total) return;
+                }
+            }
+            var workers = [];
+            for (var w = 0; w < 3; w++) workers.push(textWorker());
+            await Promise.all(workers);
+            if (run !== ltRun) return;
+            if (received === 0) {
+                ltStatus.textContent = t('lt_error');
+                ltStatus.className = 'small text-danger';
+            } else {
+                ltStatus.textContent = sprintf(t('lt_done'), received)
+                    + (failed > 0 ? ' (' + failed + ' ' + t('lt_error') + ')' : '');
+                ltStatus.className = failed > 0 ? 'small text-warning' : 'small text-success';
+                if (ltExports) ltExports.hidden = false;
+            }
+        }
+
+        audioModal.addEventListener('show.bs.modal', function (event) {
+            var btn = event.relatedTarget;
+            if (!btn) return;
+            ltDocId = btn.getAttribute('data-document-id');
+            ltDocTitle = btn.getAttribute('data-document-title') || '';
+            audioPlayer.src = apiUrl('download_document.php')
+                + '?document_id=' + encodeURIComponent(ltDocId)
+                + '&inline=1';
+            var titleEl = document.getElementById('doc-audio-title');
+            if (titleEl) titleEl.textContent = ltDocTitle || titleEl.textContent;
+            ltReset();
+            if (window.jQuery && jQuery(ltLang).hasClass('select2-hidden-accessible')) {
+                jQuery(ltLang).val('').trigger('change.select2');
+            } else if (ltLang) {
+                ltLang.value = '';
+            }
+        });
+        audioModal.addEventListener('hidden.bs.modal', function () {
+            audioPlayer.pause();
+            audioPlayer.removeAttribute('src');
+            audioPlayer.load();
+            ltReset();
+        });
+
+        // Select2 wraps this select when the modal opens and fires 'change'
+        // through jQuery — a native addEventListener never sees it. Bind via
+        // jQuery so both native and Select2-driven changes reach the handler.
+        if (ltLang) {
+            var ltOnLang = function () {
+                ltReset();
+                if (ltLang.value && ltDocId) {
+                    ltStatus.textContent = sprintf(t('lt_progress'), 1, '…');
+                    ltStatus.className = 'small text-muted';
+                    translateLive(ltDocId, ltLang.value, ltRun);
+                }
+            };
+            if (window.jQuery) {
+                jQuery(ltLang).on('change', ltOnLang);
+            } else {
+                ltLang.addEventListener('change', ltOnLang);
+            }
+        }
+
+        if (ltExports) ltExports.querySelectorAll('.doc-audio-export').forEach(function (btn) {
+            btn.addEventListener('click', async function () {
+                var format = btn.getAttribute('data-format');
+                try {
+                    var response = await fetch(apiUrl('export.php'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            title: ltDocTitle + ' — ' + ltLang.options[ltLang.selectedIndex].text,
+                            content: ltText.trim(),
+                            format: format
+                        })
+                    });
+                    if (!response.ok) throw new Error('export');
+                    var blob = await response.blob();
+                    var url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'traduction-' + ltDocId + '.' + format;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    ltStatus.textContent = t('export_failed', 'Export impossible.');
+                    ltStatus.className = 'small text-danger';
+                }
+            });
+        });
     }
 
     bindSummarizeButtons();

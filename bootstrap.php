@@ -109,6 +109,7 @@ return [
     'meta' => $metaClient,
     'rag' => $rag,
     'transcription' => $transcription,
+    'doc_translations' => new \App\Services\Ai\DocumentTranslationService($pdo, $metaClient, $root . '/storage/transcripts'),
     'vision' => $vision,
     'ingestion' => $ingestion,
     'ingestion_jobs' => new \App\Models\IngestionJob($pdo),

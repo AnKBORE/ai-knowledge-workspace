@@ -303,6 +303,55 @@ class MetaClient
     }
 
     /**
+     * Local whisper.cpp transcription WITH millisecond timestamps — powers the
+     * karaoke-style live translation in the documents audio modal.
+     *
+     * @return list<array{start:int, end:int, text:string}> offsets in ms
+     */
+    public function transcribeTimedLocal(string $audioPath, string $outputBase): array
+    {
+        $bin = (string) $this->config['whisper_binary'];
+        $model = (string) ($this->config['whisper_model'] ?? '');
+
+        if (!is_file($bin)) {
+            throw new \RuntimeException('Whisper binary not found: ' . $bin);
+        }
+        if ($model === '' || !is_file($model)) {
+            throw new \RuntimeException('Whisper model not found: ' . $model);
+        }
+
+        // -nt suppresses timestamps in every output format — strip it so the
+        // JSON offsets are populated.
+        $args = trim((string) preg_replace('/(^|\s)-n[tph]\b/', ' ', (string) ($this->config['whisper_args'] ?? '')));
+
+        $cmd = sprintf('"%s" -m "%s" -f "%s" -oj -of "%s" %s', $bin, $model, $audioPath, $outputBase, $args);
+        exec($cmd . ' 2>&1', $lines, $code);
+
+        $jsonPath = $outputBase . '.json';
+        $json = is_file($jsonPath) ? (string) file_get_contents($jsonPath) : '';
+
+        if ($code !== 0 || $json === '') {
+            throw new \RuntimeException('whisper.cpp timed transcription failed.');
+        }
+
+        $data = json_decode($json, true);
+        $segments = [];
+        foreach ((array) ($data['transcription'] ?? []) as $row) {
+            $text = trim((string) ($row['text'] ?? ''));
+            if ($text === '') {
+                continue;
+            }
+            $segments[] = [
+                'start' => (int) ($row['offsets']['from'] ?? 0),
+                'end' => (int) ($row['offsets']['to'] ?? 0),
+                'text' => $text,
+            ];
+        }
+
+        return $segments;
+    }
+
+    /**
      * Dedicated speech-to-text endpoint (Whisper-compatible
      * /v1/audio/transcriptions: multipart file + model fields). Long audio is
      * split into provider-sized chunks and concatenated.
