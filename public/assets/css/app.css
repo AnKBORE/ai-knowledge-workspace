@@ -1450,3 +1450,32 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 
 /* Login : sélecteur de langue */
 .auth-lang { display: flex; justify-content: flex-end; margin-bottom: 1.1rem; }
+
+/* Landing — responsive navbar & layout */
+@media (max-width: 640px) {
+    .landing-header { flex-wrap: wrap; gap: .5rem .8rem; padding: .7rem .9rem; }
+    .landing-brand-mark { width: 34px; height: 34px; border-radius: 10px; }
+    .landing-brand-text strong { font-size: .85rem; }
+    .landing-brand-text small { display: none; }
+    .landing-nav { gap: .5rem; margin-left: auto; }
+    .landing-nav .btn { padding: .3rem .7rem; font-size: .8rem; }
+    .landing-lang-link { padding: .22rem .55rem; font-size: .78rem; }
+    .landing-main { gap: 2rem; padding: 1.6rem .95rem; }
+    .landing-footer { padding: 1.2rem .9rem; font-size: .82rem; }
+    .landing-footer-meta { flex-wrap: wrap; justify-content: center; }
+}
+@media (max-width: 400px) {
+    .landing-brand-text strong { font-size: .78rem; max-width: 9.5em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* Landing — icon-only login button */
+.landing-login-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0; border: none; background: transparent; color: #dc2626; line-height: 1; transition: transform .15s, color .15s; }
+.landing-login-btn svg { display: block; }
+.landing-login-btn:hover, .landing-login-btn:focus-visible { color: #b91c1c; transform: scale(1.12); }
+.landing-login-btn svg { width: 34px !important; height: 34px !important; }
+
+/* Mobile: opaque topbar — content scrolling underneath stays hidden */
+@media (max-width: 768px) {
+    .topbar, .landing-header, .breadcrumb-bar { background: #fff !important; }
+    .scroll-top { right: .85rem; bottom: 4.2rem; }
+}

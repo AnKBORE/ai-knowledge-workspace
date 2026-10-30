@@ -16,9 +16,9 @@ $navLabel = $isFr ? 'Connexion' : 'Sign in';
     <meta name="description" content="<?= e($isFr ? 'Espace de connaissances agentique : réponses sourcées, tâches rédigées, gouvernance complète.' : 'Agentic knowledge workspace: sourced answers, drafted tasks, full governance.') ?>">
     <title><?= e($title ?? $productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
+    <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/shell.css') ?>">
+    <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/spaces.css') ?>">
 </head>
 <body class="landing-body">
     <header class="landing-header">
@@ -36,7 +36,9 @@ $navLabel = $isFr ? 'Connexion' : 'Sign in';
                 <a class="landing-lang-link <?= $lang === 'fr' ? 'is-active' : '' ?>" href="<?= e(url('/presentation?lang=fr')) ?>">FR</a>
                 <a class="landing-lang-link <?= $lang === 'en' ? 'is-active' : '' ?>" href="<?= e(url('/presentation?lang=en')) ?>">EN</a>
             </div>
-            <a class="btn btn-sm btn-primary" href="<?= e(url('/login')) ?>"><?= e($navLabel) ?></a>
+            <a class="btn btn-icon landing-login-btn" href="<?= e(url('/login')) ?>" title="<?= e($navLabel) ?>" aria-label="<?= e($navLabel) ?>">
+                <svg viewBox="0 0 16 16" width="34" height="34" fill="currentColor" aria-hidden="true"><path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/></svg>
+            </a>
         </nav>
     </header>
 
