@@ -53,6 +53,7 @@ final class IngestionService
     {
         if (in_array($extension, self::AUDIO, true)) {
             $content = $this->extractAudio($path, $extension);
+            $content = $this->appendTranscriptTranslation($content);
         } elseif (in_array($extension, self::IMAGE, true)) {
             $content = $this->vision->extractText($path);
         } elseif ($extension === 'pdf') {
@@ -119,6 +120,25 @@ final class IngestionService
             str_contains($message, 'File empty or unreadable') => $T['file_empty'],
             default => getenv('APP_DEBUG') === '1' ? $message : $T['upload_failed'],
         };
+    }
+
+    /**
+     * When META_ASR_TRANSLATE_TO is set (e.g. "French"), every transcript gets
+     * a translation appended — Mooré is often transcribed without its special
+     * characters, so charset detection is unreliable; the model returns the
+     * text unchanged when it is already in the target language. Both versions
+     * are indexed so questions retrieve the transcript in either language.
+     */
+    private function appendTranscriptTranslation(string $content): string
+    {
+        $target = trim((string) (getenv('META_ASR_TRANSLATE_TO') ?: ''));
+        if ($target === '' || trim($content) === '') {
+            return $content;
+        }
+
+        $translation = $this->transcription->translateTranscript($content, $target);
+
+        return $translation === '' ? $content : $content . "\n\n[Traduction — $target]\n" . $translation;
     }
 
     private function extractAudio(string $path, string $extension): string

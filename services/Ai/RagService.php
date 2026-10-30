@@ -425,7 +425,7 @@ final class RagService
                 "QUESTION:\n" . $query
                     . "\n\nEXTRAIT(S):\n" . implode("\n", $numbered),
                 [['role' => 'system', 'content' =>
-                    "Tu es un traducteur. Traduis chaque extrait numéroté dans la langue de la QUESTION posée.\n"
+                    "Tu es un traducteur. Traduis chaque extrait numéroté dans la langue de la QUESTION posée (y compris le mooré si la question est en mooré).\n"
                     . "RÈGLES :\n"
                     . "1. Garde le numéro [n] devant chaque extrait, une ligne par extrait.\n"
                     . "2. Traduction fidèle, sans ajout ni résumé. Conserve chiffres, dates et noms propres exacts.\n"
@@ -559,7 +559,7 @@ final class RagService
 
     private function answerPrompt(): string
     {
-        $langRule = '5. Réponds dans la langue de la question : si la question est posée en anglais, réponds en anglais ; en coréen, en coréen, etc. Cette règle prime sur toute autre considération de langue.';
+        $langRule = '5. Réponds dans la langue de la question : anglais → anglais, mooré → mooré, coréen → coréen, etc. Si la question est en mooré, réponds entièrement en mooré courant en gardant les données exactes (chiffres, dates, noms) telles quelles. Cette règle prime sur toute autre considération de langue.';
         $notFound = $this->notFoundPhrase();
 
         return <<<PROMPT
@@ -586,7 +586,7 @@ PROMPT;
 
     private function taskPrompt(): string
     {
-        $langRule = "7. Rédige le document dans la langue de l'instruction : instruction en anglais → document en anglais ; en coréen → en coréen, etc.";
+        $langRule = "7. Rédige le document dans la langue de l'instruction : anglais → document en anglais, mooré → document en mooré, coréen → coréen, etc. Si l'instruction est en mooré, rédige entièrement en mooré courant en gardant les données exactes telles quelles.";
 
         return <<<PROMPT
 Tu es un rédacteur professionnel expérimenté. Pour les leçons et supports de cours, tu es spécialiste de l'Approche Par les Compétences / Pédagogie de l'Intégration (APC/PI).

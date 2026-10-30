@@ -12,7 +12,9 @@
 - [ ] Questions de démo prêtes :
   - **« What are the main risks? »** → réponse + sources numérotées
   - **« List all documents »** → démontre le catalogue intent
+  - Une question **en mooré** sur un enregistrement indexé → réponse en mooré + sources
   - Une question sur l'**audio transcrit** → montre l'ASR local
+- [ ] Démo mooré prête : un enregistrement micro en mooré → transcription + **traduction française indexée** → question en mooré → réponse en mooré
 - [ ] Tâche de démo prête : **« Prepare a note for the director on this quarter's activities »**
 - [ ] Clé API configurée et **testée** (Baseten) — whisper.cpp local actif (zéro crédit pour l'audio)
 - [ ] Préparer l'export **PDF + DOCX** pour montrer la mise en forme pro (titre, pagination, justifié)
@@ -34,7 +36,7 @@
 | **0:00–0:15** | Intro | Logo + titre du projet | *"Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Multimodal Knowledge Workspace — it turns an organization's documents into answers, with sources."* |
 | **0:15–0:45** | Problème | Slide « The problem » | *"Every organization drowns in documents: reports, policies, meeting notes. Finding the right answer takes hours, and generic chatbots hallucinate. The knowledge is there — but it's unusable."* |
 | **0:45–1:15** | Solution | Slide « The solution » | *"The Agentic Multimodal Knowledge Workspace indexes your documents, retrieves the relevant passages and generates grounded answers — with the exact sources cited. And it goes beyond Q&A: it drafts notes and reports from your own knowledge base."* |
-| **1:15–2:15** | **Démo** | Écran réel | 1) Upload → *"Indexed."* 2) Question → **réponse + sources numérotées** : *"See the answer — and the exact extracts it cites, numbered."* 3) Tâche → **brouillon** : *"A full draft, generated from the same knowledge base."* 4) Export PDF : *"…exported with professional formatting."* 5) (si le temps) audio transcrit ou bascule FR/EN |
+| **1:15–2:15** | **Démo** | Écran réel | 1) Upload → *"Indexed."* 2) Question → **réponse + sources numérotées** : *"See the answer — and the exact extracts it cites, numbered."* 3) Tâche → **brouillon** : *"A full draft, generated from the same knowledge base."* 4) Export PDF : *"…exported with professional formatting."* 5) (si le temps) **mooré** : *"And it speaks Mooré — the language in which field knowledge is actually spoken. Record a meeting in Mooré, ask in Mooré, get a sourced answer in Mooré."* |
 | **2:15–2:45** | Technique | Slide « Under the hood » | *"PHP 8.4.27, MySQL 8.4.13, strict MVC, permission-scoped retrieval, numbered verifiable citations — and audio transcription running locally on whisper.cpp, with the Baseten API pipeline wired as an interchangeable backend."* |
 | **2:45–3:00** | Clôture | Slide final | *"This is Build for Your World: real domain knowledge, amplified by Meta's models. Thank you."* |
 
@@ -95,8 +97,9 @@ Des mesures concrètes pèsent plus que les adjectifs :
 | **Couverture sécurité** | Argon2 · CSRF · RBAC deny-by-default (permissions globales + par espace) · confidentialité `prive` · soft-delete · journalisation de chaque action |
 | **Retrieval** | Scoring hybride `0.6 sémantique + 0.4 lexical + boost titre` · expansion voisins ±1 + chunk 0 · détection d'intention catalogue · retry « not found » (topK ×2) |
 | **Citations** | Seuls les extraits **réellement cités** sont affichés, avec leur numéro exact de contexte — traçabilité 1:1 |
-| **Multilingue** | FR/EN complet : 7 pages, erreurs API, fallbacks RAG, extraits de sources traduits (passe dédiée t°0.1) |
-| **Audio** | whisper.cpp local (verbatim, 0 crédit) **+** pipeline Baseten interchangeable — audios > 10 min auto-découpés |
+| **Multilingue** | UI FR/EN complet (7 pages, erreurs API, fallbacks RAG, extraits traduits) **+ mooré de bout en bout** : questions, réponses, tâches agentiques, traduction |
+| **Mooré (différenciateur)** | Glossaire linguistique sourcé (SIL 10 650 entrées + Peace Corps) injecté dans les prompts · **reconstruction phonétique ASR** (transcript whisper déformé → mooré standard → traduction correcte) · transcripts auto-traduits (`META_ASR_TRANSLATE_TO`) et indexés en double version |
+| **Audio** | Enregistreur de réunion intégré (WAV navigateur, vu-mètre, anti-silence) · Muse Spark Open `input_audio` (8–21 s) en premier, whisper.cpp local en secours — audios > 10 min auto-découpés |
 | **Exports** | PDF (dompdf) + DOCX OOXML natif : titre, styles, pagination, texte justifié |
 | **Origine terrain** | Né de **GES-SACREMENTS-KTO-BF**, déjà déployé dans plusieurs paroisses du Burkina Faso |
 
@@ -104,7 +107,7 @@ Des mesures concrètes pèsent plus que les adjectifs :
 
 ---
 
-## 5. Test « clone propre » (à faire avant de soumettre)
+## 6. Test « clone propre » (à faire avant de soumettre)
 
 Sur un dossier vide :
 
@@ -121,7 +124,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 
 ---
 
-## 6. Après la soumission
+## 7. Après la soumission
 
 - [ ] Recevoir la **confirmation** par e-mail
 - [ ] **Ne pas modifier** le dépôt pendant la période de jugement (5–8 novembre)
@@ -130,11 +133,11 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 
 ---
 
-## 7. Rappel des critères (Indie Developer)
+## 8. Rappel des critères (Indie Developer)
 
 | Critère | Ce que la vidéo doit montrer |
 |---|---|
-| **Creativity** | L'angle « agentique + multimodal », pas un simple chatbot |
+| **Creativity** | L'angle « agentique + multimodal + mooré », pas un simple chatbot : le pipeline low-resource (ASR → reconstruction → traduction → RAG) est le différenciateur |
 | **Technical ambition** | PHP/MySQL robuste + RAG + tâches + modèles Meta |
 | **Functionality** | Une démo qui **fonctionne** de bout en bout |
 

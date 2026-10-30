@@ -245,6 +245,7 @@ if ($method === 'GET') {
     $pages = [
         '/' => ['view' => 'ai/question'],
         '/tache' => ['view' => 'ai/task'],
+        '/traduire' => ['view' => 'ai/translate'],
         '/ajouter' => ['view' => 'ai/upload'],
         '/documents' => ['view' => 'ai/documents'],
         '/journal' => ['view' => 'ai/journal'],

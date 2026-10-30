@@ -28,6 +28,16 @@ $P = $T['upload'];
                         <h2 class="panel-title" id="upload-title"><?= e($P['panel_title']) ?></h2>
                         <p class="panel-sub"><?= e($P['panel_sub']) ?></p>
                     </div>
+                    <div class="recorder-actions" title="<?= e($P['recorder_sub']) ?>">
+                        <button type="button" class="btn btn-outline-danger btn-icon" id="record-btn" aria-label="<?= e($P['recorder_start']) ?>" title="<?= e($P['recorder_title']) ?>">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 0 0-8 0v5a4 4 0 0 0 4 4Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v3"/></svg>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-icon" id="record-stop" aria-label="<?= e($P['recorder_stop']) ?>" title="<?= e($P['recorder_stop']) ?>" hidden>
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+                        </button>
+                        <span id="record-timer" class="fw-semibold text-danger"></span>
+                        <span class="record-level-track" aria-hidden="true"><span id="record-level"></span></span>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <form id="upload-form" class="upload-form form-card" enctype="multipart/form-data">
@@ -59,6 +69,7 @@ $P = $T['upload'];
                             </button>
                         </div>
                     </form>
+                    <div id="record-status"></div>
                     <div id="upload-status" class="small mt-2"></div>
                 </div>
                 <p class="technical-admin-note technical-admin-footer"><?= e($P['footer']) ?></p>

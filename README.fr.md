@@ -130,7 +130,19 @@ upload.php ──(texte / PDF texte)──► extraction → stockage → index 
 - Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses
 - **Goulot mesuré :** sur une page dense, 82 % des tokens générés étaient le raisonnement interne du modèle (2 466 sur 2 996). Les appels OCR utilisent donc `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`) : −64 % de tokens générés pour une transcription équivalente, donc moins de crédits
 
+### Mooré — un pipeline pour langue peu dotée
+Pensé pour le terrain : au Burkina Faso, la connaissance institutionnelle réelle est souvent **dite** en mooré, pas écrite en français. La plateforme la traite comme une langue à part entière, pas comme une case cochée.
+
+- **De bout en bout** — une réunion en mooré enregistrée dans le navigateur est transcrite, traduite automatiquement (les deux versions indexées), retrouvée par une question en mooré et répondue **en mooré avec citations** ; les tâches agentiques en mooré produisent des documents en mooré — tout est vérifié en réel
+- **Référence linguistique dédiée** (`services/Ai/MooreReference.php`) — un glossaire compact injecté dans les prompts, compilé depuis le dictionnaire mooré-français-anglais du SIL (U. Niggli, 10 650 entrées), le manuel Peace Corps et un lexique de terrain : orthographe officielle (ɩ ʋ, nasales ãẽĩõũ, voyelles longues doublées, suffixe défini -ã, marqueur déclaratif -me), pronoms, règles SVO/négation, salutations et ~80 termes de base
+- **Reconstruction phonétique ASR** — les moteurs de transcription déforment les langues peu dotées (whisper a entendu *« Ibe kibali kye mame zakalamba »* pour *« Yibeoog kibare, f zak ramba »*). Le traducteur reçoit l'ordre de reconstituer d'abord le mooré voulu phonétiquement, **puis** de traduire : ce transcript déformé donne désormais *« Comment s'est passée ta matinée ? Et les gens de la maison ? »* — le bon sens (un salut demandant des nouvelles de la matinée et de la famille)
+- **Ancrage few-shot** — jusqu'à 3 vrais extraits mooré issus des documents indexés de l'utilisateur sont injectés comme référence de style et d'orthographe dès que le mooré est en jeu
+- **Page Traduction** (`/traduire`) — FR ⇄ EN ⇄ MO dans les deux sens, copie en un clic, chaque traduction journalisée
+- **Honnêteté assumée** — la sortie mooré utilise l'orthographe mossi standard et est fiable sur le vocabulaire courant ; l'interface précise que les textes officiels doivent être relus par un locuteur
+
 ### Transcription audio — double pipeline
+- **Enregistreur de réunion** — la page Ajouter enregistre directement le micro (WAV dans le navigateur), joint le fichier au formulaire et laisse le pipeline en arrière-plan transcrire puis indexer comme un document classique. Un vu-mètre et une détection de silence empêchent d'indexer un enregistrement vide
+- **Traduction automatique des transcripts** — `META_ASR_TRANSLATE_TO=French` ajoute une version traduite à chaque transcription : la langue originale et la traduction sont indexées côte à côte (transcript mooré + version française)
 - **Baseten — Muse Spark Open (par défaut, en premier)** — l'audio est envoyé à `meta-models/muse-spark-open-1026` via `/v1/chat/completions` sous forme de partie standard `input_audio` (base64 brut + format). Mesuré sur un compte rendu de réunion en français : **transcription exacte (chiffres, noms propres) en 8 à 21 s, 5 essais sur 5**, contre ~2 min pour whisper.cpp sur CPU. L'ancien format `audio_url` (data URL) prenait 56 s et renvoyait des messages vides
 - **Déploiement Baseten Whisper Large V3 Turbo (optionnel)** — déploiement GPU dédié appelé via l'API predict de Baseten (`whisper_input.audio.audio_b64` → `segments[].text`) ; verbatim, sans garde-fous LLM (paroles chantées comprises). Activé via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`) ; facturé à la minute GPU sur l'organisation propriétaire
 - **Endpoint ASR façon OpenAI (optionnel)** — `/v1/audio/transcriptions` façon Whisper (multipart `file` + `model`), activé via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
@@ -203,7 +215,7 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
 | **Tests** | **79 tests automatisés · 179 assertions** |
 | **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
-| **UI** | Bilingue EN/FR (EN par défaut), Bootstrap + DataTables + Select2 |
+| **UI** | Bilingue EN/FR (EN par défaut) — mooré géré pour le contenu (réponses, tâches, traduction), Bootstrap + DataTables + Select2 |
 
 ---
 

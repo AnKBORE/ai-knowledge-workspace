@@ -130,7 +130,19 @@ upload.php ──(text / text PDF)──► extract → store → index → 200 
 - Large scans are downscaled to 1600 px (GD) before sending: text stays legible while avoiding provider timeouts; `META_VISION_TIMEOUT` (default 300 s) covers dense pages
 - **Measured bottleneck:** on a dense page, 82 % of the generated tokens were the model's internal reasoning (2 466 of 2 996). OCR calls therefore use `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`): −64 % completion tokens for an equivalent transcript, i.e. fewer credits
 
+### Mooré — a low-resource language pipeline
+Built for the field: in Burkina Faso, real institutional knowledge is often *spoken* in Mooré, not written in French. The platform treats it as a first-class language, not a checkbox.
+
+- **End to end** — a Mooré meeting recorded in the browser is transcribed, auto-translated (both versions indexed), searchable by a Mooré question and answered **in Mooré with citations**; agentic tasks in Mooré produce Mooré documents — all verified live
+- **Curated linguistic reference** (`services/Ai/MooreReference.php`) — a compact prompt-injected grammar/lexicon compiled from the SIL Mooré–French–English dictionary (U. Niggli, 10,650 entries), the Peace Corps Mooré manual and a field lexicon: official orthography (ɩ ʋ, nasal vowels ãẽĩõũ, doubled long vowels, -ã definite suffix, -me declarative marker), pronouns, SVO/negation rules, greetings and ~80 core terms
+- **ASR phonetic reconstruction** — ASR engines garble low-resource languages (whisper heard *"Ibe kibali kye mame zakalamba"* for the actual *"Yibeoog kibare, f zak ramba"*). The translator is instructed to first reconstruct the intended Mooré phonetically, **then** translate: that garbled transcript now yields *« Comment s'est passée ta matinée ? Et les gens de la maison ? »* — the correct meaning (a greeting asking about one's morning and family)
+- **Few-shot grounding** — up to 3 real Mooré extracts from the user's own indexed documents are injected as style/orthography references whenever Mooré is involved
+- **Translation page** (`/traduire`) — FR ⇄ EN ⇄ MO both ways, one-click copy, every translation journaled
+- **Honest scope** — Mooré output uses standard Mossi orthography and is reliable for everyday vocabulary; the UI states that official texts should still be reviewed by a speaker
+
 ### Audio transcription — dual pipeline
+- **Meeting recorder** — the Add page records audio straight from the microphone (WAV in the browser), attaches it to the upload form and lets the background pipeline transcribe and index it as a regular document. A level meter and silence detection prevent indexing empty recordings
+- **Transcript auto-translation** — `META_ASR_TRANSLATE_TO=French` appends a translated version to each transcript, so the original language and the translation are indexed side by side (Mooré transcript + French version)
 - **Baseten — Muse Spark Open (default, first in line)** — the audio is sent to `meta-models/muse-spark-open-1026` through `/v1/chat/completions` as a standard `input_audio` part (raw base64 + format). Measured on a French meeting recording: **exact transcript (figures, proper names) in 8–21 s, 5/5 runs**, vs ~2 min for whisper.cpp on CPU. The earlier `audio_url` data-URL format took 56 s and returned empty messages
 - **Optional Baseten Whisper Large V3 Turbo deployment** — dedicated GPU deployment called through the Baseten predict API (`whisper_input.audio.audio_b64` → `segments[].text`); verbatim, no LLM guardrails (sung lyrics included). Enabled via `META_BASETEN_WHISPER_URL` (+ `META_BASETEN_WHISPER_KEY`, `META_BASETEN_WHISPER_LANGUAGE`); billed per GPU minute to the owning organisation
 - **Optional OpenAI-style ASR endpoint** — Whisper-style `/v1/audio/transcriptions` (multipart `file` + `model`), enabled via `META_TRANSCRIPTION_MODEL`/`META_TRANSCRIPTION_ENDPOINT`
@@ -202,7 +214,7 @@ A deliberately lean, robust and controlled architecture.
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
 | **Tests** | **79 automated tests · 179 assertions** |
-| **UI** | Bilingual EN/FR (EN default), Bootstrap + DataTables + Select2 |
+| **UI** | Bilingual EN/FR (EN default) — Mooré supported for content (answers, tasks, translation), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · CSP · CSRF · audit journal |
 
 ---

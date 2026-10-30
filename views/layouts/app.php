@@ -23,7 +23,7 @@ $T = [
         'nav_label' => 'Espace de travail',
         'crumb' => 'Assistant',
         'signout' => 'Déconnexion',
-        'nav' => ['/', 'Tâche agentique', 'Documents indexés', 'Ajouter un document', 'Catégories', "Journal d'audit", 'Mon profil'],
+        'nav' => ['Question', 'Tâche agentique', 'Traduction', 'Documents indexés', 'Ajouter un document', 'Catégories', "Journal d'audit", 'Mon profil'],
         'logout_title' => 'Se déconnecter',
         'logout_text' => 'Voulez-vous vraiment fermer votre session ?',
         'cancel' => 'Annuler',
@@ -41,7 +41,7 @@ $T = [
         'nav_label' => 'Workspace',
         'crumb' => 'Assistant',
         'signout' => 'Sign out',
-        'nav' => ['Question', 'Agentic task', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile'],
+        'nav' => ['Question', 'Agentic task', 'Translation', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile'],
         'logout_title' => 'Sign out',
         'logout_text' => 'Are you sure you want to close your session?',
         'cancel' => 'Cancel',
@@ -58,6 +58,7 @@ $T = [
 $navItems = [
     ['path' => '/', 'icon' => '<circle cx="12" cy="12" r="9"/><path d="M9.2 9.2a2.8 2.8 0 0 1 5.5.7c0 1.8-2.7 2.3-2.7 3.8"/><path d="M12 16.8v.01"/>'],
     ['path' => '/tache', 'icon' => '<path d="M12 3l1.7 4.6L18 9l-4.3 1.4L12 15l-1.7-4.6L6 9l4.3-1.4Z"/><path d="M18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8Z"/>'],
+    ['path' => '/traduire', 'icon' => '<path d="M4 5h10M9 3v2c0 4-3 7-6 8"/><path d="M6 8c1 3 4 6 8 7"/><path d="M13 21l4-9 4 9M14.6 17.5h4.8"/>'],
     ['path' => '/documents', 'icon' => '<path d="M4 6a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/>'],
     ['path' => '/ajouter', 'icon' => '<path d="M12 16V4m0 0 4 4m-4-4-4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>'],
     ['path' => '/categories', 'icon' => '<path d="M4 4h6l2 2v6l-8 8Z"/><circle cx="7.5" cy="7.5" r="1"/>'],
@@ -191,9 +192,9 @@ $displayRole = $T['role'];
 window.WORKSPACE_I18N = <?= json_encode(app_i18n($lang)['js'], JSON_UNESCAPED_UNICODE) ?>;</script>
 <script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>" defer></script>
 <script src="<?= e(url('/assets/vendor/select2/js/select2.min.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/js/select2-init.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/js/workspace.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/js/shell.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/js/scroll-top.js')) ?>" defer></script>
+<script src="<?= e(url('/assets/js/select2-init.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/select2-init.js') ?>" defer></script>
+<script src="<?= e(url('/assets/js/workspace.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/workspace.js') ?>" defer></script>
+<script src="<?= e(url('/assets/js/shell.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/shell.js') ?>" defer></script>
+<script src="<?= e(url('/assets/js/scroll-top.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/scroll-top.js') ?>" defer></script>
 </body>
 </html>
