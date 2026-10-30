@@ -180,7 +180,14 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                 <div class="modal-body space-create-body">
                     <audio id="doc-audio-player" controls preload="metadata" class="w-100"></audio>
                     <div class="doc-live-translate mt-3">
-                        <div class="d-flex align-items-center gap-2 mb-2">
+                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                            <label for="doc-audio-from" class="small fw-semibold mb-0"><?= e($P['audio_in'] ?? 'Audio') ?></label>
+                            <select id="doc-audio-from" class="form-select form-select-sm" style="width:auto">
+                                <option value="">Auto</option>
+                                <option value="mo">Mooré</option>
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                            </select>
                             <label for="doc-audio-lang" class="small fw-semibold mb-0"><?= e($P['translate_to']) ?></label>
                             <select id="doc-audio-lang" class="form-select form-select-sm" style="width:auto">
                                 <option value="">—</option>

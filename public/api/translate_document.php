@@ -32,6 +32,7 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'do
 
 $documentId = (int) ($_GET['document_id'] ?? 0);
 $to = (string) ($_GET['to'] ?? '');
+$from = preg_match('/^(fr|en|mo)$/', (string)($_GET['from'] ?? '')) ? (string) $_GET['from'] : null;
 $mode = (string) ($_GET['mode'] ?? 'text');
 $hasSegment = isset($_GET['segment']);
 $segment = (int) ($_GET['segment'] ?? 0);
@@ -99,7 +100,7 @@ if ($mode === 'timed') {
     }
 
     try {
-        $translation = $dependencies['doc_translations']->translateTimedSegment($documentId, $versionId, $to, $segment, $timed);
+        $translation = $dependencies['doc_translations']->translateTimedSegment($documentId, $versionId, $to, $segment, $timed, $from);
         if ($translation === '') {
             http_response_code(502);
             echo json_encode(['error' => $T['internal_error']], JSON_UNESCAPED_UNICODE);
@@ -145,7 +146,7 @@ if ($segment >= $total) {
 }
 
 try {
-    $translation = $service->translateSegment($documentId, $versionId, $to, $segment);
+    $translation = $service->translateSegment($documentId, $versionId, $to, $segment, $from);
 
     if ($translation === '') {
         http_response_code(502);

@@ -58,12 +58,20 @@ Work/time: tũuma work, kibare news/how-things-are, tũnug to use, zaamẽ yeste
 Verbs: wa come, kẽnga go, maane do/make, nonga like/love, mi know, gese see, rɩɩ take/eat, paame get/receive, tũus begin, baase finish, yɩɩ be/become, kẽeme be well/exist.
 Objects/abstract: ligdi money, rɩɩbo food, koom water, sɛba writing/book, sõma good, beoogo good, sũurã heart/mind, yam wisdom/mind, noore mouth/door.
 Religion (common in documents): Wẽnnaam / Wend God, misa Mass, karen-saamba teacher/catechist, KOMINYÕ communion, resgo/yelle song.
+Qualities/intensity: nẽere beautiful/beauty, sɩd truly/indeed/real(ly), hal … wʋsgo "very much" (intensifier: nẽer hal wʋsgo = very beautiful), yaa be/become (copula).
+Commerce (very common): raag / looga-raag market, koose sell, saamẽ / saame all/everything, paama get/receive, yʋʋda profit/gain/benefit, barka thank-you/blessing (loanword bāraka), wʋsgo much/a lot.
+Aspect markers: ra = past tense (a ra bee kaa = s/he was there), tɩ = and/then (also past auxiliary: m tɩ koos = I sold), looge / looga = go (to market), wa = come (yii raag n wa = came back from the market).
 
 ### Numerals
 a yembre 1 · a yiibu 2 · a tãabo 3 · a naase 4 · a nu 5 · a yoobe 6 · a yopoe 7 · a nii 8 · a wɛ 9 · piiga 10 · pisi 20 · pis-tãa 30 · kẽmse 100 · tusri 1000.
 
 ### Translation rules
 - Mooré speech recognition transcripts are approximate: reconstruct probable standard forms first (e.g. "Ibe kibali" → "Yibeoog kibaré", "f zak ramba" → "fo zak rãmba"), THEN translate.
+- Worked reconstruction (real example — ASR garble vs actual Mooré):
+  ASR heard: "Parcaya Puguneli, Assyria Nel Halouzgo, Arabica Laloukara. M'y d'arambat, je te couvre sèche, je m'parle à y aller, Ouzgo! barka"
+  True Mooré: "Paga yaa pʋg nẽere. A sɩd yaa nẽer hal wʋsgo. A ra bee kaa, laa looga raaga. M yii raag n wa, m tɩ koos n saamẽ. M paama yʋʋda wʋsgo. Barka!"
+  French: "La femme est une belle femme. Elle est vraiment très belle. Elle était là et elle est partie au marché. Je reviens du marché, j'ai tout vendu. J'ai eu beaucoup de bénéfice. Merci."
+  → Map foreign-looking ASR words to phonetically close Mooré roots: parcaya≈paga ya, puguneli≈pʋg nẽere, halouzgo≈hal wʋsgo, laloukara≈looga raaga, ouzgo≈wʋsgo.
 - French loanwords are frequent and stay close to French (misiridi, lɛɛr, tẽn-tʋmd, kaset).
 - Output standard orthography (ɩ ʋ ã ẽ ĩ õ ũ ñ), never an ASCII approximation.
 MOORE;

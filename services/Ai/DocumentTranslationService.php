@@ -68,9 +68,10 @@ final class DocumentTranslationService
      * Translate segment $index of the document into $lang ('fr'|'en'|'mo'),
      * using the SQL cache when available. Returns the translated text.
      */
-    public function translateSegment(int $documentId, int $versionId, string $lang, int $index): string
+    public function translateSegment(int $documentId, int $versionId, string $lang, int $index, ?string $fromLang = null): string
     {
-        $cached = $this->cached($documentId, $versionId, $lang, $index);
+        $cacheIndex = $index + $this->fromOffset($fromLang);
+        $cached = $this->cached($documentId, $versionId, $lang, $cacheIndex);
         if ($cached !== null) {
             return $cached;
         }
@@ -81,7 +82,7 @@ final class DocumentTranslationService
         }
 
         $context = $index > 0 ? $segments[$index - 1] : null;
-        $translation = $this->translateText($segments[$index], $lang, $context);
+        $translation = $this->translateText($segments[$index], $lang, $context, $fromLang);
 
         if ($translation !== '') {
             $ins = $this->pdo->prepare(
@@ -91,7 +92,7 @@ final class DocumentTranslationService
             );
             $ins->execute([
                 'doc' => $documentId, 'ver' => $versionId,
-                'lang' => $lang, 'seg' => $index, 'txt' => $translation,
+                'lang' => $lang, 'seg' => $cacheIndex, 'txt' => $translation,
             ]);
         }
 
@@ -172,20 +173,20 @@ final class DocumentTranslationService
      * Translate timed segment $index; cached under a namespaced index so it
      * never collides with the plain text-segment translations.
      */
-    public function translateTimedSegment(int $documentId, int $versionId, string $lang, int $index, array $segments): string
+    public function translateTimedSegment(int $documentId, int $versionId, string $lang, int $index, array $segments, ?string $fromLang = null): string
     {
         if (!isset($segments[$index])) {
             return '';
         }
 
-        $cacheIndex = self::TIMED_OFFSET + $index;
+        $cacheIndex = self::TIMED_OFFSET + $index + $this->fromOffset($fromLang);
         $cached = $this->cached($documentId, $versionId, $lang, $cacheIndex);
         if ($cached !== null) {
             return $cached;
         }
 
         $context = $index > 0 ? (string) $segments[$index - 1]['text'] : null;
-        $translation = $this->translateText($segments[$index]['text'], $lang, $context);
+        $translation = $this->translateText($segments[$index]['text'], $lang, $context, $fromLang);
 
         if ($translation !== '') {
             $ins = $this->pdo->prepare(
@@ -200,6 +201,44 @@ final class DocumentTranslationService
         }
 
         return $translation;
+    }
+
+    /**
+     * Find Mooré corpus sentences (Bible, user corrections) whose words match
+     * tokens in the mangled ASR — fuzzy phonetic lookup, top 3 pairs.
+     */
+    private function corpusExamples(string $source): string
+    {
+        try {
+            $words = preg_split('/[^a-zà-ÿʋɩɛɔãẽĩõũñ-]+/iu', mb_strtolower($source));
+            $words = array_filter((array) $words, fn ($w) => mb_strlen($w) >= 4);
+            if ($words === [] || $words === false) {
+                return '';
+            }
+            $likes = implode(' OR ', array_fill(0, min(8, count($words)), 'moore_text LIKE ?'));
+            $st = $this->pdo->prepare(
+                "SELECT moore_text, french_text FROM moore_corpus WHERE $likes LIMIT 3"
+            );
+            $st->execute(array_map(fn ($w) => '%' . mb_substr($w, 0, 5) . '%', array_slice(array_values($words), 0, 8)));
+            $out = '';
+            foreach ($st->fetchAll() as $row) {
+                $out .= '- Mooré: "' . $row['moore_text'] . '" → FR: "' . ($row['french_text'] ?? '') . "\"\n";
+            }
+            return $out;
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
+    /** Cache namespace per explicit source-language hint (avoids collisions). */
+    private function fromOffset(?string $fromLang): int
+    {
+        return match ($fromLang) {
+            'mo' => 100_000_000,
+            'fr' => 200_000_000,
+            'en' => 300_000_000,
+            default => 0,
+        };
     }
 
     /** Merge ultra-short whisper segments (< 600 ms) into the next one. */
@@ -218,21 +257,35 @@ final class DocumentTranslationService
         return $out;
     }
 
-    private function translateText(string $source, string $lang, ?string $context = null): string
+    private function translateText(string $source, string $lang, ?string $context = null, ?string $fromLang = null): string
     {
-        $needsMoore = $lang === 'mo' || $this->looksMoore($source);
+        $needsMoore = $lang === 'mo' || $fromLang === 'mo' || $this->looksMoore($source);
+        $corpusHint = $needsMoore ? $this->corpusExamples($source) : '';
+        if ($corpusHint !== '') {
+            $corpusHint = "\n\nSimilar reference sentences from the Mooré corpus (ASR is a phonetic mangling of these):\n" . $corpusHint;
+        }
+
+        $sourceNote = $fromLang !== null
+            ? sprintf(' The source language is %s.', self::LANGUAGES[$fromLang] ?? $fromLang)
+            : '';
+        if ($fromLang === 'mo') {
+            $sourceNote .= ' The excerpt is an imperfect phonetic ASR rendering of Mooré speech '
+                . '(foreign words below are misheard Mooré, NOT real French/English): '
+                . 'reconstruct the intended Mooré words phonetically FIRST, then translate.';
+        }
 
         $system = sprintf(
-            'You are a professional translator for French, English and Mooré (Mossi, Burkina Faso). '
-            . 'Translate this audio-transcript excerpt faithfully into %s — translate EVERYTHING, '
+            'You are a professional translator for French, English and Mooré (Mossi, Burkina Faso).'
+            . '%s Translate this audio-transcript excerpt faithfully into %s — translate EVERYTHING, '
             . 'omit no phrase, no word, no nuance; the excerpt may be cut mid-sentence, keep the '
             . 'partial thought as-is. The text may contain ASR mishearings: silently reconstruct the '
             . 'intended words when they are phonetically close, then translate. Keep names, figures '
             . 'and dates exact. Output ONLY the final translation, decisively: no comments, no notes, '
             . 'no alternatives, no uncertainty markers — commit to the single most likely meaning.%s%s',
+            $sourceNote,
             self::LANGUAGES[$lang] ?? $lang,
             $context !== null ? "\n\nPrevious excerpt for context (already translated — do NOT translate it, only use it to resolve ambiguity at the boundary): " . $context : '',
-            $needsMoore ? "\n\n" . MooreReference::prompt() : '',
+            $needsMoore ? "\n\n" . MooreReference::prompt() . $corpusHint : '',
         );
 
         return trim($this->client->chat($source, [['role' => 'system', 'content' => $system]], null, 0.1));

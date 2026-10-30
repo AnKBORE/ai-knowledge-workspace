@@ -894,6 +894,8 @@
     if (audioModal) {
         var audioPlayer = document.getElementById('doc-audio-player');
         var ltLang = document.getElementById('doc-audio-lang');
+        var ltFrom = document.getElementById('doc-audio-from');
+        function ltFromVal() { return (ltFrom && ltFrom.value) ? ltFrom.value : ''; }
         var ltStatus = document.getElementById('doc-audio-translate-status');
         var ltBox = document.getElementById('doc-audio-translation');
         var ltExports = document.getElementById('doc-audio-exports');
@@ -972,6 +974,7 @@
                     var r = await fetch(apiUrl('translate_document.php')
                         + '?document_id=' + encodeURIComponent(docId)
                         + '&to=' + encodeURIComponent(lang)
+                        + '&from=' + encodeURIComponent(ltFromVal())
                         + '&mode=timed&segment=' + i, { headers: { 'Accept': 'application/json' } });
                     var data = await r.json();
                     if (!data.error) return data;
@@ -1048,7 +1051,7 @@
             try {
                 var probe = await fetch(apiUrl('translate_document.php')
                     + '?document_id=' + encodeURIComponent(docId)
-                    + '&to=' + encodeURIComponent(lang) + '&mode=timed',
+                    + '&to=' + encodeURIComponent(lang) + '&from=' + encodeURIComponent(ltFromVal()) + '&mode=timed',
                     { headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
                 var pd = await probe.json();
                 if (run !== ltRun) return;
@@ -1075,6 +1078,7 @@
                             var r = await fetch(apiUrl('translate_document.php')
                                 + '?document_id=' + encodeURIComponent(docId)
                                 + '&to=' + encodeURIComponent(lang)
+                                + '&from=' + encodeURIComponent(ltFromVal())
                                 + '&segment=' + i, { headers: { 'Accept': 'application/json' } });
                             var d = await r.json();
                             if (!d.error) { data = d; break; }
@@ -1161,6 +1165,21 @@
                 jQuery(ltLang).on('change', ltOnLang);
             } else {
                 ltLang.addEventListener('change', ltOnLang);
+            }
+        }
+
+        // Source-language hint (Mooré…): re-run translation when it changes.
+        if (ltFrom) {
+            var ltOnFrom = function () {
+                if (ltLang && ltLang.value && ltDocId) {
+                    ltReset();
+                    translateLive(ltDocId, ltLang.value, ltRun);
+                }
+            };
+            if (window.jQuery) {
+                jQuery(ltFrom).on('change', ltOnFrom);
+            } else {
+                ltFrom.addEventListener('change', ltOnFrom);
             }
         }
 
