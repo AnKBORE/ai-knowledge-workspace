@@ -310,6 +310,25 @@ class MetaClient
      */
     public function transcribeTimedLocal(string $audioPath, string $outputBase): array
     {
+        $segments = $this->whisperTimedRun($audioPath, $outputBase, null);
+
+        // Mooré is absent from whisper's 99 languages: on Mooré audio, language
+        // autodetect hallucinates non-Latin scripts (Sinhala, Tibetan). French
+        // phonetics are the closest match — retry with -l fr, then keep the
+        // better of the two.
+        if ($this->latinShare(implode(' ', array_column($segments, 'text'))) < 0.55) {
+            $retry = $this->whisperTimedRun($audioPath, $outputBase . '_fr', 'fr');
+            if ($this->latinShare(implode(' ', array_column($retry, 'text')))
+                > $this->latinShare(implode(' ', array_column($segments, 'text')))) {
+                $segments = $retry;
+            }
+        }
+
+        return $segments;
+    }
+
+    private function whisperTimedRun(string $audioPath, string $outputBase, ?string $language): array
+    {
         $bin = (string) $this->config['whisper_binary'];
         $model = (string) ($this->config['whisper_model'] ?? '');
 
@@ -321,8 +340,11 @@ class MetaClient
         }
 
         // -nt suppresses timestamps in every output format — strip it so the
-        // JSON offsets are populated.
+        // JSON offsets are populated. A forced -l replaces any -l in the args.
         $args = trim((string) preg_replace('/(^|\s)-n[tph]\b/', ' ', (string) ($this->config['whisper_args'] ?? '')));
+        if ($language !== null) {
+            $args = trim((string) preg_replace('/(^|\s)-l\s+\S+/', ' ', $args)) . ' -l ' . $language;
+        }
 
         $cmd = sprintf('"%s" -m "%s" -f "%s" -oj -of "%s" %s', $bin, $model, $audioPath, $outputBase, $args);
         exec($cmd . ' 2>&1', $lines, $code);
@@ -349,6 +371,17 @@ class MetaClient
         }
 
         return $segments;
+    }
+
+    /** Share of Latin-script letters — detects non-Latin ASR hallucinations. */
+    private function latinShare(string $text): float
+    {
+        $text = (string) preg_replace('/[\s\p{P}\p{N}]+/u', '', $text);
+        if ($text === '') {
+            return 0.0;
+        }
+
+        return preg_match_all('/\p{Latin}/u', $text) / mb_strlen($text);
     }
 
     /**

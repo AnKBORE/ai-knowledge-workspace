@@ -925,15 +925,25 @@
 
         // Karaoke reveal: on each playback tick, finished segments show fully
         // (dimmed), the current one reveals words proportionally to position.
+        // Estimated segments (seg.est) get proportional timings from the audio
+        // duration — instant subtitles even before whisper timings exist.
         function renderSubtitles() {
             if (!ltTimed) return;
             var pos = (audioPlayer.currentTime || 0) * 1000;
+            var dur = (audioPlayer.duration || 0) * 1000;
             for (var i = 0; i < ltSegs.length; i++) {
                 var seg = ltSegs[i], line = ltLines[i];
                 if (!seg || !line) continue;
+                if (seg.est) {
+                    seg.start = dur * seg.i / seg.total;
+                    seg.end = dur * (seg.i + 1) / seg.total;
+                }
                 if (seg.text === null) {
                     line.textContent = '…';
                     line.className = 'lt-segment lt-pending';
+                } else if (dur <= 0 && seg.est) {
+                    line.textContent = seg.text;   // duration unknown: show all
+                    line.className = 'lt-segment lt-done';
                 } else if (pos >= seg.end) {
                     line.textContent = seg.text;
                     line.className = 'lt-segment lt-done';
@@ -951,6 +961,7 @@
         }
         audioPlayer.addEventListener('timeupdate', renderSubtitles);
         audioPlayer.addEventListener('seeked', renderSubtitles);
+        audioPlayer.addEventListener('loadedmetadata', renderSubtitles);
 
         // Timed mode: whisper timestamps + per-segment Muse translations,
         // fetched in parallel batches so segments arrive fast, with one retry
@@ -1029,21 +1040,30 @@
             ltStatus.textContent = t('lt_preparing');
             ltStatus.className = 'small text-muted';
 
+            // Timed probe: cached timings answer instantly; a cold whisper run
+            // is aborted after 12 s so the UI never looks frozen (the server
+            // still finishes it in the background — next open is cached).
+            var ctrl = new AbortController();
+            var probeTimer = setTimeout(function () { ctrl.abort(); }, 12000);
             try {
                 var probe = await fetch(apiUrl('translate_document.php')
                     + '?document_id=' + encodeURIComponent(docId)
                     + '&to=' + encodeURIComponent(lang) + '&mode=timed',
-                    { headers: { 'Accept': 'application/json' } });
+                    { headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
                 var pd = await probe.json();
                 if (run !== ltRun) return;
                 if (pd.mode === 'timed' && pd.total > 0) {
+                    clearTimeout(probeTimer);
                     await runTimed(docId, lang, run, pd.timings, pd.total);
                     return;
                 }
-            } catch (err) { /* fall through to text mode */ }
+            } catch (err) { /* timeout or unavailable → estimated karaoke */ }
+            clearTimeout(probeTimer);
 
-            // Text mode fallback (no timestamps available): parallel batches,
-            // one retry per segment, failures never stop the stream.
+            // Estimated karaoke: text segments already indexed translate fast;
+            // they are revealed proportionally to the audio position, so the
+            // subtitles still follow speech without whisper timings.
+            ltTimed = true;
             var total = 0, next = 0, received = 0, failed = 0;
             async function textWorker() {
                 for (;;) {
@@ -1066,10 +1086,21 @@
                         if (total === 0 || (failed + received) >= total) return;
                         continue;
                     }
-                    if (total === 0) total = data.total || 1;
+                    if (total === 0) {
+                        total = data.total || 1;
+                        for (var k = 0; k < total; k++) {
+                            ltSegs[k] = { est: true, i: k, total: total, start: 0, end: 0, text: null };
+                            var p = document.createElement('p');
+                            p.className = 'lt-segment lt-pending';
+                            p.textContent = '…';
+                            ltBox.appendChild(p);
+                            ltLines[k] = p;
+                        }
+                    }
                     received++;
-                    appendLtSegment(data.translation);
+                    ltSegs[i].text = data.translation;
                     ltText += data.translation + '\n\n';
+                    renderSubtitles();
                     ltStatus.textContent = sprintf(t('lt_progress'), received, total);
                     ltStatus.className = 'small text-muted';
                     if (received + failed >= total) return;

@@ -80,7 +80,8 @@ final class DocumentTranslationService
             return '';
         }
 
-        $translation = $this->translateText($segments[$index], $lang);
+        $context = $index > 0 ? $segments[$index - 1] : null;
+        $translation = $this->translateText($segments[$index], $lang, $context);
 
         if ($translation !== '') {
             $ins = $this->pdo->prepare(
@@ -147,6 +148,21 @@ final class DocumentTranslationService
         $segs = $this->client->transcribeTimedLocal($audioPath, $base);
         $segs = $this->mergeTinySegments($segs);
 
+        // Quality gate: whisper-small does not know Mooré — on some Mooré
+        // audio it hallucinates non-Latin scripts (Sinhala, Tibetan…). A
+        // mostly non-Latin transcript is unrecoverable; re-transcribe through
+        // the main ASR cascade (Muse first) which yields Latin phonetics.
+        if ($segs !== [] && $this->latinShare(implode(' ', array_column($segs, 'text'))) < 0.55) {
+            try {
+                $clean = trim($this->client->transcribe($audioPath));
+            } catch (\Throwable) {
+                $clean = '';
+            }
+            if ($clean !== '' && $this->latinShare($clean) > $this->latinShare(implode(' ', array_column($segs, 'text')))) {
+                $segs = [['start' => 0, 'end' => 0, 'text' => $clean]];
+            }
+        }
+
         file_put_contents($merged, json_encode($segs, JSON_UNESCAPED_UNICODE));
 
         return $segs;
@@ -168,7 +184,8 @@ final class DocumentTranslationService
             return $cached;
         }
 
-        $translation = $this->translateText($segments[$index]['text'], $lang);
+        $context = $index > 0 ? (string) $segments[$index - 1]['text'] : null;
+        $translation = $this->translateText($segments[$index]['text'], $lang, $context);
 
         if ($translation !== '') {
             $ins = $this->pdo->prepare(
@@ -201,18 +218,20 @@ final class DocumentTranslationService
         return $out;
     }
 
-    private function translateText(string $source, string $lang): string
+    private function translateText(string $source, string $lang, ?string $context = null): string
     {
         $needsMoore = $lang === 'mo' || $this->looksMoore($source);
 
         $system = sprintf(
             'You are a professional translator for French, English and Mooré (Mossi, Burkina Faso). '
-            . 'Translate this audio-transcript excerpt faithfully into %s. The text may contain ASR '
-            . 'mishearings: silently reconstruct the intended words when they are phonetically close, '
-            . 'then translate. Keep names, figures and dates exact. Output ONLY the final translation, '
-            . 'decisively: no comments, no notes, no alternatives, no uncertainty markers — commit to '
-            . 'the single most likely meaning.%s',
+            . 'Translate this audio-transcript excerpt faithfully into %s — translate EVERYTHING, '
+            . 'omit no phrase, no word, no nuance; the excerpt may be cut mid-sentence, keep the '
+            . 'partial thought as-is. The text may contain ASR mishearings: silently reconstruct the '
+            . 'intended words when they are phonetically close, then translate. Keep names, figures '
+            . 'and dates exact. Output ONLY the final translation, decisively: no comments, no notes, '
+            . 'no alternatives, no uncertainty markers — commit to the single most likely meaning.%s%s',
             self::LANGUAGES[$lang] ?? $lang,
+            $context !== null ? "\n\nPrevious excerpt for context (already translated — do NOT translate it, only use it to resolve ambiguity at the boundary): " . $context : '',
             $needsMoore ? "\n\n" . MooreReference::prompt() : '',
         );
 
@@ -290,6 +309,18 @@ final class DocumentTranslationService
         }
 
         return $segments;
+    }
+
+    /** Share of Latin-script letters — detects non-Latin ASR hallucinations. */
+    private function latinShare(string $text): float
+    {
+        $text = (string) preg_replace('/[\s\p{P}\p{N}]+/u', '', $text);
+        if ($text === '') {
+            return 0.0;
+        }
+        $latin = preg_match_all('/[\p{Latin}]/u', $text, $m);
+
+        return $latin / mb_strlen($text);
     }
 
     private function looksMoore(string $text): bool
