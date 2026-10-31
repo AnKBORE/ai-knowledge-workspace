@@ -124,7 +124,7 @@ $t = [
     'inc1_title' => $isFr ? 'Questionner dans sa langue' : 'Ask in your own language',
     'inc1_text' => $isFr ? 'Une question posée en mooré obtient une réponse en mooré, avec les sources citées.' : 'A question asked in Mooré gets an answer in Mooré, with cited sources.',
     'inc2_title' => $isFr ? 'Traduire les documents' : 'Translate the documents',
-    'inc2_text' => $isFr ? 'Les rapports en français sont traduits en mooré (et inversement), appuyés par le lexique SIL de 1 349 entrées.' : 'French reports are translated into Mooré (and back), backed by the 1,349-entry SIL lexicon.',
+    'inc2_text' => $isFr ? 'Les rapports en français sont traduits en mooré (et inversement), appuyés par le lexique SIL de 1 349 entrées et 40 proverbes.' : 'French reports are translated into Mooré (and back), backed by the 1,349-entry SIL lexicon and 40 proverbs.',
     'inc3_title' => $isFr ? 'Écouter en mooré' : 'Listen in Mooré',
     'inc3_text' => $isFr ? 'L’audio d’une réunion est transcrit puis traduit en temps réel, avec une lecture karaoké.' : 'Meeting audio is transcribed then translated in real time, with karaoke playback.',
 
