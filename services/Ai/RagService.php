@@ -691,12 +691,16 @@ PROMPT;
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
         try {
+            // No SQL comparison between c.langue and d.langue: the two tables
+            // were created with different collations, which made MySQL raise
+            // "Illegal mix of collations". The preference is decided in PHP.
             $stmt = $this->db->prepare(
-                "SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le, d.title
+                "SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le,
+                        d.title, d.langue AS doc_langue
                  FROM correction_document c
                  JOIN documents d ON d.id = c.document_id
                  WHERE c.document_id IN ($placeholders) AND c.statut = 'valide'
-                 ORDER BY (c.langue = d.langue) DESC, c.id DESC"
+                 ORDER BY c.id DESC"
             );
             $stmt->execute(array_keys($ids));
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -708,14 +712,23 @@ PROMPT;
             return $chunks;
         }
 
-        // First row wins for each document: a correction in the document's own
-        // language first, then the most recent one.
+        // Rows arrive newest first. Keep one per document: a correction written
+        // in the document's own language wins, otherwise the most recent one.
         $best = [];
 
         foreach ($rows as $row) {
             $documentId = (int) $row['document_id'];
+            $candidate = $best[$documentId] ?? null;
 
-            if (!isset($best[$documentId])) {
+            if ($candidate === null) {
+                $best[$documentId] = $row;
+                continue;
+            }
+
+            $candidateMatches = (string) $candidate['langue'] === (string) ($candidate['doc_langue'] ?? '');
+            $rowMatches = (string) $row['langue'] === (string) ($row['doc_langue'] ?? '');
+
+            if ($rowMatches && !$candidateMatches) {
                 $best[$documentId] = $row;
             }
         }
