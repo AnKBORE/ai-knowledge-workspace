@@ -488,7 +488,8 @@
                     text: document.getElementById('translate-source').value,
                     from: document.getElementById('translate-from').value,
                     to: document.getElementById('translate-to').value,
-                    force: trForce.value === '1'
+                    force: trForce.value === '1',
+                    previous: trForce.value === '1' ? trResult.value : ''
                 });
                 trForce.value = '0';
                 if (data.error) {

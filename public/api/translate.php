@@ -46,6 +46,7 @@ $input = is_array($input) ? $input : [];
 
 $text = trim((string) ($input['text'] ?? ''));
 $force = (bool) ($input['force'] ?? false);
+$previous = trim((string) ($input['previous'] ?? ''));
 $from = (string) ($input['from'] ?? '');
 $to = (string) ($input['to'] ?? '');
 
@@ -72,6 +73,11 @@ try {
         . 'no reasoning, no quotation marks around the whole text. If the source is ambiguous, commit to the '
         . 'single most likely meaning.';
 
+    if ($force) {
+        $system .= "\n\nThe previous translation was:\n" . ($previous !== '' ? $previous : '(none)')
+            . "\n\nPropose a DIFFERENT but faithful wording of the same meaning: change the sentence structure and vocabulary while keeping every fact, name, number and date identical. Do not copy the previous translation.";
+    }
+
     $system .= \App\Services\Ai\Glossaire::promptFor($to, $from);
     $system .= \App\Services\Ai\LexiqueMoore::promptFor($text, $from, $to);
 
@@ -91,7 +97,7 @@ try {
         $text,
         [['role' => 'system', 'content' => sprintf($system, $languages[$from], $languages[$to])]],
         null,
-        $force ? 0.4 : 0.0,
+        $force ? 0.7 : 0.0,
     );
 
     // Length-ratio guard: an incomplete or distorted translation is retried once.
