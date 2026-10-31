@@ -263,7 +263,7 @@ la préférence de langue se décide **en PHP**.
 | **6 — Multimodal** | OCR (vision) + transcription audio | ✅ |
 | **7 — Export** | PDF (dompdf) + DOCX (OOXML natif) | ✅ |
 | **8 — UI** | 5 pages, modaux, DataTables, page publique | ✅ |
-| **9 — Qualité** | 79 tests, CSP, audit détaillé | ✅ |
+| **9 — Qualité** | 100 tests, CSP, audit détaillé | ✅ |
 | **10 — Livraison** | Vidéo ≤ 3 min, soumission | ⏳ |
 
 ---
