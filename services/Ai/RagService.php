@@ -545,12 +545,34 @@ final class RagService
     {
         $parts = [];
 
+        $hasCorrection = false;
+
         foreach ($chunks as $index => $chunk) {
+            $label = (string) ($chunk['title'] ?? 'Document');
+
+            if (isset($chunk['correction'])) {
+                $hasCorrection = true;
+                $corr = $chunk['correction'];
+                $label .= sprintf(
+                    ' · VERSION CORRIGÉE %s du %s',
+                    mb_strtoupper((string) ($corr['langue'] ?? '')),
+                    mb_substr((string) ($corr['date'] ?? ''), 0, 10)
+                );
+            }
+
             $parts[] = sprintf(
                 "[Extrait %d — %s]\n%s",
                 $index + 1,
-                (string) ($chunk['title'] ?? 'Document'),
+                $label,
                 (string) $chunk['content'],
+            );
+        }
+
+        if ($hasCorrection) {
+            array_unshift(
+                $parts,
+                'NOTE: an extract marked « VERSION CORRIGÉE » is the validated reference for that document. '
+                . 'Always prefer it over any other extract of the same document, and say so when you cite it.'
             );
         }
 
@@ -634,6 +656,212 @@ PROMPT;
      * @param list<array{content: string, title: string, score: float}> $chunks
      * @return list<array{title: string, excerpt: string}>
      */
+
+    /**
+     * A validated correction is the reliable reference for its document.
+     *
+     * When a document has one, its raw chunks are replaced by the corrected
+     * text (one entry per document) and the provenance is attached, so the
+     * answer can cite "version corrigée v3 (MOORÉ)". Documents without a
+     * correction are left untouched.
+     *
+     * @param list<array<string, mixed>> $chunks
+     * @return list<array<string, mixed>>
+     */
+    private function preferCorrections(array $chunks): array
+    {
+        if ($chunks === []) {
+            return $chunks;
+        }
+
+        $ids = [];
+
+        foreach ($chunks as $chunk) {
+            $id = (int) ($chunk['document_id'] ?? 0);
+
+            if ($id > 0) {
+                $ids[$id] = true;
+            }
+        }
+
+        if ($ids === []) {
+            return $chunks;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le, d.title
+                 FROM correction_document c
+                 JOIN documents d ON d.id = c.document_id
+                 WHERE c.document_id IN ($placeholders) AND c.statut = 'valide'
+                 ORDER BY (c.langue = d.langue) DESC, c.id DESC"
+            );
+            $stmt->execute(array_keys($ids));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return $chunks;
+        }
+
+        if ($rows === []) {
+            return $chunks;
+        }
+
+        // First row wins for each document: a correction in the document's own
+        // language first, then the most recent one.
+        $best = [];
+
+        foreach ($rows as $row) {
+            $documentId = (int) $row['document_id'];
+
+            if (!isset($best[$documentId])) {
+                $best[$documentId] = $row;
+            }
+        }
+
+        $out = [];
+        $done = [];
+
+        foreach ($chunks as $chunk) {
+            $documentId = (int) ($chunk['document_id'] ?? 0);
+
+            if (!isset($best[$documentId])) {
+                $out[] = $chunk;
+                continue;
+            }
+
+            if (isset($done[$documentId])) {
+                continue; // one entry per corrected document
+            }
+
+            $done[$documentId] = true;
+            $row = $best[$documentId];
+
+            $out[] = [
+                'document_id' => $documentId,
+                'title' => (string) ($row['title'] ?? ($chunk['title'] ?? 'Document')),
+                'content' => trim((string) $row['texte_corrige']),
+                'score' => (float) ($chunk['score'] ?? 1.0),
+                'correction' => [
+                    'id' => (int) $row['id'],
+                    'langue' => (string) $row['langue'],
+                    'date' => (string) $row['cree_le'],
+                    'fichier' => (string) ($row['nom_fichier'] ?? ''),
+                ],
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Corrections whose text matches the query, as ready-to-use context chunks.
+     *
+     * Lexical matching only (the corpus is small and corrections are prose):
+     * every distinctive term of the question is OR-ed, then the number of
+     * matched terms orders the results.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function correctionHits(string $query, ?int $userId, int $limit = 3): array
+    {
+        if (trim($query) === '' || $limit < 1) {
+            return [];
+        }
+
+        $tokens = array_values(array_filter(
+            array_unique($this->tokens($query)),
+            static fn (string $token): bool => mb_strlen($token) >= 5
+        ));
+
+        if ($tokens === []) {
+            return [];
+        }
+
+        $tokens = array_slice($tokens, 0, 5);
+
+        $where = [];
+        $params = [];
+
+        foreach ($tokens as $index => $token) {
+            $where[] = "c.texte_corrige LIKE :t$index";
+            $params["t$index"] = '%' . $token . '%';
+        }
+
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le, d.title
+                 FROM correction_document c
+                 JOIN documents d ON d.id = c.document_id AND d.supprime_le IS NULL
+                 WHERE c.statut = 'valide' AND (" . implode(' OR ', $where) . ")
+                 ORDER BY c.id DESC
+                 LIMIT 25"
+            );
+            $stmt->execute($params);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        if ($rows === []) {
+            return [];
+        }
+
+        // Permission scope, when the user is not an unrestricted reader.
+        $allowed = $userId === null ? true : $this->accessibleDocumentIds($userId);
+
+        $scored = [];
+
+        foreach ($rows as $row) {
+            $documentId = (int) $row['document_id'];
+
+            // accessibleDocumentIds() returns a map documentId => true.
+            if (is_array($allowed) && !isset($allowed[$documentId])) {
+                continue;
+            }
+
+            $haystack = mb_strtolower((string) $row['texte_corrige']);
+            $score = 0;
+
+            foreach ($tokens as $token) {
+                if (mb_strpos($haystack, $token) !== false) {
+                    $score++;
+                }
+            }
+
+            if ($score === 0) {
+                continue;
+            }
+
+            $scored[] = [$score, $row];
+        }
+
+        if ($scored === []) {
+            return [];
+        }
+
+        usort($scored, static fn (array $a, array $b): int => $b[0] <=> $a[0]);
+
+        $out = [];
+
+        foreach (array_slice($scored, 0, $limit) as [$score, $row]) {
+            $out[] = [
+                'document_id' => (int) $row['document_id'],
+                'title' => (string) ($row['title'] ?? 'Document'),
+                'content' => trim((string) $row['texte_corrige']),
+                'score' => 1.0 + ($score / 10),
+                'correction' => [
+                    'id' => (int) $row['id'],
+                    'langue' => (string) $row['langue'],
+                    'date' => (string) $row['cree_le'],
+                    'fichier' => (string) ($row['nom_fichier'] ?? ''),
+                ],
+            ];
+        }
+
+        return $out;
+    }
     private function sources(array $chunks): array
     {
         // Keep the exact retrieval order: each entry matches the numbered
@@ -646,6 +874,8 @@ PROMPT;
                 'document_id' => (int) ($chunk['document_id'] ?? 0),
                 'title' => (string) ($chunk['title'] ?? 'Document'),
                 'excerpt' => mb_substr((string) ($chunk['content'] ?? ''), 0, 240),
+                'corrige' => isset($chunk['correction']),
+                'correction' => $chunk['correction'] ?? null,
             ];
         }, $chunks, array_keys($chunks));
     }
@@ -674,11 +904,12 @@ PROMPT;
             $chunks[] = [
                 'content' => (string) $row['content'],
                 'title' => (string) ($row['title'] ?? 'Document'),
+                'document_id' => $documentId,
                 'score' => 1.0,
             ];
         }
 
-        return $chunks;
+        return $this->preferCorrections($chunks);
     }
 
     /**
@@ -765,7 +996,31 @@ PROMPT;
         // sits in the chunk just before/after the best-scoring one. Enrich each
         // hit with its adjacent chunks from the same version so the model sees
         // the full passage instead of a truncated fragment.
-        return $this->expandWithNeighbors($top);
+        $expanded = $this->expandWithNeighbors($top);
+
+        // Validated corrections are not part of the chunk index (the raw text
+        // must stay searchable), so they are looked up separately: a correction
+        // matching the question must be able to surface the document even when
+        // its raw chunks do not.
+        $hits = $this->correctionHits($query, $userId, 3);
+
+        if ($hits !== []) {
+            $known = [];
+
+            foreach ($expanded as $chunk) {
+                $known[(int) ($chunk['document_id'] ?? 0)] = true;
+            }
+
+            foreach (array_reverse($hits) as $hit) {
+                $hitId = (int) $hit['document_id'];
+                if (!isset($known[$hitId])) {
+                    array_unshift($expanded, $hit);
+                    $known[$hitId] = true;   // one entry per corrected document
+                }
+            }
+        }
+
+        return $this->preferCorrections($expanded);
     }
 
     /**
