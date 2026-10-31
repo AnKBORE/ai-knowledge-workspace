@@ -298,13 +298,21 @@
             var instruction = document.getElementById('instruction').value.trim();
             if (!instruction) { return; }
 
+            // Documents explicitly chosen in the form bound the task.
+            var taskDocs = document.getElementById('task-docs');
+            var taskDocIds = taskDocs
+                ? Array.prototype.slice.call(taskDocs.selectedOptions || [])
+                    .map(function (option) { return parseInt(option.value, 10); })
+                    .filter(function (id) { return id > 0; })
+                : [];
+
             lastRequest = {
-                payload: { instruction: instruction, mode: 'task' },
+                payload: { instruction: instruction, mode: 'task', document_ids: taskDocIds },
                 badge: t('draft_badge'), loading: t('draft_loading'), sub: t('draft_sub')
             };
             showLoading(t('draft_badge'), t('draft_badge'), t('draft_loading'));
             try {
-                var data = await postJson(apiUrl('ask.php'), { instruction: instruction, mode: 'task' });
+                var data = await postJson(apiUrl('ask.php'), { instruction: instruction, mode: 'task', document_ids: taskDocIds });
                 if (data.error) { showError(data.error); return; }
                 showResult(t('draft_badge'), t('draft_badge'), t('draft_sub'), data.draft || '', data.sources, data.steps);
             } catch (err) {

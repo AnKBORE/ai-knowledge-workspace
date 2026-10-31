@@ -49,6 +49,10 @@ final class AiAssistantController
             return ['error' => app_i18n($this->lang)['api']['instruction_required']];
         }
 
-        return $this->rag->task($instruction, 8, $userId);
+        $documentIds = array_values(array_filter(
+            array_map('intval', (array) ($input['document_ids'] ?? []))
+        ));
+
+        return $this->rag->task($instruction, 8, $userId, $documentIds);
     }
 }

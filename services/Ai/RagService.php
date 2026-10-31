@@ -254,7 +254,7 @@ final class RagService
      *
      * @return array{draft: string, sources: list<array<string, mixed>>, steps: list<array<string, mixed>>}
      */
-    public function task(string $instruction, int $topK = 8, ?int $userId = null): array
+    public function task(string $instruction, int $topK = 8, ?int $userId = null, array $documentIds = []): array
     {
         $steps = [];
 
@@ -285,37 +285,68 @@ final class RagService
             'documents' => count(array_unique(array_column($chunks, 'document_id'))),
         ];
 
-        // A document named in the instruction bounds the whole task.
-        $scopeId = $this->documentScope($instruction, $userId);
+        // Scope: documents chosen in the form, otherwise a document named in the
+        // instruction. Everything outside it is discarded, so the draft can only
+        // cite the sources the user asked for.
+        $scopeIds = [];
+        $allowedScope = $userId === null ? true : $this->accessibleDocumentIds($userId);
+
+        foreach ($documentIds as $candidate) {
+            $candidate = (int) $candidate;
+
+            if ($candidate > 0 && ($allowedScope === true || isset($allowedScope[$candidate]))) {
+                $scopeIds[] = $candidate;
+            }
+        }
+
+        if ($scopeIds === []) {
+            $detected = $this->documentScope($instruction, $userId);
+
+            if ($detected !== null) {
+                $scopeIds[] = $detected;
+            }
+        }
+
         $scopeNote = '';
 
-        if ($scopeId !== null) {
+        if ($scopeIds !== []) {
             $scoped = array_values(array_filter(
                 $chunks,
-                static fn (array $chunk): bool => (int) ($chunk['document_id'] ?? 0) === $scopeId
+                static fn (array $chunk): bool => in_array((int) ($chunk['document_id'] ?? 0), $scopeIds, true)
             ));
 
             if ($scoped === []) {
-                $scoped = $this->chunksForDocument($scopeId, $topK);
+                foreach ($scopeIds as $scopeId) {
+                    $scoped = array_merge($scoped, $this->chunksForDocument($scopeId, $topK));
+                }
             }
 
             if ($scoped !== []) {
                 $chunks = $scoped;
-                $scopeTitle = '';
-
-                foreach ($this->db->query('SELECT title FROM documents WHERE id = ' . $scopeId)->fetchAll(PDO::FETCH_ASSOC) as $scopeRow) {
-                    $scopeTitle = (string) ($scopeRow['title'] ?? '');
-                }
-
-                $scopeNote = "SCOPE: cette tâche doit s'appuyer UNIQUEMENT sur le document « "
-                    . $scopeTitle . ' » (id ' . $scopeId . '). N\'utilise aucun autre document, '
-                    . "même si un extrait voisin semble pertinent.\n\n";
             }
+
+            $titles = [];
+
+            foreach ($scopeIds as $scopeId) {
+                $stmt = $this->db->prepare('SELECT title FROM documents WHERE id = ?');
+                $stmt->execute([$scopeId]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($row !== false && (string) ($row['title'] ?? '') !== '') {
+                    $titles[] = '« ' . (string) $row['title'] . ' »';
+                }
+            }
+
+            $scopeNote = "SCOPE: cette tâche doit s'appuyer UNIQUEMENT sur "
+                . (count($titles) > 1 ? 'les documents ' : 'le document ')
+                . implode(', ', $titles)
+                . ". N'utilise aucun autre document, même si un extrait voisin semble pertinent.\n\n";
         }
 
         $steps[] = [
             'step' => 'scope',
-            'document_id' => $scopeId,
+            'document_id' => $scopeIds === [] ? null : $scopeIds[0],
+            'document_ids' => $scopeIds,
             'extracts' => count($chunks),
         ];
 

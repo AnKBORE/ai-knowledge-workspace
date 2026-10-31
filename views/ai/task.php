@@ -33,7 +33,14 @@ $P = $T['task'];
                     <form id="task-form">
                         <label for="instruction" class="form-label"><?= e($P['label']) ?></label>
                         <textarea id="instruction" class="form-control" rows="4" placeholder="<?= e($P['placeholder']) ?>" required></textarea>
-                        <button type="submit" class="btn btn-primary mt-3"><?= e($P['submit']) ?></button>
+                        <label for="task-docs" class="form-label mt-3"><?= e($P['docs_label'] ?? 'Documents sources') ?></label>
+                <select id="task-docs" class="form-select" multiple size="5" aria-describedby="task-docs-help">
+                    <?php foreach (($documents ?? []) as $docOption): ?>
+                        <option value="<?= (int) $docOption['id'] ?>"><?= e((string) $docOption['title']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <p id="task-docs-help" class="form-text"><?= e($P['docs_help'] ?? '') ?></p>
+                <button type="submit" class="btn btn-primary mt-3"><?= e($P['submit']) ?></button>
                     </form>
                 </div>
                 <p class="technical-admin-note technical-admin-footer"><?= e($P['footer']) ?></p>
