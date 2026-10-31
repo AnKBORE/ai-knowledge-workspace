@@ -73,8 +73,9 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                         </div>
 
                         <div class="translate-cta">
-                            <button type="submit" class="btn btn-primary form-submit" id="translate-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M9 3v2c0 4-3 7-6 8"/><path d="M6 8c1 3 4 6 8 7"/><path d="M13 21l4-9 4 9M14.6 17.5h4.8"/></svg>
+                            <input type="hidden" id="translate-force" value="0">
+                            <button type="button" class="btn btn-primary form-submit" id="translate-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
                                 <?= e($P['button']) ?>
                             </button>
                         </div>

@@ -397,6 +397,7 @@
         var trFrom = document.getElementById('translate-from');
         var trTo = document.getElementById('translate-to');
         var trSource = document.getElementById('translate-source');
+        var trForce = document.getElementById('translate-force');
         var trBusy = false;
         var prevFrom = trFrom.value, prevTo = trTo.value;
 
@@ -474,6 +475,7 @@
                 trStatus.textContent = '';
                 return;
             }
+            trForce.value = '0';
             trDebounce = setTimeout(function () { translateForm.requestSubmit(); }, 700);
         });
 
@@ -485,8 +487,10 @@
                 var data = await postJson(apiUrl('translate.php'), {
                     text: document.getElementById('translate-source').value,
                     from: document.getElementById('translate-from').value,
-                    to: document.getElementById('translate-to').value
+                    to: document.getElementById('translate-to').value,
+                    force: trForce.value === '1'
                 });
+                trForce.value = '0';
                 if (data.error) {
                     trStatus.textContent = data.error;
                     trStatus.className = 'small mt-2 text-danger';
@@ -499,6 +503,14 @@
                 trStatus.textContent = t('network_error');
                 trStatus.className = 'small mt-2 text-danger';
             }
+        });
+
+        document.getElementById('translate-btn').addEventListener('click', function () {
+            if (!trSource.value.trim()) { trSource.focus(); return; }
+            trForce.value = '1';
+            trStatus.textContent = t('reformulating', 'Generating another wording…');
+            trStatus.className = 'small mt-2 text-muted';
+            translateForm.requestSubmit();
         });
 
         trCopy.addEventListener('click', async function () {
