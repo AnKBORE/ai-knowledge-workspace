@@ -119,6 +119,14 @@ $t = [
     'f10_1' => $isFr ? 'Extraction page par page des PDF sans couche texte' : 'Page-by-page extraction of PDFs without a text layer',
     'f10_2' => $isFr ? 'Appels vision en parallèle, puis indexation du texte' : 'Parallel vision calls, then text indexing',
     'f10_3' => $isFr ? 'Documents papier rendus interrogeables en langage naturel' : 'Paper documents made queryable in natural language',
+    'inclusion_title' => $isFr ? 'La langue n’est plus une barrière' : 'Language is no longer a barrier',
+    'inclusion_sub' => $isFr ? 'Les savoirs sont produits en français ou en anglais ; les citoyens, les agents de terrain et les bénévoles parlent mooré. L’espace traduit dans les deux sens — documents, réponses et audio — pour que chacun accède au savoir dans sa langue maternelle.' : 'Knowledge is produced in French or English; citizens, field agents and volunteers speak Mooré. The workspace translates both ways — documents, answers and audio — so everyone can access knowledge in their mother tongue.',
+    'inc1_title' => $isFr ? 'Questionner dans sa langue' : 'Ask in your own language',
+    'inc1_text' => $isFr ? 'Une question posée en mooré obtient une réponse en mooré, avec les sources citées.' : 'A question asked in Mooré gets an answer in Mooré, with cited sources.',
+    'inc2_title' => $isFr ? 'Traduire les documents' : 'Translate the documents',
+    'inc2_text' => $isFr ? 'Les rapports en français sont traduits en mooré (et inversement), appuyés par le lexique SIL de 1 349 entrées.' : 'French reports are translated into Mooré (and back), backed by the 1,349-entry SIL lexicon.',
+    'inc3_title' => $isFr ? 'Écouter en mooré' : 'Listen in Mooré',
+    'inc3_text' => $isFr ? 'L’audio d’une réunion est transcrit puis traduit en temps réel, avec une lecture karaoké.' : 'Meeting audio is transcribed then translated in real time, with karaoke playback.',
 
     'origin_title' => $isFr ? 'Né d’un besoin réel du terrain' : 'Born from a real field need',
     'origin_text' => $isFr
@@ -311,6 +319,19 @@ $t = [
     <p><?= e($t['origin_text']) ?></p>
     <p><?= e($t['origin_text2']) ?></p>
     <p class="landing-outro"><?= e($t['origin_text3']) ?></p>
+</section>
+
+<section class="landing-section">
+    <h2 class="landing-section-title"><?= e($t['inclusion_title']) ?></h2>
+        <p class="landing-section-sub"><?= e($t['inclusion_sub']) ?></p>
+        <div class="landing-grid">
+            <?php foreach ([['inc1_title', 'inc1_text'], ['inc2_title', 'inc2_text'], ['inc3_title', 'inc3_text']] as [$tk, $tx]): ?>
+                <article class="landing-feature">
+                    <h3><?= e($t[$tk]) ?></h3>
+                    <p><?= e($t[$tx]) ?></p>
+                </article>
+            <?php endforeach; ?>
+        </div>
 </section>
 
 <section class="landing-section">
