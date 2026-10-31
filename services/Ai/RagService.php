@@ -508,6 +508,25 @@ final class RagService
      *
      * @return list<array{document_id: int, content: string, title: string, score: float}>
      */
+    /**
+     * What the document actually IS, derived from its file extension. A meeting
+     * recording is first an audio file transcribed in French; its Mooré
+     * corrected version is a translation, not the document's own language.
+     */
+    private function documentNature(string $filename): string
+    {
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        return match ($ext) {
+            'wav', 'mp3', 'm4a', 'ogg', 'flac', 'aac', 'webm' => 'enregistrement audio (transcrit)',
+            'pdf' => 'document PDF',
+            'docx', 'doc' => 'document Word',
+            'jpeg', 'jpg', 'png', 'webp', 'gif' => 'image / scan (OCR)',
+            'csv' => 'fichier CSV',
+            'md' => 'texte Markdown',
+            default => 'document texte',
+        };
+    }
     private function catalogChunks(?int $userId): array
     {
         $allowed = $userId === null ? true : $this->accessibleDocumentIds($userId);
@@ -649,6 +668,7 @@ RÈGLES ABSOLUES :
 4b. Quand la réponse cite un titre, un en-tête ou un intitulé rédigé dans une autre langue que la question, donne d'abord sa traduction dans la langue de la réponse, suivie de l'original entre parenthèses. Exemple (question en anglais, titre en français) : "Death notice and fraternal communion" ("Avis de décès et communion fraternelle").
 4c. Mets en gras (**…**) la réponse directe à la question ainsi que les données clés citées (titres, dates, chiffres, noms propres).
 4d. Toute citation littérale entre guillemets DOIT être traduite dans la langue de la réponse ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage de la réponse ne doit rester dans une autre langue que celle de la question.
+4f. Pour DÉCRIRE un document (« parle-moi de X », « présente X », « qu'est-ce que X ») : commence par son identité RÉELLE — sa NATURE (enregistrement audio, PDF, scan, Word…) et sa LANGUE D'ORIGINE — puis, séparément, les versions corrigées disponibles en précisant qu'il s'agit de TRADUCTIONS, avec leur langue et leur date. Ne présente JAMAIS le texte d'une version corrigée comme le contenu d'origine, ni sa langue comme la langue du document.
 4e. N'emploie jamais un mot ou un passage visiblement tronqué en bord d'extrait : si un extrait se termine au milieu d'une phrase ou d'un mot, ignore cette fin plutôt que de la citer.
 5b. Les étiquettes « [Extrait n — Titre] » font partie des informations fournies : une question portant sur un titre, un nom de document ou la présence d'un document DOIT être répondue à partir de ces titres.
 $langRule
@@ -754,9 +774,11 @@ PROMPT;
             // "Illegal mix of collations". The preference is decided in PHP.
             $stmt = $this->db->prepare(
                 "SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le,
-                        d.title, d.langue AS doc_langue
+                        d.title, d.langue AS doc_langue, d.filename, d.created_at,
+                        cat.nom AS categorie
                  FROM correction_document c
                  JOIN documents d ON d.id = c.document_id
+                 LEFT JOIN categorie cat ON cat.id = d.categorie_id
                  WHERE c.document_id IN ($placeholders) AND c.statut = 'valide'
                  ORDER BY c.id DESC"
             );
@@ -791,6 +813,14 @@ PROMPT;
             }
         }
 
+        // Every valid corrected version of the document, not only the one chosen
+        // for the extract: a document may have MO, EN and FR corrections.
+        $available = [];
+
+        foreach ($rows as $row) {
+            $available[(int) $row['document_id']][] = mb_strtoupper((string) $row['langue'])
+                . ' (' . mb_substr((string) $row['cree_le'], 0, 10) . ')';
+        }
         $out = [];
         $done = [];
 
@@ -809,17 +839,48 @@ PROMPT;
             $done[$documentId] = true;
             $row = $best[$documentId];
 
+            $title = (string) ($row['title'] ?? ($chunk['title'] ?? 'Document'));
+            $filename = (string) ($row['filename'] ?? '');
+            $categorie = (string) ($row['categorie'] ?? '');
+            $correctionLangue = (string) $row['langue'];
+            $correctionDate = (string) $row['cree_le'];
+
+            // The document's IDENTITY is never replaced by its correction: a
+            // meeting recording stays an audio file transcribed in French, and
+            // the corrected text is announced as a translation. Without this,
+            // describing the document produced a purely Mooré description of a
+            // French audio file.
             $out[] = [
                 'document_id' => $documentId,
                 'version_id' => (int) ($chunk['version_id'] ?? 0),
                 'chunk_index' => 0,
-                'title' => (string) ($row['title'] ?? ($chunk['title'] ?? 'Document')),
-                'content' => trim((string) $row['texte_corrige']),
+                'title' => $title,
+                'content' => 'Titre : ' . $title
+                    . ' · Nature : ' . $this->documentNature($filename)
+                    . ' · Langue d\'origine : ' . mb_strtoupper((string) ($row['doc_langue'] ?? ''))
+                    . ($categorie !== '' ? ' · Catégorie : ' . $categorie : '')
+                    . ' · Enregistré le : ' . mb_substr((string) ($row['created_at'] ?? ''), 0, 10)
+                    . (isset($available[$documentId])
+                        ? ' · Versions corrigées : ' . implode(', ', array_unique($available[$documentId]))
+                        : '')
+                    . ' · Fichier : ' . $filename,
+                'score' => (float) ($chunk['score'] ?? 1.0),
+            ];
+
+            $out[] = [
+                'document_id' => $documentId,
+                'version_id' => (int) ($chunk['version_id'] ?? 0),
+                'chunk_index' => 1,
+                'title' => $title,
+                'content' => 'Version corrigée ' . mb_strtoupper($correctionLangue)
+                    . ' du ' . mb_substr($correctionDate, 0, 10) . ' — traduction corrigée, '
+                    . 'et non la langue d\'origine du document :' . "\n"
+                    . trim((string) $row['texte_corrige']),
                 'score' => (float) ($chunk['score'] ?? 1.0),
                 'correction' => [
                     'id' => (int) $row['id'],
-                    'langue' => (string) $row['langue'],
-                    'date' => (string) $row['cree_le'],
+                    'langue' => $correctionLangue,
+                    'date' => $correctionDate,
                     'fichier' => (string) ($row['nom_fichier'] ?? ''),
                 ],
             ];
@@ -916,6 +977,14 @@ PROMPT;
 
         usort($scored, static fn (array $a, array $b): int => $b[0] <=> $a[0]);
 
+        // Every valid corrected version of the document, not only the one chosen
+        // for the extract: a document may have MO, EN and FR corrections.
+        $available = [];
+
+        foreach ($rows as $row) {
+            $available[(int) $row['document_id']][] = mb_strtoupper((string) $row['langue'])
+                . ' (' . mb_substr((string) $row['cree_le'], 0, 10) . ')';
+        }
         $out = [];
 
         foreach (array_slice($scored, 0, $limit) as [$score, $row]) {
