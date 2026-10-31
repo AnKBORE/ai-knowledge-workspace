@@ -125,7 +125,9 @@ final class RagService
         // retrieval — the top-K only sees fragments of the dominant document.
         // Feed the permission-scoped document catalogue to the model instead.
         if ($this->isCatalogQuestion($question)) {
-            $chunks = $this->catalogChunks($userId);
+            // The catalogue lists metadata; corrections are declared on the
+            // extracts rather than substituted, so the dates stay intact.
+            $chunks = $this->annotateCorrections($this->catalogChunks($userId));
             if ($chunks === []) {
                 return [
                     'answer' => $this->msg('no_documents'),
@@ -923,6 +925,100 @@ PROMPT;
         }
 
         return $this->sources($cited);
+    }
+    /**
+     * Catalogue extracts are metadata lines (title, category, date, file) used to
+     * LIST documents — replacing them with a corrected text would destroy the
+     * very dates the question is about. So the correction is not substituted
+     * here: it is *declared* on the extract (marker in the text + provenance
+     * metadata), so the model knows a validated version exists and the source
+     * panel can show the "corrected version" badge and its download link.
+     *
+     * @param list<array<string, mixed>> $chunks
+     * @return list<array<string, mixed>>
+     */
+    private function annotateCorrections(array $chunks): array
+    {
+        if ($chunks === []) {
+            return $chunks;
+        }
+
+        $ids = [];
+
+        foreach ($chunks as $chunk) {
+            $id = (int) ($chunk['document_id'] ?? 0);
+
+            if ($id > 0) {
+                $ids[$id] = true;
+            }
+        }
+
+        if ($ids === []) {
+            return $chunks;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        try {
+            $stmt = $this->db->prepare(
+                "SELECT c.id, c.document_id, c.langue, c.nom_fichier, c.cree_le, d.langue AS doc_langue
+                 FROM correction_document c
+                 JOIN documents d ON d.id = c.document_id
+                 WHERE c.document_id IN ($placeholders) AND c.statut = 'valide'
+                 ORDER BY c.id DESC"
+            );
+            $stmt->execute(array_keys($ids));
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return $chunks;
+        }
+
+        if ($rows === []) {
+            return $chunks;
+        }
+
+        // One correction per document: its own language first, else the newest.
+        $best = [];
+
+        foreach ($rows as $row) {
+            $documentId = (int) $row['document_id'];
+            $candidate = $best[$documentId] ?? null;
+
+            if ($candidate === null) {
+                $best[$documentId] = $row;
+                continue;
+            }
+
+            $candidateMatches = (string) $candidate['langue'] === (string) ($candidate['doc_langue'] ?? '');
+            $rowMatches = (string) $row['langue'] === (string) ($row['doc_langue'] ?? '');
+
+            if ($rowMatches && !$candidateMatches) {
+                $best[$documentId] = $row;
+            }
+        }
+
+        foreach ($chunks as &$chunk) {
+            $documentId = (int) ($chunk['document_id'] ?? 0);
+
+            if (!isset($best[$documentId])) {
+                continue;
+            }
+
+            $row = $best[$documentId];
+            $chunk['correction'] = [
+                'id' => (int) $row['id'],
+                'langue' => (string) $row['langue'],
+                'date' => (string) $row['cree_le'],
+                'fichier' => (string) ($row['nom_fichier'] ?? ''),
+            ];
+
+            $chunk['content'] = rtrim((string) $chunk['content'])
+                . ' · version corrigée ' . mb_strtoupper((string) $row['langue'])
+                . ' du ' . mb_substr((string) $row['cree_le'], 0, 10);
+        }
+        unset($chunk);
+
+        return $chunks;
     }
     private function sources(array $chunks): array
     {
