@@ -135,10 +135,11 @@ final class RagService
                 ];
             }
 
-            $this->openQuestion = $this->isOpenQuestion($question);
-        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+                $this->openQuestion = $this->isOpenQuestion($question);
+            $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
             $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
-            $sources = $this->sourcesFor($answer, $chunks);
+            $answer = $this->stripStrayNotFound($answer);
+        $sources = $this->sourcesFor($answer, $chunks);
 
             return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
         }
@@ -152,8 +153,8 @@ final class RagService
             ];
         }
 
-        $this->openQuestion = $this->isOpenQuestion($question);
-        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+            $this->openQuestion = $this->isOpenQuestion($question);
+            $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
         $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
 
         // Recall retry: a "not found" answer may hide a retrieval miss —
@@ -162,12 +163,13 @@ final class RagService
             $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId);
             if (count($wider) > count($chunks)) {
                 $chunks = $wider;
-                $this->openQuestion = $this->isOpenQuestion($question);
-        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+                    $this->openQuestion = $this->isOpenQuestion($question);
+            $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
                 $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
             }
         }
 
+        $answer = $this->stripStrayNotFound($answer);
         $sources = $this->sourcesFor($answer, $chunks);
 
         return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
@@ -184,6 +186,8 @@ final class RagService
      */
     private bool $openQuestion = false;
 
+    private ?string $requestedLangue = null;
+
     private function notFoundPhrases(): array
     {
         return [
@@ -192,6 +196,27 @@ final class RagService
         ];
     }
 
+    /**
+     * The model sometimes appends the "nothing found" sentence as a caveat at
+     * the end of an answer that is otherwise perfectly grounded. The prompt
+     * forbids it; the code enforces it.
+     */
+    private function stripStrayNotFound(string $answer): string
+    {
+        $trimmed = trim($answer);
+
+        foreach ($this->notFoundPhrases() as $phrase) {
+            if ($trimmed === $phrase) {
+                return $trimmed; // a genuine "not found" answer
+            }
+
+            $answer = str_replace([$phrase, "\u{00AB} " . $phrase . " \u{00BB}", '« ' . $phrase . ' »'], '', $answer);
+        }
+
+        $answer = preg_replace("/\n{3,}/", "\n\n", $answer) ?? $answer;
+
+        return trim($answer);
+    }
     private function looksNotFound(string $answer): bool
     {
         foreach ($this->notFoundPhrases() as $phrase) {
@@ -639,6 +664,41 @@ final class RagService
      * reliable than hoping the model classifies the question the same way every
      * time.
      */
+    /**
+     * Language explicitly named in the question.
+     *
+     * When the user writes "parle-moi de Meeting6 en mooré", the requested
+     * language outranks the document's identity: the answer must present the
+     * Mooré version, not describe the French audio.
+     */
+    /**
+     * Language explicitly named in the question.
+     *
+     * "Parle-moi de Meeting6 en mooré" must present the Mooré version; without
+     * a named language the document's identity comes first. Only an explicit
+     * request counts — a bare mention of a language is not a preference.
+     */
+    private function requestedLanguage(string $question): ?string
+    {
+        $q = mb_strtolower($question);
+
+        $names = [
+            'mo' => '(?:moor[ée]|moore|mor[ée]|mossi)',
+            'fr' => '(?:fran[çc]ais|french|francophone)',
+            'en' => '(?:anglais|english|anglo)',
+        ];
+
+        foreach ($names as $code => $alt) {
+            $pattern = '/(?:en|in|vers|into|version|tradui\w*|traduis\w*|traduction)\s+'
+                . '(?:la\s+|le\s+|l\')?' . $alt . '\b/u';
+
+            if (preg_match($pattern, $q) === 1) {
+                return $code;
+            }
+        }
+
+        return null;
+    }
     private function isOpenQuestion(string $question): bool
     {
         return preg_match(
@@ -668,6 +728,7 @@ RÈGLES ABSOLUES :
 4b. Quand la réponse cite un titre, un en-tête ou un intitulé rédigé dans une autre langue que la question, donne d'abord sa traduction dans la langue de la réponse, suivie de l'original entre parenthèses. Exemple (question en anglais, titre en français) : "Death notice and fraternal communion" ("Avis de décès et communion fraternelle").
 4c. Mets en gras (**…**) la réponse directe à la question ainsi que les données clés citées (titres, dates, chiffres, noms propres).
 4d. Toute citation littérale entre guillemets DOIT être traduite dans la langue de la réponse ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage de la réponse ne doit rester dans une autre langue que celle de la question.
+4g. Si la question NOMME UNE LANGUE (« en mooré », « en anglais », « en français », « in English »…), CETTE LANGUE DÉSIGNE LE CONTENU À PRÉSENTER, et non la langue de ta réponse : tu réponds toujours dans la langue de la question (règle 5), tu présentes la version écrite dans la langue demandée, et tu cites le passage dans sa langue d'origine. Si cette version est une traduction corrigée, dis-le en une courte mention (nature et langue d'origine du document, date de la correction), puis donne le contenu — sans développer l'identité du document ni proposer les autres langues.
 4f. Pour DÉCRIRE un document (« parle-moi de X », « présente X », « qu'est-ce que X ») : commence par son identité RÉELLE — sa NATURE (enregistrement audio, PDF, scan, Word…) et sa LANGUE D'ORIGINE — puis, séparément, les versions corrigées disponibles en précisant qu'il s'agit de TRADUCTIONS, avec leur langue et leur date. Ne présente JAMAIS le texte d'une version corrigée comme le contenu d'origine, ni sa langue comme la langue du document.
 4e. N'emploie jamais un mot ou un passage visiblement tronqué en bord d'extrait : si un extrait se termine au milieu d'une phrase ou d'un mot, ignore cette fin plutôt que de la citer.
 5b. Les étiquettes « [Extrait n — Titre] » font partie des informations fournies : une question portant sur un titre, un nom de document ou la présence d'un document DOIT être répondue à partir de ces titres.
@@ -805,6 +866,18 @@ PROMPT;
                 continue;
             }
 
+            // An explicitly requested language outranks every other rule.
+            if ($this->requestedLangue !== null) {
+                $candidateWanted = (string) $candidate['langue'] === $this->requestedLangue;
+                $rowWanted = (string) $row['langue'] === $this->requestedLangue;
+
+                if ($rowWanted && !$candidateWanted) {
+                    $best[$documentId] = $row;
+                }
+
+                continue;
+            }
+
             $candidateMatches = (string) $candidate['langue'] === (string) ($candidate['doc_langue'] ?? '');
             $rowMatches = (string) $row['langue'] === (string) ($row['doc_langue'] ?? '');
 
@@ -884,6 +957,19 @@ PROMPT;
                     'fichier' => (string) ($row['nom_fichier'] ?? ''),
                 ],
             ];
+        }
+
+        // Stable sort: the corrected version written in the requested language
+        // comes first, so the model focuses on it.
+        if ($this->requestedLangue !== null) {
+            $wanted = $this->requestedLangue;
+
+            usort($out, static function (array $a, array $b) use ($wanted): int {
+                $aWanted = isset($a['correction']['langue']) && (string) $a['correction']['langue'] === $wanted ? 0 : 1;
+                $bWanted = isset($b['correction']['langue']) && (string) $b['correction']['langue'] === $wanted ? 0 : 1;
+
+                return $aWanted <=> $bWanted;
+            });
         }
 
         return $out;
@@ -1088,6 +1174,18 @@ PROMPT;
                 continue;
             }
 
+            // An explicitly requested language outranks every other rule.
+            if ($this->requestedLangue !== null) {
+                $candidateWanted = (string) $candidate['langue'] === $this->requestedLangue;
+                $rowWanted = (string) $row['langue'] === $this->requestedLangue;
+
+                if ($rowWanted && !$candidateWanted) {
+                    $best[$documentId] = $row;
+                }
+
+                continue;
+            }
+
             $candidateMatches = (string) $candidate['langue'] === (string) ($candidate['doc_langue'] ?? '');
             $rowMatches = (string) $row['langue'] === (string) ($row['doc_langue'] ?? '');
 
@@ -1276,6 +1374,10 @@ PROMPT;
                 }
             }
         }
+
+        // A language named in the question decides which corrected version
+        // is presented first.
+        $this->requestedLangue = $this->requestedLanguage($query);
 
         return $this->preferCorrections($expanded);
     }
