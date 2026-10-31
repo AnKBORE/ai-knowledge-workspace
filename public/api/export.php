@@ -61,7 +61,17 @@ try {
     $slug = trim(mb_strtolower($slug), '-') ?: 'resultat';
     $filename = $slug . '-' . date('Ymd-His') . '.' . $format;
 
-    header('Content-Type: ' . ($format === 'docx'
+    // Every generated file leaves the application: record it.
+$dependencies['journal']->log(
+    (int) $dependencies['auth']->id(),
+    'document.export',
+    'document',
+    null,
+    'succes',
+    ['format' => $format, 'titre' => mb_substr($title, 0, 120), 'octets' => strlen($bytes)]
+);
+
+header('Content-Type: ' . ($format === 'docx'
         ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         : 'application/pdf'));
     header('Content-Disposition: attachment; filename="' . $filename . '"');

@@ -23,6 +23,7 @@ if (!$dependencies['auth']->check()) {
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.supprimer')) {
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'document.suppression', 'document', null, 'refus', ['raison' => 'permission']);
     http_response_code(403);
     echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;

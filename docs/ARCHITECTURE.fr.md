@@ -327,6 +327,28 @@ l'apprentissage et au RAG — il ne reconstruit jamais le fichier.
 
 ---
 
+### 10.1 Ce que le journal enregistre
+
+| Famille | Actions |
+|---|---|
+| **Authentification** | `connexion` (succès **et** refus, verrouillage inclus), `deconnexion` |
+| **Documents** | `document.depot`, `document.consultation`, `document.suppression`, `document.export`, `document.resume` |
+| **Corrections** | `document.correction`, `document.correction.consultation`, `document.correction.telechargement`, `document.correction.suppression` |
+| **Usage de l'IA** | `assistant.question`, `traduction`, `reformulation` |
+| **Administration** | `categorie.creation/modification/suppression`, `profil.maj`, `profil.mot_de_passe`, `journal.export`, `journal.purge` |
+
+Les tentatives **refusées** sur les opérations destructrices sont enregistrées
+avec `resultat = refus` (`document.suppression`, `journal.purge`,
+`document.correction.suppression`, ainsi que tout mot de passe de purge erroné).
+
+L'export du journal (`journal.export`) et tout fichier généré
+(`document.export`) sont audités : la piste d'audit ne peut pas être exfiltrée
+sans laisser de trace.
+
+**Limite connue :** les rejets CSRF (419) et les refus de permission sur les
+endpoints de **lecture** sont répondus mais ne laissent pas de trace.
+---
+
 ## 11. Tests
 
 `vendor/bin/phpunit` — **100 tests, 230 assertions**, sans base de données ni API.

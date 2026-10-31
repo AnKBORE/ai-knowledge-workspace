@@ -28,6 +28,7 @@ if (!$dependencies['auth']->check()) {
 }
 
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'journal.lire')) {
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'journal.purge', 'journal', null, 'refus', ['raison' => 'permission']);
     http_response_code(403);
     echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;

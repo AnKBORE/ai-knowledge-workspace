@@ -32,6 +32,17 @@ header('Content-Type: text/csv; charset=utf-8');
 header('Content-Disposition: attachment; filename="journal-' . date('Ymd-His') . '.csv"');
 header('X-Content-Type-Options: nosniff');
 
+// Exporting the audit trail is itself an auditable action: without this
+// line the whole log could be exfiltrated without leaving a trace.
+$dependencies['journal']->log(
+    (int) $dependencies['auth']->id(),
+    'journal.export',
+    'journal',
+    null,
+    'succes',
+    ['entrees' => is_array($entries) ? count($entries) : 0]
+);
+
 $output = fopen('php://output', 'w');
 fputcsv($output, ['Date', 'Acteur', 'Action', 'Objet', 'Resultat', 'IP', 'Details'], ',', '"', '');
 

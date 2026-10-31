@@ -325,6 +325,27 @@ for learning and RAG — it never rebuilds the file.
 
 ---
 
+### 10.1 What the audit journal records
+
+| Family | Actions |
+|---|---|
+| **Authentication** | `connexion` (success **and** refusal, including lockout), `deconnexion` |
+| **Documents** | `document.depot`, `document.consultation`, `document.suppression`, `document.export`, `document.resume` |
+| **Corrections** | `document.correction`, `document.correction.consultation`, `document.correction.telechargement`, `document.correction.suppression` |
+| **AI usage** | `assistant.question`, `traduction`, `reformulation` |
+| **Administration** | `categorie.creation/modification/suppression`, `profil.maj`, `profil.mot_de_passe`, `journal.export`, `journal.purge` |
+
+Refused attempts on **destructive** operations are recorded with
+`resultat = refus` (`document.suppression`, `journal.purge`,
+`document.correction.suppression`, plus every wrong purge password).
+
+Exporting the journal (`journal.export`) and any generated file
+(`document.export`) are audited too: the trail cannot be exfiltrated silently.
+
+**Known gap:** CSRF rejections (419) and plain permission refusals on **read**
+endpoints are answered but leave no trace.
+---
+
 ## 11. Tests
 
 `vendor/bin/phpunit` — **100 tests, 230 assertions**, with no database server and

@@ -68,6 +68,10 @@ foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
     ];
 }
 
+$dependencies['journal']->log($userId, 'document.correction.consultation', 'document', $documentId, 'succes', [
+    'corrections' => count($out),
+]);
+
 echo json_encode([
     'corrections' => $out,
     'total' => count($out),
