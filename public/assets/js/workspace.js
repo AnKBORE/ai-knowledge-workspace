@@ -553,6 +553,63 @@
         });
     }
 
+    /* ---------------- Audit journal: legal purge ---------------- */
+
+    var purgeForm = document.getElementById('journal-purge-form');
+    if (purgeForm) {
+        var purgeError = document.getElementById('journal-purge-error');
+        var purgeSubmit = document.getElementById('journal-purge-submit');
+        var purgeDebut = document.getElementById('journal-purge-debut');
+        var purgeFin = document.getElementById('journal-purge-fin');
+        var purgePassword = document.getElementById('journal-purge-password');
+
+        var purgeShowError = function (message) {
+            if (!purgeError) { return; }
+            if (!message) {
+                purgeError.hidden = true;
+                purgeError.textContent = '';
+                return;
+            }
+            purgeError.hidden = false;
+            purgeError.textContent = message;
+        };
+
+        // The form previously had no method and no handler: the browser sent a
+        // GET to the endpoint and displayed a raw 405 page. It is now an AJAX
+        // POST, so failures stay inside the modal.
+        purgeForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            purgeShowError(null);
+
+            if (purgeSubmit) { purgeSubmit.disabled = true; }
+
+            try {
+                var response = await fetch(apiUrl('journal_purge.php'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        date_debut: purgeDebut ? purgeDebut.value : '',
+                        date_fin: purgeFin ? purgeFin.value : '',
+                        password: purgePassword ? purgePassword.value : ''
+                    })
+                });
+
+                var data = {};
+                try { data = await response.json(); } catch (e) { data = {}; }
+
+                if (response.ok && typeof data.deleted !== 'undefined') {
+                    window.location.reload();
+                    return;
+                }
+
+                purgeShowError(data.error || t('purge_failed', 'Purge impossible. Vérifiez la période et le mot de passe.'));
+            } catch (err) {
+                purgeShowError(t('network_error'));
+            } finally {
+                if (purgeSubmit) { purgeSubmit.disabled = false; }
+            }
+        });
+    }
     /* ---------------- Corrected version of an indexed document ---------------- */
 
     var correctionButtons = document.querySelectorAll('.correction-btn');

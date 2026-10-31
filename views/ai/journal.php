@@ -109,7 +109,8 @@ $labels = [
 <div class="modal fade space-create-modal profil-modal" id="journal-purge-modal" tabindex="-1" aria-labelledby="journal-purge-title" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered profil-modal-dialog">
         <div class="modal-content">
-            <form class="space-form" id="journal-purge-form" action="<?= e(url('/api/journal_purge.php')) ?>">
+            <form class="space-form" id="journal-purge-form" method="post" action="<?= e(url('/api/journal_purge.php')) ?>">
+                    <?= $csrf?->field() ?? '' ?>
                 <div class="modal-header space-create-header text-bg-danger border-bottom border-2 border-danger">
                     <span class="space-create-head-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 16.5v.01"/><path d="M10.3 3.6 2.6 17a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/></svg>
