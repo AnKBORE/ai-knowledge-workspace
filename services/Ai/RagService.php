@@ -154,7 +154,7 @@ final class RagService
 
         // Recall retry: a "not found" answer may hide a retrieval miss —
         // widen top-K once before conceding.
-        if (str_contains($answer, $this->notFoundPhrase())) {
+        if ($this->looksNotFound($answer)) {
             $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId);
             if (count($wider) > count($chunks)) {
                 $chunks = $wider;
@@ -168,6 +168,33 @@ final class RagService
         return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
     }
 
+    /**
+     * The "nothing found" sentence in every supported UI language.
+     *
+     * The model is asked to answer in the QUESTION's language, so it may return
+     * the French variant even when the interface is in English. Detection must
+     * therefore accept both, otherwise the recall retry never triggers.
+     *
+     * @return list<string>
+     */
+    private function notFoundPhrases(): array
+    {
+        return [
+            'This information is not in the provided documents.',
+            'Cette information ne figure pas dans les documents fournis.',
+        ];
+    }
+
+    private function looksNotFound(string $answer): bool
+    {
+        foreach ($this->notFoundPhrases() as $phrase) {
+            if (str_contains($answer, $phrase)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     private function notFoundPhrase(): string
     {
         return $this->lang === 'en'
@@ -582,14 +609,13 @@ final class RagService
     private function answerPrompt(): string
     {
         $langRule = '5. Réponds dans la langue de la question : anglais → anglais, mooré → mooré, coréen → coréen, etc. Si la question est en mooré, réponds entièrement en mooré courant en gardant les données exactes (chiffres, dates, noms) telles quelles. Cette règle prime sur toute autre considération de langue.';
-        $notFound = $this->notFoundPhrase();
-
         return <<<PROMPT
 Tu es un assistant documentaire expert, rigoureux et professionnel.
 
 RÈGLES ABSOLUES :
 1. Réponds UNIQUEMENT à partir des extraits fournis. N'invente aucun fait, chiffre, date, nom ni citation.
-2. Si l'information demandée n'est pas présente dans les extraits, réponds exactement : « {$notFound} »
+2. Si l'information demandée n'est pas présente dans les extraits, réponds exactement par cette phrase, TRADUITE dans la langue de la question (et non celle de l'interface) : « Cette information ne figure pas dans les documents fournis. » / « This information is not in the provided documents. »
+2b. Si la question demande une LISTE de documents ou filtre par PÉRIODE (mois, année, « ce mois », « l'année ») : les extraits contiennent la date d'enregistrement de chaque document. Quand aucun document ne correspond à la période demandée, n'utilise PAS la phrase du point 2 : dis explicitement qu'aucun document de cette période n'est présent, cite les périodes réellement présentes dans les extraits, puis liste les documents disponibles avec leur date.
 3. Commence par une réponse DIRECTE à la question, formulée avec tes propres mots : synthétise, ne recopie pas l'extrait mot pour mot (sauf pour les citations exactes placées entre guillemets).
 4. Conserve les données exactes (chiffres, dates, noms, intitulés) telles quelles, sans les arrondir.
 4b. Quand la réponse cite un titre, un en-tête ou un intitulé rédigé dans une autre langue que la question, donne d'abord sa traduction dans la langue de la réponse, suivie de l'original entre parenthèses. Exemple (question en anglais, titre en français) : "Death notice and fraternal communion" ("Avis de décès et communion fraternelle").
