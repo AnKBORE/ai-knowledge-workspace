@@ -37,7 +37,7 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                                 <label for="translate-from" class="form-label"><?= e($P['from_label']) ?></label>
                                 <select id="translate-from" class="form-select">
                                     <?php foreach ($langs as $code => $label): ?>
-                                        <option value="<?= e($code) ?>" <?= $code === 'mo' ? 'selected' : '' ?>><?= e($label) ?></option>
+                                        <option value="<?= e($code) ?>" <?= $code === 'en' ? 'selected' : '' ?>><?= e($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -48,7 +48,7 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                                 <label for="translate-to" class="form-label"><?= e($P['to_label']) ?></label>
                                 <select id="translate-to" class="form-select">
                                     <?php foreach ($langs as $code => $label): ?>
-                                        <option value="<?= e($code) ?>" <?= $code === 'fr' ? 'selected' : '' ?>><?= e($label) ?></option>
+                                        <option value="<?= e($code) ?>" <?= $code === 'mo' ? 'selected' : '' ?>><?= e($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
