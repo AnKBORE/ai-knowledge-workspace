@@ -163,6 +163,30 @@ Pensé pour le terrain : au Burkina Faso, la connaissance institutionnelle réel
 - **Téléchargement direct** — chaque source citée porte un lien `document_id` vers sa dernière version
 - **Surlignage des termes** — les mots de la question sont surlignés dans les extraits de sources affichés
 
+### Corrections humaines — la boucle d'apprentissage
+
+Un modèle laisse toujours passer du vocabulaire ou des tournures. Un locuteur
+natif — ou l'auteur du document — dépose une **version corrigée** (PDF, DOCX ou
+texte) en précisant sa langue. Cette correction devient immédiatement la
+**référence fiable** de ce document :
+
+- **La recherche la privilégie.** Pour toute question ou tâche agentique, le
+  texte corrigé remplace les segments bruts de ce document, et le contexte est
+  étiqueté `VERSION CORRIGÉE <langue> <date>` pour que le modèle sache qu'il
+  fait foi.
+- **Les sources la citent.** La réponse liste la source avec un badge
+  *Version corrigée* (langue + date) et un lien pour télécharger exactement le
+  fichier utilisé.
+- **Le fichier d'origine est conservé.** Le DOCX ou PDF déposé est stocké et
+  servi **à l'octet près** (SHA-256 identique) — jamais converti.
+- **Elle apprend au traducteur.** Les formulations validées sont injectées comme
+  exemples de style dans les traductions suivantes (`Apprentissage` :
+  pondération IDF, un exemple par document, budget de 2 600 caractères).
+- **Elle est réversible.** Les corrections sont listées dans le modal du document
+  et supprimables par leur auteur ou un gestionnaire ; la suppression cesse
+  immédiatement d'alimenter le prompt.
+- **Elle reste honnête sur sa portée.** C'est de l'apprentissage par
+  récupération, pas un fine-tuning : le modèle est guidé, jamais réentraîné.
 ### Génération de contenu
 - Résumés automatiques
 - Notes de synthèse
@@ -299,7 +323,7 @@ Endpoints API (protégés par session) :
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**100 tests, 230 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan et la boucle d'agent. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**100 tests, 230 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 
@@ -311,6 +335,7 @@ Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots
 
 ## Documentation
 
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — **référence technique** : modèle de données, ingestion, RAG++, pipeline de traduction, corrections et apprentissage, limites
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons)
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et résolutions
 - [docs/MARQUE_ET_PROPRIETE.md](docs/MARQUE_ET_PROPRIETE.md) — marque et propriété intellectuelle

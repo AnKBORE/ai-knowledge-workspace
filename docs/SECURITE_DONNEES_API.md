@@ -237,3 +237,39 @@ Le journal est **en ajout seul par conception**. Il existe **une** exception enc
 | **Refus** | Un mot de passe incorrect est **journalisé** (`journal.purge`, résultat `refus`) |
 
 > ✅ **Rien n'échappe au journal** : même la purge **laisse une trace**. Les entrées purgées sont **anciennes** (> 10 jours) et la purge est **restreinte, re-authentifiée et auditée**.
+
+---
+
+## 17. Endpoints de correction et de reformulation
+
+Ces endpoints manipulent des contenus rédigés par un humain : ils sont donc
+traités avec les mêmes contrôles que les documents.
+
+| Endpoint | Méthode | Contrôles |
+|---|---|---|
+| `correction_save.php` | POST multipart | Auth · **CSRF** · `document.deposer` · rate limit 30/5 min · 24 Mo · extensions `.pdf/.docx/.txt/.md/.csv` · doc non supprimé |
+| `correction_list.php` | GET | Auth · `document.consulter` · `document_id` obligatoire |
+| `correction_delete.php` | POST | Auth · **CSRF** · auteur de la correction **ou** `document.supprimer` |
+| `correction_download.php` | GET | Auth · `document.consulter` · `basename()` + nettoyage du nom · `no-store` · journalisé |
+| `reformulate.php` | POST | Auth · **CSRF** · rate limit 30/5 min · accepte un audio (24 Mo), un texte ou un `document_id` |
+
+### Ce qui est journalisé
+
+| Action | Détail enregistré |
+|---|---|
+| `document.correction` | langue, nombre de caractères |
+| `document.correction.suppression` | identifiant, langue |
+| `document.correction.telechargement` | identifiant, langue, source (fichier ou texte) |
+| `reformulation` | source (audio / texte), langues, longueur |
+
+### Ce qui ne quitte jamais le serveur
+
+Le **fichier corrigé** reste dans `storage/files/corrections/`. Seul son
+**texte** est envoyé à l'API, comme n'importe quel document indexé.
+
+### Lecture des corrections
+
+Les corrections déposées par un locuteur natif sont **validées par nature** : il
+n'existe pas de workflow d'approbation. Le contrôle est **a posteriori** :
+n'importe quel ayant-droit peut lister et supprimer une correction erronée, et
+la suppression cesse immédiatement d'alimenter les prompts.

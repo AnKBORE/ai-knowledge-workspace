@@ -195,6 +195,61 @@ php vendor/phpunit/phpunit/phpunit
 
 ---
 
+## 10.1 Corrections humaines et apprentissage
+
+### Pourquoi
+
+Un modèle laisse toujours passer des erreurs de vocabulaire ou de tournure.
+Plutôt que d'espérer un modèle parfait, le produit **capte la correction
+humaine** et la réutilise. C'est la réponse honnête au problème des langues à
+faible ressource.
+
+### Les deux tables
+
+| Table | Colonnes décisives |
+|---|---|
+| `correction_document` | `document_id`, `langue`, `texte_corrige`, `texte_source`, `nom_fichier`, `fichier`, `auteur_id`, `statut` |
+| `document_chunks` | reste **inchangée** : le texte brut demeure interrogeable |
+
+> Le fichier corrigé est stocké dans `storage/files/corrections/<doc>/<sha256>.<ext>`
+> et servi **à l'octet près** ; seul son texte est extrait pour l'apprentissage.
+
+### Le parcours
+
+```
+Documents indexés → ✏️  →  langue + nom proposé + fichier (.pdf/.docx/.txt/.md/.csv)
+                        →  correction enregistrée (validée par nature)
+                        →  immédiatement prioritaire dans le RAG
+```
+
+### Les quatre effets
+
+| Effet | Implémentation |
+|---|---|
+| **Récupération prioritaire** | `RagService::correctionHits()` puis `preferCorrections()` : les segments bruts du document sont remplacés par le texte corrigé, un extrait par document |
+| **Contexte étiqueté** | `[Extrait n — Titre · VERSION CORRIGÉE <langue> du <date>]` + note explicite au modèle |
+| **Sources citées** | `sources()` expose `corrige: true` et `correction {id, langue, date, fichier}` ; l'interface affiche un badge et un lien de téléchargement |
+| **Apprentissage de style** | `Apprentissage::exemples()` injecte les formulations validées dans les prompts de traduction / reformulation |
+
+### Les règles de conception
+
+- **Aucune approbation** : celui qui dépose maîtrise la langue ou possède le document.
+- **Fichier d'origine conservé** : un `.docx` reste un `.docx` (téléchargement SHA-256 identique).
+- **Nom proposé** : `<document>_corrige_vN.<ext>`, modifiable, `N` incrémental.
+- **Suppression** : auteur ou `document.supprimer`, effet **immédiat** sur les prompts.
+- **Isolation par langue** : une correction mooré ne pollue jamais le français.
+
+### Tests dédiés (6)
+
+`ApprentissageTest` couvre : absence de correction, filtrage par vocabulaire,
+poids des termes rares (IDF), isolation par langue, plafond d'exemples et
+**effet réel de la suppression**.
+
+### Piège à connaître
+
+`correction_document` et `documents` n'ont pas la même collation. Toute
+comparaison SQL entre leurs colonnes `langue` lève `Illegal mix of collations` :
+la préférence de langue se décide **en PHP**.
 ## 11. Phases d'exécution
 
 | Phase | Contenu | Statut |

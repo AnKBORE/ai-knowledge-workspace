@@ -163,6 +163,28 @@ Built for the field: in Burkina Faso, real institutional knowledge is often *spo
 - **Direct download** — every cited source carries a `document_id` download link to its latest version
 - **Query-term highlighting** — words from the question are highlighted in the displayed source excerpts
 
+### Human corrections — the learning loop
+
+A model always lets some vocabulary or phrasing through. A native speaker — or
+the document's own author — uploads a **corrected version** (PDF, DOCX or plain
+text) tagged with its language. That correction immediately becomes the
+**reliable reference** for that document:
+
+- **Retrieval prefers it.** For any question or agentic task, the corrected text
+  replaces the raw chunks of that document, and the context is labelled
+  `VERSION CORRIGÉE <lang> <date>` so the model knows it is authoritative.
+- **Sources cite it.** The answer lists the source with a *Corrected version*
+  badge (language + date) and a link to download the exact file that was used.
+- **The original file is preserved.** The uploaded DOCX or PDF is stored and
+  served back **byte for byte** (SHA-256 identical) — never converted.
+- **It teaches the translator.** Validated phrasings are injected as style
+  examples into later translations (`Apprentissage`: IDF-weighted retrieval, one
+  example per document, 2 600-character budget).
+- **It is reversible.** Corrections are listed in the document modal and can be
+  deleted by their author or a document manager; deletion stops feeding the
+  prompt immediately.
+- **It is honest about its scope.** This is retrieval-based learning, not
+  fine-tuning: the model is guided by approved wording, never retrained.
 ### Content generation
 - Automatic summaries
 - Synthesis notes
@@ -213,7 +235,7 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **79 automated tests · 179 assertions** |
+| **Tests** | **100 automated tests · 230 assertions** |
 | **UI** | Bilingual EN/FR (EN default) — Mooré supported for content (answers, tasks, translation), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · CSP · CSRF · audit journal |
 
@@ -299,7 +321,7 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**100 tests, 230 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
+**100 tests, 230 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 
@@ -311,6 +333,7 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 
 ## Documentation
 
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — **technical reference**: data model, ingestion, RAG++, translation pipeline, corrections & learning, limits
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — execution roadmap (phases, checklists, milestones)
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — issue register & resolution log
 - [docs/MARQUE_ET_PROPRIETE.md](docs/MARQUE_ET_PROPRIETE.md) — marque et propriété intellectuelle

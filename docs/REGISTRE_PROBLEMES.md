@@ -110,3 +110,21 @@ Quand un problème est résolu :
 5. Si applicable, mettre à jour le **README** (si le problème concernait la doc).
 
 > Règle d'or : **aucun problème ne disparaît sans trace** — il est toujours résolu + journalisé.
+
+---
+
+## 5. Incidents de la phase 5 — corrections et RAG
+
+| # | Symptôme observé | Cause réelle | Résolution | État |
+|---|---|---|---|---|
+| P-20 | Réponse « Meeting6 ne contient pas de mooré » alors qu'une correction existe | `Illegal mix of collations` entre `correction_document.langue` (`utf8mb4_unicode_ci`) et `documents.langue` (`utf8mb4_0900_ai_ci`) ; l'exception était avalée par un `catch` | préférence de langue décidée **en PHP**, plus aucune comparaison SQL | ✅ |
+| P-21 | Correction jamais appliquée en question / tâche agentique | même cause que P-20, mais silencieuse : `catch (Throwable) { return $chunks; }` | `catch` réduit au strict nécessaire + requête corrigée | ✅ |
+| P-22 | Réponse tronquée en pleine phrase, sans source | plafond `max_tokens` à 1 200 (réglé pour la latence de traduction) | plafond 3 000 ; les traductions s'arrêtent d'elles-mêmes | ✅ |
+| P-23 | Panneau SOURCES vide malgré une réponse ancrée | la réponse tronquée ne citait aucun `[n]`, et les sources sont dérivées des citations | `sourcesFor()` : repli sur les 3 premiers extraits | ✅ |
+| P-24 | Badge « version corrigée » invisible malgré un correctif déployé | pages HTML non versionnées → ancien `?v=` → ancien JS en cache | `Cache-Control: no-store` sur toutes les pages | ✅ |
+| P-25 | Correction `.docx` refusée | liste blanche limitée à `.txt/.md/.csv` + libellé anglais non mis à jour | `.pdf` et `.docx` acceptés, extraction PDF/DOCX, libellés FR **et** EN corrigés | ✅ |
+| P-26 | Téléchargement d'une correction en `.txt` au lieu du format d'origine | le fichier était jeté, seul le texte conservé | fichier copié dans `storage`, servi à l'octet près (SHA-256 identique) | ✅ |
+| P-27 | Enregistrement de réunion muet pendant 47 s | deadlock : une tranche rejetée consommait un numéro de séquence jamais rempli | séquence allouée **au moment de l'envoi** | ✅ |
+| P-28 | Mots manquants en transcription live | seuil calculé sur le **pic** : une voix calme tombait sous 0,012 et 6 s étaient jetées | seuil **RMS** 0,0015 | ✅ |
+| P-29 | « Are you going today? » rendu « Do you want it today? » | la forme fléchie `rabda` ne matchait pas l'entrée `rabde` du lexique | recherche par **racine** (4 lettres) | ✅ |
+| P-30 | Corrections de test laissées en base, devenues prioritaires | vérifications d'API effectuées sans nettoyage | suppression des corrections de test, conservation de la correction réelle | ✅ |
