@@ -57,7 +57,9 @@
 
             // A corrected source is the reliable reference: say so and let the
             // user download the exact text that was used.
-            if (source.corrige) {
+            var isCorrected = !!(source.corrige || (source.correction && source.correction.id));
+
+            if (isCorrected) {
                 var badge = document.createElement('span');
                 badge.className = 'src-badge-corrected';
                 var when = (source.correction && source.correction.date) ? ' · ' + String(source.correction.date).slice(0, 10) : '';
@@ -73,7 +75,7 @@
             li.appendChild(strong);
             li.appendChild(span);
 
-            if (source.corrige && source.correction && source.correction.id) {
+            if (isCorrected && source.correction && source.correction.id) {
                 var corr = document.createElement('a');
                 corr.href = apiUrl('correction_download.php?id=' + encodeURIComponent(source.correction.id));
                 corr.className = 'small d-inline-block mt-1 src-corrected-dl';

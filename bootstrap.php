@@ -2,6 +2,14 @@
 
 declare(strict_types=1);
 
+// Pages are never cached: an old HTML document would point at the previous
+// asset version (?v=mtime) and the browser would keep an outdated JS/CSS
+// after a fix. Assets stay cacheable thanks to their versioned URL.
+if (PHP_SAPI !== 'cli' && !headers_sent()) {
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+}
+
 use App\Core\Auth;
 use App\Core\Csrf;
 use App\Core\Env;
