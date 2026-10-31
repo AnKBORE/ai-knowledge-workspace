@@ -1859,3 +1859,10 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     line-height: 1.45;
     color: #b42318;
 }
+
+.ltr-help {
+    margin: 0 0 .55rem;
+    font-size: .8rem;
+    line-height: 1.45;
+    color: #64748b;
+}

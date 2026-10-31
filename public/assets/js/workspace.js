@@ -597,6 +597,8 @@
         var liveLevel = document.getElementById('live-rec-level');
         var liveHint = document.getElementById('live-rec-hint');
         var liveAudioSent = 0;   // slices actually sent to the ASR
+        var liveLangPrev = '';   // previous spoken language (output follows it)
+        var liveLangFollow = '';
         var liveCursor = 0;          // samples already transcribed
         var liveBusy = false;        // in-flight chunk
         var liveRunning = false;
@@ -770,21 +772,40 @@
 
         // Warn as soon as both lists point at the same language: the server
         // then has nothing to translate and returns the raw transcript.
+        // The output language follows the spoken language:
+        //   spoken FR  -> output FR (transcript)   — pick another to translate
+        //   spoken MO  -> output MO
+        //   spoken EN  -> output EN
+        // Whenever the spoken language changes, an output that was tracking the
+        // previous spoken language follows it, so "speak X -> get X" always holds.
         function liveSyncLangs() {
             var f = document.getElementById('live-rec-from');
             var t = document.getElementById('live-rec-lang');
             if (!f || !t || !liveHint) return;
-            if (t.value !== '' && f.value === t.value) {
+
+            liveLangFollow = f.value;
+
+            if (t.value !== '' && t.value === liveLangPrev && f.value !== '') {
+                t.value = f.value;
+            }
+
+            liveLangPrev = f.value;
+
+            if (t.value === '') {
                 liveHint.hidden = false;
                 liveHint.textContent = document.documentElement.lang === 'fr'
-                    ? 'Langue audio et langue cible identiques : aucune traduction ne sera produite.'
-                    : 'Audio language and target language are identical: no translation will be produced.';
+                    ? 'Transcription dans la langue parlée. Choisissez une autre langue pour traduire.'
+                    : 'Transcript in the spoken language. Pick another language to translate.';
+            } else if (t.value === f.value) {
+                liveHint.hidden = false;
+                liveHint.textContent = document.documentElement.lang === 'fr'
+                    ? 'Langue parlée = langue de sortie : transcription seule.'
+                    : 'Spoken language = output language: transcript only.';
             } else {
                 liveHint.hidden = true;
                 liveHint.textContent = '';
             }
         }
-
         function startLiveTranscription() {
             if (!liveModal) return;
             liveCursor = 0; liveRunning = true; liveBusy = false;
