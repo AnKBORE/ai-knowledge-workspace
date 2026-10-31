@@ -29,6 +29,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     exit;
 }
 if (!$dependencies['csrf']->validateRequest()) {
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'csrf', 'chemin' => mb_substr((string) ($_SERVER['REQUEST_URI'] ?? ''), 0, 180)]);
     http_response_code(419);
     echo json_encode(['error' => $T['csrf'] ?? 'Session expirée. Rechargez la page.'], JSON_UNESCAPED_UNICODE);
     exit;

@@ -25,6 +25,7 @@ if (!$dependencies['auth']->check()) {
 if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'document.consulter')) {
     http_response_code(403);
     header('Content-Type: application/json; charset=utf-8');
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'permission', 'chemin' => mb_substr((string) ($_SERVER['REQUEST_URI'] ?? ''), 0, 180)]);
     echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
     exit;
 }

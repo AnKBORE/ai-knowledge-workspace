@@ -61,7 +61,6 @@ $isAuthor = (int) ($row['auteur_id'] ?? 0) === $userId;
 $canDeleteAny = $dependencies['permissions']->peutAilleurs($userId, 'document.supprimer');
 
 if (!$isAuthor && !$canDeleteAny) {
-    $dependencies['journal']->log($userId, 'document.correction.suppression', 'document', (int) $row['document_id'], 'refus', ['correction_id' => $id, 'raison' => 'permission']);
     $fail(403, $T['permission_denied'] ?? 'Permission denied.');
 }
 

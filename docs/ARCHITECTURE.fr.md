@@ -337,16 +337,22 @@ l'apprentissage et au RAG — il ne reconstruit jamais le fichier.
 | **Usage de l'IA** | `assistant.question`, `traduction`, `reformulation` |
 | **Administration** | `categorie.creation/modification/suppression`, `profil.maj`, `profil.mot_de_passe`, `journal.export`, `journal.purge` |
 
-Les tentatives **refusées** sur les opérations destructrices sont enregistrées
-avec `resultat = refus` (`document.suppression`, `journal.purge`,
-`document.correction.suppression`, ainsi que tout mot de passe de purge erroné).
+Les requêtes **refusées** sont enregistrées, elles aussi avec `resultat = refus` :
+
+| Refus | Détail |
+|---|---|
+| **Jeton CSRF absent ou périmé (419)** | `securite.refus` · `{"raison": "csrf", "chemin": "/api/translate.php"}` |
+| **Permission manquante (403)** | `securite.refus` · `{"raison": "permission", "chemin": "…"}` |
+| **Mot de passe de purge erroné** | `journal.purge` · `refus` |
+| **Compte verrouillé / identifiants invalides** | `connexion` · `refus` |
 
 L'export du journal (`journal.export`) et tout fichier généré
 (`document.export`) sont audités : la piste d'audit ne peut pas être exfiltrée
 sans laisser de trace.
 
-**Limite connue :** les rejets CSRF (419) et les refus de permission sur les
-endpoints de **lecture** sont répondus mais ne laissent pas de trace.
+**Choix assumé :** une requête **non authentifiée** rejetée en 401 n'est *pas*
+enregistrée. Un robot pourrait sinon noyer le journal en ajout seul et enterrer
+les événements réels. Seuls les refus impliquant une session réelle sont tracés.
 ---
 
 ## 11. Tests

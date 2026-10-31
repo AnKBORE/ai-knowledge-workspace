@@ -335,15 +335,21 @@ for learning and RAG — it never rebuilds the file.
 | **AI usage** | `assistant.question`, `traduction`, `reformulation` |
 | **Administration** | `categorie.creation/modification/suppression`, `profil.maj`, `profil.mot_de_passe`, `journal.export`, `journal.purge` |
 
-Refused attempts on **destructive** operations are recorded with
-`resultat = refus` (`document.suppression`, `journal.purge`,
-`document.correction.suppression`, plus every wrong purge password).
+Refused requests are recorded too, with `resultat = refus`:
+
+| Refusal | Detail |
+|---|---|
+| **CSRF token missing or stale (419)** | `securite.refus` · `{"raison": "csrf", "chemin": "/api/translate.php"}` |
+| **Missing permission (403)** | `securite.refus` · `{"raison": "permission", "chemin": "…"}` |
+| **Wrong purge password** | `journal.purge` · `refus` |
+| **Locked account / bad credentials** | `connexion` · `refus` |
 
 Exporting the journal (`journal.export`) and any generated file
 (`document.export`) are audited too: the trail cannot be exfiltrated silently.
 
-**Known gap:** CSRF rejections (419) and plain permission refusals on **read**
-endpoints are answered but leave no trace.
+**Deliberate choice:** an **unauthenticated** request rejected with 401 is *not*
+recorded. A bot could otherwise flood the append-only journal and bury the real
+events. Only refusals involving a real session are traced.
 ---
 
 ## 11. Tests
