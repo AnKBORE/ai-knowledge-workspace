@@ -191,7 +191,7 @@ Chaque résultat s'ouvre dans un **modal** avec téléchargement **PDF** et **DO
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**92 tests, 214 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le RAG, les exports et les services multimodaux. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**93 tests, 217 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le RAG, les exports et les services multimodaux. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 
