@@ -203,6 +203,7 @@ explicite : une même question garde donc toujours la même forme.
 | **draft** | Rédaction ancrée, avec citations `[n]` obligatoires |
 | **verify** | Un second appel vérifie que chaque affirmation est **soutenue** par le contexte ; renvoie les affirmations non soutenues |
 | **revise** | Si des affirmations ne sont pas soutenues, un troisième appel corrige le brouillon |
+| **conformité** | Une dernière vérification demande si la sortie **répond réellement à l'instruction**. Un brouillon ancré peut être hors sujet (décrire le projet quand une analyse de risques était demandée) ; s'il est rejeté, une passe de réécriture est faite puis la vérification est relancée. Cette étape ne bloque jamais : un échec d'analyse vaut « conforme ». |
 
 La trace complète (`steps`) est renvoyée à l'interface : c'est ce qui distingue
 une tâche **agentique** d'un simple prompt.

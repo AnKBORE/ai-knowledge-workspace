@@ -164,7 +164,13 @@
                 text = sprintf(t('step_retrieve'), step.extracts, step.documents);
             } else if (step.step === 'draft') {
                 text = sprintf(t('step_draft'), step.citations);
-            } else if (step.step === 'verify') {
+            } else if (step.step === 'conformity') {
+                var frUi = document.documentElement.lang === 'fr';
+                text = !step.available
+                    ? (frUi ? 'Conformité non vérifiée' : 'Conformity not checked')
+                    : step.conforme
+                        ? (frUi ? 'Conformité vérifiée : le résultat répond à l\'instruction' : 'Conformity checked: the output answers the instruction')
+                        : (frUi ? 'Hors sujet détecté — résultat réécrit' : 'Off-topic detected — output rewritten');            } else if (step.step === 'verify') {
                 text = !step.available ? t('step_verify_na')
                     : step.unsupported > 0 ? sprintf(t('step_verify_fixed'), step.checked, step.unsupported)
                     : sprintf(t('step_verify_ok'), step.checked);

@@ -310,6 +310,28 @@ final class RagService
             'available' => $verdict['available'],
         ];
 
+        // Conformity: a grounded answer can still be off-topic.
+        $conformity = $this->checkConformity($instruction, $draft);
+        $conformityRevised = false;
+
+        if (!$conformity['conforme']) {
+            $fixed = $this->reviseForConformity($instruction, $draft, $conformity['raison'], $context);
+
+            if ($fixed !== '') {
+                $draft = $fixed;
+                $conformityRevised = true;
+                $conformity = $this->checkConformity($instruction, $draft);
+            }
+        }
+
+        $steps[] = [
+            'step' => 'conformity',
+            'conforme' => $conformity['conforme'],
+            'raison' => $conformity['raison'],
+            'revised' => $conformityRevised,
+            'available' => $conformity['available'],
+        ];
+
         $sources = $this->sourcesFor($draft, $chunks);
 
         return ['draft' => $draft, 'sources' => $this->translateSources($sources, $instruction), 'steps' => $steps];
@@ -321,6 +343,73 @@ final class RagService
      *
      * @return list<string>
      */
+    /**
+     * Conformity step — does the draft actually ANSWER the instruction?
+     *
+     * The verify step only checks that claims are supported by the extracts: an
+     * answer can be perfectly grounded and still off-topic (for instance
+     * describing the project when the instruction asked for a risk analysis).
+     * This check is cheap, runs once, and never blocks: a parsing failure is
+     * treated as "conforme".
+     *
+     * @return array{conforme: bool, raison: string, available: bool}
+     */
+    private function checkConformity(string $instruction, string $draft): array
+    {
+        try {
+            $raw = $this->client->chat(
+                "INSTRUCTION:\n" . $instruction . "\n\nRÉPONSE PRODUITE:\n" . mb_substr($draft, 0, 6000),
+                [['role' => 'system', 'content' =>
+                    "Tu évalues si une RÉPONSE répond à une INSTRUCTION.\n"
+                    . "Réponds UNIQUEMENT par un objet JSON : {\"conforme\": true|false, \"raison\": \"...\"}\n"
+                    . "conforme = false si : la réponse est hors sujet ; elle décrit au lieu d'analyser ou de proposer ; elle ignore une partie explicitement demandée ; elle produit un document administratif alors qu'une simple réponse était attendue.\n"
+                    . "conforme = true si elle traite l'instruction, même imparfaitement.\n"
+                    . "La raison tient en une phrase, dans la langue de l'instruction."]],
+                null,
+                0.0,
+            );
+
+            $clean = trim((string) preg_replace('/^```(?:json)?|```$/m', '', trim($raw)));
+            $data = json_decode($clean, true);
+
+            if (is_array($data) && array_key_exists('conforme', $data)) {
+                return [
+                    'conforme' => (bool) $data['conforme'],
+                    'raison' => (string) ($data['raison'] ?? ''),
+                    'available' => true,
+                ];
+            }
+        } catch (\Throwable) {
+            // fall through
+        }
+
+        return ['conforme' => true, 'raison' => '', 'available' => false];
+    }
+
+    /**
+     * Rewrite the draft so it answers the instruction, keeping every grounding
+     * rule intact.
+     */
+    private function reviseForConformity(string $instruction, string $draft, string $reason, string $context): string
+    {
+        try {
+            return $this->client->chat(
+                "INSTRUCTION:\n" . $instruction
+                    . "\n\nRAISON DU REJET:\n" . $reason
+                    . "\n\nBROUILLON À CORRIGER:\n" . $draft
+                    . "\n\nEXTRAITS:\n" . $context,
+                [['role' => 'system', 'content' =>
+                    $this->taskPrompt()
+                    . "\n\nLe brouillon ci-dessus a été rejeté : il ne répond pas à l'instruction. "
+                    . "Réécris-le afin qu'il y réponde réellement, en respectant toutes les règles. "
+                    . "Ne commente pas la correction, ne t'excuse pas : produis directement le texte corrigé."]],
+                null,
+                0.2,
+            );
+        } catch (\Throwable) {
+            return '';
+        }
+    }
     private function planQueries(string $instruction, ?int $userId): array
     {
         $queries = [$instruction];

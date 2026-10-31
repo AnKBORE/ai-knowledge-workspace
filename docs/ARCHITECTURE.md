@@ -202,6 +202,7 @@ so the same question always gets the same shape.
 | **draft** | Grounded writing, with mandatory `[n]` citations |
 | **verify** | A second call checks that each claim is **supported** by the context, and returns unsupported ones |
 | **revise** | If claims are unsupported, a third call fixes the draft |
+| **conformity** | A final check asks whether the output actually **answers the instruction**. A grounded draft can still be off-topic (describing the project when a risk analysis was asked); if rejected, one rewrite pass is made and the check is repeated. This step never blocks: a parsing failure counts as "conform". |
 
 The full trace (`steps`) is returned to the UI: this is what separates an
 **agentic** task from a plain prompt.
