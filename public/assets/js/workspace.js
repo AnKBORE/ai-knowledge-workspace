@@ -630,7 +630,7 @@
                 var total = 0;
                 for (var k = 0; k < livePcm.length; k++) total += livePcm[k].length;
                 var newSamples = total - liveCursor;
-                if (newSamples < liveRate * 1.5) {
+                if (newSamples < liveRate * 5.5) {
                     liveInFlight--;
                     if (liveState) liveState.textContent = '…';
                     return;
@@ -649,7 +649,7 @@
                 // first ≥120 ms low-energy gap after 6 s — slices break at
                 // natural speech pauses instead of mid-word.
                 var cut = span.length;
-                if (newSamples > liveRate * 6) {
+                if (newSamples > liveRate * 9) {
                     var win = Math.floor(liveRate * 0.12);
                     var from = Math.max(Math.floor(liveRate * 4), Math.floor(span.length * 0.55));
                     for (var ci = from; ci + win <= span.length; ci += win >> 1) {
@@ -701,7 +701,12 @@
                 liveAudioSent++;
                 if (liveHint) { liveHint.hidden = true; }
                 if (liveState) { liveState.textContent = '⏳'; liveState.className = 'ltr-state'; }
-                var r = await fetch(apiUrl('transcribe_chunk.php'), { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+                var ctrl = new AbortController();
+                var killer = setTimeout(function () { ctrl.abort(); }, 30000);
+                var r;
+                try {
+                    r = await fetch(apiUrl('transcribe_chunk.php'), { method: 'POST', body: fd, headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
+                } finally { clearTimeout(killer); }
                 var data = await r.json();
                 if (livePaused) { liveInFlight--; return; } // drop reply while paused
                 var txt = (data.text || '').trim();
@@ -722,6 +727,10 @@
                 if (out !== '') {
                     liveLast = out;
                     liveRender(out);
+                    if (liveState) { liveState.textContent = '✓'; liveState.className = 'ltr-state is-ok'; }
+                } else if (liveState && liveAudioSent > 0) {
+                    liveState.textContent = 'aucun texte reconnu';
+                    liveState.className = 'ltr-state is-error';
                 }
             }
             liveInFlight--;
@@ -737,7 +746,7 @@
             if (liveText) liveText.innerHTML = '<span class="live-empty">' + (document.documentElement.lang === 'fr' ? 'En écoute… parlez.' : 'Listening… speak.') + '</span>';
             if (liveState) liveState.textContent = '';
             liveModal.show();
-            livePushTimer = setInterval(livePush, 5000);
+            livePushTimer = setInterval(livePush, 3000);
             setTimeout(function () {
                 if (liveAudioSent === 0 && liveHint) {
                     liveHint.hidden = false;
@@ -746,7 +755,7 @@
                         : 'No audio slice could be sent: the microphone is not delivering usable sound.';
                 }
             }, 18000);
-            setTimeout(livePush, 4000); // first partial slice early
+            setTimeout(livePush, 6000); // first slice: 6 s of speech
         }
 
         function stopLiveTranscription() {

@@ -100,12 +100,12 @@ $P = $T['upload'];
                     <select id="live-rec-from" class="form-select form-select-sm ltr-lang" aria-label="<?= e(($isFr ?? true) ? 'Langue de l\'audio' : 'Audio language') ?>">
                         <option value=""><?= e(($isFr ?? true) ? 'Audio : auto' : 'Audio: auto') ?></option>
                         <option value="mo">Mooré</option>
-                        <option value="fr">Français</option>
+                        <option value="fr" selected>Français</option>
                         <option value="en">English</option>
                     </select>
                     <select id="live-rec-lang" class="form-select form-select-sm ltr-lang" aria-label="<?= e($P['translate_to'] ?? 'Translate to') ?>">
                         <option value=""><?= e(($isFr ?? true) ? 'Transcription brute' : 'Raw transcript') ?></option>
-                        <option value="fr">Français</option>
+                        <option value="fr" selected>Français</option>
                         <option value="en">English</option>
                         <option value="mo">Mooré</option>
                     </select>
