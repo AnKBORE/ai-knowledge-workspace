@@ -203,6 +203,9 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                 </select>
                             </div>
                             <div class="lt-actions lt-disabled" id="doc-audio-exports">
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-icon" id="doc-audio-reformulate" title="<?= e($P['reformulate'] ?? 'Reformuler') ?>" aria-label="<?= e($P['reformulate'] ?? 'Reformuler') ?>">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+                                </button>
                                 <button type="button" class="btn btn-sm btn-outline-danger btn-icon doc-audio-export" data-format="pdf" title="<?= e($S['download_pdf'] ?? 'PDF') ?>" aria-label="<?= e($S['download_pdf'] ?? 'PDF') ?>">
                                     <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h2a1.5 1.5 0 0 0 0-3H9v6"/><path d="M13 10v6h1.5a2 2 0 0 0 0-6z"/><path d="M17.2 16h1.6"/><path d="M17.2 10v6"/></svg>
                                 </button>

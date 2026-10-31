@@ -1643,6 +1643,48 @@
             }
         }
 
+        // Rephrase the audio transcript: the server restarts from the document's
+        // own transcript (the ASR of the sound), never from the translation.
+        var ltReform = document.getElementById('doc-audio-reformulate');
+        if (ltReform) {
+            ltReform.addEventListener('click', async function () {
+                if (!ltDocId) { return; }
+                ltReform.disabled = true;
+                ltStatus.textContent = t('reformulating', 'Reformulation…');
+                ltStatus.className = 'small text-muted';
+                try {
+                    var response = await fetch(apiUrl('reformulate.php'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            document_id: ltDocId,
+                            to: ltLang ? ltLang.value : '',
+                            from: ltFrom ? ltFrom.value : '',
+                            previous: ltText
+                        })
+                    });
+                    var data = await response.json();
+                    if (data.text) {
+                        ltText = data.text;
+                        var box = document.getElementById('doc-audio-translation');
+                        if (box) {
+                            box.textContent = data.text;
+                            box.hidden = false;
+                        }
+                        ltStatus.textContent = t('reformulated', 'Nouvelle formulation.');
+                        ltStatus.className = 'small text-success';
+                    } else {
+                        ltStatus.textContent = data.error || t('reformulate_failed', 'Reformulation impossible.');
+                        ltStatus.className = 'small text-danger';
+                    }
+                } catch (err) {
+                    ltStatus.textContent = t('reformulate_failed', 'Reformulation impossible.');
+                    ltStatus.className = 'small text-danger';
+                } finally {
+                    ltReform.disabled = false;
+                }
+            });
+        }
         if (ltExports) ltExports.querySelectorAll('.doc-audio-export').forEach(function (btn) {
             btn.addEventListener('click', async function () {
                 var format = btn.getAttribute('data-format');

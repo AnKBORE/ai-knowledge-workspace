@@ -27,13 +27,13 @@ header('X-Content-Type-Options: nosniff');
 
 if (!$dependencies['auth']->check()) {
     http_response_code(401);
-    echo json_encode(['error' => $T['auth_required']], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['auth_required'] ?? 'Authentication required.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
-    echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['method_post'] ?? 'POST required.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -56,6 +56,7 @@ $langs = ['fr' => 'French', 'en' => 'English', 'mo' => 'Mooré (Mossi, Burkina F
 $allowed = static fn (string $v): bool => in_array($v, ['fr', 'en', 'mo'], true);
 
 $from = (string) ($_POST['from'] ?? '');
+$documentId = (int) ($_POST['document_id'] ?? 0);
 $to = (string) ($_POST['to'] ?? '');
 $previous = trim((string) ($_POST['previous'] ?? ''));
 $inputText = '';
@@ -76,15 +77,16 @@ if (isset($_FILES['audio']) && is_uploaded_file($_FILES['audio']['tmp_name'])) {
     $inputText = trim((string) ($payload['text'] ?? ''));
     $previous = $previous !== '' ? $previous : trim((string) ($payload['previous'] ?? ''));
     $to = $to !== '' ? $to : (string) ($payload['to'] ?? '');
+    $documentId = $documentId > 0 ? $documentId : (int) ($payload['document_id'] ?? 0);
     $from = $from !== '' ? $from : (string) ($payload['lang'] ?? '');
 }
 
 $from = $allowed($from) ? $from : '';
 $to = $allowed($to) ? $to : '';
 
-if ($audioPath === null && $inputText === '') {
+if ($audioPath === null && $inputText === '' && $documentId === 0) {
     http_response_code(422);
-    echo json_encode(['error' => $T['text_required']], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $T['text_required'] ?? 'A text or a recording is required.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -92,7 +94,33 @@ try {
     $translated = false;
     $transcript = $inputText;
 
-    // 1. Always start from the audio when we have it.
+    // 1a. An existing document: its stored transcript IS the audio-derived source.
+    if ($documentId > 0) {
+        if (!$dependencies['permissions']->peutAilleurs($userId, 'document.consulter')) {
+            http_response_code(403);
+            echo json_encode(['error' => $T['permission_denied'] ?? 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $stmt = $dependencies['pdo']->prepare(
+            'SELECT content FROM document_chunks WHERE document_id = :id ORDER BY chunk_index'
+        );
+        $stmt->execute(['id' => $documentId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $transcript = trim(implode("\n\n", array_map(static fn ($r): string => trim((string) $r), $rows)));
+        // Some older documents stored a translation marker inside their chunks:
+        // strip it so the rewrite starts from the spoken words only.
+        $transcript = trim((string) preg_replace('/\[Traduction\s*[—-][^\]]*\]/u', '', $transcript));
+        $transcript = trim((string) preg_replace('/\n{3,}/u', "\n\n", $transcript));
+
+        if ($transcript === '') {
+            http_response_code(422);
+            echo json_encode(['error' => 'This document has no transcript yet.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
+
+    // 1b. Always start from the audio when we have it.
     if ($audioPath !== null) {
         try {
             $transcript = trim($dependencies['transcription']->transcribe($audioPath, $from !== '' ? $from : null));
@@ -152,7 +180,7 @@ try {
 } catch (\Throwable $e) {
     http_response_code(500);
     echo json_encode(
-        ['error' => getenv('APP_DEBUG') === '1' ? $e->getMessage() : $T['internal_error']],
+        ['error' => getenv('APP_DEBUG') === '1' ? $e->getMessage() : ($T['internal_error'] ?? 'Internal error.')],
         JSON_UNESCAPED_UNICODE
     );
 }
