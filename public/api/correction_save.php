@@ -88,10 +88,10 @@ if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name']
     $original = (string) ($_FILES['fichier']['name'] ?? 'correction.txt');
     $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
 
-    // A correction is a text file: the reviewer rewrites the transcript.
-    if (!in_array($ext, ['txt', 'md', 'csv'], true)) {
+    // PDF, DOCX or plain text: the reviewer sends what they actually work with.
+    if (!in_array($ext, \App\Services\TexteExtracteur::EXTENSIONS, true)) {
         @unlink($_FILES['fichier']['tmp_name']);
-        $respond(422, ['error' => 'A correction must be a text file (.txt, .md, .csv).']);
+        $respond(422, ['error' => 'A correction must be a .pdf, .docx, .txt, .md or .csv file.']);
     }
 
     $tmp = tempnam(sys_get_temp_dir(), 'akw_corr_');
@@ -99,7 +99,12 @@ if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name']
 
     try {
         if ($texteCorrige === '') {
-            $texteCorrige = trim((string) file_get_contents($tmp));
+            $texteCorrige = (new \App\Services\TexteExtracteur())->fromFile($tmp, $ext);
+
+            if ($texteCorrige === '') {
+                @unlink($tmp);
+                $respond(422, ['error' => 'No text could be extracted from this file.']);
+            }
         }
     } finally {
         @unlink($tmp);
@@ -124,6 +129,17 @@ $base = (string) pathinfo((string) ($document['title'] ?? 'document'), PATHINFO_
 $slug = strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/', '_', $base), '_'));
 $slug = $slug !== '' ? $slug : 'document';
 $nomFichier = $slug . '_corrige_v' . $version . '.txt';
+
+// The user may edit the proposed name: keep their choice, sanitised.
+$saisi = trim((string) ($_POST['nom_fichier'] ?? ''));
+
+if ($saisi !== '') {
+    $saisi = (string) preg_replace('/[^\p{L}\p{N}._-]+/u', '_', basename($saisi));
+    $saisi = trim($saisi, '._-');
+    if ($saisi !== '' && mb_strlen($saisi) <= 180) {
+        $nomFichier = $saisi;
+    }
+}
 
 try {
     $correctionId = $dependencies['correction_model']->create(

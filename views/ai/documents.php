@@ -331,15 +331,15 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                         </div>
                         <div class="col-md-7">
                             <label for="correction-nom" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Nom du fichier proposé' : 'Proposed file name') ?></label>
-                            <input type="text" id="correction-nom" class="form-control" readonly>
-                            <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Construit à partir du nom existant et du numéro de version.' : 'Built from the existing name and the version number.') ?></p>
+                            <input type="text" id="correction-nom" class="form-control" maxlength="180">
+                            <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Proposé automatiquement — modifiable.' : 'Built from the existing name and the version number.') ?></p>
                         </div>
                     </div>
 
                     <div class="mt-4">
                         <label for="correction-file" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Fichier texte corrigé' : 'Corrected text file') ?></label>
-                        <input type="file" id="correction-file" name="fichier" class="form-control" accept=".txt,.md,.csv,text/plain" required>
-                        <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Formats acceptés : .txt, .md, .csv — 24 Mo maximum.' : 'Accepted formats: .txt, .md, .csv — 24 MB maximum.') ?></p>
+                        <input type="file" id="correction-file" name="fichier" class="form-control" accept=".pdf,.docx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" required>
+                        <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Formats acceptés : .pdf, .docx, .txt, .md, .csv — 24 Mo maximum.' : 'Accepted formats: .txt, .md, .csv — 24 MB maximum.') ?></p>
                     </div>
 
                     <div id="correction-existing" class="correction-existing" hidden>

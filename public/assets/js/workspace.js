@@ -549,12 +549,14 @@
             btn.addEventListener('click', function () {
                 if (!correctionModal) { return; }
                 correctionDocId.value = btn.getAttribute('data-document-id') || '';
-                correctionTitle.textContent = btn.getAttribute('data-document-title') || '';
+                correctionDocTitle = btn.getAttribute('data-document-title') || '';
+                correctionTitle.textContent = correctionDocTitle;
                 var lang = btn.getAttribute('data-document-langue') || 'fr';
                 if (correctionLangue) { correctionLangue.value = ['fr', 'en', 'mo'].indexOf(lang) >= 0 ? lang : 'fr'; }
                 if (correctionText) { correctionText.value = ''; }
                 if (correctionFile) { correctionFile.value = ''; }
                 if (correctionStatus) { correctionStatus.textContent = ''; correctionStatus.className = 'small mt-2'; }
+                if (correctionNom) { delete correctionNom.dataset.touched; }
                 correctionProposeName(1);
                 correctionModal.show();
             });
@@ -580,10 +582,18 @@
 
         function correctionProposeName(version) {
             if (!correctionNom) { return; }
+            if (correctionNom.dataset.touched === '1' && correctionNom.value.trim() !== '') { return; }
             var name = correctionSlug(correctionDocTitle) + '_corrige_v' + version + '.txt';
             correctionNom.value = name;
             if (correctionNomValue) { correctionNomValue.value = name; }
         }
+        if (correctionNom) {
+            correctionNom.addEventListener('input', function () {
+                correctionNom.dataset.touched = '1';
+                if (correctionNomValue) { correctionNomValue.value = correctionNom.value.trim(); }
+            });
+        }
+
         async function correctionRefresh() {
             if (!correctionList || !correctionDocId) { return; }
             var docId = correctionDocId.value;
