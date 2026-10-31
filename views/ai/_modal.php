@@ -32,6 +32,11 @@ $S ??= app_i18n($lang ?? 'en')['shared'];
                         title="<?= e($S['retry']) ?>" aria-label="<?= e($S['retry']) ?>">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
                 </button>
+                <button type="button" class="btn btn-outline-warning btn-icon doc-action-icon" id="clean-result"
+                        title="<?= e($S['clean'] ?? 'Nettoyer les sources') ?>"
+                        aria-label="<?= e($S['clean'] ?? 'Nettoyer les sources') ?>" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+                </button>
                 <button type="button" class="btn btn-outline-primary btn-icon doc-action-icon" id="download-docx"
                         title="<?= e($S['download_docx']) ?>" aria-label="<?= e($S['download_docx']) ?>">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>

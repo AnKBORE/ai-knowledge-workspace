@@ -321,6 +321,74 @@
         });
     }
 
+    /* ---------------- Clean the result (sources removed) ---------------- */
+
+    var cleanResult = document.getElementById('clean-result');
+
+    if (cleanResult) {
+        // A draft is often well written but unusable as a deliverable because it
+        // ends with "Sources : [1], [2]" and carries inline [n] markers. This
+        // toggle removes them and hides the source panel, so the DOCX / PDF
+        // export contains the answer and nothing else. A second click restores
+        // everything, so nothing is lost.
+        var cleanBackup = null;
+
+        var stripCitations = function (html) {
+            return html
+                .replace(/\s*(?:<strong>)?\s*Sources?\s*:\s*(?:\[\d{1,2}\]\s*(?:,\s*)?)+(?:<\/strong>)?\s*$/i, '')
+                .replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g, '')
+                .replace(/[ \t]{2,}/g, ' ')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        };
+
+        cleanResult.addEventListener('click', function () {
+            if (!resultContent) { return; }
+
+            if (cleanBackup === null) {
+                cleanBackup = {
+                    html: resultContent.innerHTML,
+                    content: currentResult ? currentResult.content : '',
+                    sourcesHidden: resultSources ? resultSources.hidden : true,
+                    stepsHidden: resultSteps ? resultSteps.hidden : true
+                };
+
+                resultContent.innerHTML = stripCitations(resultContent.innerHTML);
+
+                if (currentResult) {
+                    currentResult.content = stripCitations(String(currentResult.content || ''));
+                }
+
+                if (resultSources) { resultSources.hidden = true; }
+                if (resultSteps) { resultSteps.hidden = true; }
+
+                cleanResult.setAttribute('aria-pressed', 'true');
+                cleanResult.classList.remove('btn-outline-warning');
+                cleanResult.classList.add('btn-warning');
+
+                var hint = document.createElement('p');
+                hint.id = 'clean-result-hint';
+                hint.className = 'small text-muted mt-2 mb-0';
+                hint.textContent = document.documentElement.lang === 'fr'
+                    ? 'Sources retirées : le fichier exporté ne contient que la réponse.'
+                    : 'Sources removed: the exported file contains the answer only.';
+                resultContent.appendChild(hint);
+
+                return;
+            }
+
+            resultContent.innerHTML = cleanBackup.html;
+
+            if (currentResult) { currentResult.content = cleanBackup.content; }
+            if (resultSources) { resultSources.hidden = cleanBackup.sourcesHidden; }
+            if (resultSteps) { resultSteps.hidden = cleanBackup.stepsHidden; }
+
+            cleanBackup = null;
+            cleanResult.setAttribute('aria-pressed', 'false');
+            cleanResult.classList.remove('btn-warning');
+            cleanResult.classList.add('btn-outline-warning');
+        });
+    }
     /* ---------------- Upload ---------------- */
 
     var uploadForm = document.getElementById('upload-form');
