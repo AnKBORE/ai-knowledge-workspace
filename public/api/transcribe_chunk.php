@@ -93,7 +93,7 @@ $translateSlice = static function (string $source, string $target, ?string $sour
         . "\n- Do not add, summarize or omit information; translate every clause."
         . "\n- The slice may start or end mid-word: translate the complete words only and ignore the partial fragment."
         . "\n- The text may contain ASR mishearings: silently reconstruct the probable words first, then translate."
-        . Glossaire::promptFor($target)
+        . Glossaire::promptFor($target, $sourceLang ?? 'fr')
         . LexiqueMoore::promptFor($source, $sourceLang ?? 'fr', $target)
         . $ctxNote
         . $repairNote

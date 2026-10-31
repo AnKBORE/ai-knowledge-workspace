@@ -41,13 +41,30 @@ final class Glossaire
         'séminariste' => ['seminarian', ''],
     ];
 
-    /** Build a compact "use these exact terms" block for a prompt. */
-    public static function promptFor(string $to): string
+    /**
+     * Build a compact "use these exact terms" block for a prompt, in the right
+     * direction (FR → EN and EN → FR are both supported).
+     */
+    public static function promptFor(string $to, string $from = 'fr'): string
     {
+        if ($from === $to) {
+            return '';
+        }
+
         $lines = [];
         foreach (self::TERMES as $fr => [$en]) {
+            $source = $from === 'en' ? $en : $fr;
             $target = $to === 'en' ? $en : $fr;
-            $lines[] = '- ' . $fr . ' → ' . $target;
+
+            if ($source === '' || $target === '' || $source === $target) {
+                continue;
+            }
+
+            $lines[] = '- ' . $source . ' → ' . $target;
+        }
+
+        if ($lines === []) {
+            return '';
         }
 
         return "\n\nDomain glossary (use these exact terms, keep them consistent):\n" . implode("\n", $lines);

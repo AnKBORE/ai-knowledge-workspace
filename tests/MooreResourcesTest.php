@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Services\Ai\Glossaire;
 use App\Services\Ai\LexiqueMoore;
 use App\Services\Ai\Proverbes;
 use PHPUnit\Framework\TestCase;
 
 final class MooreResourcesTest extends TestCase
 {
+    public function testGlossaryIsBidirectional(): void
+    {
+        $this->assertStringContainsString('catéchiste → catechist', Glossaire::promptFor('en', 'fr'));
+        $this->assertStringContainsString('catechist → catéchiste', Glossaire::promptFor('fr', 'en'));
+        $this->assertSame('', Glossaire::promptFor('fr', 'fr'));
+    }
     public function testLexiconIsLoadedAndSearchable(): void
     {
         $this->assertGreaterThan(1000, LexiqueMoore::count());

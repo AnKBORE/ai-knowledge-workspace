@@ -71,7 +71,7 @@ try {
         . 'no reasoning, no quotation marks around the whole text. If the source is ambiguous, commit to the '
         . 'single most likely meaning.';
 
-    $system .= \App\Services\Ai\Glossaire::promptFor($to);
+    $system .= \App\Services\Ai\Glossaire::promptFor($to, $from);
     $system .= \App\Services\Ai\LexiqueMoore::promptFor($text, $from, $to);
 
     if ($from === 'mo' || $to === 'mo') {
