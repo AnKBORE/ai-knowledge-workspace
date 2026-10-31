@@ -285,11 +285,46 @@ final class RagService
             'documents' => count(array_unique(array_column($chunks, 'document_id'))),
         ];
 
+        // A document named in the instruction bounds the whole task.
+        $scopeId = $this->documentScope($instruction, $userId);
+        $scopeNote = '';
+
+        if ($scopeId !== null) {
+            $scoped = array_values(array_filter(
+                $chunks,
+                static fn (array $chunk): bool => (int) ($chunk['document_id'] ?? 0) === $scopeId
+            ));
+
+            if ($scoped === []) {
+                $scoped = $this->chunksForDocument($scopeId, $topK);
+            }
+
+            if ($scoped !== []) {
+                $chunks = $scoped;
+                $scopeTitle = '';
+
+                foreach ($this->db->query('SELECT title FROM documents WHERE id = ' . $scopeId)->fetchAll(PDO::FETCH_ASSOC) as $scopeRow) {
+                    $scopeTitle = (string) ($scopeRow['title'] ?? '');
+                }
+
+                $scopeNote = "SCOPE: cette tâche doit s'appuyer UNIQUEMENT sur le document « "
+                    . $scopeTitle . ' » (id ' . $scopeId . '). N\'utilise aucun autre document, '
+                    . "même si un extrait voisin semble pertinent.\n\n";
+            }
+        }
+
+        $steps[] = [
+            'step' => 'scope',
+            'document_id' => $scopeId,
+            'extracts' => count($chunks),
+        ];
+
+
         if ($chunks === []) {
             return ['draft' => $this->msg('no_chunks'), 'sources' => [], 'steps' => $steps];
         }
 
-        $context = $this->labeledContext($chunks);
+        $context = $scopeNote . $this->labeledContext($chunks);
         $draft = $this->client->chat($instruction, [['role' => 'system', 'content' => $this->taskPrompt() . "\n\n" . $context]], null, 0.2);
         $steps[] = ['step' => 'draft', 'citations' => count($this->citedChunks($draft, $chunks))];
 
@@ -1376,6 +1411,50 @@ PROMPT;
     /**
      * @return list<array{content: string, title: string, score: float}>
      */
+    /**
+     * A document explicitly named in the instruction ("à base de Meeting6",
+     * "d'après Meeting6", "from Meeting6") restricts the whole task to that
+     * document. Without this, the planner searched the entire corpus and the
+     * draft quoted an unrelated project matrix.
+     */
+    private function documentScope(string $instruction, ?int $userId): ?int
+    {
+        try {
+            $stmt = $this->db->query('SELECT id, title FROM documents WHERE supprime_le IS NULL');
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $allowed = $userId === null ? true : $this->accessibleDocumentIds($userId);
+        $best = null;
+        $bestLength = 0;
+
+        foreach ($rows as $row) {
+            $title = trim((string) ($row['title'] ?? ''));
+
+            if ($title === '' || mb_strlen($title) < 3) {
+                continue;
+            }
+
+            if (preg_match('/\b' . preg_quote($title, '/') . '\b/iu', $instruction) !== 1) {
+                continue;
+            }
+
+            $id = (int) $row['id'];
+
+            if (is_array($allowed) && !isset($allowed[$id])) {
+                continue;
+            }
+
+            if (mb_strlen($title) > $bestLength) {
+                $best = $id;
+                $bestLength = mb_strlen($title);
+            }
+        }
+
+        return $best;
+    }
     private function chunksForDocument(int $documentId, int $limit): array
     {
         $stmt = $this->db->prepare(

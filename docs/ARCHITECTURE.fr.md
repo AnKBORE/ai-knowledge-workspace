@@ -231,6 +231,23 @@ réelle et sa langue d'origine, présenter une version corrigée comme une
 traduction, et produire une véritable traduction quand l'instruction le demande.
 ---
 
+### 6.2 Cadrage documentaire — « à base de Meeting6 »
+
+Quand l'instruction nomme un document (« à base de Meeting6 », « d'après
+Meeting6 », « from Meeting6 »), ce nom **borne toute la tâche** :
+
+1. `documentScope()` compare l'instruction aux titres accessibles par
+   l'utilisateur (le titre le plus long l'emporte) ;
+2. les résultats de récupération sont filtrés sur ce document, avec repli sur
+   `chunksForDocument()` si le filtre ne laisse rien ;
+3. le contexte est préfixé par `SCOPE: … N'utilise aucun autre document` ;
+4. une étape `scope` apparaît dans la trace.
+
+Sans cela, le planificateur interrogeait tout le corpus : un discours « à base
+de Meeting6 » citait une matrice de projet sans rapport — les extraits étaient
+ancrés, mais sur le mauvais document.
+---
+
 ## 7. Pipeline de traduction
 
 ### 7.1 Les six directions

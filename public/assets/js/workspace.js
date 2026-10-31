@@ -164,7 +164,11 @@
                 text = sprintf(t('step_retrieve'), step.extracts, step.documents);
             } else if (step.step === 'draft') {
                 text = sprintf(t('step_draft'), step.citations);
-            } else if (step.step === 'conformity') {
+            } else if (step.step === 'scope') {
+                var frScope = document.documentElement.lang === 'fr';
+                text = step.document_id
+                    ? (frScope ? 'Cadrage : tâche limitée au document demandé' : 'Scope: task restricted to the requested document')
+                    : (frScope ? 'Aucun document nommé — recherche sur tout le corpus' : 'No document named — searching the whole corpus');            } else if (step.step === 'conformity') {
                 var frUi = document.documentElement.lang === 'fr';
                 text = !step.available
                     ? (frUi ? 'Conformité non vérifiée' : 'Conformity not checked')

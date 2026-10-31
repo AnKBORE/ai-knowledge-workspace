@@ -229,6 +229,23 @@ original language, treat a corrected version as a translation, and produce an
 actual translation when the instruction asks one.
 ---
 
+### 6.2 Document scope — "based on Meeting6"
+
+When the instruction names a document ("à base de Meeting6", "d'après
+Meeting6", "from Meeting6"), that name **bounds the whole task**:
+
+1. `documentScope()` matches the instruction against the titles the user may
+   access (longest title wins);
+2. retrieval results are filtered to that document, falling back to
+   `chunksForDocument()` when the filter leaves nothing;
+3. the context is prefixed with `SCOPE: … N'utilise aucun autre document`;
+4. a `scope` step is added to the trace.
+
+Without it, the planner searched the entire corpus and a speech "based on
+Meeting6" quoted an unrelated project matrix — the extracts were grounded, but
+about the wrong document.
+---
+
 ## 7. Translation pipeline
 
 ### 7.1 The six directions
