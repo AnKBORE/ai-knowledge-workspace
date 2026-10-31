@@ -288,7 +288,7 @@ final class DocumentTranslationService
             $needsMoore ? "\n\n" . MooreReference::prompt() . $corpusHint : '',
         );
 
-        return trim($this->client->chat($source, [['role' => 'system', 'content' => $system]], null, 0.1));
+        return trim($this->client->chat($source, [['role' => 'system', 'content' => $system]], null, 0.0));
     }
 
     private function cached(int $documentId, int $versionId, string $lang, int $index): ?string

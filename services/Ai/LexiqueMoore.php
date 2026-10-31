@@ -104,6 +104,6 @@ final class LexiqueMoore
         usort($values, static fn (string $a, string $b): int => mb_strlen($b) <=> mb_strlen($a));
 
         return "\n\nVerified vocabulary from the SIL/Mooré lexicon (use these exact words when they appear):\n- "
-            . implode("\n- ", array_slice($values, 0, 30));
+            . implode("\n- ", array_slice($values, 0, 15));
     }
 }

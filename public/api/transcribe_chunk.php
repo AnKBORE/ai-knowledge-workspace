@@ -99,7 +99,7 @@ $translateSlice = static function (string $source, string $target, ?string $sour
         . $repairNote
         . ($moore ? "\n\n" . MooreReference::prompt() . "\n\n" . Proverbes::prompt(4) : '');
 
-    return trim($dependencies['meta']->chat($source, [['role' => 'system', 'content' => $system]], null, 0.1));
+    return trim($dependencies['meta']->chat($source, [['role' => 'system', 'content' => $system]], null, 0.0));
 };
 
 if ($text !== '' && isset($langs[$to])) {

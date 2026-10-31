@@ -85,11 +85,27 @@ class MetaClient
         }
         $messages[] = ['role' => 'user', 'content' => $prompt];
 
-        $payload = $this->request('/v1/chat/completions', [
+        $body = [
             'model' => $model ?? (string) ($this->config['chat_model'] ?? ''),
             'messages' => $messages,
             'temperature' => $temperature ?? 0.2,
-        ]);
+        ];
+
+        // Translation is a mechanical task: keep reasoning low and cap the output
+        // so the model stops stalling (and burning time) before answering.
+        $effort = (string) ($this->config['chat_reasoning_effort'] ?? '');
+
+        if ($effort !== '') {
+            $body['reasoning_effort'] = $effort;
+        }
+
+        $maxTokens = (int) ($this->config['chat_max_tokens'] ?? 0);
+
+        if ($maxTokens > 0) {
+            $body['max_tokens'] = $maxTokens;
+        }
+
+        $payload = $this->request('/v1/chat/completions', $body);
 
         $content = (string) ($payload['choices'][0]['message']['content'] ?? '');
 

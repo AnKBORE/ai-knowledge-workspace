@@ -98,7 +98,7 @@ try {
     if (trim($translation) === '' || $ratio < 0.35 || $ratio > 3.5) {
         $repair = sprintf($system, $languages[$from], $languages[$to])
             . "\n\nYour previous attempt was rejected (incomplete or distorted). Translate the ENTIRE source faithfully, clause by clause; keep the same length and level of detail.";
-        $retry = $dependencies['meta']->chat($text, [['role' => 'system', 'content' => $repair]], null, 0.1);
+        $retry = $dependencies['meta']->chat($text, [['role' => 'system', 'content' => $repair]], null, 0.0);
         if (trim($retry) !== '') {
             $translation = $retry;
         }
