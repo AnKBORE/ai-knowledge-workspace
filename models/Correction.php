@@ -88,6 +88,27 @@ final class Correction
         return (int) $stmt->fetchColumn();
     }
 
+    /**
+     * Most recent validated correction of a document in a given language.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function latestForLangue(int $documentId, string $langue): ?array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT id, langue, nom_fichier, texte_corrige, cree_le
+             FROM correction_document
+             WHERE document_id = :id AND langue = :langue AND statut = \'valide\'
+             ORDER BY id DESC
+             LIMIT 1'
+        );
+        $stmt->execute(['id' => $documentId, 'langue' => $langue]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row === false ? null : $row;
+    }
+
     public function count(): int
     {
         return (int) $this->db->query('SELECT COUNT(*) FROM correction_document')->fetchColumn();

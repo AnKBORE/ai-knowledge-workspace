@@ -59,6 +59,48 @@ if ($version === null) {
 }
 $versionId = (int) $version['id'];
 
+/* ---------- A validated correction is the reliable reference --------------
+   When a correction exists for the requested language, it wins over a fresh
+   translation of the raw transcript: the reviewer already fixed the wording. */
+
+$correction = $dependencies['correction_model']->latestForLangue($documentId, $to);
+
+if ($correction !== null) {
+    $corrected = trim((string) $correction['texte_corrige']);
+
+    if (!$hasSegment) {
+        echo json_encode([
+            'mode' => 'corrected',
+            'total' => 1,
+            'translation' => $corrected,
+            'corrige' => true,
+            'correction' => [
+                'id' => (int) $correction['id'],
+                'langue' => (string) $correction['langue'],
+                'date' => (string) $correction['cree_le'],
+                'fichier' => (string) ($correction['nom_fichier'] ?? ''),
+            ],
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    if ($segment === 0) {
+        echo json_encode([
+            'segment' => 0,
+            'total' => 1,
+            'translation' => $corrected,
+            'title' => (string) ($document['title'] ?? 'Document'),
+            'corrige' => true,
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    http_response_code(422);
+    echo json_encode(['error' => 'segment_out_of_range'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+
 /* ---------- Timed mode: whisper timestamps → karaoke-style subtitles -------- */
 
 if ($mode === 'timed') {

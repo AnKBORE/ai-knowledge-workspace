@@ -1707,6 +1707,19 @@
                     await runTimed(docId, lang, run, pd.timings, pd.total);
                     return;
                 }
+                // A validated correction exists for this language: it is the
+                // reliable reference, so it is shown as-is instead of the model output.
+                if (pd.mode === 'corrected' && pd.translation) {
+                    clearTimeout(probeTimer);
+                    ltTimed = false;
+                    ltText = pd.translation;
+                    ltBox.textContent = pd.translation;
+                    ltBox.hidden = false;
+                    var when = (pd.correction && pd.correction.date) ? ' · ' + String(pd.correction.date).slice(0, 10) : '';
+                    ltStatus.textContent = (document.documentElement.lang === 'fr' ? 'Version corrigée' : 'Corrected version') + when;
+                    ltStatus.className = 'small text-success';
+                    return;
+                }
             } catch (err) { /* timeout or unavailable → estimated karaoke */ }
             clearTimeout(probeTimer);
 
