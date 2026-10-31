@@ -26,6 +26,20 @@ if (!function_exists('config')) {
     }
 }
 
+if (!function_exists('asset')) {
+    /**
+     * Asset URL with a mtime cache-buster so edited CSS/JS is picked up
+     * immediately by browsers (no stale styles after a deploy).
+     */
+    function asset(string $path): string
+    {
+        $file = dirname(__DIR__) . '/public/' . ltrim($path, '/');
+        $version = is_file($file) ? (string) filemtime($file) : '';
+
+        return url($path) . ($version !== '' ? '?v=' . $version : '');
+    }
+}
+
 if (!function_exists('url')) {
     function url(string $path = '/'): string
     {

@@ -16,7 +16,7 @@ $navLabel = $isFr ? 'Connexion' : 'Sign in';
     <meta name="description" content="<?= e($isFr ? 'Espace de connaissances agentique : réponses sourcées, tâches rédigées, gouvernance complète.' : 'Agentic knowledge workspace: sourced answers, drafted tasks, full governance.') ?>">
     <title><?= e($title ?? $productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/app.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/app.css') ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/shell.css') ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/css/spaces.css') ?>">
 </head>

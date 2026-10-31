@@ -80,7 +80,7 @@ $displayRole = $T['role'];
     <title><?= e($title ?? 'Assistant') ?> — <?= e($productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/select2/css/select2.min.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/app.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
     <script src="<?= e(url('/assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>"></script>
