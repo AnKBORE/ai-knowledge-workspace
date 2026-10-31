@@ -194,6 +194,44 @@ svg {
     height: 20px;
 }
 
+.doc-modal-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: .55rem;
+}
+
+.doc-modal-actions .doc-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.doc-modal-actions .doc-action-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.doc-modal-actions .doc-action-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgb(15 23 42 / 14%);
+}
+
+.doc-modal-actions .doc-action-icon:focus-visible {
+    outline: 3px solid rgb(74 99 200 / 35%);
+    outline-offset: 2px;
+}
+
+@media (max-width: 576px) {
+    .doc-modal-actions .doc-action-icon { width: 40px; height: 40px; }
+}
+
 .btn:disabled {
     opacity: 0.55;
     cursor: not-allowed;

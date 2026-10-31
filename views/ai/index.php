@@ -130,10 +130,16 @@ declare(strict_types=1);
                     <ul id="result-sources-list" class="small mb-0 ps-3"></ul>
                 </div>
             </div>
-            <div class="modal-footer border-0 px-4 pb-4">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="button" class="btn btn-outline-primary" id="download-docx">Télécharger DOCX</button>
-                <button type="button" class="btn btn-primary" id="download-pdf">Télécharger PDF</button>
+            <div class="modal-footer doc-modal-actions border-0 px-4 pb-4">
+                <button type="button" class="btn btn-outline-secondary btn-icon doc-action-icon" data-bs-dismiss="modal" title="Fermer" aria-label="Fermer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-icon doc-action-icon" id="download-docx" title="Télécharger DOCX" aria-label="Télécharger DOCX">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+                </button>
+                <button type="button" class="btn btn-primary btn-icon doc-action-icon" id="download-pdf" title="Télécharger PDF" aria-label="Télécharger PDF">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                </button>
             </div>
         </div>
     </div>
