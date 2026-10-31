@@ -80,6 +80,7 @@ try {
 
     $system .= \App\Services\Ai\Glossaire::promptFor($to, $from);
     $system .= \App\Services\Ai\LexiqueMoore::promptFor($text, $from, $to);
+    $system .= $dependencies['apprentissage']->exemples($text, $to);
 
     if ($from === 'mo' || $to === 'mo') {
         $system .= "\n\n" . \App\Services\Ai\MooreReference::prompt();

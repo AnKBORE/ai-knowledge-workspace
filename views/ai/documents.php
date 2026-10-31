@@ -7,6 +7,7 @@ declare(strict_types=1);
 $T = app_i18n($lang ?? 'en');
 $S = $T['shared'];
 $P = $T['documents'];
+$isFr = ($lang ?? 'fr') === 'fr';
 $search = (string) ($search ?? '');
 $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions' : 'version'];
 ?>
@@ -106,6 +107,9 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                                                     </button>
                                                 <?php endif; ?>
+                                                <button type="button" class="doc-action correction-btn" title="<?= e(($isFr ?? true) ? 'Déposer une version corrigée' : 'Upload a corrected version') ?>" data-document-id="<?= $docId ?>" data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>" data-document-langue="<?= e((string) ($doc['langue'] ?? 'fr')) ?>" aria-label="<?= e(($isFr ?? true) ? 'Déposer une version corrigée' : 'Upload a corrected version') ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                                                </button>
                                                 <button type="button" class="doc-action doc-action-danger delete-btn" title="<?= e($P['delete_title']) ?>"
                                                         data-document-id="<?= $docId ?>"
                                                         data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
@@ -296,3 +300,56 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
 <script src="<?= e(url('/assets/vendor/datatables/js/dataTables.responsive.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/spaces-tables.js')) ?>"></script>
+
+<!-- Corrected version: the correction also feeds the learning layer -->
+<div class="modal fade space-create-modal profil-modal" id="correction-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <p class="page-eyebrow"><?= e(($isFr ?? true) ? 'Correction' : 'Correction') ?></p>
+                    <h2 class="modal-title fs-5"><?= e(($isFr ?? true) ? 'Version corrigée du document' : 'Corrected version of the document') ?></h2>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="correction-form" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <input type="hidden" id="correction-document-id" name="document_id" value="">
+                    <p class="small text-muted mb-3" id="correction-document-title"></p>
+
+                    <div class="row g-3">
+                        <div class="col-md-5">
+                            <label for="correction-langue" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Langue de la correction' : 'Correction language') ?></label>
+                            <select id="correction-langue" name="langue" class="form-select" required>
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                                <option value="mo">Mooré</option>
+                            </select>
+                            <p class="small text-muted mt-2 mb-0"><?= e(($isFr ?? true) ? 'Le système réutilisera cette formulation pour la même langue.' : 'The system will reuse this wording for the same language.') ?></p>
+                        </div>
+                        <div class="col-md-7">
+                            <label for="correction-file" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Fichier corrigé (audio ou texte)' : 'Corrected file (audio or text)') ?></label>
+                            <input type="file" id="correction-file" name="fichier" class="form-control"
+                                   accept="audio/*,.txt,.md,.doc,.docx,.pdf">
+                            <p class="small text-muted mt-2 mb-0"><?= e(($isFr ?? true) ? 'Un audio est transcrit automatiquement dans la langue choisie.' : 'An audio file is transcribed automatically in the chosen language.') ?></p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label for="correction-text" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Ou collez le texte corrigé' : 'Or paste the corrected text') ?></label>
+                        <textarea id="correction-text" name="texte_corrige" class="form-control" rows="7"
+                                  placeholder="<?= e(($isFr ?? true) ? 'Texte corrigé…' : 'Corrected text…') ?>"></textarea>
+                    </div>
+
+                    <div id="correction-status" class="small mt-2"></div>
+                </div>
+                <div class="modal-footer space-create-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= e(($isFr ?? true) ? 'Annuler' : 'Cancel') ?></button>
+                    <button type="submit" class="btn btn-primary space-create-submit" id="correction-submit">
+                        <?= e(($isFr ?? true) ? 'Enregistrer la correction' : 'Save the correction') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

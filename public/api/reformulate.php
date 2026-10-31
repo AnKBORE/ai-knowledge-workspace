@@ -158,6 +158,8 @@ try {
         $system .= "\n\nThis is also a translation task: render the meaning in the target language, do not copy the source wording.";
     }
 
+    $system .= $dependencies['apprentissage']->exemples($transcript, $wantsTranslation ? $to : ($from !== '' ? $from : 'fr'));
+
     if (($wantsTranslation ? $to : $from) === 'mo') {
         $system .= "\n\n" . MooreReference::prompt();
     }

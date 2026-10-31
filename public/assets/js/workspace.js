@@ -527,6 +527,83 @@
         });
     }
 
+    /* ---------------- Corrected version of an indexed document ---------------- */
+
+    var correctionButtons = document.querySelectorAll('.correction-btn');
+    if (correctionButtons.length) {
+        var correctionModalEl = document.getElementById('correction-modal');
+        var correctionModal = (window.bootstrap && correctionModalEl) ? new bootstrap.Modal(correctionModalEl) : null;
+        var correctionForm = document.getElementById('correction-form');
+        var correctionDocId = document.getElementById('correction-document-id');
+        var correctionTitle = document.getElementById('correction-document-title');
+        var correctionLangue = document.getElementById('correction-langue');
+        var correctionText = document.getElementById('correction-text');
+        var correctionFile = document.getElementById('correction-file');
+        var correctionStatus = document.getElementById('correction-status');
+        var correctionSubmit = document.getElementById('correction-submit');
+
+        correctionButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (!correctionModal) { return; }
+                correctionDocId.value = btn.getAttribute('data-document-id') || '';
+                correctionTitle.textContent = btn.getAttribute('data-document-title') || '';
+                var lang = btn.getAttribute('data-document-langue') || 'fr';
+                if (correctionLangue) { correctionLangue.value = ['fr', 'en', 'mo'].indexOf(lang) >= 0 ? lang : 'fr'; }
+                if (correctionText) { correctionText.value = ''; }
+                if (correctionFile) { correctionFile.value = ''; }
+                if (correctionStatus) { correctionStatus.textContent = ''; correctionStatus.className = 'small mt-2'; }
+                correctionModal.show();
+            });
+        });
+
+        if (correctionForm) {
+            correctionForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                var text = correctionText ? correctionText.value.trim() : '';
+                var hasFile = correctionFile && correctionFile.files && correctionFile.files.length > 0;
+
+                if (text === '' && !hasFile) {
+                    correctionStatus.textContent = t('correction_need_input', 'Ajoutez un fichier ou collez le texte corrigé.');
+                    correctionStatus.className = 'small mt-2 text-danger';
+                    return;
+                }
+
+                correctionSubmit.disabled = true;
+                correctionStatus.textContent = t('correction_saving', 'Enregistrement…');
+                correctionStatus.className = 'small mt-2 text-muted';
+
+                try {
+                    var fd = new FormData();
+                    fd.append('document_id', correctionDocId.value);
+                    fd.append('langue', correctionLangue.value);
+                    if (text !== '') { fd.append('texte_corrige', text); }
+                    if (hasFile) { fd.append('fichier', correctionFile.files[0]); }
+
+                    var r = await fetch(apiUrl('correction_save.php'), {
+                        method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
+                    });
+                    var d = await r.json();
+
+                    if (r.ok && d.id) {
+                        correctionStatus.textContent = t('correction_saved', 'Correction enregistrée. Le système enrichit son vocabulaire.')
+                            + ' (' + (d.chars || 0) + ' ' + t('chars', 'caractères') + ')';
+                        correctionStatus.className = 'small mt-2 text-success';
+                        correctionForm.reset();
+                        setTimeout(function () { if (correctionModal) { correctionModal.hide(); } }, 1400);
+                    } else {
+                        correctionStatus.textContent = d.error || t('correction_failed', 'Enregistrement impossible.');
+                        correctionStatus.className = 'small mt-2 text-danger';
+                    }
+                } catch (err) {
+                    correctionStatus.textContent = t('correction_failed', 'Enregistrement impossible.');
+                    correctionStatus.className = 'small mt-2 text-danger';
+                } finally {
+                    correctionSubmit.disabled = false;
+                }
+            });
+        }
+    }
     /* ---------------- Meeting recorder (microphone → WAV → upload) ---------------- */
 
     var recBtn = document.getElementById('record-btn');
