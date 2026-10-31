@@ -335,8 +335,16 @@
 
         var stripCitations = function (html) {
             return html
+                // Trailing "Sources : [1], [2]" line, bold or not.
                 .replace(/\s*(?:<strong>)?\s*Sources?\s*:\s*(?:\[\d{1,2}\]\s*(?:,\s*)?)+(?:<\/strong>)?\s*$/i, '')
+                // Inline citations, keeping a bracketed year such as [2026].
                 .replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g, '')
+                // A line that is only a meta marker is dropped entirely.
+                .replace(/^[ \t]*\*?[ \t]*\[(?:Proposition|Élément issu|À compléter|Formule d|Adressez|Annoncer|Rappeler|Note de)[^\]]*\][ \t]*\*?[ \t]*:?[ \t]*$/gim, '')
+                // An inline meta marker is removed, the sentence it introduced is kept.
+                .replace(/\*?[ \t]*\[(?:Proposition|Élément issu|À compléter|Formule d|Adressez|Annoncer|Rappeler|Note de)[^\]]*\][ \t]*\*?[ \t]*:?[ \t]*/gi, '')
+                // Method note: pure scaffolding, not part of the deliverable.
+                .replace(/^[^\n]*Note de méthode[^\n]*$/gim, '')
                 .replace(/[ \t]{2,}/g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
@@ -372,10 +380,17 @@
                 hint.textContent = document.documentElement.lang === 'fr'
                     ? 'Sources retirées : le fichier exporté ne contient que la réponse.'
                     : 'Sources removed: the exported file contains the answer only.';
-                resultContent.appendChild(hint);
+                // Outside #result-content: the notice must never end up in
+                // the downloaded document.
+                if (resultContent.parentNode) {
+                    resultContent.parentNode.insertBefore(hint, resultContent.nextSibling);
+                }
 
                 return;
             }
+
+            var staleHint = document.getElementById('clean-result-hint');
+            if (staleHint) { staleHint.remove(); }
 
             resultContent.innerHTML = cleanBackup.html;
 
