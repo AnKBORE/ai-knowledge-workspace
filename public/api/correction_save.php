@@ -85,23 +85,20 @@ if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name']
         $respond(413, ['error' => 'File too large (24 MB max).']);
     }
 
-    $original = (string) ($_FILES['fichier']['name'] ?? 'correction');
+    $original = (string) ($_FILES['fichier']['name'] ?? 'correction.txt');
     $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-    $isAudio = str_starts_with((string) ($_FILES['fichier']['type'] ?? ''), 'audio/')
-        || in_array($ext, ['wav', 'mp3', 'ogg', 'm4a', 'flac', 'webm'], true);
+
+    // A correction is a text file: the reviewer rewrites the transcript.
+    if (!in_array($ext, ['txt', 'md', 'csv'], true)) {
+        @unlink($_FILES['fichier']['tmp_name']);
+        $respond(422, ['error' => 'A correction must be a text file (.txt, .md, .csv).']);
+    }
 
     $tmp = tempnam(sys_get_temp_dir(), 'akw_corr_');
     move_uploaded_file($_FILES['fichier']['tmp_name'], $tmp);
 
     try {
-        if ($isAudio) {
-            $transcript = trim($dependencies['transcription']->transcribe($tmp, $langue));
-            if ($transcript === '') {
-                @unlink($tmp);
-                $respond(422, ['error' => 'No speech recognised in the corrected audio.']);
-            }
-            $texteCorrige = $transcript;
-        } elseif ($texteCorrige === '') {
+        if ($texteCorrige === '') {
             $texteCorrige = trim((string) file_get_contents($tmp));
         }
     } finally {
@@ -122,6 +119,12 @@ $stmt->execute(['id' => $documentId]);
 $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
 $texteSource = trim(implode("\n\n", array_map(static fn ($r): string => trim((string) $r), $rows)));
 
+$version = $dependencies['correction_model']->countForDocument($documentId) + 1;
+$base = (string) pathinfo((string) ($document['title'] ?? 'document'), PATHINFO_FILENAME);
+$slug = strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/', '_', $base), '_'));
+$slug = $slug !== '' ? $slug : 'document';
+$nomFichier = $slug . '_corrige_v' . $version . '.txt';
+
 try {
     $correctionId = $dependencies['correction_model']->create(
         $documentId,
@@ -129,7 +132,8 @@ try {
         $texteCorrige,
         $texteSource !== '' ? $texteSource : null,
         null,
-        $userId
+        $userId,
+        $nomFichier
     );
 
     $dependencies['journal']->log($userId, 'document.correction', 'document', $documentId, 'succes', [
@@ -141,6 +145,8 @@ try {
         'id' => $correctionId,
         'langue' => $langue,
         'chars' => mb_strlen($texteCorrige),
+        'nom_fichier' => $nomFichier,
+        'version' => $version,
         'appris' => $dependencies['apprentissage']->count(),
     ]);
 } catch (\Throwable $e) {

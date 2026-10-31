@@ -301,21 +301,23 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
 <script src="<?= e(url('/assets/vendor/datatables/js/responsive.bootstrap5.min.js')) ?>"></script>
 <script src="<?= e(url('/assets/js/spaces-tables.js')) ?>"></script>
 
-<!-- Corrected version: the correction also feeds the learning layer -->
-<div class="modal fade space-create-modal profil-modal" id="correction-modal" tabindex="-1" aria-hidden="true">
+<!-- Corrected version: a text file rewritten by the author or a native reviewer -->
+<div class="modal fade doc-modal" id="correction-modal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary bg-gradient text-white border-0">
                 <div>
-                    <p class="page-eyebrow"><?= e(($isFr ?? true) ? 'Correction' : 'Correction') ?></p>
+                    <span class="badge text-bg-light mb-2"><?= e(($isFr ?? true) ? 'Correction' : 'Correction') ?></span>
                     <h2 class="modal-title fs-5"><?= e(($isFr ?? true) ? 'Version corrigée du document' : 'Corrected version of the document') ?></h2>
+                    <p class="small mb-0 opacity-75" id="correction-document-title"></p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <form id="correction-form" enctype="multipart/form-data">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <input type="hidden" id="correction-document-id" name="document_id" value="">
-                    <p class="small text-muted mb-3" id="correction-document-title"></p>
+                    <input type="hidden" id="correction-nom-value" name="nom_fichier" value="">
 
                     <div class="row g-3">
                         <div class="col-md-5">
@@ -325,31 +327,31 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                 <option value="en">English</option>
                                 <option value="mo">Mooré</option>
                             </select>
-                            <p class="small text-muted mt-2 mb-0"><?= e(($isFr ?? true) ? 'Le système réutilisera cette formulation pour la même langue.' : 'The system will reuse this wording for the same language.') ?></p>
+                            <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Le système réutilisera cette formulation pour cette langue.' : 'The system will reuse this wording for that language.') ?></p>
                         </div>
                         <div class="col-md-7">
-                            <label for="correction-file" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Fichier corrigé (audio ou texte)' : 'Corrected file (audio or text)') ?></label>
-                            <input type="file" id="correction-file" name="fichier" class="form-control"
-                                   accept="audio/*,.txt,.md,.doc,.docx,.pdf">
-                            <p class="small text-muted mt-2 mb-0"><?= e(($isFr ?? true) ? 'Un audio est transcrit automatiquement dans la langue choisie.' : 'An audio file is transcribed automatically in the chosen language.') ?></p>
+                            <label for="correction-nom" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Nom du fichier proposé' : 'Proposed file name') ?></label>
+                            <input type="text" id="correction-nom" class="form-control" readonly>
+                            <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Construit à partir du nom existant et du numéro de version.' : 'Built from the existing name and the version number.') ?></p>
                         </div>
                     </div>
 
-                    <div class="mt-3">
-                        <label for="correction-text" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Ou collez le texte corrigé' : 'Or paste the corrected text') ?></label>
-                        <textarea id="correction-text" name="texte_corrige" class="form-control" rows="7"
-                                  placeholder="<?= e(($isFr ?? true) ? 'Texte corrigé…' : 'Corrected text…') ?>"></textarea>
+                    <div class="mt-4">
+                        <label for="correction-file" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Fichier texte corrigé' : 'Corrected text file') ?></label>
+                        <input type="file" id="correction-file" name="fichier" class="form-control" accept=".txt,.md,.csv,text/plain" required>
+                        <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Formats acceptés : .txt, .md, .csv — 24 Mo maximum.' : 'Accepted formats: .txt, .md, .csv — 24 MB maximum.') ?></p>
                     </div>
 
                     <div id="correction-existing" class="correction-existing" hidden>
                         <p class="page-eyebrow mb-2"><?= e(($isFr ?? true) ? 'Corrections déjà enregistrées' : 'Corrections already saved') ?></p>
                         <div id="correction-list" class="correction-list"></div>
                     </div>
-                    <div id="correction-status" class="small mt-2"></div>
+
+                    <div id="correction-status" class="small mt-3"></div>
                 </div>
-                <div class="modal-footer space-create-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= e(($isFr ?? true) ? 'Annuler' : 'Cancel') ?></button>
-                    <button type="submit" class="btn btn-primary space-create-submit" id="correction-submit">
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?= e(($isFr ?? true) ? 'Annuler' : 'Cancel') ?></button>
+                    <button type="submit" class="btn btn-primary" id="correction-submit">
                         <?= e(($isFr ?? true) ? 'Enregistrer la correction' : 'Save the correction') ?>
                     </button>
                 </div>

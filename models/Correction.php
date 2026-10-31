@@ -25,15 +25,17 @@ final class Correction
         ?string $texteSource = null,
         ?int $versionDocumentId = null,
         ?int $auteurId = null,
+        ?string $nomFichier = null,
     ): int {
         $stmt = $this->db->prepare(
-            'INSERT INTO correction_document (document_id, version_document_id, langue, texte_source, texte_corrige, auteur_id)
-             VALUES (:document_id, :version_id, :langue, :source, :corrige, :auteur)'
+            'INSERT INTO correction_document (document_id, version_document_id, langue, nom_fichier, texte_source, texte_corrige, auteur_id)
+             VALUES (:document_id, :version_id, :langue, :nom_fichier, :source, :corrige, :auteur)'
         );
         $stmt->execute([
             'document_id' => $documentId,
             'version_id' => $versionDocumentId,
             'langue' => $langue,
+            'nom_fichier' => $nomFichier,
             'source' => $texteSource,
             'corrige' => $texteCorrige,
             'auteur' => $auteurId,
@@ -75,6 +77,15 @@ final class Correction
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    /** Number of corrections already stored for a document (used for vN). */
+    public function countForDocument(int $documentId): int
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM correction_document WHERE document_id = :id');
+        $stmt->execute(['id' => $documentId]);
+
+        return (int) $stmt->fetchColumn();
     }
 
     public function count(): int

@@ -25,6 +25,7 @@ final class ApprentissageTest extends TestCase
                 document_id INTEGER NOT NULL,
                 version_document_id INTEGER NULL,
                 langue TEXT NOT NULL DEFAULT "fr",
+                nom_fichier TEXT NULL,
                 texte_source TEXT NULL,
                 texte_corrige TEXT NOT NULL,
                 auteur_id INTEGER NULL,

@@ -538,6 +538,9 @@
         var correctionTitle = document.getElementById('correction-document-title');
         var correctionLangue = document.getElementById('correction-langue');
         var correctionText = document.getElementById('correction-text');
+        var correctionNom = document.getElementById('correction-nom');
+        var correctionNomValue = document.getElementById('correction-nom-value');
+        var correctionDocTitle = '';
         var correctionFile = document.getElementById('correction-file');
         var correctionStatus = document.getElementById('correction-status');
         var correctionSubmit = document.getElementById('correction-submit');
@@ -552,6 +555,7 @@
                 if (correctionText) { correctionText.value = ''; }
                 if (correctionFile) { correctionFile.value = ''; }
                 if (correctionStatus) { correctionStatus.textContent = ''; correctionStatus.className = 'small mt-2'; }
+                correctionProposeName(1);
                 correctionModal.show();
             });
         });
@@ -564,6 +568,22 @@
             return '<span class="correction-lang">' + (map[langue] || langue.toUpperCase()) + '</span>';
         }
 
+        // "Meeting6.pdf" + version 2  ->  "meeting6_corrige_v2.txt"
+        function correctionSlug(value) {
+            var base = (value || 'document').toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/\.[a-z0-9]{1,5}$/i, '')
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            return base === '' ? 'document' : base;
+        }
+
+        function correctionProposeName(version) {
+            if (!correctionNom) { return; }
+            var name = correctionSlug(correctionDocTitle) + '_corrige_v' + version + '.txt';
+            correctionNom.value = name;
+            if (correctionNomValue) { correctionNomValue.value = name; }
+        }
         async function correctionRefresh() {
             if (!correctionList || !correctionDocId) { return; }
             var docId = correctionDocId.value;
@@ -575,6 +595,7 @@
                 });
                 var d = await r.json();
                 var rows = (d && d.corrections) ? d.corrections : [];
+                correctionProposeName(rows.length + 1);
 
                 if (!rows.length) {
                     correctionExisting.hidden = true;
