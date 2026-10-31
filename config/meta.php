@@ -30,7 +30,9 @@ return [
     // Main conversational model (Muse Wonder, per the live API example).
     'chat_model' => getenv('META_MODEL_NAME') ?: 'muse-wonder-1.0',
     'chat_reasoning_effort' => getenv('META_CHAT_REASONING_EFFORT') ?: 'low',
-    'chat_max_tokens' => (int) (getenv('META_CHAT_MAX_TOKENS') ?: 1200),
+    // Answers and agentic drafts are long; translations stop on their own, so a
+    // generous ceiling never slows them down but prevents truncated replies.
+    'chat_max_tokens' => (int) (getenv('META_CHAT_MAX_TOKENS') ?: 3000),
 
     // Advanced model for report generation / decision support.
     'advanced_model' => 'muse-wonder-1.0',

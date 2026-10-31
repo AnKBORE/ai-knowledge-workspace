@@ -135,7 +135,7 @@ final class RagService
 
             $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
             $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
-            $sources = $this->sources($this->citedChunks($answer, $chunks));
+            $sources = $this->sourcesFor($answer, $chunks);
 
             return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
         }
@@ -163,7 +163,7 @@ final class RagService
             }
         }
 
-        $sources = $this->sources($this->citedChunks($answer, $chunks));
+        $sources = $this->sourcesFor($answer, $chunks);
 
         return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
     }
@@ -246,7 +246,7 @@ final class RagService
             'available' => $verdict['available'],
         ];
 
-        $sources = $this->sources($this->citedChunks($draft, $chunks));
+        $sources = $this->sourcesFor($draft, $chunks);
 
         return ['draft' => $draft, 'sources' => $this->translateSources($sources, $instruction), 'steps' => $steps];
     }
@@ -878,6 +878,25 @@ PROMPT;
         }
 
         return $out;
+    }
+
+    /**
+     * Sources for an answer: the extracts it actually cited, or — when the
+     * model forgot or was cut off — the top extracts it was given. A grounded
+     * answer must never look sourceless in the UI.
+     *
+     * @param list<array<string, mixed>> $chunks
+     * @return list<array<string, mixed>>
+     */
+    private function sourcesFor(string $text, array $chunks): array
+    {
+        $cited = $this->citedChunks($text, $chunks);
+
+        if ($cited === [] && $chunks !== []) {
+            $cited = array_slice($chunks, 0, 3);
+        }
+
+        return $this->sources($cited);
     }
     private function sources(array $chunks): array
     {
