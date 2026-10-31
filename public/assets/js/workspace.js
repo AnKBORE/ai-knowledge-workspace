@@ -574,6 +574,13 @@
             purgeError.textContent = message;
         };
 
+        // Keep the range coherent: the end can never precede the start.
+        if (purgeDebut && purgeFin) {
+            purgeDebut.addEventListener('change', function () {
+                if (purgeDebut.value) { purgeFin.min = purgeDebut.value; } else { purgeFin.removeAttribute('min'); }
+            });
+        }
+
         // The form previously had no method and no handler: the browser sent a
         // GET to the endpoint and displayed a raw 405 page. It is now an AJAX
         // POST, so failures stay inside the modal.

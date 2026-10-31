@@ -44,12 +44,22 @@ if (!$dependencies['csrf']->validateRequest()) {
     exit;
 }
 
+// A stolen session must not be able to brute-force the account password
+// through this endpoint, nor wipe the whole audit trail in one request.
+$userId = (int) $dependencies['auth']->id();
+
+if (!$dependencies['rate_limiter']->allow('journal_purge:' . $userId, 5, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode(['error' => $T['rate_limited'] ?? 'Trop de tentatives, réessayez dans 5 minutes.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];
 $dateDebut = trim((string) ($input['date_debut'] ?? ''));
 $dateFin = trim((string) ($input['date_fin'] ?? ''));
 $password = (string) ($input['password'] ?? '');
-$userId = (int) $dependencies['auth']->id();
 
 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateDebut) !== 1) {
     http_response_code(422);
@@ -75,6 +85,16 @@ if ($dateFin === '') {
 
 $from = $dateDebut . ' 00:00:00';
 $to = $dateFin . ' 23:59:59';
+
+// A purge is a legal erasure, not a reset: cap the span so one request
+// cannot empty the whole journal.
+$spanDays = (int) floor((strtotime($to) - strtotime($from)) / 86400);
+
+if ($spanDays > 92) {
+    http_response_code(422);
+    echo json_encode(['error' => $T['purge_span'] ?? 'La période ne peut pas dépasser 92 jours.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 if ($from > $to) {
     http_response_code(422);

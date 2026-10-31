@@ -125,11 +125,11 @@ $labels = [
                 <div class="modal-body space-create-body">
                     <div class="space-create-fields">
                         <label><?= e($P['purge_from']) ?>
-                            <input id="journal-purge-debut" type="date" required>
+                            <input id="journal-purge-debut" type="date" required max="<?= date('Y-m-d', strtotime('-10 days')) ?>">
                             <small class="field-hint"><?= e($P['purge_from_hint']) ?></small>
                         </label>
                         <label><?= e($P['purge_to']) ?>
-                            <input id="journal-purge-fin" type="date">
+                            <input id="journal-purge-fin" type="date" max="<?= date('Y-m-d', strtotime('-10 days')) ?>">
                             <small class="field-hint"><?= e($P['purge_to_hint']) ?></small>
                         </label>
                         <label class="profil-field-full"><?= e($S['password_label']) ?>
