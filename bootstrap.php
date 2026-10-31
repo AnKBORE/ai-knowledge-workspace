@@ -103,6 +103,7 @@ return [
     'document_model' => $documentModel,
     'version_model' => $versionModel,
     'categorie_model' => new \App\Models\Categorie($pdo),
+    'rate_limiter' => new \App\Services\RateLimiter($pdo),
     'documents_service' => $documentService,
     'users' => $users,
     'storage_path' => $root . '/storage/files',

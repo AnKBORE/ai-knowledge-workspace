@@ -39,6 +39,13 @@ if (!$dependencies['csrf']->validateRequest()) {
     exit;
 }
 
+if (!$dependencies['rate_limiter']->allow('summarize:' . (int) $dependencies['auth']->id(), 20, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode(['error' => $T['rate_limited'] ?? 'Trop de requetes.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];
 $documentId = (int) ($input['document_id'] ?? 0);
