@@ -1832,3 +1832,30 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 
 .ltr-state.is-error { color: #b42318; font-weight: 600; }
 .ltr-state.is-ok { color: #15803d; font-weight: 700; }
+
+/* Live transcription: level meter + diagnostic hint */
+.ltr-meter {
+    height: 6px;
+    margin: .55rem 0 .35rem;
+    border-radius: 99px;
+    background: #eef2f7;
+    overflow: hidden;
+}
+
+.ltr-meter-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #22a06b, #4a63c8);
+    transition: width .12s linear;
+}
+
+.ltr-meter-fill.is-hot { background: linear-gradient(90deg, #e0a800, #d92d20); }
+
+.ltr-hint {
+    margin: 0 0 .6rem;
+    font-size: .85rem;
+    line-height: 1.45;
+    color: #b42318;
+}

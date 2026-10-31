@@ -105,7 +105,8 @@ $translateSlice = static function (string $source, string $target, ?string $sour
 
 $translationError = '';
 
-if ($text !== '' && isset($langs[$to])) {
+// Translating into the source language is a no-op: keep the transcript as is.
+if ($text !== '' && isset($langs[$to]) && $to !== $from) {
     $context = trim(mb_substr((string) ($_POST['ctx'] ?? ''), 0, 1000));
 
     try {

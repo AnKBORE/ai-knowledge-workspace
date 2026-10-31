@@ -593,6 +593,9 @@
         var liveText = document.getElementById('live-rec-text');
         var liveTimer = document.getElementById('live-rec-timer');
         var liveState = document.getElementById('live-rec-state');
+        var liveLevel = document.getElementById('live-rec-level');
+        var liveHint = document.getElementById('live-rec-hint');
+        var liveAudioSent = 0;   // slices actually sent to the ASR
         var liveCursor = 0;          // samples already transcribed
         var liveBusy = false;        // in-flight chunk
         var liveRunning = false;
@@ -627,7 +630,11 @@
                 var total = 0;
                 for (var k = 0; k < livePcm.length; k++) total += livePcm[k].length;
                 var newSamples = total - liveCursor;
-                if (newSamples < liveRate * 1.5) { liveInFlight--; return; } // < 1.5 s
+                if (newSamples < liveRate * 1.5) {
+                    liveInFlight--;
+                    if (liveState) liveState.textContent = '…';
+                    return;
+                } // < 1.5 s
 
                 // Concatenate the not-yet-transcribed span.
                 var span = new Float32Array(newSamples), off = 0, skip = liveCursor;
@@ -666,7 +673,20 @@
                     peak = Math.max(peak, Math.abs(v));
                     pcm16[i] = v;
                 }
-                if (peak < 0.012) { liveCursor += cut; liveInFlight--; return; } // silence slice: skip it
+                if (liveLevel) {
+                    liveLevel.style.width = Math.min(100, Math.round(peak * 250)) + '%';
+                    liveLevel.className = 'ltr-meter-fill' + (peak > 0.25 ? ' is-hot' : '');
+                }
+                if (peak < 0.012) {
+                    liveCursor += cut; liveInFlight--;
+                    if (liveHint) {
+                        liveHint.hidden = false;
+                        liveHint.textContent = document.documentElement.lang === 'fr'
+                            ? 'Aucun son capté pour le moment. Vérifiez le micro (périphérique sélectionné, muet, autorisation du système).'
+                            : 'No sound captured yet. Check the microphone (selected device, muted, OS permission).';
+                    }
+                    return;
+                }
                 liveCursor += cut;
 
                 var fd = new FormData();
@@ -678,11 +698,15 @@
                 // Continuity hint: tail of the previous transcript so Muse
                 // keeps pronouns/sentence fragments coherent across slices.
                 if (liveLast !== '') fd.append('ctx', liveLast.slice(-300));
+                liveAudioSent++;
+                if (liveHint) { liveHint.hidden = true; }
+                if (liveState) { liveState.textContent = '⏳'; liveState.className = 'ltr-state'; }
                 var r = await fetch(apiUrl('transcribe_chunk.php'), { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
                 var data = await r.json();
                 if (livePaused) { liveInFlight--; return; } // drop reply while paused
                 var txt = (data.text || '').trim();
                 if (data.error && liveState) { liveState.textContent = data.error; liveState.className = 'ltr-state is-error'; }
+                else if (data.translation_error && liveState) { liveState.textContent = 'texte brut (traduction indisponible)'; liveState.className = 'ltr-state is-error'; }
                 else if (liveState) { liveState.textContent = txt === '' ? '' : '✓'; liveState.className = 'ltr-state is-ok'; }
                 livePending[seq] = txt;
             } catch (err) {
@@ -707,10 +731,21 @@
             if (!liveModal) return;
             liveCursor = 0; liveRunning = true; liveBusy = false;
             liveInFlight = 0; liveSeq = 0; liveFlush = 0; livePending = {}; liveLast = '';
+            liveAudioSent = 0;
+            if (liveHint) { liveHint.hidden = true; liveHint.textContent = ''; }
+            if (liveLevel) { liveLevel.style.width = '0'; liveLevel.className = 'ltr-meter-fill'; }
             if (liveText) liveText.innerHTML = '<span class="live-empty">' + (document.documentElement.lang === 'fr' ? 'En écoute… parlez.' : 'Listening… speak.') + '</span>';
             if (liveState) liveState.textContent = '';
             liveModal.show();
             livePushTimer = setInterval(livePush, 5000);
+            setTimeout(function () {
+                if (liveAudioSent === 0 && liveHint) {
+                    liveHint.hidden = false;
+                    liveHint.textContent = document.documentElement.lang === 'fr'
+                        ? 'Aucune tranche audio n’a pu être envoyée : le micro ne délivre pas de son exploitable.'
+                        : 'No audio slice could be sent: the microphone is not delivering usable sound.';
+                }
+            }, 18000);
             setTimeout(livePush, 4000); // first partial slice early
         }
 

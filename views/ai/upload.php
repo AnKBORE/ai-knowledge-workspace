@@ -111,6 +111,10 @@ $P = $T['upload'];
                     </select>
                     <span id="live-rec-state" class="ltr-state"></span>
                 </div>
+                <div class="ltr-meter" aria-hidden="true">
+                    <span id="live-rec-level" class="ltr-meter-fill"></span>
+                </div>
+                <p id="live-rec-hint" class="ltr-hint" hidden></p>
                 <div id="live-rec-text" class="live-rec-transcript ltr-transcript" aria-live="polite"></div>
             </div>
             <div class="modal-footer ltr-footer">
