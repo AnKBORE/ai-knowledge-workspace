@@ -1624,3 +1624,151 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     .ltr-eq { display: none; }
     .ltr-lang { width: 100% !important; margin-left: 0; }
 }
+
+/* ---- Translation page ---- */
+.translate-form .translate-langs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    background: #f8fafd;
+}
+
+.translate-form .translate-lang {
+    display: flex;
+    flex-direction: column;
+}
+
+.translate-form .translate-lang .form-label {
+    margin-bottom: .35rem;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.translate-form .translate-lang .form-select {
+    min-width: 190px;
+    border-radius: 10px;
+}
+
+.translate-form .translate-swap {
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #c7d2fe;
+    background: #eef2ff;
+    color: #3552c7;
+    transition: transform .2s ease, background-color .15s ease;
+}
+
+.translate-form .translate-swap:hover {
+    background: #e0e7ff;
+    color: #2f4bb8;
+    transform: rotate(180deg);
+}
+
+.translate-form .translate-swap svg {
+    width: 21px;
+    height: 21px;
+}
+
+.translate-form .translate-panes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.translate-form .translate-pane {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.translate-form .translate-pane:focus-within {
+    border-color: #94a7e8;
+    box-shadow: 0 0 0 4px rgb(74 99 200 / 10%);
+}
+
+.translate-form .translate-pane-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: .6rem 1rem;
+    border-bottom: 1px solid #edf1f7;
+    background: #fbfcfe;
+}
+
+.translate-form .translate-pane-head .form-label {
+    margin: 0;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.translate-form .translate-pane textarea {
+    flex: 1;
+    min-height: 230px;
+    padding: 1rem;
+    border: 0;
+    border-radius: 0;
+    resize: vertical;
+    font-size: 1rem;
+    line-height: 1.65;
+    box-shadow: none;
+}
+
+.translate-form .translate-pane textarea:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.translate-form .translate-copy {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.translate-form .translate-copy svg {
+    width: 17px;
+    height: 17px;
+}
+
+.translate-form .translate-cta {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+.translate-form .translate-cta .btn {
+    min-width: 250px;
+    padding: .8rem 1.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .translate-form .translate-panes { grid-template-columns: 1fr; }
+    .translate-form .translate-lang .form-select { min-width: 100%; width: 100%; }
+    .translate-form .translate-lang { flex: 1 1 100%; }
+}

@@ -31,46 +31,50 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                     </div>
                 </div>
                 <div class="panel-body">
-                    <form id="translate-form">
-                        <div class="row g-3 align-items-center mb-3">
-                            <div class="col-auto">
-                                <label for="translate-from" class="form-label fw-semibold mb-0 me-2"><?= e($P['from_label']) ?></label>
-                                <select id="translate-from" class="form-select d-inline-block" style="width:auto">
+                    <form id="translate-form" class="translate-form">
+                        <div class="translate-langs">
+                            <div class="translate-lang">
+                                <label for="translate-from" class="form-label"><?= e($P['from_label']) ?></label>
+                                <select id="translate-from" class="form-select">
                                     <?php foreach ($langs as $code => $label): ?>
                                         <option value="<?= e($code) ?>" <?= $code === 'mo' ? 'selected' : '' ?>><?= e($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn btn-outline-secondary btn-icon" id="translate-swap" title="<?= e($P['swap']) ?>" aria-label="<?= e($P['swap']) ?>">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
-                                </button>
-                            </div>
-                            <div class="col-auto">
-                                <label for="translate-to" class="form-label fw-semibold mb-0 me-2"><?= e($P['to_label']) ?></label>
-                                <select id="translate-to" class="form-select d-inline-block" style="width:auto">
+                            <button type="button" class="btn translate-swap" id="translate-swap" title="<?= e($P['swap']) ?>" aria-label="<?= e($P['swap']) ?>">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+                            </button>
+                            <div class="translate-lang">
+                                <label for="translate-to" class="form-label"><?= e($P['to_label']) ?></label>
+                                <select id="translate-to" class="form-select">
                                     <?php foreach ($langs as $code => $label): ?>
                                         <option value="<?= e($code) ?>" <?= $code === 'fr' ? 'selected' : '' ?>><?= e($label) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="translate-source" class="form-label fw-semibold"><?= e($P['source_label']) ?></label>
+
+                        <div class="translate-panes">
+                            <div class="translate-pane">
+                                <div class="translate-pane-head">
+                                    <label for="translate-source" class="form-label"><?= e($P['source_label']) ?></label>
+                                </div>
                                 <textarea id="translate-source" class="form-control" rows="8" placeholder="<?= e($P['source_placeholder']) ?>" required></textarea>
                             </div>
-                            <div class="col-md-6">
-                                <label for="translate-result" class="form-label fw-semibold"><?= e($P['target_label']) ?></label>
-                                <div class="position-relative">
-                                    <textarea id="translate-result" class="form-control" rows="8" readonly></textarea>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2" id="translate-copy" hidden><?= e($P['copy']) ?></button>
+                            <div class="translate-pane">
+                                <div class="translate-pane-head">
+                                    <label for="translate-result" class="form-label"><?= e($P['target_label']) ?></label>
+                                    <button type="button" class="btn btn-outline-secondary translate-copy" id="translate-copy" title="<?= e($P['copy']) ?>" aria-label="<?= e($P['copy']) ?>" hidden>
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                                    </button>
                                 </div>
+                                <textarea id="translate-result" class="form-control" rows="8" readonly></textarea>
                             </div>
                         </div>
-                        <div class="form-actions mt-3">
+
+                        <div class="translate-cta">
                             <button type="submit" class="btn btn-primary form-submit" id="translate-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h10M9 3v2c0 4-3 7-6 8"/><path d="M6 8c1 3 4 6 8 7"/><path d="M13 21l4-9 4 9M14.6 17.5h4.8"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h10M9 3v2c0 4-3 7-6 8"/><path d="M6 8c1 3 4 6 8 7"/><path d="M13 21l4-9 4 9M14.6 17.5h4.8"/></svg>
                                 <?= e($P['button']) ?>
                             </button>
                         </div>
