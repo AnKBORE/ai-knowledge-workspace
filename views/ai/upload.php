@@ -98,9 +98,9 @@ $P = $T['upload'];
                     <span class="ltr-rec-badge"><span class="live-rec-dot" aria-hidden="true"></span>REC</span>
                     <span id="live-rec-timer" class="ltr-timer">00:00</span>
                     <select id="live-rec-from" class="form-select form-select-sm ltr-lang" aria-label="<?= e(($isFr ?? true) ? 'Langue de l\'audio' : 'Audio language') ?>">
-                        <option value=""><?= e(($isFr ?? true) ? 'Audio : auto' : 'Audio: auto') ?></option>
+                        <option value="" selected><?= e(($isFr ?? true) ? 'Audio : auto' : 'Audio: auto') ?></option>
                         <option value="mo">Mooré</option>
-                        <option value="fr" selected>Français</option>
+                        <option value="fr">Français</option>
                         <option value="en">English</option>
                     </select>
                     <select id="live-rec-lang" class="form-select form-select-sm ltr-lang" aria-label="<?= e($P['translate_to'] ?? 'Translate to') ?>">

@@ -768,6 +768,23 @@
             liveInFlight--;
         }
 
+        // Warn as soon as both lists point at the same language: the server
+        // then has nothing to translate and returns the raw transcript.
+        function liveSyncLangs() {
+            var f = document.getElementById('live-rec-from');
+            var t = document.getElementById('live-rec-lang');
+            if (!f || !t || !liveHint) return;
+            if (t.value !== '' && f.value === t.value) {
+                liveHint.hidden = false;
+                liveHint.textContent = document.documentElement.lang === 'fr'
+                    ? 'Langue audio et langue cible identiques : aucune traduction ne sera produite.'
+                    : 'Audio language and target language are identical: no translation will be produced.';
+            } else {
+                liveHint.hidden = true;
+                liveHint.textContent = '';
+            }
+        }
+
         function startLiveTranscription() {
             if (!liveModal) return;
             liveCursor = 0; liveRunning = true; liveBusy = false;
@@ -778,6 +795,11 @@
             if (liveText) liveText.innerHTML = '<span class="live-empty">' + (document.documentElement.lang === 'fr' ? 'En écoute… parlez.' : 'Listening… speak.') + '</span>';
             if (liveState) liveState.textContent = '';
             liveModal.show();
+            var __lf = document.getElementById('live-rec-from');
+            var __lt = document.getElementById('live-rec-lang');
+            if (__lf) __lf.addEventListener('change', liveSyncLangs);
+            if (__lt) __lt.addEventListener('change', liveSyncLangs);
+            liveSyncLangs();
             livePushTimer = setInterval(livePush, 3000);
             setTimeout(function () {
                 if (liveAudioSent === 0 && liveHint) {
