@@ -76,8 +76,7 @@ if ($document === false) {
     $respond(404, ['error' => 'Document not found.']);
 }
 
-$storedFile = null;
-$filePath = null;
+$uploadedExt = null;
 
 // A corrected audio file is transcribed; a text file is read verbatim.
 if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name'])) {
@@ -87,6 +86,7 @@ if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name']
 
     $original = (string) ($_FILES['fichier']['name'] ?? 'correction.txt');
     $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+    $uploadedExt = $ext;
 
     // PDF, DOCX or plain text: the reviewer sends what they actually work with.
     if (!in_array($ext, \App\Services\TexteExtracteur::EXTENSIONS, true)) {
@@ -138,6 +138,14 @@ if ($saisi !== '') {
     $saisi = trim($saisi, '._-');
     if ($saisi !== '' && mb_strlen($saisi) <= 180) {
         $nomFichier = $saisi;
+    }
+}
+
+if ($uploadedExt !== null) {
+    $nomExt = strtolower((string) pathinfo($nomFichier, PATHINFO_EXTENSION));
+
+    if ($nomExt !== $uploadedExt) {
+        $nomFichier = (string) pathinfo($nomFichier, PATHINFO_FILENAME) . '.' . $uploadedExt;
     }
 }
 

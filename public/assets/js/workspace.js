@@ -613,11 +613,30 @@
             correctionNom.value = name;
             if (correctionNomValue) { correctionNomValue.value = name; }
         }
+        // The proposed name must follow the file the user actually picked:
+        // choosing a .docx cannot suggest a .txt name.
+        function correctionSyncExtension() {
+            if (!correctionFile || !correctionNom) { return; }
+            var file = correctionFile.files && correctionFile.files[0];
+            if (!file) { return; }
+            var match = /\.([a-z0-9]{1,5})$/i.exec(file.name || '');
+            if (!match) { return; }
+            var ext = match[1].toLowerCase();
+            var base = correctionNom.value.trim() || (correctionSlug(correctionDocTitle) + '_corrige_v1');
+            base = base.replace(/\.[a-z0-9]{1,5}$/i, '');
+            correctionNom.value = base + '.' + ext;
+            if (correctionNomValue) { correctionNomValue.value = correctionNom.value; }
+            delete correctionNom.dataset.touched;
+        }
         if (correctionNom) {
             correctionNom.addEventListener('input', function () {
                 correctionNom.dataset.touched = '1';
                 if (correctionNomValue) { correctionNomValue.value = correctionNom.value.trim(); }
             });
+        }
+
+        if (correctionFile) {
+            correctionFile.addEventListener('change', correctionSyncExtension);
         }
 
         async function correctionRefresh() {

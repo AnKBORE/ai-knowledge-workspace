@@ -71,10 +71,33 @@ $dependencies['journal']->log($userId, 'document.correction.telechargement', 'do
     'langue' => (string) $row['langue'],
 ]);
 
-header('Content-Type: text/plain; charset=utf-8');
+// Honour the stored extension: a correction saved as .docx must download as
+// a real Word document, not as plain text.
+$ext = strtolower((string) pathinfo($name, PATHINFO_EXTENSION));
+$title = (string) ($row['title'] ?? 'Correction');
+
+try {
+    if ($ext === 'docx') {
+        $payload = (new \App\Services\ExportService())->toDocx($title, $body);
+        $type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    } elseif ($ext === 'pdf') {
+        $payload = (new \App\Services\ExportService())->toPdf($title, $body);
+        $type = 'application/pdf';
+    } else {
+        $payload = $body;
+        $type = 'text/plain; charset=utf-8';
+    }
+} catch (\Throwable $e) {
+    // Never fail the download: fall back to plain text with a .txt name.
+    $payload = $body;
+    $type = 'text/plain; charset=utf-8';
+    $name = (string) pathinfo($name, PATHINFO_FILENAME) . '.txt';
+}
+
+header('Content-Type: ' . $type);
 header('Content-Disposition: attachment; filename="' . $name . '"');
-header('Content-Length: ' . (string) strlen($body));
+header('Content-Length: ' . (string) strlen($payload));
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, no-store');
 
-echo $body;
+echo $payload;
