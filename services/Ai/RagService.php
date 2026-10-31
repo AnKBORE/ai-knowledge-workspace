@@ -740,6 +740,8 @@ PROMPT;
 
             $out[] = [
                 'document_id' => $documentId,
+                'version_id' => (int) ($chunk['version_id'] ?? 0),
+                'chunk_index' => 0,
                 'title' => (string) ($row['title'] ?? ($chunk['title'] ?? 'Document')),
                 'content' => trim((string) $row['texte_corrige']),
                 'score' => (float) ($chunk['score'] ?? 1.0),
@@ -848,6 +850,8 @@ PROMPT;
         foreach (array_slice($scored, 0, $limit) as [$score, $row]) {
             $out[] = [
                 'document_id' => (int) $row['document_id'],
+                'version_id' => 0,
+                'chunk_index' => 0,
                 'title' => (string) ($row['title'] ?? 'Document'),
                 'content' => trim((string) $row['texte_corrige']),
                 'score' => 1.0 + ($score / 10),
