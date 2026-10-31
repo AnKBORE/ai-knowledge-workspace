@@ -1267,6 +1267,19 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .landing-card-solution { border-left: 4px solid #17752d; }
 .landing-section-title { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 0 0 1rem; }
 .landing-section-sub { color: #4a5670; margin: -.4rem 0 1.2rem; }
+
+.landing-note {
+    max-width: 78ch;
+    margin: 1.6rem 0 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid #c9a227;
+    border-radius: 0 8px 8px 0;
+    background: rgb(201 162 39 / 8%);
+    color: #3d4a63;
+    font-size: .95rem;
+    line-height: 1.6;
+    text-align: justify;
+}
 .landing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
 .landing-feature { padding: 1.2rem 1.3rem; background: #fff; border: 1px solid #e5e8ee; border-radius: 14px; }
 .landing-feature h3 { font-size: .98rem; margin: 0 0 .4rem; }

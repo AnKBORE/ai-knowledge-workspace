@@ -127,6 +127,7 @@ $t = [
     'inc2_text' => $isFr ? 'Les rapports en français sont traduits en mooré (et inversement), appuyés par le lexique SIL de 1 349 entrées et 40 proverbes.' : 'French reports are translated into Mooré (and back), backed by the 1,349-entry SIL lexicon and 40 proverbs.',
     'inc3_title' => $isFr ? 'Écouter en mooré' : 'Listen in Mooré',
     'inc3_text' => $isFr ? 'L’audio d’une réunion est transcrit puis traduit en temps réel, avec une lecture karaoké.' : 'Meeting audio is transcribed then translated in real time, with karaoke playback.',
+    'inclusion_note' => $isFr ? 'Le mooré est une langue à faible ressource. Le dictionnaire de référence (SIL, 10 650 entrées) et notre lexique de 1 349 entrées ne couvrent pas toutes les tournures : sur une expression complexe, la traduction reste approximative. L’outil le signale et s’appuie sur le contexte plutôt que d’inventer.' : 'Mooré is a low-resource language. The reference dictionary (SIL, 10,650 entries) and our 1,349-entry lexicon do not cover every construction: on a complex expression, the translation stays approximate. The tool flags it and relies on context rather than inventing.',
 
     'origin_title' => $isFr ? 'Né d’un besoin réel du terrain' : 'Born from a real field need',
     'origin_text' => $isFr
@@ -332,6 +333,7 @@ $t = [
                 </article>
             <?php endforeach; ?>
         </div>
+        <p class="landing-note"><?= e($t['inclusion_note']) ?></p>
 </section>
 
 <section class="landing-section">
