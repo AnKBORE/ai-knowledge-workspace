@@ -17,6 +17,7 @@ $t = [
     'pill_2' => $isFr ? 'Assistant IA contextuel' : 'Contextual AI assistant',
     'pill_3' => $isFr ? 'Recherche intelligente hybride' : 'Hybrid smart search',
     'pill_4' => $isFr ? 'Journal d’audit et traçabilité' : 'Audit trail and traceability',
+    'pill_5' => $isFr ? 'Traduction mooré' : 'Mooré translation',
 
     'problem_title' => $isFr ? 'Problématique' : 'The challenge',
     'problem_intro' => $isFr
@@ -110,6 +111,14 @@ $t = [
     'f8_1' => $isFr ? 'PDF' : 'PDF',
     'f8_2' => $isFr ? 'DOCX' : 'DOCX',
     'f8_3' => $isFr ? 'Partage simplifié des résultats' : 'Simplified result sharing',
+    'f9_title' => $isFr ? 'Traduction FR / EN / Mooré' : 'FR / EN / Mooré translation',
+    'f9_1' => $isFr ? 'Six directions, y compris mooré vers français et mooré vers anglais' : 'Six directions, including Mooré to French and Mooré to English',
+    'f9_2' => $isFr ? 'Glossaire métier + lexique SIL de 1 349 entrées' : 'Domain glossary + 1,349-entry SIL lexicon',
+    'f9_3' => $isFr ? 'Contexte glissant et reprise automatique si la sortie dérive' : 'Rolling context and automatic repair when output drifts',
+    'f10_title' => $isFr ? 'OCR des PDF scannés' : 'Scanned PDF OCR',
+    'f10_1' => $isFr ? 'Extraction page par page des PDF sans couche texte' : 'Page-by-page extraction of PDFs without a text layer',
+    'f10_2' => $isFr ? 'Appels vision en parallèle, puis indexation du texte' : 'Parallel vision calls, then text indexing',
+    'f10_3' => $isFr ? 'Documents papier rendus interrogeables en langage naturel' : 'Paper documents made queryable in natural language',
 
     'origin_title' => $isFr ? 'Né d’un besoin réel du terrain' : 'Born from a real field need',
     'origin_text' => $isFr
@@ -145,8 +154,9 @@ $t = [
     'stack_1' => 'PHP 8.4.27 · MVC strict (PSR-4)',
     'stack_2' => 'MySQL 8.4.13 · InnoDB / UTF8MB4',
     'stack_3' => 'Muse Spark Open (Meta)',
-    'stack_4' => $isFr ? '57 tests automatisés · 122 assertions' : '57 automated tests · 122 assertions',
+    'stack_4' => $isFr ? '86 tests automatisés · 198 assertions' : '86 automated tests · 198 assertions',
     'stack_5' => 'Argon2 · CSP · CSRF · ' . ($isFr ? 'journal d’audit' : 'audit journal'),
+    'stack_6' => $isFr ? 'Lexique mooré SIL · 1 349 entrées' : 'SIL Mooré lexicon · 1,349 entries',
 
     'roadmap_title' => $isFr ? 'Feuille de route' : 'Roadmap',
     'badge_mvp' => 'MVP',
@@ -211,6 +221,7 @@ $t = [
         <li><?= e($t['pill_2']) ?></li>
         <li><?= e($t['pill_3']) ?></li>
         <li><?= e($t['pill_4']) ?></li>
+        <li><?= e($t['pill_5']) ?></li>
     </ul>
 </section>
 
@@ -279,6 +290,8 @@ $t = [
             ['f6_title', ['f6_1', 'f6_2', 'f6_3', 'f6_4']],
             ['f7_title', ['f7_1', 'f7_2', 'f7_3']],
             ['f8_title', ['f8_1', 'f8_2', 'f8_3']],
+            ['f9_title', ['f9_1', 'f9_2', 'f9_3']],
+            ['f10_title', ['f10_1', 'f10_2', 'f10_3']],
         ];
         foreach ($features as [$titleKey, $bulletKeys]): ?>
             <article class="landing-feature">
@@ -326,6 +339,7 @@ $t = [
         <li><?= e($t['stack_3']) ?></li>
         <li><?= e($t['stack_4']) ?></li>
         <li><?= e($t['stack_5']) ?></li>
+        <li><?= e($t['stack_6']) ?></li>
     </ul>
 </section>
 
