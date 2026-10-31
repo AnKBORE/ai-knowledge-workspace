@@ -208,6 +208,26 @@ The full trace (`steps`) is returned to the UI: this is what separates an
 
 ---
 
+### 6.1 Document or open answer
+
+The task loop does not always produce an administrative document. Rule 7 of the
+task prompt switches the output shape when the instruction is a question or an
+analysis (`?`, why / how / which / analyse / compare / explain / evaluate /
+propose):
+
+| Instruction | Output |
+|---|---|
+| "Write a report on…", "draft a note…" | **document** with the structure of its genre (memo, report, minutes, letter, APC/PI lesson plan) |
+| "Analyse the risks of…", "what are the obstacles?" | **open answer**: a 2-3 sentence synthesis, 3 to 6 titled and cited sections, one operational conclusion — 400 words maximum, no "objet", no addressees, no salutation |
+
+Both modes obey the same grounding rules: every claim comes from an extract and
+carries its `[n]` citation, and the answer ends with `Sources : [n]`.
+
+Rules 8 to 10 complete the picture: describe a document by its real nature and
+original language, treat a corrected version as a translation, and produce an
+actual translation when the instruction asks one.
+---
+
 ## 7. Translation pipeline
 
 ### 7.1 The six directions

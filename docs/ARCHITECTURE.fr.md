@@ -209,6 +209,27 @@ une tâche **agentique** d'un simple prompt.
 
 ---
 
+### 6.1 Document ou réponse ouverte
+
+La boucle agentique ne produit pas toujours un document administratif. La règle 7
+du prompt de tâche change la forme de sortie lorsque l'instruction est une
+question ou une analyse (`?`, pourquoi / comment / quel / analyse / compare /
+explique / évalue / propose) :
+
+| Instruction | Sortie |
+|---|---|
+| « Rédige un rapport sur… », « fais une note… » | **document** avec la structure de son genre (note, rapport, compte rendu, courrier, leçon APC/PI) |
+| « Analyse les risques de… », « quels sont les obstacles ? » | **réponse ouverte** : une synthèse de 2-3 phrases, 3 à 6 sections titrées et citées, une conclusion opérationnelle — 400 mots maximum, sans « objet », sans destinataires, sans formule de politesse |
+
+Les deux modes obéissent aux mêmes règles d'ancrage : chaque affirmation vient
+d'un extrait et porte sa citation `[n]`, et la réponse se termine par
+`Sources : [n]`.
+
+Les règles 8 à 10 complètent l'ensemble : décrire un document par sa nature
+réelle et sa langue d'origine, présenter une version corrigée comme une
+traduction, et produire une véritable traduction quand l'instruction le demande.
+---
+
 ## 7. Pipeline de traduction
 
 ### 7.1 Les six directions

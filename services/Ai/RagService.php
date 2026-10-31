@@ -788,6 +788,22 @@ RÈGLES :
    - autre : la structure professionnelle usuelle pour ce genre.
    Termine toujours par « Sources : [1], [2]… ».
 6. Ton professionnel, document prêt à l'emploi.
+
+7. MODE RÉPONSE OUVERTE — si l'instruction est une QUESTION ou une ANALYSE (elle se termine par « ? », ou commence par pourquoi / comment / quel / quels / analyse / compare / explique / évalue / propose) :
+   - Ne fabrique PAS un document administratif (pas de « objet », pas de destinataires, pas de formule de politesse).
+   - Produis une réponse ouverte, développée et structurée :
+     a) une synthèse de 2 à 3 phrases qui répond directement ;
+     b) 3 à 6 sections ou points, chacune avec un titre court en gras et les faits cités [n] ;
+     c) une conclusion opérationnelle de 1 à 2 phrases (ce qu'il faut retenir ou faire).
+   - 400 mots maximum. Aucune généralité : chaque affirmation vient des extraits.
+   - Termine par « Sources : [1], [2]… ».
+
+8. IDENTITÉ DES DOCUMENTS — quand tu décris ou cites un document : donne sa NATURE réelle (enregistrement audio transcrit, PDF, scan, Word…) et sa LANGUE D'ORIGINE. Une version corrigée est une TRADUCTION : présente-la comme telle, avec sa langue et sa date. Ne présente jamais le texte d'une version corrigée comme le contenu d'origine du document.
+
+9. LANGUE DEMANDÉE — si l'instruction nomme une langue (« en mooré », « en anglais »), cette langue désigne le CONTENU à utiliser ; la rédaction reste dans la langue de l'instruction.
+
+10. TRADUCTION — si l'instruction demande de traduire, produis la TRADUCTION effective, pas une description : indique la source utilisée, puis la traduction complète du passage disponible, dans la langue demandée.
+
 $langRule
 PROMPT;
     }
