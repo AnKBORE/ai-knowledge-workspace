@@ -109,7 +109,7 @@
     },
     {
         "mo": "kan-tɩɩga",
-        "en": "forearm. lower arm",
+        "en": "forearm",
         "fr": "avant-bras",
         "theme": "corps"
     },
@@ -409,8 +409,8 @@
     },
     {
         "mo": "no-gãongo",
-        "en": "lip (lit. mouth skin)",
-        "fr": "lèvre (lit. peau de bouche)",
+        "en": "lip (lit",
+        "fr": "lèvre (lit",
         "theme": "corps"
     },
     {
@@ -553,8 +553,8 @@
     },
     {
         "mo": "wilga1",
-        "en": "component of, constituent, element of, member, area, district",
-        "fr": "composante, membre, quartier. Karg yaa yĩng wilga. The leg is a member of the body. La jambe est un membre du corps",
+        "en": "component of, constituent, element of, member, area, distric…",
+        "fr": "composante, membre, quartier",
         "theme": "corps"
     },
     {
@@ -746,7 +746,7 @@
     {
         "mo": "zãn-kudga",
         "en": "back",
-        "fr": "dos. A gãee a zãn-kudgã zugu. He is lying on his back. Il est couché sur son dos",
+        "fr": "dos",
         "theme": "corps"
     },
     {
@@ -997,7 +997,7 @@
     },
     {
         "mo": "kaolgo",
-        "en": "dried dawadawa seeds boiled and kneaded into balls for use in cooking, dawadawa seasoning, African maggi",
+        "en": "dried dawadawa seeds boiled and kneaded into balls for use i…",
         "fr": "soumbala, condiment fait des grains de néré",
         "theme": "nourriture"
     },
@@ -1046,7 +1046,7 @@
     {
         "mo": "ko-rɩtem",
         "en": "subsistent farming, subsistence crop",
-        "fr": "culture vivrière. Koob sẽn ya rɩɩb yĩnga. Culture destinée à la consommation",
+        "fr": "culture vivrière",
         "theme": "nourriture"
     },
     {
@@ -1058,7 +1058,7 @@
     {
         "mo": "kudbade",
         "en": "plant sp producing edible tubers",
-        "fr": "plante donnant des tubercules comestibles (espèce) du même nom",
+        "fr": "plante donnant des tubercules comestibles (espèce) du même n…",
         "theme": "plantes"
     },
     {
@@ -1088,7 +1088,7 @@
     {
         "mo": "laoore1",
         "en": "boiled millet",
-        "fr": "mil bouilli. Ka-laoore. Cooked millet. Mil bouilli",
+        "fr": "mil bouilli",
         "theme": "nourriture"
     },
     {
@@ -1214,7 +1214,7 @@
     {
         "mo": "pulli",
         "en": "dish made of a kind of leaves mixed with potash",
-        "fr": "plat fait de feuilles cuites et malaxé avec de la potasse (bèrenga)",
+        "fr": "plat fait de feuilles cuites et malaxé avec de la potasse (b…",
         "theme": "nourriture"
     },
     {
@@ -1243,14 +1243,14 @@
     },
     {
         "mo": "sagbo",
-        "en": "millet porridge, t.z",
+        "en": "millet porridge, t",
         "fr": "tô, gâteau de mil, pâte de mil, bouillie de il ou de maïs",
         "theme": "nourriture"
     },
     {
         "mo": "sag-ma",
         "en": "porridge put on the bottom of the dish",
-        "fr": "tô étalé au fond du plat sur lequel on dispose les petites boulettes appelées «sag-biisi»",
+        "fr": "tô étalé au fond du plat sur lequel on dispose les petites b…",
         "theme": "nourriture"
     },
     {
@@ -1508,7 +1508,7 @@
     {
         "mo": "bãgende",
         "en": "shrub sp",
-        "fr": "arbuste (espèce) dont l'écorce fibreuse est utilisée comme cordelettes",
+        "fr": "arbuste (espèce) dont l'écorce fibreuse est utilisée comme c…",
         "theme": "plantes"
     },
     {
@@ -1525,8 +1525,8 @@
     },
     {
         "mo": "bãnembãodgo",
-        "en": "water plant sp of which the leaves can cover the surface of a lake \/ pond",
-        "fr": "plante (espèce) aquatique dont les feuilles recouvrent la surface de l'eau",
+        "en": "water plant sp of which the leaves can cover the surface of…",
+        "fr": "plante (espèce) aquatique dont les feuilles recouvrent la su…",
         "theme": "plantes"
     },
     {
@@ -1640,7 +1640,7 @@
     {
         "mo": "gomtɩ-laongo",
         "en": "plant sp",
-        "fr": "plante (espèce) dont les feuilles ressemblent à celles du coton",
+        "fr": "plante (espèce) dont les feuilles ressemblent à celles du co…",
         "theme": "plantes"
     },
     {
@@ -1712,13 +1712,13 @@
     {
         "mo": "kãgre",
         "en": "thicket, forest, woods",
-        "fr": "fourré, forêt, touffu, présence de beaucoup d'arbres, d'herbes . tɩɩsã la moodã waooga zĩigã pʋgẽ",
+        "fr": "fourré, forêt, touffu, présence de beaucoup d'arbres, d'herb…",
         "theme": "plantes"
     },
     {
         "mo": "kakemsalle",
         "en": "shrub sp",
-        "fr": "arbuste (espèce) utilisé en décoction pour purger les enfants",
+        "fr": "arbuste (espèce) utilisé en décoction pour purger les enfant…",
         "theme": "plantes"
     },
     {
@@ -1730,7 +1730,7 @@
     {
         "mo": "kalidri",
         "en": "thin grass sp",
-        "fr": "herbe fine \/mince (espèce) utilisée par les oiseaux pour construire leurs nids",
+        "fr": "herbe fine \/mince (espèce) utilisée par les oiseaux pour con…",
         "theme": "plantes"
     },
     {
@@ -1904,7 +1904,7 @@
     {
         "mo": "kukur-gõaaga",
         "en": "thorny plant sp",
-        "fr": "plante épineuse (espèce) qui pousse autour des champs autour des cases",
+        "fr": "plante épineuse (espèce) qui pousse autour des champs autour…",
         "theme": "plantes"
     },
     {
@@ -2161,8 +2161,8 @@
     },
     {
         "mo": "rudumdi",
-        "en": "grass sp growing in the shallows \/ valleys used for basket work",
-        "fr": "herbe (espèce) qui pousse dans les bas-fonds et sert pour la vannerie",
+        "en": "grass sp growing in the shallows \/ valleys used for basket w…",
+        "fr": "herbe (espèce) qui pousse dans les bas-fonds et sert pour la…",
         "theme": "plantes"
     },
     {
@@ -2191,8 +2191,8 @@
     },
     {
         "mo": "sɩgdre1",
-        "en": "shrub sp of which people use the branches to brush their teeth",
-        "fr": "arbuste (espèce) dont on utilise les branchettes pour se frotter les dents",
+        "en": "shrub sp of which people use the branches to brush their tee…",
+        "fr": "arbuste (espèce) dont on utilise les branchettes pour se fro…",
         "theme": "plantes"
     },
     {
@@ -2246,7 +2246,7 @@
     {
         "mo": "sʋgdendaaga",
         "en": "kind of thorny plant of which the shepherds make flutes",
-        "fr": "plante épineuse (espèce) dont se servent les bergers pour faire des flûtes",
+        "fr": "plante épineuse (espèce) dont se servent les bergers pour fa…",
         "theme": "plantes"
     },
     {
@@ -2407,8 +2407,8 @@
     },
     {
         "mo": "zibri1",
-        "en": "kind of liana (the wood is used in roof construction for huts)",
-        "fr": "espèce de liane (bois utilisé dans la construction des toits de case)",
+        "en": "kind of liana (the wood is used in roof construction for hut…",
+        "fr": "espèce de liane (bois utilisé dans la construction des toits…",
         "theme": "plantes"
     },
     {
@@ -2533,8 +2533,8 @@
     },
     {
         "mo": "bõn-vɩɩl-yalenga",
-        "en": "insect (lit. useless flying thing)",
-        "fr": "insecte (lit. chose vivante inutile, embêtante)",
+        "en": "insect (lit",
+        "fr": "insecte (lit",
         "theme": "animaux"
     },
     {
@@ -2660,7 +2660,7 @@
     {
         "mo": "kãanzoeere",
         "en": "bird sp, Yellow-crowned Gonolek",
-        "fr": "oiseau (espèce), pelage noir avec poitrine rouge, Gonolek de Barbarie",
+        "fr": "oiseau (espèce), pelage noir avec poitrine rouge, Gonolek de…",
         "theme": "animaux"
     },
     {
@@ -2701,8 +2701,8 @@
     },
     {
         "mo": "karenga",
-        "en": "louse (pl. lice)",
-        "fr": "pou (pl. poux)",
+        "en": "louse (pl",
+        "fr": "pou (pl",
         "theme": "animaux"
     },
     {
@@ -3554,7 +3554,7 @@
     {
         "mo": "tɩ-lilsa",
         "en": "locust sp hiding behind of a tree",
-        "fr": "espèce de criquet qui tourne derrière un arbre pour se cacher",
+        "fr": "espèce de criquet qui tourne derrière un arbre pour se cache…",
         "theme": "animaux"
     },
     {
@@ -3847,8 +3847,8 @@
     },
     {
         "mo": "zãabazã",
-        "en": "solifuge, running-spider, kind of big spider moving very quickly an having long legs",
-        "fr": "espèce de grosse araignée haute sur pattes que se déplace très rapidement",
+        "en": "solifuge, running-spider, kind of big spider moving very qui…",
+        "fr": "espèce de grosse araignée haute sur pattes que se déplace tr…",
         "theme": "animaux"
     },
     {
@@ -3890,7 +3890,7 @@
     {
         "mo": "zãnkita",
         "en": "kind of small bat living in holes of habitations",
-        "fr": "espèce de chauve-souris de petite taille vivant dans les trous des habitations",
+        "fr": "espèce de chauve-souris de petite taille vivant dans les tro…",
         "theme": "animaux"
     },
     {
@@ -3985,13 +3985,13 @@
     },
     {
         "mo": "ad",
-        "en": "here is, here are. Ad kamba.Ad kamba.Ad kamba.Ad kamba. Voici des enfants. Here are children",
+        "en": "here is, here are",
         "fr": "voici, voilà",
         "theme": "general"
     },
     {
         "mo": "ada",
-        "en": "asterisk. ****",
+        "en": "asterisk",
         "fr": "astérisque",
         "theme": "general"
     },
@@ -4009,7 +4009,7 @@
     },
     {
         "mo": "alfa",
-        "en": "friend in the faith, brother in Muslim faith. 2  tout blanc; all white",
+        "en": "friend in the faith, brother in Muslim faith",
         "fr": "1  ami croyant, frère dans la foi musulmane",
         "theme": "general"
     },
@@ -4033,7 +4033,7 @@
     },
     {
         "mo": "arzãna",
-        "en": "Paradise. 6lm à1]yye6\/ ba ne 16\/02\/2020 3",
+        "en": "Paradise",
         "fr": "Paradis",
         "theme": "general"
     },
@@ -4045,7 +4045,7 @@
     },
     {
         "mo": "ay",
-        "en": "expressing disgust. 2  expression de scepticisme; expressing scepticism",
+        "en": "expressing disgust",
         "fr": "1  expression de dégoût",
         "theme": "general"
     },
@@ -4105,13 +4105,13 @@
     },
     {
         "mo": "badge",
-        "en": "separate. 2  bifurquer; bifurcate, move \/ spread apart, branch off",
+        "en": "separate",
         "fr": "1  séparer",
         "theme": "general"
     },
     {
         "mo": "bage",
-        "en": "shake the head. 2  trembler; tremble, shake",
+        "en": "shake the head",
         "fr": "1  secouer la tête",
         "theme": "general"
     },
@@ -4219,7 +4219,7 @@
     },
     {
         "mo": "baorgo",
-        "en": "corne de buf ou de buffle; horn (for music)",
+        "en": "corne de buf ou de buffle",
         "fr": "cor (instrument de musique)",
         "theme": "general"
     },
@@ -4237,13 +4237,13 @@
     },
     {
         "mo": "bedre",
-        "en": "big, adult. antonyme: bilfubilfubilfubilfu2, bilabilabilabila1. 2  gros; thick, fat",
+        "en": "big, adult",
         "fr": "1  grand, adulte",
         "theme": "general"
     },
     {
         "mo": "beele",
-        "en": "greet, welcome somebody. 2  saluer; greet",
+        "en": "greet, welcome somebody",
         "fr": "1  saluer, souhaiter la bienvenue",
         "theme": "general"
     },
@@ -4261,7 +4261,7 @@
     },
     {
         "mo": "beese",
-        "en": "cut in quarters\/parts, to quarter, cut up, butcher. 2  détacher par morceaux; detach, break away",
+        "en": "cut in quarters\/parts, to quarter, cut up, butcher",
         "fr": "1  découper en quartiers, dépecer",
         "theme": "general"
     },
@@ -4279,8 +4279,8 @@
     },
     {
         "mo": "besge",
-        "en": "fall down, fall flat (e.g. part of wall)",
-        "fr": "tomber (ex. partie d'un mur)",
+        "en": "fall down, fall flat (e",
+        "fr": "tomber (ex",
         "theme": "general"
     },
     {
@@ -4291,7 +4291,7 @@
     },
     {
         "mo": "bida",
-        "en": "black (idea of). Lik bida pLik bida pLik bida pLik bida pʋʋʋʋggggẽ.... Dans les ténèbres. In the dark",
+        "en": "black (idea of)",
         "fr": "noir (idée de)",
         "theme": "general"
     },
@@ -4309,7 +4309,7 @@
     },
     {
         "mo": "bidu",
-        "en": "can, a 5-gal.\/25 litre can",
+        "en": "can, a 5-gal",
         "fr": "bidon",
         "theme": "general"
     },
@@ -4333,7 +4333,7 @@
     },
     {
         "mo": "bilgdga",
-        "en": "ideophone. ssssɩɩɩɩddd ...ddd ...ddd ...ddd ... sans bruit. noiseless",
+        "en": "ideophone",
         "fr": "idéophone",
         "theme": "general"
     },
@@ -4346,7 +4346,7 @@
     {
         "mo": "birga",
         "en": "manure, fertilizer, organic manure",
-        "fr": "fumier, engrais qui contient de la matière organique , fumure organique",
+        "fr": "fumier, engrais qui contient de la matière organique , fumur…",
         "theme": "general"
     },
     {
@@ -4387,8 +4387,8 @@
     },
     {
         "mo": "bobe",
-        "en": "dress up in sth., carry hanging on the shoulder, put on the body, to wear (e.g. objects)",
-        "fr": "porter à l'épaule, se mettre autour du corps (ex. objets), porter en bandoulière",
+        "en": "dress up in sth",
+        "fr": "porter à l'épaule, se mettre autour du corps (ex",
         "theme": "general"
     },
     {
@@ -4423,7 +4423,7 @@
     },
     {
         "mo": "bõgemde",
-        "en": "smash, break in thousand pieces. 2  cuire à point; cook just right",
+        "en": "smash, break in thousand pieces",
         "fr": "1  briser, casser en mille morceaux",
         "theme": "general"
     },
@@ -4465,13 +4465,13 @@
     },
     {
         "mo": "boosre",
-        "en": "African Puff Adder. bitis arietans",
+        "en": "African Puff Adder",
         "fr": "vipère bitis",
         "theme": "general"
     },
     {
         "mo": "bõre",
-        "en": "sink in. SaSaSaSa",
+        "en": "sink in",
         "fr": "s'enfoncer",
         "theme": "general"
     },
@@ -4495,13 +4495,13 @@
     },
     {
         "mo": "bõtme",
-        "en": "interlace, interweave, mix up, add water to. boto bugum yiri 16\/02\/2020 23",
+        "en": "interlace, interweave, mix up, add water to",
         "fr": "entrelacer, mélanger, délayer",
         "theme": "general"
     },
     {
         "mo": "bubgi",
-        "en": "hit someone with a whip, to whip sb.\/sth",
+        "en": "hit someone with a whip, to whip sb",
         "fr": "donner un coup de fouet",
         "theme": "general"
     },
@@ -4513,7 +4513,7 @@
     },
     {
         "mo": "buka",
-        "en": "tracing, lead. 2  table de matière, sommaire; table of content, summary. 3  valeur; value",
+        "en": "tracing, lead",
         "fr": "1  tracé, fil conducteur",
         "theme": "general"
     },
@@ -4525,13 +4525,13 @@
     },
     {
         "mo": "burgi",
-        "en": "cave in because of weight. 2  pourrir; decay, rot",
+        "en": "cave in because of weight",
         "fr": "1  céder sous le poids",
         "theme": "general"
     },
     {
         "mo": "busgi",
-        "en": "break (of wall). busi AZe[1à1e22a2\/ 16\/02\/2020 26",
+        "en": "break (of wall)",
         "fr": "casser en parlant d'un pan \/mur",
         "theme": "general"
     },
@@ -4549,7 +4549,7 @@
     },
     {
         "mo": "buudu",
-        "en": "family, blood relationship, family ties, relations, ethnic group, kinship",
+        "en": "family, blood relationship, family ties, relations, ethnic g…",
         "fr": "1  famille (souche), parenté, ethnie",
         "theme": "general"
     },
@@ -4585,8 +4585,8 @@
     },
     {
         "mo": "fã",
-        "en": "plunder, loot, rob, take away by force, grab, confiscate. 2  retirer des choses de force; take away by force",
-        "fr": "1  piller, arracher, prendre prestement et de force, confisquer",
+        "en": "plunder, loot, rob, take away by force, grab, confiscate",
+        "fr": "1  piller, arracher, prendre prestement et de force, confis…",
         "theme": "general"
     },
     {
@@ -4615,7 +4615,7 @@
     },
     {
         "mo": "fãagre",
-        "en": "salvation. 2  fait de retirer par force; taking by force",
+        "en": "salvation",
         "fr": "1  salut",
         "theme": "general"
     },
@@ -4639,7 +4639,7 @@
     },
     {
         "mo": "fabge",
-        "en": "throw to the ground. 2  avorter (animal); abort (animal)",
+        "en": "throw to the ground",
         "fr": "1  jeter au sol avec force",
         "theme": "general"
     },
@@ -4651,7 +4651,7 @@
     },
     {
         "mo": "fãerge",
-        "en": "undo, scatter in throwing. faga farongo 16\/02\/2020 33",
+        "en": "undo, scatter in throwing",
         "fr": "défaire, éparpiller en jetant",
         "theme": "general"
     },
@@ -4705,13 +4705,13 @@
     },
     {
         "mo": "fãooge",
-        "en": "put on in throwing at, throw against, splatter, splash. 2  mélanger, mettre ensemble; mix, put together",
+        "en": "put on in throwing at, throw against, splatter, splash",
         "fr": "1  appliquer en jetant contre",
         "theme": "general"
     },
     {
         "mo": "faoole",
-        "en": "treat roughly, deal with somebody without showing respect. 2  faire un travail de vaurien; do a very bad \/ unworthy job",
+        "en": "treat roughly, deal with somebody without showing respect",
         "fr": "1  malmener, traiter comme un rien",
         "theme": "general"
     },
@@ -4747,13 +4747,13 @@
     },
     {
         "mo": "feooge",
-        "en": "root out, pull up, tear out, to pull sth. out of the ground (single instance)",
+        "en": "root out, pull up, tear out, to pull sth",
         "fr": "extirper, arracher, déterrer",
         "theme": "general"
     },
     {
         "mo": "feoogo",
-        "en": "empty (because pulled off). 2  zéro (unité, dizaine ...); nil (units), nought. fẽoolle firgi 16\/02\/2020 35",
+        "en": "empty (because pulled off)",
         "fr": "1  vide, creux (car arraché)",
         "theme": "general"
     },
@@ -4783,7 +4783,7 @@
     },
     {
         "mo": "fiuugi",
-        "en": "take away a bit by breaking it at an end. to amputate, cut \/ break off (living part). 2  couper, amputer; cut, amputate",
+        "en": "take away a bit by breaking it at an end",
         "fr": "1  couper, un morceau en cassant le bout, amputer",
         "theme": "general"
     },
@@ -4807,7 +4807,7 @@
     },
     {
         "mo": "fõke",
-        "en": "take off the lid, uncover the lid. antonyme: fõgnefõgnefõgnefõgne",
+        "en": "take off the lid, uncover the lid",
         "fr": "enlever le couvercle, découvrir",
         "theme": "general"
     },
@@ -4819,13 +4819,13 @@
     },
     {
         "mo": "foo",
-        "en": "you (sg.) A gomda ne foo.A gomda ne foo.A gomda ne foo.A gomda ne foo. Elle s'adresse à toi. She talks to you",
+        "en": "you (sg",
         "fr": "toi",
         "theme": "general"
     },
     {
         "mo": "fõoge",
-        "en": "pump, suck up, draw a fluid, inhale, breathe. 2  s'infiltrer; infiltrate, seep into",
+        "en": "pump, suck up, draw a fluid, inhale, breathe",
         "fr": "1  pomper, aspirer, inhaler",
         "theme": "general"
     },
@@ -4843,7 +4843,7 @@
     },
     {
         "mo": "foolle",
-        "en": "space between two lines. 2  colonne; column",
+        "en": "space between two lines",
         "fr": "1  espace entre deux lignes",
         "theme": "general"
     },
@@ -4885,7 +4885,7 @@
     },
     {
         "mo": "gãande",
-        "en": "to lie down, lay down, go to bed, pass the night. 2  passer la nuit, loger; stay over night, to live",
+        "en": "to lie down, lay down, go to bed, pass the night",
         "fr": "1  coucher se, passer la nuit",
         "theme": "general"
     },
@@ -4915,7 +4915,7 @@
     },
     {
         "mo": "gãde",
-        "en": "catch, hold, grip, grasp, take hold of. 2  tenir dans la main; hold in the hand",
+        "en": "catch, hold, grip, grasp, take hold of",
         "fr": "1  saisir, tenir, attraper",
         "theme": "general"
     },
@@ -4957,7 +4957,7 @@
     },
     {
         "mo": "gãndaoogo",
-        "en": "person who is brave, fearless, energetic, a hero, champion. 2  champion, héro; champion, a hero",
+        "en": "person who is brave, fearless, energetic, a hero, champion",
         "fr": "1  personne brave, intrépide, énergique",
         "theme": "general"
     },
@@ -4976,12 +4976,12 @@
     {
         "mo": "gaolgo",
         "en": "drinking trough in lengthy shape",
-        "fr": "abreuvoir de forme allongée (ex. pour bufs)",
+        "fr": "abreuvoir de forme allongée (ex",
         "theme": "general"
     },
     {
         "mo": "gaooge",
-        "en": "turn over the soil in pulling it towards oneself. 2  puiser abondamment; draw abundantly",
+        "en": "turn over the soil in pulling it towards oneself",
         "fr": "1  retourner (terre) en tirant vers soi",
         "theme": "general"
     },
@@ -4993,7 +4993,7 @@
     },
     {
         "mo": "garaam",
-        "en": "gram, gramme. garbe e22a1A-a6\/ 16\/02\/2020 43",
+        "en": "gram, gramme",
         "fr": "gramme",
         "theme": "general"
     },
@@ -5029,7 +5029,7 @@
     },
     {
         "mo": "geonfo",
-        "en": "braid, woven strip, cockscomb. 2  accent; accent",
+        "en": "braid, woven strip, cockscomb",
         "fr": "1  tresse, bande nattée, crête",
         "theme": "general"
     },
@@ -5065,13 +5065,13 @@
     },
     {
         "mo": "goabga",
-        "en": "left (to the), left hand. 2  main gauche; left hand",
+        "en": "left (to the), left hand",
         "fr": "1  à gauche, main gauche",
         "theme": "general"
     },
     {
         "mo": "goama",
-        "en": "words, language. 2  dispute, discussion chaude; quarrel, argument. 3  reproches, réprimandes; rebuke, scolding",
+        "en": "words, language",
         "fr": "1  paroles, langue",
         "theme": "general"
     },
@@ -5101,13 +5101,13 @@
     },
     {
         "mo": "golme",
-        "en": "to twist, wrench, wring, contort, become twisted, curved, bent",
+        "en": "to twist, wrench, wring, contort, become twisted, curved, be…",
         "fr": "tordre",
         "theme": "general"
     },
     {
         "mo": "gomde",
-        "en": "speaking, word, palaver, rebuke, reprimand. 2  phrase; sentence",
+        "en": "speaking, word, palaver, rebuke, reprimand",
         "fr": "1  parole, propos",
         "theme": "general"
     },
@@ -5131,7 +5131,7 @@
     },
     {
         "mo": "gõoge",
-        "en": "keep back, hold back, hinder prevent from continuing, impede, to restrain",
+        "en": "keep back, hold back, hinder prevent from continuing, impede…",
         "fr": "retenir, empêcher de continuer",
         "theme": "general"
     },
@@ -5155,7 +5155,7 @@
     },
     {
         "mo": "kãamde",
-        "en": "clearing the throat. 2  étouffer, rester en travers de la gorge; strangle, suffocate, remain across the throat",
+        "en": "clearing the throat",
         "fr": "1  racler la gorge",
         "theme": "general"
     },
@@ -5185,7 +5185,7 @@
     },
     {
         "mo": "kagdge",
-        "en": "put in a crossed manner, to lay, put things crosswise, arrange (things) crosswise",
+        "en": "put in a crossed manner, to lay, put things crosswise, arran…",
         "fr": "mettre \/ poser de manière croisée",
         "theme": "general"
     },
@@ -5222,7 +5222,7 @@
     {
         "mo": "kalwaare",
         "en": "big locust that moves in groups and destroys plants",
-        "fr": "grosse criquets qui se déplace en bande et ravage les plantes",
+        "fr": "grosse criquets qui se déplace en bande et ravage les plante…",
         "theme": "general"
     },
     {
@@ -5251,7 +5251,7 @@
     },
     {
         "mo": "kãndibga",
-        "en": "pole of a spear. kando b6à1[6Aae6\/ 16\/02\/2020 62",
+        "en": "pole of a spear",
         "fr": "hampe d'une lance",
         "theme": "general"
     },
@@ -5269,8 +5269,8 @@
     },
     {
         "mo": "kãnege",
-        "en": "to slander sb. (single instance), vilify, malign",
-        "fr": "calomnier, mettre en conflit en rapportant des propos mensongers, diffamer",
+        "en": "to slander sb",
+        "fr": "calomnier, mettre en conflit en rapportant des propos menson…",
         "theme": "general"
     },
     {
@@ -5329,7 +5329,7 @@
     },
     {
         "mo": "karme",
-        "en": "read, study, to be a student. 2  aller à l'école; go too school. 3  enseigner; teach",
+        "en": "read, study, to be a student",
         "fr": "1  lire, étudier, être un étudiant",
         "theme": "general"
     },
@@ -5383,14 +5383,14 @@
     },
     {
         "mo": "kedbe",
-        "en": "to shift, move sth., dislodge, relocate",
+        "en": "to shift, move sth",
         "fr": "bouger, déplacer",
         "theme": "general"
     },
     {
         "mo": "keedo",
         "en": "shrubs cut as one clears the farmland, rubbish to be burned",
-        "fr": "arbustes coupés en débroussaillant le champ, ordures que l'on brûle",
+        "fr": "arbustes coupés en débroussaillant le champ, ordures que l'o…",
         "theme": "general"
     },
     {
@@ -5402,7 +5402,7 @@
     {
         "mo": "keelme",
         "en": "put face to face or next to each other (pots)",
-        "fr": "mettre l'un en face de l'autre ou l'un collé à l'autre (canaris, marmites)",
+        "fr": "mettre l'un en face de l'autre ou l'un collé à l'autre (cana…",
         "theme": "general"
     },
     {
@@ -5419,7 +5419,7 @@
     },
     {
         "mo": "keeme",
-        "en": "be in good health. A keemame.A keemame.A keemame.A keemame. Il est en bonne santé. He is in good health",
+        "en": "be in good health",
         "fr": "être en bonne santé",
         "theme": "general"
     },
@@ -5455,7 +5455,7 @@
     },
     {
         "mo": "kibsa",
-        "en": "celebration, party, festival. kidbi kinkirg siilfu 16\/02\/2020 74",
+        "en": "celebration, party, festival",
         "fr": "fête",
         "theme": "general"
     },
@@ -5497,7 +5497,7 @@
     },
     {
         "mo": "kisgu",
-        "en": "forbidden thing, a taboo, prohibition. 2  haine; hatred. 3  totem; totem. kisi kɩdme 16\/02\/2020 76",
+        "en": "forbidden thing, a taboo, prohibition",
         "fr": "1  interdit, un tabou",
         "theme": "general"
     },
@@ -5527,7 +5527,7 @@
     },
     {
         "mo": "koamsa",
-        "en": "pauper, handicapped person, disabled person, lame person, cripple",
+        "en": "pauper, handicapped person, disabled person, lame person, cr…",
         "fr": "indigent, handicapé, paralytique, infirme",
         "theme": "general"
     },
@@ -5539,7 +5539,7 @@
     },
     {
         "mo": "kõdge",
-        "en": "scrape off what is on the bottom of a recipient, to scrape out, scoop out (contents)",
+        "en": "scrape off what is on the bottom of a recipient, to scrape o…",
         "fr": "racler ce qui est au fond d'un récipient",
         "theme": "general"
     },
@@ -5563,7 +5563,7 @@
     },
     {
         "mo": "koetre",
-        "en": "well formed, sturdy, tough, solid. 2  rugueux; rough. 3  émousser; take the edge off, blunt, dull",
+        "en": "well formed, sturdy, tough, solid",
         "fr": "1  bien formé, robuste, solide",
         "theme": "general"
     },
@@ -5611,8 +5611,8 @@
     },
     {
         "mo": "koolle",
-        "en": "grass sp. panicum laxum",
-        "fr": "herbe (espèce) dont les grains sont utilisés en temps de famine",
+        "en": "grass sp",
+        "fr": "herbe (espèce) dont les grains sont utilisés en temps de fam…",
         "theme": "general"
     },
     {
@@ -5683,7 +5683,7 @@
     },
     {
         "mo": "kuiisi",
-        "en": "go home. B kuiisame.B kuiisame.B kuiisame.B kuiisame. Ils sont rentrés chez soi. They went home",
+        "en": "go home",
         "fr": "rentrer chez soi",
         "theme": "general"
     },
@@ -5779,7 +5779,7 @@
     },
     {
         "mo": "labge",
-        "en": "flatten sth., squash",
+        "en": "flatten sth",
         "fr": "aplatir, écraser (en jetant sur)",
         "theme": "general"
     },
@@ -5791,7 +5791,7 @@
     },
     {
         "mo": "lagfo",
-        "en": "cowrie, money-coin. 2  argent; money. lagle lamdo 16\/02\/2020 101",
+        "en": "cowrie, money-coin",
         "fr": "1  cauris, pièce d'argent, unité de monnaie",
         "theme": "general"
     },
@@ -5827,13 +5827,13 @@
     },
     {
         "mo": "lare",
-        "en": "axe, an adze. 2  potence, puissance; potency, strength, might",
+        "en": "axe, an adze",
         "fr": "1  hache",
         "theme": "general"
     },
     {
         "mo": "large",
-        "en": "slip away, step aside, draw aside. 2  mettre au sol; put to the ground",
+        "en": "slip away, step aside, draw aside",
         "fr": "1  s'éclipser, s'écarter",
         "theme": "general"
     },
@@ -5869,7 +5869,7 @@
     },
     {
         "mo": "leoore",
-        "en": "answer. 2  solution; solution",
+        "en": "answer",
         "fr": "1  réponse",
         "theme": "general"
     },
@@ -5905,7 +5905,7 @@
     },
     {
         "mo": "liibi",
-        "en": "distract, divert to cheat \/ deceive, to make a feint, to con, dummy, fake",
+        "en": "distract, divert to cheat \/ deceive, to make a feint, to con…",
         "fr": "distraire pour tromper, feinter",
         "theme": "general"
     },
@@ -5917,7 +5917,7 @@
     },
     {
         "mo": "liki",
-        "en": "emerge, come into sight, appear, become visible, show self. 2  devenir claire, dégagé; become clear",
+        "en": "emerge, come into sight, appear, become visible, show self",
         "fr": "1  apparaître, se montrer, devenir claire",
         "theme": "general"
     },
@@ -6014,7 +6014,7 @@
     {
         "mo": "lugri",
         "en": "a peg beside the doorway to retain a straw door",
-        "fr": "piquet fixé à l'angle de la porte pour retenir la natte servant de portail",
+        "fr": "piquet fixé à l'angle de la porte pour retenir la natte serv…",
         "theme": "general"
     },
     {
@@ -6025,7 +6025,7 @@
     },
     {
         "mo": "maam",
-        "en": "I, me. Yaa maam.Yaa maam.Yaa maam.Yaa maam. C'est moi. It's me. 2  mon, ma, mes; my. maamdo maasre 16\/02\/2020 114",
+        "en": "I, me",
         "fr": "1  moi, je, me",
         "theme": "general"
     },
@@ -6055,7 +6055,7 @@
     },
     {
         "mo": "magse",
-        "en": "measure several times, to measure up, take multiple measurements",
+        "en": "measure several times, to measure up, take multiple measurem…",
         "fr": "mesurer à plusieurs endroits",
         "theme": "general"
     },
@@ -6091,7 +6091,7 @@
     },
     {
         "mo": "maoongo",
-        "en": "sacrifice, offering, the ritual of scarifying or the things scarified",
+        "en": "sacrifice, offering, the ritual of scarifying or the things…",
         "fr": "sacrifice, offrande",
         "theme": "general"
     },
@@ -6139,7 +6139,7 @@
     },
     {
         "mo": "menese",
-        "en": "go astray, lose sth., get lost",
+        "en": "go astray, lose sth",
         "fr": "égarer, perdre",
         "theme": "general"
     },
@@ -6163,8 +6163,8 @@
     },
     {
         "mo": "miidu",
-        "en": "red (pl.)",
-        "fr": "rouges (pl.)",
+        "en": "red (pl",
+        "fr": "rouges (pl",
         "theme": "general"
     },
     {
@@ -6181,13 +6181,13 @@
     },
     {
         "mo": "miisi",
-        "en": "be sour, bitter. Ad rãamã miisa.Ad rãamã miisa.Ad rãamã miisa.Ad rãamã miisa. Cette bière est aigre. This beer is sour",
+        "en": "be sour, bitter",
         "fr": "être aigre",
         "theme": "general"
     },
     {
         "mo": "miisim",
-        "en": "sourness, bitterness, tartness. 2  décoction aigre servant à la préparation du tô; fluid used for making porridge",
+        "en": "sourness, bitterness, tartness",
         "fr": "1  aigreur, goût acide",
         "theme": "general"
     },
@@ -6271,7 +6271,7 @@
     },
     {
         "mo": "moenege",
-        "en": "give a day's ration of food to be cooked, to dole out (the day's ration for the family)",
+        "en": "give a day's ration of food to be cooked, to dole out (the d…",
         "fr": "donner la ration alimentaire de la journée à préparer",
         "theme": "general"
     },
@@ -6295,7 +6295,7 @@
     },
     {
         "mo": "Moogo",
-        "en": "Mossi country, Mossi-land, territory of the Mossi. 2  monde, univers; world, universe",
+        "en": "Mossi country, Mossi-land, territory of the Mossi",
         "fr": "1  pays des Mossi",
         "theme": "general"
     },
@@ -6331,7 +6331,7 @@
     },
     {
         "mo": "naam",
-        "en": "chiefdom-ship, kingship, power of a chief, kingdom, chief-ship, chieftaincy, chiefly power \/ authority \/ status",
+        "en": "chiefdom-ship, kingship, power of a chief, kingdom, chief-sh…",
         "fr": "chefferie, règne, pouvoir du chef",
         "theme": "general"
     },
@@ -6397,7 +6397,7 @@
     },
     {
         "mo": "neoodre",
-        "en": "shoe. neoongo nin tɩpg zĩiga 16\/02\/2020 136",
+        "en": "shoe",
         "fr": "chaussure",
         "theme": "general"
     },
@@ -6415,7 +6415,7 @@
     },
     {
         "mo": "nina",
-        "en": "somebody, a certain person. Nina waa ka.Nina waa ka.Nina waa ka.Nina waa ka. Quelqu'un est venu ici. Somebody came here",
+        "en": "somebody, a certain person",
         "fr": "quelqu'un, une certaine personne",
         "theme": "general"
     },
@@ -6427,7 +6427,7 @@
     },
     {
         "mo": "nobge",
-        "en": "fatten, thicken, flourish, gain weight (single instance), grow",
+        "en": "fatten, thicken, flourish, gain weight (single instance), gr…",
         "fr": "grossir",
         "theme": "general"
     },
@@ -6458,12 +6458,12 @@
     {
         "mo": "nore",
         "en": "bod down, burden, make heavy",
-        "fr": "alourdir, rendre quelqu'un mou et incapable de faire un effort",
+        "fr": "alourdir, rendre quelqu'un mou et incapable de faire un effo…",
         "theme": "general"
     },
     {
         "mo": "norge",
-        "en": "be smashed in. Laagã norgame.Laagã norgame.Laagã norgame.Laagã norgame. Le plat est défoncé. the plate is smashed in",
+        "en": "be smashed in",
         "fr": "être défoncé",
         "theme": "general"
     },
@@ -6565,7 +6565,7 @@
     },
     {
         "mo": "pese",
-        "en": "to peel, pare (many instances), cut on the surface, plane down, trim down",
+        "en": "to peel, pare (many instances), cut on the surface, plane do…",
         "fr": "couper superficiellement, raboter, tailler",
         "theme": "general"
     },
@@ -6608,7 +6608,7 @@
     {
         "mo": "piila",
         "en": "small square basket made of straw",
-        "fr": "panier, petite corbeille quadrangulaire tressée avec de la paille",
+        "fr": "panier, petite corbeille quadrangulaire tressée avec de la p…",
         "theme": "general"
     },
     {
@@ -6673,13 +6673,13 @@
     },
     {
         "mo": "poko",
-        "en": "female. 2  femelle; female",
+        "en": "female",
         "fr": "1  féminin",
         "theme": "general"
     },
     {
         "mo": "põmpo",
-        "en": "air pump. 2  puits muni d'une pompe, fontaine en général; well with a water pump, water source in general",
+        "en": "air pump",
         "fr": "1  pompe à air",
         "theme": "general"
     },
@@ -6691,7 +6691,7 @@
     },
     {
         "mo": "poode",
-        "en": "lacking (be). 2  manquer de respect; lacking respect",
+        "en": "lacking (be)",
         "fr": "1  manquer (être insuffisant)",
         "theme": "general"
     },
@@ -6727,13 +6727,13 @@
     },
     {
         "mo": "rababse",
-        "en": "hereafter, after-world, on the far side, beyond, the next world, place of no returning",
+        "en": "hereafter, after-world, on the far side, beyond, the next wo…",
         "fr": "au-delà, lieu de non retour",
         "theme": "general"
     },
     {
         "mo": "rabde",
-        "en": "to go (present), going, walking. A dabda yA dabda yA dabda yA dabda yɛɛɛɛ???? Où va-t-il? Where is he going?",
+        "en": "to go (present), going, walking",
         "fr": "aller, marcher (forme progressive)",
         "theme": "general"
     },
@@ -6745,13 +6745,13 @@
     },
     {
         "mo": "raboogo",
-        "en": "abandoned house because the family head has died, house of which the head of the family has died",
-        "fr": "case abandonnée suite au décès du chef de famille, demeure dont le chef de famille est mort",
+        "en": "abandoned house because the family head has died, house of w…",
+        "fr": "case abandonnée suite au décès du chef de famille, demeure d…",
         "theme": "general"
     },
     {
         "mo": "rage",
-        "en": "dry up, become dry. TTTTẽngã ragame.ngã ragame.ngã ragame.ngã ragame. La terre s'est desséchée. The earth has dried out",
+        "en": "dry up, become dry",
         "fr": "se dessécher",
         "theme": "general"
     },
@@ -6793,7 +6793,7 @@
     },
     {
         "mo": "randagre",
-        "en": "desert, place where nothing grows, open ground, clearing, glade, barren land",
+        "en": "desert, place where nothing grows, open ground, clearing, gl…",
         "fr": "désert, lieu où rien ne pousse, clairière",
         "theme": "general"
     },
@@ -6835,13 +6835,13 @@
     },
     {
         "mo": "rignoore",
-        "en": "doorway, door, room opening. Pag rignoorã.Pag rignoorã.Pag rignoorã.Pag rignoorã. Ferme la porte. Close the door",
+        "en": "doorway, door, room opening",
         "fr": "porte, ouverture",
         "theme": "general"
     },
     {
         "mo": "ripoore",
-        "en": "space behind the house, area behind the house, backyard, home-farm, toilet area",
+        "en": "space behind the house, area behind the house, backyard, hom…",
         "fr": "espace derrière la maison",
         "theme": "general"
     },
@@ -6877,7 +6877,7 @@
     },
     {
         "mo": "rondo",
-        "en": "compensation, something given in exchange for medicine received",
+        "en": "compensation, something given in exchange for medicine recei…",
         "fr": "rétribution, compensation en échange d'un médicament reçu",
         "theme": "general"
     },
@@ -6901,7 +6901,7 @@
     },
     {
         "mo": "sãabga",
-        "en": "a calabash ladle, piece of calabash cut into the shape of a spoon used to take out porridge",
+        "en": "a calabash ladle, piece of calabash cut into the shape of a…",
         "fr": "calebasse taillée en forme de cuillère pour enlever le tô",
         "theme": "general"
     },
@@ -7009,8 +7009,8 @@
     },
     {
         "mo": "sardo",
-        "en": "contract, deal, covenant, pact, common decision, commitment, pledge, subscription",
-        "fr": "contrat, convention, décision collégiale, engagement, abonnement",
+        "en": "contract, deal, covenant, pact, common decision, commitment…",
+        "fr": "contrat, convention, décision collégiale, engagement, abonne…",
         "theme": "general"
     },
     {
@@ -7075,19 +7075,19 @@
     },
     {
         "mo": "soabenga",
-        "en": "possessive pronoun. Mam biiga.Mam biiga.Mam biiga.Mam biiga. Mon enfant. My child",
+        "en": "possessive pronoun",
         "fr": "adjectif possessif",
         "theme": "general"
     },
     {
         "mo": "sõadga",
-        "en": "calculation, counting, account. 2  recensement; census, inventory",
+        "en": "calculation, counting, account",
         "fr": "1  décompte, calcul, compte",
         "theme": "general"
     },
     {
         "mo": "soalma",
-        "en": "good, well. TTTTʋʋʋʋʋʋʋʋmdã yaa sõama.mdã yaa sõama.mdã yaa sõama.mdã yaa sõama. Le travail est bien. The work is good",
+        "en": "good, well",
         "fr": "bien, correcte",
         "theme": "general"
     },
@@ -7123,19 +7123,19 @@
     },
     {
         "mo": "sõmblem",
-        "en": "goodness, kindness, holiness, perfection. 2  qualité; quality",
+        "en": "goodness, kindness, holiness, perfection",
         "fr": "1  bonté, sainteté, perfection",
         "theme": "general"
     },
     {
         "mo": "sõngda",
-        "en": "helper, aid, person that helps, assistant. sõnge soomse 16\/02\/2020 216",
+        "en": "helper, aid, person that helps, assistant",
         "fr": "aide, assistant, bénévole",
         "theme": "general"
     },
     {
         "mo": "soogo",
-        "en": "estate, land property, land ownership. 2  ministère; ministry",
+        "en": "estate, land property, land ownership",
         "fr": "1  domaine, propriété territoriale",
         "theme": "general"
     },
@@ -7147,7 +7147,7 @@
     },
     {
         "mo": "sõta",
-        "en": "counting agent, meter (device counting), person who counts or calculates",
+        "en": "counting agent, meter (device counting), person who counts o…",
         "fr": "compteur, personne qui compte ou calcule",
         "theme": "general"
     },
@@ -7171,7 +7171,7 @@
     },
     {
         "mo": "sudgi",
-        "en": "pour out water down (flow from high to low), (water) pours down",
+        "en": "pour out water down (flow from high to low), (water) pours d…",
         "fr": "1  verser de l'eau (écoulement de haut vers le bas)",
         "theme": "general"
     },
@@ -7225,8 +7225,8 @@
     },
     {
         "mo": "tagdo",
-        "en": "thick (pl.)",
-        "fr": "épais (pl.)",
+        "en": "thick (pl",
+        "fr": "épais (pl",
         "theme": "general"
     },
     {
@@ -7285,7 +7285,7 @@
     },
     {
         "mo": "tao",
-        "en": "quickly. Lebg tao!Lebg tao!Lebg tao!Lebg tao! Reviens vite ! Come back quickly!",
+        "en": "quickly",
         "fr": "vite",
         "theme": "general"
     },
@@ -7346,7 +7346,7 @@
     {
         "mo": "te",
         "en": "prop several things, hold by a support \/ fixture",
-        "fr": "étayer plusieurs choses, prendre appui sur, retenir par un support",
+        "fr": "étayer plusieurs choses, prendre appui sur, retenir par un s…",
         "theme": "general"
     },
     {
@@ -7357,7 +7357,7 @@
     },
     {
         "mo": "teedo",
-        "en": "kind of tree. phoenix dactylifera",
+        "en": "kind of tree",
         "fr": "espèce d'arbre",
         "theme": "general"
     },
@@ -7375,7 +7375,7 @@
     },
     {
         "mo": "tiga",
-        "en": "pitch-dark, very dark, completely dark. Sablg tiga.Sablg tiga.Sablg tiga.Sablg tiga. Tout noir. Completely black",
+        "en": "pitch-dark, very dark, completely dark",
         "fr": "tout noir",
         "theme": "general"
     },
@@ -7447,7 +7447,7 @@
     },
     {
         "mo": "tõo",
-        "en": "heavily. Yaa zYaa zYaa zYaa zɩʋɩʋɩʋɩʋsg tõo.sg tõo.sg tõo.sg tõo. C'est très lourd. It's very heavy",
+        "en": "heavily",
         "fr": "lourdement",
         "theme": "general"
     },
@@ -7495,7 +7495,7 @@
     },
     {
         "mo": "vãaga",
-        "en": "hollow, cavity, hole, socket, vent. vaage vaka 16\/02\/2020 260",
+        "en": "hollow, cavity, hole, socket, vent",
         "fr": "creux, trou",
         "theme": "general"
     },
@@ -7550,7 +7550,7 @@
     {
         "mo": "wãeega",
         "en": "device to smoke or grill meat or fish, grill",
-        "fr": "dispositif pour sécher ou griller la viande, le poisson, un grille",
+        "fr": "dispositif pour sécher ou griller la viande, le poisson, un…",
         "theme": "general"
     },
     {
@@ -7645,7 +7645,7 @@
     },
     {
         "mo": "wõbe",
-        "en": "eat, crunch. A wõbd kamaana.A wõbd kamaana.A wõbd kamaana.A wõbd kamaana. Il croque du maïs. He eats maize",
+        "en": "eat, crunch",
         "fr": "mâcher, croquer",
         "theme": "general"
     },
@@ -7675,7 +7675,7 @@
     },
     {
         "mo": "woogre",
-        "en": "diminishing \/ reducing one thing. wõonegowõonegowõonegowõonego Nom. espèce de plante; kind of plant",
+        "en": "diminishing \/ reducing one thing",
         "fr": "le fait de diminuer une chose",
         "theme": "general"
     },
@@ -7723,7 +7723,7 @@
     },
     {
         "mo": "yaadem",
-        "en": "stride, wingspan, scope, width, breadth, distance, broadness. 2  diamètre; diameter",
+        "en": "stride, wingspan, scope, width, breadth, distance, broadness",
         "fr": "1  enjambée, écartement de jambe, envergure, largeur",
         "theme": "general"
     },
@@ -7753,7 +7753,7 @@
     },
     {
         "mo": "yaasre",
-        "en": "bifurcation, place where a branch goes away. 2  angle; angle",
+        "en": "bifurcation, place where a branch goes away",
         "fr": "1  fourche, endroit où prend naissance une branche",
         "theme": "general"
     },
@@ -7771,7 +7771,7 @@
     },
     {
         "mo": "yakre",
-        "en": "taking down something hooked up. yãkre yam tʋntʋmda 16\/02\/2020 309",
+        "en": "taking down something hooked up",
         "fr": "le fait d'enlever ce qui est suspendu",
         "theme": "general"
     },
@@ -7819,7 +7819,7 @@
     },
     {
         "mo": "yeele",
-        "en": "to say. A yeelame tA yeelame tA yeelame tA yeelame tɩɩɩɩ bõe?bõe?bõe?bõe? Qu'est-ce qu'il a dit ? What did he say?",
+        "en": "to say",
         "fr": "dire",
         "theme": "general"
     },
@@ -7916,7 +7916,7 @@
     {
         "mo": "zãabo",
         "en": "carrying, holding, possession, maintenance",
-        "fr": "détention, portage, le fait de tenir, le fait de garder sur soi, entretien",
+        "fr": "détention, portage, le fait de tenir, le fait de garder sur…",
         "theme": "general"
     },
     {
@@ -7927,7 +7927,7 @@
     },
     {
         "mo": "zãare",
-        "en": "forge-hammer, iron hammer used in blacksmith work, with no handle",
+        "en": "forge-hammer, iron hammer used in blacksmith work, with no h…",
         "fr": "marteau utilisé dans la forge, constitué de fer sans manche",
         "theme": "general"
     },
@@ -7951,8 +7951,8 @@
     },
     {
         "mo": "zãmbeende",
-        "en": "traditional celebration during which people are spilled over with water for amusement",
-        "fr": "fête coutumière pendant laquelle on s'asperge d'eau pour jouer",
+        "en": "traditional celebration during which people are spilled over…",
+        "fr": "fête coutumière pendant laquelle on s'asperge d'eau pour jou…",
         "theme": "general"
     },
     {
@@ -8005,7 +8005,7 @@
     },
     {
         "mo": "zeorgo",
-        "en": "fringe of a garment. zeosgo zɛɛse 16\/02\/2020 354",
+        "en": "fringe of a garment",
         "fr": "frange d'habit",
         "theme": "general"
     },
@@ -8035,7 +8035,7 @@
     },
     {
         "mo": "zõbge",
-        "en": "cut off (the end \/edge), take a bit, cut a portion, break one end and take it, cut t.z. (take a mouthful)",
+        "en": "cut off (the end \/edge), take a bit, cut a portion, break on…",
         "fr": "prendre un peu, couper, casser un bout",
         "theme": "general"
     },
@@ -8071,13 +8071,13 @@
     },
     {
         "mo": "zosgo",
-        "en": "electric catfish sp. malopterus electricus",
+        "en": "electric catfish sp",
         "fr": "poisson électrique (espèce)",
         "theme": "general"
     },
     {
         "mo": "zugdu",
-        "en": "blacksmith bellows. bellows (for smith's forge)",
+        "en": "blacksmith bellows",
         "fr": "soufflets (de forge)",
         "theme": "general"
     },

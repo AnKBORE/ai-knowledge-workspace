@@ -26,6 +26,13 @@ final class MooreResourcesTest extends TestCase
         $this->assertStringContainsString('riz', $prompt);
     }
 
+    public function testLexiconMatchesInflectedMoorForms(): void
+    {
+        // rabda (inflected) must resolve to the lexicon entry rabde (to go).
+        $prompt = LexiqueMoore::promptFor('Fo rabda rûnda bii ?', 'mo', 'en');
+
+        $this->assertStringContainsString('rabde', $prompt);
+    }
     public function testLexiconIgnoresSameSourceAndTarget(): void
     {
         $this->assertSame('', LexiqueMoore::promptFor('Le soldat mange.', 'fr', 'fr'));

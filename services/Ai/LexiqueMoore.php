@@ -72,6 +72,26 @@ final class LexiqueMoore
                 if (!isset($matches[$key])) {
                     $matches[$key] = $term . ' → ' . $translation;
                 }
+
+                continue;
+            }
+
+            // Mooré is agglutinative: match the stem so inflected forms resolve
+            // (rabda "going" against the entry rabde "to go").
+            $stem = mb_substr($term, 0, 4);
+
+            if (mb_strlen($stem) < 4) {
+                continue;
+            }
+
+            $stemPattern = '/(?<![\p{L}\p{N}])' . preg_quote($stem, '/') . '[\p{L}]{0,4}(?![\p{L}\p{N}])/iu';
+
+            if (preg_match($stemPattern, $text) === 1) {
+                $key = mb_strtolower($term);
+
+                if (!isset($matches[$key])) {
+                    $matches[$key] = $term . ' (' . $translation . '; the source uses an inflected form of this word)';
+                }
             }
         }
 
