@@ -578,7 +578,8 @@
         }
 
         function recTick() {
-            var s = Math.floor((Date.now() - recStart) / 1000);
+            // While paused the clock must freeze too, not keep counting.
+            var s = Math.floor(((livePaused ? recPausedAt : Date.now()) - recStart) / 1000);
             var ts = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
             recTimer.textContent = ts;
             if (liveTimer) liveTimer.textContent = ts;
@@ -609,6 +610,20 @@
         var liveFlush = 0;           // next slice index to render
         var livePending = {};        // seq → transcript, flushed in order
 
+        // Drop the buffers already transcribed: a long meeting would otherwise
+        // grow an unbounded array and slow every slice down.
+        function livePrune() {
+            var drop = 0, acc = 0;
+            while (drop < livePcm.length && acc + livePcm[drop].length <= liveCursor) {
+                acc += livePcm[drop].length;
+                drop++;
+            }
+            if (drop > 0) {
+                livePcm = livePcm.slice(drop);
+                liveCursor -= acc;
+            }
+        }
+
         function liveRender(txt) {
             if (!liveText || !txt) return;
             if (/^[\s*\(\[]|bruits?|musique|applaudissements/i.test(txt)) return;
@@ -622,19 +637,18 @@
         }
 
         async function livePush() {
-            if (liveInFlight >= 2 || !liveRunning || livePaused || !livePcm.length) return;
+            if (liveInFlight >= 3 || !liveRunning || livePaused || !livePcm.length) return;
             liveInFlight++;
-            var seq = -1;   // allocated only when the slice is really sent
-            var ok = true;
+            var seq = -1;   // allocated only when a slice is really sent
             try {
                 var total = 0;
                 for (var k = 0; k < livePcm.length; k++) total += livePcm[k].length;
                 var newSamples = total - liveCursor;
-                if (newSamples < liveRate * 5.5) {
+                if (newSamples < liveRate * 4.5) {
                     liveInFlight--;
                     if (liveState) liveState.textContent = '…';
                     return;
-                } // < 1.5 s
+                }
 
                 // Concatenate the not-yet-transcribed span.
                 var span = new Float32Array(newSamples), off = 0, skip = liveCursor;
@@ -645,49 +659,52 @@
                     span.set(buf.subarray(s), off); off += buf.length - s;
                 }
 
-                // VAD cut: when the span is long enough, end the slice on the
-                // first ≥120 ms low-energy gap after 6 s — slices break at
-                // natural speech pauses instead of mid-word.
+                // VAD: close the slice on a natural pause after 4 s, so a word is
+                // never split between two ASR calls (a split word is a lost word).
                 var cut = span.length;
-                if (newSamples > liveRate * 9) {
-                    var win = Math.floor(liveRate * 0.12);
-                    var from = Math.max(Math.floor(liveRate * 4), Math.floor(span.length * 0.55));
+                if (newSamples > liveRate * 6) {
+                    var win = Math.floor(liveRate * 0.14);
+                    var from = Math.max(Math.floor(liveRate * 3), Math.floor(span.length * 0.5));
                     for (var ci = from; ci + win <= span.length; ci += win >> 1) {
                         var e = 0, n = 0;
-                        for (var j = ci; j < ci + win; j += 8) { e += span[j] * span[j]; n++; }
-                        if (e / n < 0.0008) { cut = ci + win; break; }
+                        for (var j = ci; j < ci + win; j += 4) { e += span[j] * span[j]; n++; }
+                        if (e / n < 0.0006) { cut = ci + win; break; }
                     }
                 }
-                // Only advance the cursor once the slice is known to be usable:
-                // a silent or too-short slice must be dropped WITHOUT stealing the
-                // audio that follows it (otherwise speech never reaches the ASR).
-                if (cut < Math.floor(liveRate * 1.5)) { liveInFlight--; return; }
+                if (cut < Math.floor(liveRate * 2)) { liveInFlight--; return; }
 
-                // Downsample context rate → 16 kHz (linear), kept as float for wavBlob.
+                // Downsample → 16 kHz.
                 var ratio = liveRate / 16000;
                 var n16 = Math.floor(cut / ratio);
                 var pcm16 = new Float32Array(n16);
-                var peak = 0;
+                var sum2 = 0;
                 for (var i = 0; i < n16; i++) {
                     var v = span[Math.floor(i * ratio)] || 0;
-                    peak = Math.max(peak, Math.abs(v));
+                    sum2 += v * v;
                     pcm16[i] = v;
                 }
+
+                // RMS, not peak: quiet speech used to fall under the old threshold
+                // and the whole slice was discarded — that was the "missing words".
+                var rms = Math.sqrt(sum2 / Math.max(1, n16));
                 if (liveLevel) {
-                    liveLevel.style.width = Math.min(100, Math.round(peak * 250)) + '%';
-                    liveLevel.className = 'ltr-meter-fill' + (peak > 0.25 ? ' is-hot' : '');
+                    liveLevel.style.width = Math.min(100, Math.round(rms * 900)) + '%';
+                    liveLevel.className = 'ltr-meter-fill' + (rms > 0.12 ? ' is-hot' : '');
                 }
-                if (peak < 0.012) {
-                    liveCursor += cut; liveInFlight--;
+                if (rms < 0.0015) {
+                    liveCursor += cut;
+                    liveInFlight--;
                     if (liveHint) {
                         liveHint.hidden = false;
                         liveHint.textContent = document.documentElement.lang === 'fr'
-                            ? 'Aucun son capté pour le moment. Vérifiez le micro (périphérique sélectionné, muet, autorisation du système).'
-                            : 'No sound captured yet. Check the microphone (selected device, muted, OS permission).';
+                            ? 'Silence détecté. Parlez plus près du micro si rien ne s’écrit.'
+                            : 'Silence detected. Move closer to the microphone if nothing appears.';
                     }
                     return;
                 }
+
                 liveCursor += cut;
+                livePrune();
 
                 var fd = new FormData();
                 fd.append('audio', wavBlob(pcm16, 16000), 'chunk.wav');
@@ -695,35 +712,46 @@
                 if (liveLangEl && liveLangEl.value) fd.append('to', liveLangEl.value);
                 var liveFromEl = document.getElementById('live-rec-from');
                 if (liveFromEl && liveFromEl.value) fd.append('from', liveFromEl.value);
-                // Continuity hint: tail of the previous transcript so Muse
-                // keeps pronouns/sentence fragments coherent across slices.
                 if (liveLast !== '') fd.append('ctx', liveLast.slice(-300));
-                // Allocate the sequence number ONLY now. An abandoned slice must
-                // not consume one, otherwise the flush loop waits forever for a
-                // slot that will never arrive (deadlock -> Listening… for ever).
+
                 seq = liveSeq++;
                 liveAudioSent++;
                 if (liveHint) { liveHint.hidden = true; }
                 if (liveState) { liveState.textContent = '⏳'; liveState.className = 'ltr-state'; }
+
                 var ctrl = new AbortController();
-                var killer = setTimeout(function () { ctrl.abort(); }, 30000);
+                var killer = setTimeout(function () { ctrl.abort(); }, 45000);
                 var r;
                 try {
-                    r = await fetch(apiUrl('transcribe_chunk.php'), { method: 'POST', body: fd, headers: { 'Accept': 'application/json' }, signal: ctrl.signal });
-                } finally { clearTimeout(killer); }
+                    r = await fetch(apiUrl('transcribe_chunk.php'), {
+                        method: 'POST', body: fd,
+                        headers: { 'Accept': 'application/json' },
+                        signal: ctrl.signal
+                    });
+                } finally {
+                    clearTimeout(killer);
+                }
+
                 var data = await r.json();
-                if (livePaused) { liveInFlight--; return; } // drop reply while paused
                 var txt = (data.text || '').trim();
-                if (data.error && liveState) { liveState.textContent = data.error; liveState.className = 'ltr-state is-error'; }
-                else if (data.translation_error && liveState) { liveState.textContent = 'texte brut (traduction indisponible)'; liveState.className = 'ltr-state is-error'; }
-                else if (liveState) { liveState.textContent = txt === '' ? '' : '✓'; liveState.className = 'ltr-state is-ok'; }
+                if (data.error && liveState) {
+                    liveState.textContent = data.error;
+                    liveState.className = 'ltr-state is-error';
+                } else if (data.translation_error && liveState) {
+                    liveState.textContent = 'texte brut (traduction indisponible)';
+                    liveState.className = 'ltr-state is-error';
+                }
                 livePending[seq] = txt;
             } catch (err) {
-                livePending[seq] = '';
-                if (liveState) liveState.textContent = 'ASR ' + (err.message || 'error');
+                if (seq >= 0) { livePending[seq] = ''; }
+                if (liveState) {
+                    liveState.textContent = 'ASR ' + (err && err.message ? err.message : 'error');
+                    liveState.className = 'ltr-state is-error';
+                }
             }
 
-            // Flush completed slices strictly in order.
+            // Flush completed slices strictly in order (never leaves a hole: an
+            // abandoned slice always writes an empty slot).
             while (livePending[liveFlush] !== undefined) {
                 var out = livePending[liveFlush];
                 delete livePending[liveFlush];
@@ -733,8 +761,8 @@
                     liveRender(out);
                     if (liveState) { liveState.textContent = '✓'; liveState.className = 'ltr-state is-ok'; }
                 } else if (liveState && liveAudioSent > 0) {
-                    liveState.textContent = 'aucun texte reconnu';
-                    liveState.className = 'ltr-state is-error';
+                    liveState.textContent = '…';
+                    liveState.className = 'ltr-state';
                 }
             }
             liveInFlight--;
