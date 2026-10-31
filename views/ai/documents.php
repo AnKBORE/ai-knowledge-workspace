@@ -339,7 +339,7 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                     <div class="mt-4">
                         <label for="correction-file" class="form-label fw-semibold"><?= e(($isFr ?? true) ? 'Fichier texte corrigé' : 'Corrected text file') ?></label>
                         <input type="file" id="correction-file" name="fichier" class="form-control" accept=".pdf,.docx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" required>
-                        <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Formats acceptés : .pdf, .docx, .txt, .md, .csv — 24 Mo maximum.' : 'Accepted formats: .txt, .md, .csv — 24 MB maximum.') ?></p>
+                        <p class="form-text mb-0"><?= e(($isFr ?? true) ? 'Formats acceptés : .pdf, .docx, .txt, .md, .csv — 24 Mo maximum.' : 'Accepted formats: .pdf, .docx, .txt, .md, .csv — 24 MB maximum.') ?></p>
                     </div>
 
                     <div id="correction-existing" class="correction-existing" hidden>

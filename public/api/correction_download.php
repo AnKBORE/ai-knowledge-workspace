@@ -39,7 +39,7 @@ if ($id < 1) {
 }
 
 $stmt = $dependencies['pdo']->prepare(
-    'SELECT c.id, c.langue, c.texte_corrige, c.nom_fichier, c.cree_le, d.title
+    'SELECT c.id, c.langue, c.texte_corrige, c.nom_fichier, c.fichier, c.cree_le, d.title
      FROM correction_document c
      JOIN documents d ON d.id = c.document_id
      WHERE c.id = :id AND c.statut = \'valide\''
@@ -64,7 +64,39 @@ if ($name === '') {
 // Keep only the file name, never a path.
 $name = (string) preg_replace('/[^A-Za-z0-9._\-\x{00C0}-\x{024F}]+/u', '_', basename($name));
 
+$mime = match (strtolower((string) pathinfo($name, PATHINFO_EXTENSION))) {
+    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'pdf' => 'application/pdf',
+    default => 'text/plain; charset=utf-8',
+};
+
 $body = (string) $row['texte_corrige'];
+
+// The reviewer's own file wins: it is served byte for byte, keeping its
+// real format (Word, PDF…). Generation is only a fallback for text-only
+// corrections.
+$stored = trim((string) ($row['fichier'] ?? ''));
+$storedPath = $stored !== ''
+    ? rtrim((string) $dependencies['storage_path'], '/') . '/' . ltrim($stored, '/')
+    : '';
+
+if ($storedPath !== '' && is_file($storedPath)) {
+    $size = (int) filesize($storedPath);
+
+    $dependencies['journal']->log($userId, 'document.correction.telechargement', 'document', null, 'succes', [
+        'correction_id' => $id,
+        'langue' => (string) $row['langue'],
+        'source' => 'fichier',
+    ]);
+
+    header('Content-Type: ' . $mime);
+    header('Content-Disposition: attachment; filename="' . $name . '"');
+    header('Content-Length: ' . (string) $size);
+    header('X-Content-Type-Options: nosniff');
+    header('Cache-Control: private, no-store');
+    readfile($storedPath);
+    exit;
+}
 
 $dependencies['journal']->log($userId, 'document.correction.telechargement', 'document', null, 'succes', [
     'correction_id' => $id,

@@ -26,16 +26,18 @@ final class Correction
         ?int $versionDocumentId = null,
         ?int $auteurId = null,
         ?string $nomFichier = null,
+        ?string $fichier = null,
     ): int {
         $stmt = $this->db->prepare(
-            'INSERT INTO correction_document (document_id, version_document_id, langue, nom_fichier, texte_source, texte_corrige, auteur_id)
-             VALUES (:document_id, :version_id, :langue, :nom_fichier, :source, :corrige, :auteur)'
+            'INSERT INTO correction_document (document_id, version_document_id, langue, nom_fichier, fichier, texte_source, texte_corrige, auteur_id)
+             VALUES (:document_id, :version_id, :langue, :nom_fichier, :fichier, :source, :corrige, :auteur)'
         );
         $stmt->execute([
             'document_id' => $documentId,
             'version_id' => $versionDocumentId,
             'langue' => $langue,
             'nom_fichier' => $nomFichier,
+            'fichier' => $fichier,
             'source' => $texteSource,
             'corrige' => $texteCorrige,
             'auteur' => $auteurId,
@@ -96,7 +98,7 @@ final class Correction
     public function latestForLangue(int $documentId, string $langue): ?array
     {
         $stmt = $this->db->prepare(
-            'SELECT id, langue, nom_fichier, texte_corrige, cree_le
+            'SELECT id, langue, nom_fichier, fichier, texte_corrige, cree_le
              FROM correction_document
              WHERE document_id = :id AND langue = :langue AND statut = \'valide\'
              ORDER BY id DESC

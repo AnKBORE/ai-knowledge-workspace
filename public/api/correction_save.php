@@ -77,6 +77,7 @@ if ($document === false) {
 }
 
 $uploadedExt = null;
+$storedRelative = null;
 
 // A corrected audio file is transcribed; a text file is read verbatim.
 if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name'])) {
@@ -96,6 +97,26 @@ if (isset($_FILES['fichier']) && is_uploaded_file($_FILES['fichier']['tmp_name']
 
     $tmp = tempnam(sys_get_temp_dir(), 'akw_corr_');
     move_uploaded_file($_FILES['fichier']['tmp_name'], $tmp);
+
+    // Keep the reviewer's own file: the correction must stay downloadable in
+    // its original format (a .docx is not converted into a .txt).
+    try {
+        $dir = rtrim((string) $dependencies['storage_path'], '/') . '/corrections/' . $documentId;
+
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0775, true);
+        }
+
+        if (is_dir($dir) && is_writable($dir)) {
+            $storedName = hash_file('sha256', $tmp) . '.' . $ext;
+
+            if (@copy($tmp, $dir . '/' . $storedName)) {
+                $storedRelative = 'corrections/' . $documentId . '/' . $storedName;
+            }
+        }
+    } catch (\Throwable) {
+        $storedRelative = null;
+    }
 
     try {
         if ($texteCorrige === '') {
@@ -157,7 +178,8 @@ try {
         $texteSource !== '' ? $texteSource : null,
         null,
         $userId,
-        $nomFichier
+        $nomFichier,
+        $storedRelative
     );
 
     $dependencies['journal']->log($userId, 'document.correction', 'document', $documentId, 'succes', [
@@ -170,6 +192,7 @@ try {
         'langue' => $langue,
         'chars' => mb_strlen($texteCorrige),
         'nom_fichier' => $nomFichier,
+        'fichier' => $storedRelative,
         'version' => $version,
         'appris' => $dependencies['apprentissage']->count(),
     ]);
