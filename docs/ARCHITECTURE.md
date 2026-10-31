@@ -177,6 +177,20 @@ Each exposed source carries:
 
 ---
 
+### 5.5 Two answer modes — strict vs developed
+
+The server decides the mode; the model does not guess it.
+
+| Mode | Trigger | Shape |
+|---|---|---|
+| **Closed** | how many, which, when, who, yes/no, a precise value | **one to three sentences**, the first being the answer; no preamble, no unsolicited inventory, bullets only if several items are requested |
+| **Open** | summarise, tell me about, explain, describe, what does it say, compare, key points | **developed but structured**: an opening sentence, 3 to 6 bullet points, a closing sentence only if it adds a fact — **150 words maximum** |
+
+Detection lives in `RagService::isOpenQuestion()` (French, English and Mooré
+markers). The chosen mode is written into the prompt as an explicit instruction,
+so the same question always gets the same shape.
+---
+
 ## 6. Agentic task — plan → retrieve → draft → verify → revise
 
 `AiAssistantController::task()` → `RagService::task()`:

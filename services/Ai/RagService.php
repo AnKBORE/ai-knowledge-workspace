@@ -135,7 +135,8 @@ final class RagService
                 ];
             }
 
-            $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+            $this->openQuestion = $this->isOpenQuestion($question);
+        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
             $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
             $sources = $this->sourcesFor($answer, $chunks);
 
@@ -151,6 +152,7 @@ final class RagService
             ];
         }
 
+        $this->openQuestion = $this->isOpenQuestion($question);
         $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
         $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
 
@@ -160,7 +162,8 @@ final class RagService
             $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId);
             if (count($wider) > count($chunks)) {
                 $chunks = $wider;
-                $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
+                $this->openQuestion = $this->isOpenQuestion($question);
+        $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
                 $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
             }
         }
@@ -179,6 +182,8 @@ final class RagService
      *
      * @return list<string>
      */
+    private bool $openQuestion = false;
+
     private function notFoundPhrases(): array
     {
         return [
@@ -608,8 +613,29 @@ final class RagService
         return implode("\n\n---\n\n", $parts);
     }
 
+    /**
+     * Open requests ("summarise", "tell me about", "explain", "what does it
+     * say") deserve a developed answer; a closed question ("how many", "which
+     * one", "when") deserves one sentence. Deciding this on the server is more
+     * reliable than hoping the model classifies the question the same way every
+     * time.
+     */
+    private function isOpenQuestion(string $question): bool
+    {
+        return preg_match(
+            '/\b(r[ée]sum\w*|synth[èe]se|synth[ée]tise\w*|parle[- ]moi|pr[ée]sente\w*|explique\w*|expliquer'
+            . '|d[ée]cri\w*|d[ée]taille\w*|analyse\w*|compare\w*|commentaire|comment\w*'
+            . '|que dit|que contient|de quoi parle|quels? sont les points|points? cl[ée]s?'
+            . '|summary|summari[sz]e|tell me about|overview|explain|describe|compare|what does .{0,40}(say|contain))\b/iu',
+            $question
+        ) === 1;
+    }
     private function answerPrompt(): string
     {
+        $mode = $this->openQuestion
+            ? 'OUVERTE — applique 6b : réponse développée et structurée (150 mots max).'
+            : 'FERMÉE — applique 6a : réponse directe en une à trois phrases, sans énumération.';
+
         $langRule = '5. Réponds dans la langue de la question : anglais → anglais, mooré → mooré, coréen → coréen, etc. Si la question est en mooré, réponds entièrement en mooré courant en gardant les données exactes (chiffres, dates, noms) telles quelles. Cette règle prime sur toute autre considération de langue.';
         return <<<PROMPT
 Tu es un assistant documentaire expert, rigoureux et professionnel.
@@ -626,13 +652,15 @@ RÈGLES ABSOLUES :
 4e. N'emploie jamais un mot ou un passage visiblement tronqué en bord d'extrait : si un extrait se termine au milieu d'une phrase ou d'un mot, ignore cette fin plutôt que de la citer.
 5b. Les étiquettes « [Extrait n — Titre] » font partie des informations fournies : une question portant sur un titre, un nom de document ou la présence d'un document DOIT être répondue à partir de ces titres.
 $langRule
-6. Réponds STRICTEMENT à la question posée, et rien de plus :
-   - La première phrase est la réponse elle-même (un chiffre, un titre, une date, un oui/non, la valeur demandée). Pas de préambule (« d'après les extraits… »), pas de reformulation de la question, pas de conclusion, pas de conseil.
-   - N'ajoute AUCUNE information non demandée : pas d'inventaire des autres documents, pas de contexte historique, pas de synthèse élargie.
-   - Utilise une liste à puces UNIQUEMENT si la question demande une énumération (plusieurs éléments). Sinon, une à trois phrases suffisent.
-   - Si la question demande un seul élément (un titre, une date, un nombre), donne cet élément seul, éventuellement avec la phrase minimale qui le porte.
-   - Termine par « Sources : [1], [2] » en citant uniquement les numéros réellement utilisés.
-7. Ton neutre et précis, sans remplissage ni formule de politesse. La brièveté est une exigence : si deux formulations répondent, garde la plus courte.
+6. RÈGLE DE FORME, selon le type de question (le mode est indiqué plus bas) :
+   6a. QUESTION FERMÉE (combien, quel, quand, qui, où, oui/non, une valeur précise) :
+        la première phrase EST la réponse (un chiffre, un titre, une date, une valeur). Pas de préambule, pas de reformulation, pas de conclusion, pas de conseil. Une à trois phrases maximum. Aucune puce sauf si plusieurs éléments sont demandés. Aucune information non demandée.
+   6b. QUESTION OUVERTE (résume, parle-moi de, explique, décris, que dit, compare, points clés) :
+        réponse développée mais structurée : une phrase d'ensemble, puis 3 à 6 points clés en puces, puis une phrase de clôture seulement si elle apporte un fait. 150 mots maximum. Toujours uniquement à partir des extraits, sans remplissage ni généralités.
+   Dans les deux cas : termine par « Sources : [1], [2] » en citant uniquement les numéros réellement utilisés.
+7. Ton neutre et précis, sans remplissage ni formule de politesse. En mode 6a, la brièveté est une exigence : si deux formulations répondent, garde la plus courte.
+
+MODE DE CETTE QUESTION : {$mode}
 PROMPT;
     }
 
