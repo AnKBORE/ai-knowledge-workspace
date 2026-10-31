@@ -18,6 +18,7 @@ $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
 use App\Services\Ai\Glossaire;
 use App\Services\Ai\LexiqueMoore;
 use App\Services\Ai\MooreReference;
+use App\Services\Ai\Proverbes;
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -102,6 +103,8 @@ $translateSlice = static function (string $source, string $target, ?string $sour
     return trim($dependencies['meta']->chat($source, [['role' => 'system', 'content' => $system]], null, 0.0));
 };
 
+$translationError = '';
+
 if ($text !== '' && isset($langs[$to])) {
     $context = trim(mb_substr((string) ($_POST['ctx'] ?? ''), 0, 1000));
 
@@ -120,8 +123,17 @@ if ($text !== '' && isset($langs[$to])) {
 
         if ($translation !== '') {
             $text = $translation;
+        } else {
+            $translationError = 'empty translation';
         }
-    } catch (\Throwable) { /* keep raw transcript */ }
+    } catch (\Throwable $e) {
+        // Never fail silently: the caller must know the wording is the raw
+        // transcript, not a translation (the UI shows a warning).
+        $translationError = $e->getMessage();
+    }
 }
 
-echo json_encode(['text' => $text], JSON_UNESCAPED_UNICODE);
+echo json_encode(
+    $translationError !== '' ? ['text' => $text, 'translation_error' => $translationError] : ['text' => $text],
+    JSON_UNESCAPED_UNICODE
+);

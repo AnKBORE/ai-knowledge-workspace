@@ -651,7 +651,9 @@
                         if (e / n < 0.0008) { cut = ci + win; break; }
                     }
                 }
-                liveCursor += cut;
+                // Only advance the cursor once the slice is known to be usable:
+                // a silent or too-short slice must be dropped WITHOUT stealing the
+                // audio that follows it (otherwise speech never reaches the ASR).
                 if (cut < Math.floor(liveRate * 1.5)) { liveInFlight--; return; }
 
                 // Downsample context rate → 16 kHz (linear), kept as float for wavBlob.
@@ -664,7 +666,8 @@
                     peak = Math.max(peak, Math.abs(v));
                     pcm16[i] = v;
                 }
-                if (peak < 0.012) { liveInFlight--; return; } // silence slice
+                if (peak < 0.012) { liveCursor += cut; liveInFlight--; return; } // silence slice: skip it
+                liveCursor += cut;
 
                 var fd = new FormData();
                 fd.append('audio', wavBlob(pcm16, 16000), 'chunk.wav');
@@ -679,7 +682,8 @@
                 var data = await r.json();
                 if (livePaused) { liveInFlight--; return; } // drop reply while paused
                 var txt = (data.text || '').trim();
-                if (data.error && liveState) liveState.textContent = data.error;
+                if (data.error && liveState) { liveState.textContent = data.error; liveState.className = 'ltr-state is-error'; }
+                else if (liveState) { liveState.textContent = txt === '' ? '' : '✓'; liveState.className = 'ltr-state is-ok'; }
                 livePending[seq] = txt;
             } catch (err) {
                 livePending[seq] = '';

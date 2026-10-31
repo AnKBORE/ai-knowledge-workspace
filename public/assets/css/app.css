@@ -1829,3 +1829,6 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 @media (max-width: 767px) {
     .translate-form .translate-cta .translate-refresh { width: 38px; height: 38px; }
 }
+
+.ltr-state.is-error { color: #b42318; font-weight: 600; }
+.ltr-state.is-ok { color: #15803d; font-weight: 700; }

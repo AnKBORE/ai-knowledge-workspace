@@ -47,7 +47,7 @@ final class Glossaire
      */
     public static function promptFor(string $to, string $from = 'fr'): string
     {
-        if ($from === $to) {
+        if ($from === $to || !in_array($to, ['fr', 'en'], true)) {
             return '';
         }
 

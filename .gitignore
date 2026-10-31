@@ -32,3 +32,6 @@ whisper/
 
 # Temporary extracted PDFs
 _tmp_*.pdf
+
+# Test audio samples
+_jfk.wav
