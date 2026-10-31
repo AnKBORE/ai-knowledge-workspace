@@ -817,7 +817,7 @@
             liveAudioSent = 0;
             if (liveHint) { liveHint.hidden = true; liveHint.textContent = ''; }
             if (liveLevel) { liveLevel.style.width = '0'; liveLevel.className = 'ltr-meter-fill'; }
-            if (liveText) liveText.innerHTML = '<span class="live-empty">' + (document.documentElement.lang === 'fr' ? 'En écoute… parlez.' : 'Listening… speak.') + '</span>';
+
             if (liveState) liveState.textContent = '';
             liveModal.show();
             var __lf = document.getElementById('live-rec-from');
@@ -825,7 +825,7 @@
             if (__lf) __lf.addEventListener('change', liveSyncLangs);
             if (__lt) __lt.addEventListener('change', liveSyncLangs);
             liveSyncLangs();
-            livePushTimer = setInterval(livePush, 3000);
+            // No background slicing: one reliable call is made when the user stops.
             setTimeout(function () {
                 if (liveAudioSent === 0 && liveHint) {
                     liveHint.hidden = false;
@@ -870,6 +870,84 @@
             if (liveState) liveState.textContent = livePaused ? '⏸' : '';
         });
 
+        /* ---- Result panel: rephrase + DOCX + PDF ---- */
+        var liveRecFinal = document.getElementById('live-rec-final-text');
+        var liveRecReform = document.getElementById('live-rec-reformulate');
+        var liveRecDocx = document.getElementById('live-rec-docx');
+        var liveRecPdf = document.getElementById('live-rec-pdf');
+
+        function liveRecSetBusy(on) {
+            [liveRecReform, liveRecDocx, liveRecPdf].forEach(function (b) {
+                if (b) { b.disabled = !!on; }
+            });
+        }
+
+        async function liveRecDownload(format) {
+            var text = liveRecFinal ? liveRecFinal.textContent.trim() : '';
+            if (!text) { return; }
+            liveRecSetBusy(true);
+            try {
+                var r = await fetch(apiUrl('export.php'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': '*/*' },
+                    body: JSON.stringify({ title: 'Transcription', content: text, format: format })
+                });
+                if (!r.ok) { throw new Error('export'); }
+                var blob = await r.blob();
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'transcription.' + (format === 'pdf' ? 'pdf' : 'docx');
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+            } catch (e) {
+                if (liveState) {
+                    liveState.textContent = document.documentElement.lang === 'fr' ? 'téléchargement impossible' : 'download failed';
+                    liveState.className = 'ltr-state is-error';
+                }
+            } finally {
+                liveRecSetBusy(false);
+            }
+        }
+
+        if (liveRecDocx) { liveRecDocx.addEventListener('click', function () { liveRecDownload('docx'); }); }
+        if (liveRecPdf) { liveRecPdf.addEventListener('click', function () { liveRecDownload('pdf'); }); }
+
+        if (liveRecReform) {
+            liveRecReform.addEventListener('click', async function () {
+                var text = liveRecFinal ? liveRecFinal.textContent.trim() : '';
+                if (!text) { return; }
+                liveRecSetBusy(true);
+                if (liveState) {
+                    liveState.textContent = document.documentElement.lang === 'fr' ? 'reformulation…' : 'rephrasing…';
+                    liveState.className = 'ltr-state';
+                }
+                try {
+                    var sel = document.getElementById('live-rec-lang');
+                    var r = await fetch(apiUrl('reformulate.php'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({ text: text, previous: text, lang: sel ? sel.value : '' })
+                    });
+                    var d = await r.json();
+                    if (d.text) {
+                        liveRecFinal.textContent = d.text;
+                        if (liveState) { liveState.textContent = '✓'; liveState.className = 'ltr-state is-ok'; }
+                    } else if (liveState) {
+                        liveState.textContent = d.error || 'reformulation impossible';
+                        liveState.className = 'ltr-state is-error';
+                    }
+                } catch (e) {
+                    if (liveState) {
+                        liveState.textContent = document.documentElement.lang === 'fr' ? 'reformulation impossible' : 'rephrase failed';
+                        liveState.className = 'ltr-state is-error';
+                    }
+                } finally {
+                    liveRecSetBusy(false);
+                }
+            });
+        }
         recBtn.addEventListener('click', async function () {
             try {
                 if (!window.MediaRecorder) { throw new Error('MediaRecorder'); }

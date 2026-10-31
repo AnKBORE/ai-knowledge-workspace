@@ -1888,3 +1888,45 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     max-height: 180px;
     overflow-y: auto;
 }
+
+/* Recorder result panel */
+.ltr-final-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem;
+    margin-bottom: .5rem;
+}
+
+.ltr-final-actions {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.ltr-act {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid #c9d8f5;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #3552c7;
+    cursor: pointer;
+    transition: background-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.ltr-act svg { width: 17px; height: 17px; }
+
+.ltr-act:hover:not(:disabled) { background: #eef2ff; transform: translateY(-1px); box-shadow: 0 4px 12px rgb(53 82 199 / 16%); }
+
+.ltr-act:focus-visible { outline: 3px solid rgb(74 99 200 / 40%); outline-offset: 2px; }
+
+.ltr-act:disabled { opacity: .5; cursor: progress; }
+
+.ltr-final .ltr-transcript {
+    white-space: pre-wrap;
+}
