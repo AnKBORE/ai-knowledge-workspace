@@ -22,42 +22,52 @@ $isFr = $isFr ?? true;
             </div>
 
             <div class="modal-body ltr-body">
-                <div class="ltr-statusbar">
+                <div class="ltr-recordbar">
                     <span class="ltr-rec-badge"><span class="live-rec-dot" aria-hidden="true"></span>REC</span>
                     <span id="live-rec-timer" class="ltr-timer">00:00</span>
-                    <select id="live-rec-from" class="form-select form-select-sm ltr-lang" aria-label="<?= e($isFr ? 'Langue parlée' : 'Spoken language') ?>">
-                        <option value="" selected><?= e($isFr ? 'Langue parlée : auto' : 'Spoken: auto') ?></option>
-                        <option value="mo">Mooré</option>
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
-                    </select>
-                    <select id="live-rec-lang" class="form-select form-select-sm ltr-lang" aria-label="<?= e($P['translate_to'] ?? 'Translate to') ?>">
-                        <option value=""><?= e($isFr ? 'Sortie : même langue' : 'Output: same language') ?></option>
-                        <option value="fr" selected>Français</option>
-                        <option value="en">English</option>
-                        <option value="mo">Mooré</option>
-                    </select>
-                    <span id="live-rec-state" class="ltr-state"></span>
+                    <div class="ltr-meter" aria-hidden="true">
+                        <span id="live-rec-level" class="ltr-meter-fill"></span>
+                    </div>
                 </div>
 
-                <div class="ltr-meter" aria-hidden="true">
-                    <span id="live-rec-level" class="ltr-meter-fill"></span>
+                <div class="ltr-fields">
+                    <div class="ltr-field">
+                        <label for="live-rec-from" class="ltr-label"><?= e($isFr ? 'Langue parlée' : 'Spoken language') ?></label>
+                        <select id="live-rec-from" class="form-select ltr-select">
+                            <option value="" selected><?= e($isFr ? 'Détection automatique' : 'Automatic detection') ?></option>
+                            <option value="fr">Français</option>
+                            <option value="mo">Mooré</option>
+                            <option value="en">English</option>
+                        </select>
+                        <p class="ltr-field-hint"><?= e($isFr ? 'Auto suffit pour le français et l’anglais. Indiquez Mooré pour une meilleure restitution.' : 'Auto is enough for French and English. Pick Mooré for a better result.') ?></p>
+                    </div>
+                    <div class="ltr-field">
+                        <label for="live-rec-lang" class="ltr-label"><?= e($isFr ? 'Sortie' : 'Output') ?></label>
+                        <select id="live-rec-lang" class="form-select ltr-select">
+                            <option value=""><?= e($isFr ? 'Même langue (transcription)' : 'Same language (transcript)') ?></option>
+                            <option value="fr" selected>Français</option>
+                            <option value="en">English</option>
+                            <option value="mo">Mooré</option>
+                        </select>
+                        <p class="ltr-field-hint"><?= e($isFr ? 'Autre langue = traduction du même enregistrement.' : 'Another language = translation of the same recording.') ?></p>
+                    </div>
                 </div>
 
-                <p class="ltr-help">
+                <p class="ltr-note">
                     <?= e($isFr
                         ? 'La transcription est générée à la fin de l’enregistrement : parlez normalement, puis appuyez sur le bouton d’arrêt.'
                         : 'The transcript is generated when the recording ends: speak normally, then press stop.') ?>
                 </p>
 
-                <p id="live-rec-hint" class="ltr-hint" hidden></p>
+                <p id="live-rec-state" class="ltr-state" hidden></p>
 
                 <div id="live-rec-final" class="ltr-final" hidden>
                     <div class="ltr-final-head">
                         <p class="ltr-final-title"><?= e($isFr ? 'Transcription' : 'Transcript') ?></p>
                         <div class="ltr-final-actions">
                             <button type="button" class="ltr-act" id="live-rec-reformulate"
-                                    title="<?= e($isFr ? 'Reformuler' : 'Rephrase') ?>" aria-label="<?= e($isFr ? 'Reformuler' : 'Rephrase') ?>">
+                                    title="<?= e($isFr ? 'Reformuler depuis l’audio' : 'Rephrase from the audio') ?>"
+                                    aria-label="<?= e($isFr ? 'Reformuler depuis l’audio' : 'Rephrase from the audio') ?>">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
                             </button>
                             <button type="button" class="ltr-act" id="live-rec-docx"

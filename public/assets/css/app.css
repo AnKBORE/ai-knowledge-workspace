@@ -1930,3 +1930,82 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .ltr-final .ltr-transcript {
     white-space: pre-wrap;
 }
+
+/* Recorder: recording bar + professional fields */
+.ltr-recordbar {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin-bottom: 1rem;
+}
+
+.ltr-recordbar .ltr-meter {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.ltr-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .9rem;
+    padding: 1rem 1.05rem;
+    border: 1px solid #dbe4f0;
+    border-radius: 14px;
+    background: #f8fafd;
+}
+
+.ltr-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.ltr-label {
+    margin-bottom: .35rem;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: #64748b;
+}
+
+.ltr-select {
+    min-height: 44px;
+    border: 1px solid #cdd9ea;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #1f2a44;
+    font-size: .95rem;
+    font-weight: 500;
+}
+
+.ltr-select:focus {
+    border-color: #4a63c8;
+    box-shadow: 0 0 0 3px rgb(74 99 200 / 16%);
+}
+
+.ltr-field-hint {
+    margin: .4rem 0 0;
+    font-size: .74rem;
+    line-height: 1.4;
+    color: #7a8699;
+}
+
+.ltr-note {
+    margin: 1rem 0 .2rem;
+    padding: .7rem .9rem;
+    border-left: 3px solid #c9a227;
+    border-radius: 0 8px 8px 0;
+    background: rgb(201 162 39 / 8%);
+    font-size: .85rem;
+    line-height: 1.5;
+    color: #4a5670;
+}
+
+.ltr-state {
+    margin: .4rem 0 .6rem;
+    font-size: .82rem;
+}
+
+@media (max-width: 767px) {
+    .ltr-fields { grid-template-columns: 1fr; }
+}

@@ -597,6 +597,7 @@
         var liveLevel = document.getElementById('live-rec-level');
         var liveHint = document.getElementById('live-rec-hint');
         var liveAudioSent = 0;   // slices actually sent to the ASR
+        var liveWav = null;      // the recording itself: the source for reformulation
         var liveAudioDone = 0;   // slices whose reply came back
         var liveLangPrev = '';   // previous spoken language (output follows it)
         var liveLangFollow = '';
@@ -916,21 +917,35 @@
 
         if (liveRecReform) {
             liveRecReform.addEventListener('click', async function () {
-                var text = liveRecFinal ? liveRecFinal.textContent.trim() : '';
-                if (!text) { return; }
+                var current = liveRecFinal ? liveRecFinal.textContent.trim() : '';
+                if (!liveWav && current === '') { return; }
+
                 liveRecSetBusy(true);
                 if (liveState) {
-                    liveState.textContent = document.documentElement.lang === 'fr' ? 'reformulation…' : 'rephrasing…';
+                    liveState.hidden = false;
+                    liveState.textContent = document.documentElement.lang === 'fr' ? 'reformulation depuis l’audio…' : 'rephrasing from the audio…';
                     liveState.className = 'ltr-state';
                 }
+
                 try {
-                    var sel = document.getElementById('live-rec-lang');
+                    var fd = new FormData();
+                    var selFrom = document.getElementById('live-rec-from');
+                    var selTo = document.getElementById('live-rec-lang');
+
+                    if (liveWav) {
+                        fd.append('audio', liveWav, 'recording.wav');
+                    } else {
+                        fd.append('text', current);
+                    }
+                    if (selFrom && selFrom.value) { fd.append('from', selFrom.value); }
+                    if (selTo && selTo.value) { fd.append('to', selTo.value); }
+                    if (current !== '') { fd.append('previous', current); }
+
                     var r = await fetch(apiUrl('reformulate.php'), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({ text: text, previous: text, lang: sel ? sel.value : '' })
+                        method: 'POST', body: fd, headers: { 'Accept': 'application/json' }
                     });
                     var d = await r.json();
+
                     if (d.text) {
                         liveRecFinal.textContent = d.text;
                         if (liveState) { liveState.textContent = '✓'; liveState.className = 'ltr-state is-ok'; }
@@ -1026,6 +1041,7 @@
                         return;
                     }
                     var wav = wavBlob(mono, 16000);
+                    liveWav = wav;   // reformulation re-listens to this, never to the translation
                     // Guaranteed result: whatever the live slices managed to do,
                     // transcribe the whole recording in one call and show it.
                     try {

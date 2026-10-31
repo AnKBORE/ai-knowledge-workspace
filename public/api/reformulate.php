@@ -7,11 +7,15 @@ use App\Services\Ai\MooreReference;
 /**
  * Protected endpoint — POST /api/reformulate.php
  *
- * Reword a transcript faithfully (same language, no new facts). Used by the
- * recorder result panel when the first wording reads badly.
+ * Produces a different, better-phrased version of a recording. The AUDIO is the
+ * source of truth: when the request carries `audio`, the model re-listens to it
+ * instead of rewording a translation (which would lose the original wording).
  *
- * Request:  {"text": "...", "lang": "fr", "previous": "..."}
- * Response: {"text": "..."}
+ * Two shapes are accepted:
+ *   multipart: audio=@file, from=mo|fr|en (optional), to=mo|fr|en (optional), previous=...
+ *   JSON:      {"text": "...", "lang": "fr", "previous": "..."}
+ *
+ * Response: {"text": "...", "transcript": "...", "translated": true|false}
  */
 
 $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
@@ -41,54 +45,110 @@ if (!$dependencies['csrf']->validateRequest()) {
 
 $userId = (int) $dependencies['auth']->id();
 
-if (!$dependencies['rate_limiter']->allow('reformulate:' . $userId, 20, 300)) {
+if (!$dependencies['rate_limiter']->allow('reformulate:' . $userId, 30, 300)) {
     http_response_code(429);
     header('Retry-After: 60');
     echo json_encode(['error' => $T['rate_limited'] ?? 'Trop de requêtes, réessayez dans une minute.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$input = json_decode((string) file_get_contents('php://input'), true);
-$input = is_array($input) ? $input : [];
+$langs = ['fr' => 'French', 'en' => 'English', 'mo' => 'Mooré (Mossi, Burkina Faso)'];
+$allowed = static fn (string $v): bool => in_array($v, ['fr', 'en', 'mo'], true);
 
-$text = trim((string) ($input['text'] ?? ''));
-$previous = trim((string) ($input['previous'] ?? ''));
-$sourceLang = (string) ($input['lang'] ?? '');
+$from = (string) ($_POST['from'] ?? '');
+$to = (string) ($_POST['to'] ?? '');
+$previous = trim((string) ($_POST['previous'] ?? ''));
+$inputText = '';
+$audioPath = null;
 
-if ($text === '') {
+if (isset($_FILES['audio']) && is_uploaded_file($_FILES['audio']['tmp_name'])) {
+    if ((int) $_FILES['audio']['size'] > 24 * 1024 * 1024) {
+        http_response_code(413);
+        echo json_encode(['error' => 'Audio too large (24 MB max).'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $audioPath = tempnam(sys_get_temp_dir(), 'akw_ref_') . '.wav';
+    move_uploaded_file($_FILES['audio']['tmp_name'], $audioPath);
+} else {
+    $payload = json_decode((string) file_get_contents('php://input'), true);
+    $payload = is_array($payload) ? $payload : [];
+    $inputText = trim((string) ($payload['text'] ?? ''));
+    $previous = $previous !== '' ? $previous : trim((string) ($payload['previous'] ?? ''));
+    $to = $to !== '' ? $to : (string) ($payload['to'] ?? '');
+    $from = $from !== '' ? $from : (string) ($payload['lang'] ?? '');
+}
+
+$from = $allowed($from) ? $from : '';
+$to = $allowed($to) ? $to : '';
+
+if ($audioPath === null && $inputText === '') {
     http_response_code(422);
     echo json_encode(['error' => $T['text_required']], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-$langs = ['fr' => 'French', 'en' => 'English', 'mo' => 'Mooré (Mossi, Burkina Faso)'];
-$label = $langs[$sourceLang] ?? 'the same language as the text';
-
 try {
-    $system = 'You reword a transcript while keeping its meaning strictly identical.'
-        . ' Write it again in ' . $label . ', in clear, natural and well-punctuated prose.'
-        . "\n\nRules:"
-        . "\n- Output ONLY the rewritten transcript — no commentary, no title, no language name."
-        . "\n- Keep every fact, name, number, date and acronym unchanged."
-        . "\n- Do not add, remove or summarise any information."
-        . "\n- Fix hesitations, repetitions and mis-punctuation; keep the speaker's intent."
-        . "\n- Make it genuinely different from the given version: new sentence structure, not a copy.";
+    $translated = false;
+    $transcript = $inputText;
 
-    if ($previous !== '') {
-        $system .= "\n\nThe current wording is:\n" . $previous . "\n\nProduce a DIFFERENT and better-phrased version.";
+    // 1. Always start from the audio when we have it.
+    if ($audioPath !== null) {
+        try {
+            $transcript = trim($dependencies['transcription']->transcribe($audioPath, $from !== '' ? $from : null));
+        } finally {
+            @unlink($audioPath);
+        }
+
+        if ($transcript === '') {
+            http_response_code(422);
+            echo json_encode(['error' => 'No speech recognised in the recording.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
     }
 
-    if ($sourceLang === 'mo') {
+    // 2. Decide the output language: translate only when one was requested.
+    $wantsTranslation = $to !== '' && $to !== $from;
+    $targetLabel = $langs[$wantsTranslation ? $to : ($from !== '' ? $from : 'fr')] ?? 'the same language as the source';
+
+    $system = 'You rewrite a spoken recording so it reads well, keeping its meaning strictly identical.'
+        . ' Write it in ' . $targetLabel . ', in clear, natural, well-punctuated prose.'
+        . "\n\nRules:"
+        . "\n- Output ONLY the rewritten text — no commentary, no title, no language name."
+        . "\n- Keep every fact, name, number, date and acronym unchanged."
+        . "\n- Do not add, remove or summarise any information."
+        . "\n- Remove hesitations and repetitions, fix the punctuation, keep the speaker's intent."
+        . "\n- This text comes from speech recognition: silently repair obvious mishearings first."
+        . "\n- Produce a genuinely different sentence structure from the version you are given.";
+
+    if ($previous !== '' && $previous !== $transcript) {
+        $system .= "\n\nA first version already exists:\n" . mb_substr($previous, 0, 4000)
+            . "\n\nWrite a DIFFERENT and better-phrased version of the same recording.";
+    }
+
+    if ($wantsTranslation) {
+        $system .= "\n\nThis is also a translation task: render the meaning in the target language, do not copy the source wording.";
+    }
+
+    if (($wantsTranslation ? $to : $from) === 'mo') {
         $system .= "\n\n" . MooreReference::prompt();
     }
 
-    $reformulated = trim($dependencies['meta']->chat($text, [['role' => 'system', 'content' => $system]], null, 0.7));
+    $out = trim($dependencies['meta']->chat($transcript, [['role' => 'system', 'content' => $system]], null, 0.7));
+    $translated = $wantsTranslation;
 
     $dependencies['journal']->log($userId, 'reformulation', null, null, 'succes', [
-        'longueur' => mb_strlen($text),
+        'source' => $audioPath !== null ? 'audio' : 'texte',
+        'de' => $from,
+        'vers' => $to,
+        'longueur' => mb_strlen($transcript),
     ]);
 
-    echo json_encode(['text' => $reformulated !== '' ? $reformulated : $text], JSON_UNESCAPED_UNICODE);
+    echo json_encode([
+        'text' => $out !== '' ? $out : $transcript,
+        'transcript' => $transcript,
+        'translated' => $translated,
+    ], JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $e) {
     http_response_code(500);
     echo json_encode(
