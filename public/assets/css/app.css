@@ -1683,7 +1683,8 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 
 .translate-form .translate-panes {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
     gap: 1rem;
     margin-top: 1rem;
 }
@@ -1756,19 +1757,18 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 
 .translate-form .translate-cta {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin-top: 1.25rem;
 }
 
-.translate-form .translate-cta .btn {
-    min-width: 250px;
-    padding: .8rem 1.6rem;
-    border-radius: 12px;
-    font-weight: 600;
+.translate-form .translate-cta .translate-refresh {
+    min-width: 0;
+    padding: 0;
 }
 
 @media (max-width: 767px) {
     .translate-form .translate-panes { grid-template-columns: 1fr; }
+    .translate-form .translate-cta { order: 2; margin: .25rem 0; }
     .translate-form .translate-lang .form-select { min-width: 100%; width: 100%; }
     .translate-form .translate-lang { flex: 1 1 100%; }
 }

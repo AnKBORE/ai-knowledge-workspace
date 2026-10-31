@@ -54,12 +54,19 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                             </div>
                         </div>
 
+                        <input type="hidden" id="translate-force" value="0">
                         <div class="translate-panes">
                             <div class="translate-pane">
                                 <div class="translate-pane-head">
                                     <label for="translate-source" class="form-label"><?= e($P['source_label']) ?></label>
                                 </div>
                                 <textarea id="translate-source" class="form-control" rows="8" placeholder="<?= e($P['source_placeholder']) ?>" required></textarea>
+                            </div>
+                            <div class="translate-cta">
+                                <button type="button" class="btn btn-primary translate-refresh" id="translate-btn"
+                                        title="<?= e($P['button']) ?>" aria-label="<?= e($P['button']) ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+                                </button>
                             </div>
                             <div class="translate-pane">
                                 <div class="translate-pane-head">
@@ -70,14 +77,6 @@ $langs = ['fr' => $P['lang_fr'], 'en' => $P['lang_en'], 'mo' => $P['lang_mo']];
                                 </div>
                                 <textarea id="translate-result" class="form-control" rows="8" readonly></textarea>
                             </div>
-                        </div>
-
-                        <div class="translate-cta">
-                            <input type="hidden" id="translate-force" value="0">
-                            <button type="button" class="btn btn-primary translate-refresh" id="translate-btn"
-                                    title="<?= e($P['button']) ?>" aria-label="<?= e($P['button']) ?>">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
-                            </button>
                         </div>
                     </form>
                     <div id="translate-status" class="small mt-2"></div>
