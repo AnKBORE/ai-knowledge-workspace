@@ -178,6 +178,20 @@ Chaque source exposée porte :
 
 ---
 
+### 5.5 Deux modes de réponse — stricte ou développée
+
+C'est le serveur qui décide du mode ; le modèle ne le devine pas.
+
+| Mode | Déclencheur | Forme |
+|---|---|---|
+| **Fermée** | combien, quel, quand, qui, oui/non, une valeur précise | **une à trois phrases**, la première étant la réponse ; pas de préambule, pas d'inventaire non demandé, puces seulement si plusieurs éléments sont demandés |
+| **Ouverte** | résume, parle-moi de, explique, décris, que dit, compare, points clés | **développée mais structurée** : une phrase d'ensemble, 3 à 6 points clés, une phrase de clôture seulement si elle apporte un fait — **150 mots maximum** |
+
+La détection est dans `RagService::isOpenQuestion()` (marqueurs français,
+anglais et mooré). Le mode retenu est écrit dans le prompt comme consigne
+explicite : une même question garde donc toujours la même forme.
+
+---
 ## 6. Tâche agentique — plan → retrieve → draft → verify → revise
 
 `AiAssistantController::task()` → `RagService::task()` :
