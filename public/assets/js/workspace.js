@@ -556,6 +556,84 @@
             });
         });
 
+        var correctionExisting = document.getElementById('correction-existing');
+        var correctionList = document.getElementById('correction-list');
+
+        function correctionBadge(langue) {
+            var map = { fr: 'FR', en: 'EN', mo: 'MO' };
+            return '<span class="correction-lang">' + (map[langue] || langue.toUpperCase()) + '</span>';
+        }
+
+        async function correctionRefresh() {
+            if (!correctionList || !correctionDocId) { return; }
+            var docId = correctionDocId.value;
+            if (!docId) { return; }
+
+            try {
+                var r = await fetch(apiUrl('correction_list.php?document_id=' + encodeURIComponent(docId)), {
+                    headers: { 'Accept': 'application/json' }
+                });
+                var d = await r.json();
+                var rows = (d && d.corrections) ? d.corrections : [];
+
+                if (!rows.length) {
+                    correctionExisting.hidden = true;
+                    correctionList.innerHTML = '';
+                    return;
+                }
+
+                correctionExisting.hidden = false;
+                correctionList.innerHTML = rows.map(function (row) {
+                    var del = row.peut_supprimer
+                        ? '<button type="button" class="correction-del" data-id="' + row.id + '" title="' + t('delete', 'Supprimer') + '" aria-label="' + t('delete', 'Supprimer') + '">'
+                          + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></svg>'
+                          + '</button>'
+                        : '';
+
+                    return '<div class="correction-item">'
+                        + correctionBadge(row.langue)
+                        + '<div class="correction-body">'
+                        + '<p class="correction-text">' + row.extrait.replace(/[<>&]/g, '') + '</p>'
+                        + '<p class="correction-meta">' + row.auteur + ' · ' + row.cree_le + ' · ' + row.chars + ' ' + t('chars', 'caractères') + '</p>'
+                        + '</div>'
+                        + del
+                        + '</div>';
+                }).join('');
+
+                correctionList.querySelectorAll('.correction-del').forEach(function (btn) {
+                    btn.addEventListener('click', async function () {
+                        btn.disabled = true;
+                        try {
+                            var rr = await fetch(apiUrl('correction_delete.php'), {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: parseInt(btn.getAttribute('data-id'), 10) })
+                            });
+                            if (rr.ok) {
+                                correctionStatus.textContent = t('correction_deleted', 'Correction supprimée.');
+                                correctionStatus.className = 'small mt-2 text-success';
+                                await correctionRefresh();
+                            } else {
+                                var err = await rr.json();
+                                correctionStatus.textContent = err.error || t('correction_failed', 'Suppression impossible.');
+                                correctionStatus.className = 'small mt-2 text-danger';
+                            }
+                        } catch (e) {
+                            correctionStatus.textContent = t('correction_failed', 'Suppression impossible.');
+                            correctionStatus.className = 'small mt-2 text-danger';
+                        } finally {
+                            btn.disabled = false;
+                        }
+                    });
+                });
+            } catch (e) {
+                correctionExisting.hidden = true;
+            }
+        }
+
+        if (correctionModalEl) {
+            correctionModalEl.addEventListener('shown.bs.modal', correctionRefresh);
+        }
         if (correctionForm) {
             correctionForm.addEventListener('submit', async function (event) {
                 event.preventDefault();
@@ -590,6 +668,7 @@
                             + ' (' + (d.chars || 0) + ' ' + t('chars', 'caractères') + ')';
                         correctionStatus.className = 'small mt-2 text-success';
                         correctionForm.reset();
+                        correctionRefresh();
                         setTimeout(function () { if (correctionModal) { correctionModal.hide(); } }, 1400);
                     } else {
                         correctionStatus.textContent = d.error || t('correction_failed', 'Enregistrement impossible.');

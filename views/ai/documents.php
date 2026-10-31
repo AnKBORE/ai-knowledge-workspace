@@ -341,6 +341,10 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                   placeholder="<?= e(($isFr ?? true) ? 'Texte corrigé…' : 'Corrected text…') ?>"></textarea>
                     </div>
 
+                    <div id="correction-existing" class="correction-existing" hidden>
+                        <p class="page-eyebrow mb-2"><?= e(($isFr ?? true) ? 'Corrections déjà enregistrées' : 'Corrections already saved') ?></p>
+                        <div id="correction-list" class="correction-list"></div>
+                    </div>
                     <div id="correction-status" class="small mt-2"></div>
                 </div>
                 <div class="modal-footer space-create-footer">
