@@ -837,9 +837,15 @@
             setTimeout(livePush, 8000); // first slice: 8 s of speech
         }
 
-        function stopLiveTranscription() {
+        // keepOpen=true means "we are about to show the full transcript":
+        // the modal must stay visible instead of closing and reopening.
+        function stopLiveTranscription(keepOpen) {
             liveRunning = false;
             clearInterval(livePushTimer);
+            if (keepOpen) {
+                if (liveState) { liveState.textContent = ''; liveState.className = 'ltr-state'; }
+                return;
+            }
             if (liveModal) liveModal.hide();
         }
 
@@ -914,7 +920,7 @@
         });
 
         recStop.addEventListener('click', function () {
-            stopLiveTranscription();
+            stopLiveTranscription(true);
             clearInterval(recInterval);
             recBtn.hidden = false; recStop.hidden = true;
             var duration = recTimer.textContent;
@@ -951,13 +957,16 @@
                         if (fl && fl.value) ffd.append('from', fl.value);
                         var tl = document.getElementById('live-rec-lang');
                         if (tl && tl.value) ffd.append('to', tl.value);
+                        if (liveState) {
+                            liveState.textContent = document.documentElement.lang === 'fr' ? 'transcription…' : 'transcribing…';
+                            liveState.className = 'ltr-state';
+                        }
                         var fin = document.getElementById('live-rec-final');
                         var fint = document.getElementById('live-rec-final-text');
                         if (fin && fint) {
                             fin.hidden = false;
                             fint.textContent = document.documentElement.lang === 'fr' ? 'Transcription en cours…' : 'Transcribing…';
                         }
-                        if (liveModal) { liveModal.show(); }
                         var r2 = await fetch(apiUrl('transcribe_chunk.php'), {
                             method: 'POST', body: ffd, headers: { 'Accept': 'application/json' }
                         });
@@ -966,6 +975,7 @@
                             var t2 = (d2.text || '').trim();
                             fint.textContent = t2 !== '' ? t2 : (document.documentElement.lang === 'fr' ? '(aucun texte reconnu)' : '(no speech recognised)');
                         }
+                        if (liveState) { liveState.textContent = '✓'; liveState.className = 'ltr-state is-ok'; }
                     } catch (e) { /* the file is still attached below */ }
 
                     var stamp = new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-');
