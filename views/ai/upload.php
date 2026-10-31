@@ -117,6 +117,10 @@ $P = $T['upload'];
                 <p id="live-rec-hint" class="ltr-hint" hidden></p>
                 <p class="ltr-help"><?= e(($isFr ?? true) ? 'Choisissez la langue parlée, puis la sortie : même langue = transcription, autre langue = traduction.' : 'Pick the spoken language, then the output: same language = transcript, other language = translation.') ?></p>
                 <div id="live-rec-text" class="live-rec-transcript ltr-transcript" aria-live="polite"></div>
+                <div id="live-rec-final" class="ltr-final" hidden>
+                    <p class="ltr-final-title"><?= e(($isFr ?? true) ? 'Transcription complète de l’enregistrement' : 'Full transcript of the recording') ?></p>
+                    <div id="live-rec-final-text" class="ltr-transcript"></div>
+                </div>
             </div>
             <div class="modal-footer ltr-footer">
                 <button type="button" class="ltr-btn ltr-btn-ghost" id="live-rec-pause" title="<?= e(($isFr ?? true) ? 'Pause' : 'Pause') ?>" aria-label="Pause">

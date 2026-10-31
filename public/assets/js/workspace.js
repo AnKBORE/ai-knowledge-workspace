@@ -597,6 +597,7 @@
         var liveLevel = document.getElementById('live-rec-level');
         var liveHint = document.getElementById('live-rec-hint');
         var liveAudioSent = 0;   // slices actually sent to the ASR
+        var liveAudioDone = 0;   // slices whose reply came back
         var liveLangPrev = '';   // previous spoken language (output follows it)
         var liveLangFollow = '';
         var liveCursor = 0;          // samples already transcribed
@@ -646,7 +647,7 @@
                 var total = 0;
                 for (var k = 0; k < livePcm.length; k++) total += livePcm[k].length;
                 var newSamples = total - liveCursor;
-                if (newSamples < liveRate * 4.5) {
+                if (newSamples < liveRate * 7) {
                     liveInFlight--;
                     if (liveState) liveState.textContent = '…';
                     return;
@@ -718,11 +719,12 @@
 
                 seq = liveSeq++;
                 liveAudioSent++;
+            if (liveState) liveState.textContent = '⏳ ' + liveAudioDone + '/' + liveAudioSent;
                 if (liveHint) { liveHint.hidden = true; }
                 if (liveState) { liveState.textContent = '⏳'; liveState.className = 'ltr-state'; }
 
                 var ctrl = new AbortController();
-                var killer = setTimeout(function () { ctrl.abort(); }, 45000);
+                var killer = setTimeout(function () { ctrl.abort(); }, 20000);
                 var r;
                 try {
                     r = await fetch(apiUrl('transcribe_chunk.php'), {
@@ -735,6 +737,7 @@
                 }
 
                 var data = await r.json();
+                liveAudioDone++;
                 var txt = (data.text || '').trim();
                 if (data.error && liveState) {
                     liveState.textContent = data.error;
@@ -745,7 +748,8 @@
                 }
                 livePending[seq] = txt;
             } catch (err) {
-                if (seq >= 0) { livePending[seq] = ''; }
+                if (seq >= 0) { livePending[seq] = ''; liveAudioDone++; }
+                if (liveState) liveState.textContent = '⏳ ' + liveAudioDone + '/' + liveAudioSent;
                 if (liveState) {
                     liveState.textContent = 'ASR ' + (err && err.message ? err.message : 'error');
                     liveState.className = 'ltr-state is-error';
@@ -830,7 +834,7 @@
                         : 'No audio slice could be sent: the microphone is not delivering usable sound.';
                 }
             }, 18000);
-            setTimeout(livePush, 6000); // first slice: 6 s of speech
+            setTimeout(livePush, 8000); // first slice: 8 s of speech
         }
 
         function stopLiveTranscription() {
@@ -938,6 +942,32 @@
                         return;
                     }
                     var wav = wavBlob(mono, 16000);
+                    // Guaranteed result: whatever the live slices managed to do,
+                    // transcribe the whole recording in one call and show it.
+                    try {
+                        var ffd = new FormData();
+                        ffd.append('audio', wav, 'full.wav');
+                        var fl = document.getElementById('live-rec-from');
+                        if (fl && fl.value) ffd.append('from', fl.value);
+                        var tl = document.getElementById('live-rec-lang');
+                        if (tl && tl.value) ffd.append('to', tl.value);
+                        var fin = document.getElementById('live-rec-final');
+                        var fint = document.getElementById('live-rec-final-text');
+                        if (fin && fint) {
+                            fin.hidden = false;
+                            fint.textContent = document.documentElement.lang === 'fr' ? 'Transcription en cours…' : 'Transcribing…';
+                        }
+                        if (liveModal) { liveModal.show(); }
+                        var r2 = await fetch(apiUrl('transcribe_chunk.php'), {
+                            method: 'POST', body: ffd, headers: { 'Accept': 'application/json' }
+                        });
+                        var d2 = await r2.json();
+                        if (fint) {
+                            var t2 = (d2.text || '').trim();
+                            fint.textContent = t2 !== '' ? t2 : (document.documentElement.lang === 'fr' ? '(aucun texte reconnu)' : '(no speech recognised)');
+                        }
+                    } catch (e) { /* the file is still attached below */ }
+
                     var stamp = new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-');
                     var file = new File([wav], 'enregistrement-' + stamp + '.wav', { type: 'audio/wav' });
                     var dt = new DataTransfer();

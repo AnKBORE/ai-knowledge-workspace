@@ -1866,3 +1866,25 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     line-height: 1.45;
     color: #64748b;
 }
+
+.ltr-final {
+    margin-top: .9rem;
+    padding: .85rem 1rem;
+    border: 1px solid #cfe0ff;
+    border-radius: 12px;
+    background: #f4f8ff;
+}
+
+.ltr-final-title {
+    margin: 0 0 .5rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #3552c7;
+}
+
+.ltr-final .ltr-transcript {
+    max-height: 180px;
+    overflow-y: auto;
+}

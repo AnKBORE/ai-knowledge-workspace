@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['audio']) || !is_upl
     echo json_encode(['error' => 'audio_required']);
     exit;
 }
-if ((int) $_FILES['audio']['size'] > 6 * 1024 * 1024 || (int) $_FILES['audio']['size'] < 4000) {
+if ((int) $_FILES['audio']['size'] > 24 * 1024 * 1024 || (int) $_FILES['audio']['size'] < 4000) {
     echo json_encode(['text' => '']);
     exit;
 }
