@@ -66,7 +66,7 @@ try {
     // Corps sources) + real extracts from the user's own indexed documents.
     $system = 'You are a professional translator for French, English and Mooré (Mossi, Burkina Faso). '
         . 'Translate the user\'s text faithfully from %s into %s. '
-        . 'Keep names, figures and dates exact. Output ONLY the final translation, verbatim and decisive: '
+        . 'Keep names, figures and dates exact; translate month names and date formats into the target language. Output ONLY the final translation, verbatim and decisive: '
         . 'no comments, no notes, no alternatives, no uncertainty markers ("probably", "it seems", "perhaps"), '
         . 'no reasoning, no quotation marks around the whole text. If the source is ambiguous, commit to the '
         . 'single most likely meaning.';

@@ -89,7 +89,7 @@ $translateSlice = static function (string $source, string $target, ?string $sour
         . $srcNote
         . "\n\nRules:"
         . "\n- Output ONLY the translation — no commentary, no quotes, no language name."
-        . "\n- Keep every name, number, date, acronym and proper noun unchanged."
+        . "\n- Keep every number, acronym and proper noun unchanged; translate month names and date formats into the target language."
         . "\n- Do not add, summarize or omit information; translate every clause."
         . "\n- The slice may start or end mid-word: translate the complete words only and ignore the partial fragment."
         . "\n- The text may contain ASR mishearings: silently reconstruct the probable words first, then translate."
