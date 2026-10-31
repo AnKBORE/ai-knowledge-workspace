@@ -97,7 +97,7 @@ $translateSlice = static function (string $source, string $target, ?string $sour
         . LexiqueMoore::promptFor($source, $sourceLang ?? 'fr', $target)
         . $ctxNote
         . $repairNote
-        . ($moore ? "\n\n" . MooreReference::prompt() : '');
+        . ($moore ? "\n\n" . MooreReference::prompt() . "\n\n" . Proverbes::prompt(4) : '');
 
     return trim($dependencies['meta']->chat($source, [['role' => 'system', 'content' => $system]], null, 0.1));
 };

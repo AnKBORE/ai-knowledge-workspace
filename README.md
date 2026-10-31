@@ -299,7 +299,7 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**86 tests, 198 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
+**92 tests, 214 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 
