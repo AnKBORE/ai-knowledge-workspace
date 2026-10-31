@@ -624,7 +624,7 @@
         async function livePush() {
             if (liveInFlight >= 2 || !liveRunning || livePaused || !livePcm.length) return;
             liveInFlight++;
-            var seq = liveSeq++;
+            var seq = -1;   // allocated only when the slice is really sent
             var ok = true;
             try {
                 var total = 0;
@@ -698,6 +698,10 @@
                 // Continuity hint: tail of the previous transcript so Muse
                 // keeps pronouns/sentence fragments coherent across slices.
                 if (liveLast !== '') fd.append('ctx', liveLast.slice(-300));
+                // Allocate the sequence number ONLY now. An abandoned slice must
+                // not consume one, otherwise the flush loop waits forever for a
+                // slot that will never arrive (deadlock -> Listening… for ever).
+                seq = liveSeq++;
                 liveAudioSent++;
                 if (liveHint) { liveHint.hidden = true; }
                 if (liveState) { liveState.textContent = '⏳'; liveState.className = 'ltr-state'; }
