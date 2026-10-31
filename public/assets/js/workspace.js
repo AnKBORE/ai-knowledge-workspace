@@ -398,6 +398,7 @@
         var trTo = document.getElementById('translate-to');
         var trSource = document.getElementById('translate-source');
         var trForce = document.getElementById('translate-force');
+        var trBtn = document.getElementById('translate-btn');
         var trBusy = false;
         var prevFrom = trFrom.value, prevTo = trTo.value;
 
@@ -481,7 +482,10 @@
 
         translateForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-            trStatus.textContent = t('translating', 'Translating…');
+            if (trBtn) { trBtn.classList.add('is-busy'); }
+            trStatus.textContent = trForce.value === '1'
+                ? t('reformulating', 'Generating another wording…')
+                : t('translating', 'Translating…');
             trStatus.className = 'small mt-2 text-muted';
             try {
                 var data = await postJson(apiUrl('translate.php'), {
@@ -503,10 +507,12 @@
             } catch (err) {
                 trStatus.textContent = t('network_error');
                 trStatus.className = 'small mt-2 text-danger';
+            } finally {
+                if (trBtn) { trBtn.classList.remove('is-busy'); }
             }
         });
 
-        document.getElementById('translate-btn').addEventListener('click', function () {
+        trBtn.addEventListener('click', function () {
             if (!trSource.value.trim()) { trSource.focus(); return; }
             trForce.value = '1';
             trStatus.textContent = t('reformulating', 'Generating another wording…');

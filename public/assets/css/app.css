@@ -1772,3 +1772,58 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     .translate-form .translate-lang .form-select { min-width: 100%; width: 100%; }
     .translate-form .translate-lang { flex: 1 1 100%; }
 }
+
+/* Rephrase icon button */
+.translate-form .translate-cta .translate-refresh {
+    width: 58px;
+    height: 58px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(145deg, #4a63c8, #27499a);
+    box-shadow: 0 8px 20px rgb(39 73 154 / 30%), inset 0 1px 0 rgb(255 255 255 / 25%);
+    transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+
+.translate-form .translate-cta .translate-refresh svg {
+    width: 26px;
+    height: 26px;
+}
+
+.translate-form .translate-cta .translate-refresh:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgb(39 73 154 / 38%), inset 0 1px 0 rgb(255 255 255 / 30%);
+}
+
+.translate-form .translate-cta .translate-refresh:active {
+    transform: translateY(0) scale(.97);
+}
+
+.translate-form .translate-cta .translate-refresh:focus-visible {
+    outline: 3px solid rgb(74 99 200 / 45%);
+    outline-offset: 3px;
+}
+
+.translate-form .translate-cta .translate-refresh svg {
+    transition: transform .35s ease;
+}
+
+.translate-form .translate-cta .translate-refresh:hover svg {
+    transform: rotate(180deg);
+}
+
+.translate-form .translate-cta .translate-refresh.is-busy svg {
+    animation: translate-spin 1s linear infinite;
+}
+
+@keyframes translate-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 767px) {
+    .translate-form .translate-cta .translate-refresh { width: 52px; height: 52px; }
+}
