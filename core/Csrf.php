@@ -42,4 +42,18 @@ final class Csrf
 
         return is_string($stored) && is_string($token) && $token !== '' && hash_equals($stored, $token);
     }
+
+    /**
+     * Validate a state-changing request: accepts the classic `_csrf` form field
+     * or the `X-CSRF-Token` header sent by the fetch wrapper.
+     */
+    public function validateRequest(): bool
+    {
+        $token = $_POST['_csrf']
+            ?? $_SERVER['HTTP_X_CSRF_TOKEN']
+            ?? $_SERVER['HTTP_X_XSRF_TOKEN']
+            ?? null;
+
+        return $this->validate(is_string($token) ? $token : null);
+    }
 }

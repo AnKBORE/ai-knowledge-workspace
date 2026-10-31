@@ -1,3 +1,18 @@
+/* Send the CSRF token with every fetch (defence in depth for AJAX endpoints). */
+(function () {
+    var meta = document.querySelector('meta[name="csrf-token"]');
+    if (!meta) { return; }
+    var token = meta.getAttribute('content') || '';
+    if (!token) { return; }
+    var originalFetch = window.fetch;
+    window.fetch = function (input, init) {
+        init = init || {};
+        var headers = new Headers(init.headers || {});
+        if (!headers.has('X-CSRF-Token')) { headers.set('X-CSRF-Token', token); }
+        init.headers = headers;
+        return originalFetch.call(this, input, init);
+    };
+})();
 /* Agentic Knowledge Workspace — shared client logic (one file for all pages). */
 (function () {
     'use strict';
@@ -500,7 +515,7 @@
         var recStop = document.getElementById('record-stop');
         var recTimer = document.getElementById('record-timer');
         var recStatus = document.getElementById('record-status');
-        var mediaRecorder = null, streamRef = null, chunks = [], recInterval = null, recStart = 0;
+        var mediaRecorder = null, streamRef = null, chunks = [], recInterval = null, recStart = 0, recElapsed = 0, recPausedAt = 0;
         var analyserCtx = null, analyser = null, levelEl = document.getElementById('record-level');
 
         function updateLevel() {
@@ -545,8 +560,163 @@
 
         function recTick() {
             var s = Math.floor((Date.now() - recStart) / 1000);
-            recTimer.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+            var ts = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+            recTimer.textContent = ts;
+            if (liveTimer) liveTimer.textContent = ts;
         }
+
+        /* ---- Rolling live transcription: every ~8 s the new audio slice is
+           re-decoded from the full chunk buffer, sent to the ASR endpoint and
+           appended to the live modal. ASR stays accurate (clean 16 k WAV per
+           slice) while the transcript follows speech in near real time. ---- */
+        var liveModalEl = document.getElementById('live-rec-modal');
+        var liveModal = (window.bootstrap && liveModalEl) ? new bootstrap.Modal(liveModalEl) : null;
+        var liveText = document.getElementById('live-rec-text');
+        var liveTimer = document.getElementById('live-rec-timer');
+        var liveState = document.getElementById('live-rec-state');
+        var liveCursor = 0;          // samples already transcribed
+        var liveBusy = false;        // in-flight chunk
+        var liveRunning = false;
+        var livePushTimer = null;
+        var livePcm = [];            // raw Float32 buffers captured by ScriptProcessor
+        var liveRate = 48000;        // analyserCtx.sampleRate, set on start
+        var liveProc = null;         // ScriptProcessorNode for PCM capture
+        var liveLast = '';           // last received transcript — continuity hint
+        var liveInFlight = 0;        // concurrent ASR calls (max 2 → pipeline)
+        var liveSeq = 0;             // slice issue order
+        var liveFlush = 0;           // next slice index to render
+        var livePending = {};        // seq → transcript, flushed in order
+
+        function liveRender(txt) {
+            if (!liveText || !txt) return;
+            if (/^[\s*\(\[]|bruits?|musique|applaudissements/i.test(txt)) return;
+            var empty = liveText.querySelector('.live-empty');
+            if (empty) empty.remove();
+            var line = document.createElement('span');
+            line.className = 'live-chunk';
+            line.textContent = txt + ' ';
+            liveText.appendChild(line);
+            liveText.scrollTop = liveText.scrollHeight;
+        }
+
+        async function livePush() {
+            if (liveInFlight >= 2 || !liveRunning || livePaused || !livePcm.length) return;
+            liveInFlight++;
+            var seq = liveSeq++;
+            var ok = true;
+            try {
+                var total = 0;
+                for (var k = 0; k < livePcm.length; k++) total += livePcm[k].length;
+                var newSamples = total - liveCursor;
+                if (newSamples < liveRate * 1.5) { liveInFlight--; return; } // < 1.5 s
+
+                // Concatenate the not-yet-transcribed span.
+                var span = new Float32Array(newSamples), off = 0, skip = liveCursor;
+                for (k = 0; k < livePcm.length; k++) {
+                    var buf = livePcm[k];
+                    if (skip >= buf.length) { skip -= buf.length; continue; }
+                    var s = skip; skip = 0;
+                    span.set(buf.subarray(s), off); off += buf.length - s;
+                }
+
+                // VAD cut: when the span is long enough, end the slice on the
+                // first ≥120 ms low-energy gap after 6 s — slices break at
+                // natural speech pauses instead of mid-word.
+                var cut = span.length;
+                if (newSamples > liveRate * 6) {
+                    var win = Math.floor(liveRate * 0.12);
+                    var from = Math.max(Math.floor(liveRate * 4), Math.floor(span.length * 0.55));
+                    for (var ci = from; ci + win <= span.length; ci += win >> 1) {
+                        var e = 0, n = 0;
+                        for (var j = ci; j < ci + win; j += 8) { e += span[j] * span[j]; n++; }
+                        if (e / n < 0.0008) { cut = ci + win; break; }
+                    }
+                }
+                liveCursor += cut;
+                if (cut < Math.floor(liveRate * 1.5)) { liveInFlight--; return; }
+
+                // Downsample context rate → 16 kHz (linear), kept as float for wavBlob.
+                var ratio = liveRate / 16000;
+                var n16 = Math.floor(cut / ratio);
+                var pcm16 = new Float32Array(n16);
+                var peak = 0;
+                for (var i = 0; i < n16; i++) {
+                    var v = span[Math.floor(i * ratio)] || 0;
+                    peak = Math.max(peak, Math.abs(v));
+                    pcm16[i] = v;
+                }
+                if (peak < 0.012) { liveInFlight--; return; } // silence slice
+
+                var fd = new FormData();
+                fd.append('audio', wavBlob(pcm16, 16000), 'chunk.wav');
+                var liveLangEl = document.getElementById('live-rec-lang');
+                if (liveLangEl && liveLangEl.value) fd.append('to', liveLangEl.value);
+                var liveFromEl = document.getElementById('live-rec-from');
+                if (liveFromEl && liveFromEl.value) fd.append('from', liveFromEl.value);
+                // Continuity hint: tail of the previous transcript so Muse
+                // keeps pronouns/sentence fragments coherent across slices.
+                if (liveLast !== '') fd.append('ctx', liveLast.slice(-300));
+                var r = await fetch(apiUrl('transcribe_chunk.php'), { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
+                var data = await r.json();
+                if (livePaused) { liveInFlight--; return; } // drop reply while paused
+                var txt = (data.text || '').trim();
+                if (data.error && liveState) liveState.textContent = data.error;
+                livePending[seq] = txt;
+            } catch (err) {
+                livePending[seq] = '';
+                if (liveState) liveState.textContent = 'ASR ' + (err.message || 'error');
+            }
+
+            // Flush completed slices strictly in order.
+            while (livePending[liveFlush] !== undefined) {
+                var out = livePending[liveFlush];
+                delete livePending[liveFlush];
+                liveFlush++;
+                if (out !== '') {
+                    liveLast = out;
+                    liveRender(out);
+                }
+            }
+            liveInFlight--;
+        }
+
+        function startLiveTranscription() {
+            if (!liveModal) return;
+            liveCursor = 0; liveRunning = true; liveBusy = false;
+            liveInFlight = 0; liveSeq = 0; liveFlush = 0; livePending = {}; liveLast = '';
+            if (liveText) liveText.innerHTML = '<span class="live-empty">' + (document.documentElement.lang === 'fr' ? 'En écoute… parlez.' : 'Listening… speak.') + '</span>';
+            if (liveState) liveState.textContent = '';
+            liveModal.show();
+            livePushTimer = setInterval(livePush, 5000);
+            setTimeout(livePush, 4000); // first partial slice early
+        }
+
+        function stopLiveTranscription() {
+            liveRunning = false;
+            clearInterval(livePushTimer);
+            if (liveModal) liveModal.hide();
+        }
+
+        var liveStopBtn = document.getElementById('live-rec-stop');
+        if (liveStopBtn) liveStopBtn.addEventListener('click', function () { if (recStop && !recStop.hidden) recStop.click(); });
+
+        // Pause/resume (icon toggles play↔pause); rolling loop freezes too.
+        var livePaused = false;
+        var livePauseBtn = document.getElementById('live-rec-pause');
+        var livePauseIc = document.getElementById('live-rec-pause-ic');
+        var liveRecDot = liveModalEl ? liveModalEl.querySelector('.live-rec-dot') : null;
+        if (livePauseBtn) livePauseBtn.addEventListener('click', function () {
+            if (!mediaRecorder) return;
+            livePaused = !livePaused;
+            try { livePaused ? mediaRecorder.pause() : mediaRecorder.resume(); } catch (e) { livePaused = !livePaused; return; }
+            if (livePaused) { recPausedAt = Date.now(); }
+            else { recStart += Date.now() - recPausedAt; } // shift start → elapsed freezes
+            if (livePauseIc) livePauseIc.innerHTML = livePaused
+                ? '<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>'
+                : '<path d="M10 4H6v16h4zM18 4h-4v16h4z"/>';
+            if (liveRecDot) liveRecDot.style.animationPlayState = livePaused ? 'paused' : 'running';
+            if (liveState) liveState.textContent = livePaused ? '⏸' : '';
+        });
 
         recBtn.addEventListener('click', async function () {
             try {
@@ -567,15 +737,27 @@
                 pull.gain.value = 0;
                 analyser.connect(pull);
                 pull.connect(analyserCtx.destination);
+
+                // Raw PCM capture for live transcription — no blob decoding.
+                livePcm = []; liveCursor = 0; liveRate = analyserCtx.sampleRate;
+                liveProc = analyserCtx.createScriptProcessor(4096, 1, 1);
+                analyserCtx.createMediaStreamSource(streamRef).connect(liveProc);
+                liveProc.onaudioprocess = function (ev) {
+                    if (!livePaused) livePcm.push(new Float32Array(ev.inputBuffer.getChannelData(0)));
+                };
+                var liveSink = analyserCtx.createGain();
+                liveSink.gain.value = 0;
+                liveProc.connect(liveSink); liveSink.connect(analyserCtx.destination);
                 chunks = [];
                 mediaRecorder.ondataavailable = function (e) { if (e.data && e.data.size) { chunks.push(e.data); } };
-                mediaRecorder.start();
+                mediaRecorder.start(4000); // 4 s timeslice → chunks flow live
+                startLiveTranscription();
                 var track = streamRef.getAudioTracks()[0];
                 if (track && track.muted) {
                     recStatus.textContent = t('rec_muted');
                     recStatus.className = 'small mt-2 text-warning';
                 }
-                recStart = Date.now();
+                recStart = Date.now(); recElapsed = 0; livePaused = false;
                 recInterval = setInterval(function () { recTick(); updateLevel(); }, 300);
                 recBtn.hidden = true; recStop.hidden = false;
                 recStatus.textContent = '';
@@ -586,12 +768,14 @@
         });
 
         recStop.addEventListener('click', function () {
+            stopLiveTranscription();
             clearInterval(recInterval);
             recBtn.hidden = false; recStop.hidden = true;
             var duration = recTimer.textContent;
 
             mediaRecorder.onstop = async function () {
                 streamRef.getTracks().forEach(function (trk) { trk.stop(); });
+                if (liveProc) { try { liveProc.disconnect(); } catch (e) {} liveProc = null; }
                 if (analyserCtx) { analyserCtx.close(); analyserCtx = null; analyser = null; }
                 if (levelEl) { levelEl.style.width = '0'; }
                 try {
@@ -908,7 +1092,7 @@
             ltLines = [];
             if (ltBox) { ltBox.hidden = true; ltBox.innerHTML = ''; }
             ltText = '';
-            if (ltExports) ltExports.hidden = true;
+            if (ltExports) ltExports.classList.add('lt-disabled');
             if (ltStatus) ltStatus.textContent = '';
         }
 
@@ -1031,7 +1215,7 @@
                 ltStatus.textContent = sprintf(t('lt_done'), total);
                 ltStatus.className = 'small text-success';
             }
-            if (ltExports) ltExports.hidden = received === 0;
+            if (ltExports) ltExports.classList.toggle('lt-disabled', received === 0);
         }
 
         // Fetch and display the translation — timed (karaoke) when whisper
@@ -1121,7 +1305,7 @@
                 ltStatus.textContent = sprintf(t('lt_done'), received)
                     + (failed > 0 ? ' (' + failed + ' ' + t('lt_error') + ')' : '');
                 ltStatus.className = failed > 0 ? 'small text-warning' : 'small text-success';
-                if (ltExports) ltExports.hidden = false;
+                if (ltExports) ltExports.classList.remove('lt-disabled');
             }
         }
 

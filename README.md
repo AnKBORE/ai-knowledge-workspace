@@ -299,13 +299,13 @@ API endpoints (session-protected):
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**79 tests, 179 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
+**86 tests, 198 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline and the agent loop. No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 
 ## Security
 
-Prepared SQL statements · CSRF protection on every POST · password hashing (Argon2/bcrypt) · progressive brute-force lockout · RBAC resolved centrally (`PermissionService`) · deny-by-default · files stored outside the web root · no secrets in code or logs · audit journal (append-only) · security headers (CSP).
+Prepared SQL statements · CSRF protection on every POST · password hashing (Argon2/bcrypt) · progressive brute-force lockout · RBAC resolved centrally (`PermissionService`) · deny-by-default · files stored outside the web root · no secrets in code or logs · audit journal (append-only; restricted legal purge requires password re-auth and is itself journaled) · security headers (CSP).
 
 ---
 

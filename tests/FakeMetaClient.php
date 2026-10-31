@@ -41,13 +41,25 @@ final class FakeMetaClient extends MetaClient
         return 'Grounded answer from context.';
     }
 
-    public function transcribe(string $audioPath): string
+    public function transcribe(string $audioPath, ?string $lang = null): string
     {
         return 'transcribed meeting text';
+    }
+
+    /** @return array{text: string, segments: list<array<string, mixed>>, language: string} */
+    public function transcribeTimedLocal(string $audioPath, string $outputBase): array
+    {
+        return ['text' => 'transcribed meeting text', 'segments' => [], 'language' => 'fr'];
     }
 
     public function describeImage(string $imagePath): string
     {
         return 'scanned document text';
+    }
+
+    /** @return list<string> */
+    public function describeImages(array $imagePaths): array
+    {
+        return array_fill(0, count($imagePaths), 'scanned document text');
     }
 }

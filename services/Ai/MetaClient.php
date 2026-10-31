@@ -153,18 +153,18 @@ class MetaClient
      *
      * @param string $audioPath Path to a local audio file (wav/mp3/m4a/...).
      */
-    public function transcribe(string $audioPath): string
+    public function transcribe(string $audioPath, ?string $lang = null): string
     {
         // Ordered cascade: each backend that fails (refusal, missing binary,
         // empty output) is logged and the next one is tried; the last error is
         // rethrown only if every configured backend failed.
         $verbatim = [
-            'whisper_binary' => fn () => $this->transcribeLocal($audioPath),
-            'baseten_whisper_url' => fn () => $this->transcribeBasetenWhisper($audioPath),
+            'whisper_binary' => fn () => $this->transcribeLocal($audioPath, $lang),
+            'baseten_whisper_url' => fn () => $this->transcribeBasetenWhisper($audioPath, $lang),
             'transcription_model' => fn () => $this->transcribeDedicated($audioPath),
         ];
         $cloud = (string) ($this->config['api_style'] ?? 'meta') === 'openai'
-            ? fn () => $this->transcribeOpenAi($audioPath)
+            ? fn () => $this->transcribeOpenAi($audioPath, $lang)
             : fn () => (string) ($this->requestMultipart(
                 (string) ($this->config['transcription_endpoint'] ?? '/v1/audio/transcriptions'),
                 $audioPath,
@@ -198,16 +198,19 @@ class MetaClient
      * Split long audio (MP3/WAV) into chunks shorter than 5 minutes, transcribe
      * each chunk and concatenate the transcripts.
      */
-    private function transcribeOpenAi(string $audioPath): string
+    private function transcribeOpenAi(string $audioPath, ?string $lang = null): string
     {
         $chunkSeconds = (int) ($this->config['audio_chunk_seconds'] ?? 300);
         $splitter = new AudioSplitter();
         $segments = $splitter->split($audioPath, $chunkSeconds);
 
+        $langHint = $lang !== null
+            ? ' The audio language is ' . ($lang === 'mo' ? 'Mooré (Mossi, Burkina Faso) — transcribe the phonetic Mooré words as they sound, using Mooré orthography characters (ɩ ʋ ã ẽ ĩ õ ũ ñ) when needed' : ($lang === 'fr' ? 'French' : 'English')) . '.'
+            : '';
         $texts = [];
         foreach ($segments as $segment) {
             $texts[] = $this->chatWithAudio(
-                'Transcribe the exact words spoken in this audio, in their original language. Output only the transcript.',
+                'Transcribe the exact words spoken in this audio, in their original language. Output only the transcript.' . $langHint,
                 $segment,
             );
 
@@ -223,7 +226,7 @@ class MetaClient
      * Baseten dedicated Whisper deployment (predict API):
      * {"whisper_input": {"audio": {"audio_b64"}, "whisper_params"}} → segments[].text.
      */
-    private function transcribeBasetenWhisper(string $audioPath): string
+    private function transcribeBasetenWhisper(string $audioPath, ?string $lang = null): string
     {
         $data = file_get_contents($audioPath);
         if ($data === false) {
@@ -231,7 +234,7 @@ class MetaClient
         }
 
         $input = ['audio' => ['audio_b64' => base64_encode($data)]];
-        $language = (string) ($this->config['baseten_whisper_language'] ?? '');
+        $language = $this->whisperLang($lang) ?? (string) ($this->config['baseten_whisper_language'] ?? '');
         if ($language !== '') {
             $input['whisper_params'] = ['audio_language' => $language];
         }
@@ -262,7 +265,7 @@ class MetaClient
      * Local whisper.cpp transcription (free, offline, verbatim).
      * Config: whisper_binary + whisper_model (+ optional whisper_args).
      */
-    private function transcribeLocal(string $audioPath): string
+    private function transcribeLocal(string $audioPath, ?string $lang = null): string
     {
         $bin = (string) $this->config['whisper_binary'];
         $model = (string) ($this->config['whisper_model'] ?? '');
@@ -275,6 +278,10 @@ class MetaClient
         }
 
         $args = trim((string) ($this->config['whisper_args'] ?? '-nt'));
+        $wl = $this->whisperLang($lang);
+        if ($wl !== null) {
+            $args = trim((string) preg_replace('/(^|\s)-l\s+\S+/', ' ', $args)) . ' -l ' . $wl;
+        }
         $cmd = sprintf('"%s" -m "%s" -f "%s" %s', $bin, $model, $audioPath, $args);
         exec($cmd . ' 2>&1', $lines, $code);
 
@@ -371,6 +378,20 @@ class MetaClient
         }
 
         return $segments;
+    }
+
+    /**
+     * Map our lang codes to whisper's ISO codes. Mooré is unsupported by
+     * whisper — French phonetics are the closest proxy (proven on real audio).
+     */
+    private function whisperLang(?string $lang): ?string
+    {
+        return match ($lang) {
+            'fr' => 'fr',
+            'en' => 'en',
+            'mo' => 'fr',
+            default => null,
+        };
     }
 
     /** Share of Latin-script letters — detects non-Latin ASR hallucinations. */

@@ -29,3 +29,6 @@
 Thumbs.db
 
 whisper/
+
+# Temporary extracted PDFs
+_tmp_*.pdf

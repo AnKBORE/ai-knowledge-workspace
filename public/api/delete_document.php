@@ -33,6 +33,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
+if (!$dependencies['csrf']->validateRequest()) {
+    http_response_code(419);
+    echo json_encode(['error' => $T['csrf'] ?? 'Session expirée. Rechargez la page.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];

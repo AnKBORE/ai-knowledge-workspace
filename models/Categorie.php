@@ -79,8 +79,24 @@ final class Categorie
 
     public function slugify(string $nom): string
     {
-        $slug = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $nom) ?: $nom;
-        $slug = strtolower((string) preg_replace('/[^A-Za-z0-9]+/', '-', $slug));
+        // Portable transliteration (iconv //TRANSLIT is unreliable on Windows).
+        $nom = strtr($nom, [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a', 'á' => 'a', 'ã' => 'a', 'å' => 'a',
+            'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
+            'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'ö' => 'o', 'õ' => 'o',
+            'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'u',
+            'ç' => 'c', 'ñ' => 'n', 'ÿ' => 'y',
+            'À' => 'a', 'Â' => 'a', 'Ä' => 'a', 'Á' => 'a', 'Ã' => 'a', 'Å' => 'a',
+            'È' => 'e', 'É' => 'e', 'Ê' => 'e', 'Ë' => 'e',
+            'Ì' => 'i', 'Í' => 'i', 'Î' => 'i', 'Ï' => 'i',
+            'Ò' => 'o', 'Ó' => 'o', 'Ô' => 'o', 'Ö' => 'o', 'Õ' => 'o',
+            'Ù' => 'u', 'Ú' => 'u', 'Û' => 'u', 'Ü' => 'u',
+            'Ç' => 'c', 'Ñ' => 'n', 'Ÿ' => 'y',
+            'œ' => 'oe', 'æ' => 'ae',
+        ]);
+
+        $slug = strtolower((string) preg_replace('/[^A-Za-z0-9]+/', '-', $nom));
 
         return trim($slug, '-') ?: 'categorie';
     }

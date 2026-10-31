@@ -180,24 +180,35 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                 <div class="modal-body space-create-body">
                     <audio id="doc-audio-player" controls preload="metadata" class="w-100"></audio>
                     <div class="doc-live-translate mt-3">
-                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                            <label for="doc-audio-from" class="small fw-semibold mb-0"><?= e($P['audio_in'] ?? 'Audio') ?></label>
-                            <select id="doc-audio-from" class="form-select form-select-sm" style="width:auto">
-                                <option value="">Auto</option>
-                                <option value="mo">Mooré</option>
-                                <option value="fr">Français</option>
-                                <option value="en">English</option>
-                            </select>
-                            <label for="doc-audio-lang" class="small fw-semibold mb-0"><?= e($P['translate_to']) ?></label>
-                            <select id="doc-audio-lang" class="form-select form-select-sm" style="width:auto">
-                                <option value="">—</option>
-                                <option value="fr">Français</option>
-                                <option value="en">English</option>
-                                <option value="mo">Mooré</option>
-                            </select>
-                            <div class="ms-auto" id="doc-audio-exports" hidden>
-                                <button type="button" class="btn btn-sm btn-outline-primary doc-audio-export" data-format="pdf"><?= e($S['download_pdf'] ?? 'PDF') ?></button>
-                                <button type="button" class="btn btn-sm btn-outline-primary doc-audio-export" data-format="docx"><?= e($S['download_docx'] ?? 'DOCX') ?></button>
+                        <div class="lt-bar mb-2">
+                            <div class="lt-field">
+                                <label for="doc-audio-from"><?= e($P['audio_in'] ?? 'Audio in') ?></label>
+                                <select id="doc-audio-from" class="form-select">
+                                    <option value="">Auto</option>
+                                    <option value="mo">Mooré</option>
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                            <div class="lt-swap" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M21 7H8a4 4 0 0 0-4 4v1"/><path d="m7 21-4-4 4-4"/><path d="M3 17h13a4 4 0 0 0 4-4v-1"/></svg>
+                            </div>
+                            <div class="lt-field">
+                                <label for="doc-audio-lang"><?= e($P['translate_to']) ?></label>
+                                <select id="doc-audio-lang" class="form-select">
+                                    <option value="">—</option>
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                    <option value="mo">Mooré</option>
+                                </select>
+                            </div>
+                            <div class="lt-actions lt-disabled" id="doc-audio-exports">
+                                <button type="button" class="btn btn-sm btn-outline-danger btn-icon doc-audio-export" data-format="pdf" title="<?= e($S['download_pdf'] ?? 'PDF') ?>" aria-label="<?= e($S['download_pdf'] ?? 'PDF') ?>">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h2a1.5 1.5 0 0 0 0-3H9v6"/><path d="M13 10v6h1.5a2 2 0 0 0 0-6z"/><path d="M17.2 16h1.6"/><path d="M17.2 10v6"/></svg>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary btn-icon doc-audio-export" data-format="docx" title="<?= e($S['download_docx'] ?? 'DOCX') ?>" aria-label="<?= e($S['download_docx'] ?? 'DOCX') ?>">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m8 11 2 8 2-5 2 5 2-8"/></svg>
+                                </button>
                             </div>
                         </div>
                         <div id="doc-audio-translate-status" class="small text-muted"></div>

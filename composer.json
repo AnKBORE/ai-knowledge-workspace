@@ -2,7 +2,7 @@
     "name": "ai-knowledge-workspace/app",
     "description": "AI-powered institutional knowledge workspace (PHP 8.4.27 / MySQL 8.4.13, strict MVC).",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "require": {
         "php": ">=8.4.27",
         "ext-fileinfo": "*",

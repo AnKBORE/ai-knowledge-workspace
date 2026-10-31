@@ -77,3 +77,50 @@ $P = $T['upload'];
         </div>
     </div>
 </div>
+
+<!-- Live transcription modal (meeting recorder) -->
+<div class="modal fade doc-modal" id="live-rec-modal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content ltr-modal">
+            <div class="modal-header ltr-head">
+                <div class="ltr-mic-badge" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/></svg>
+                </div>
+                <div class="ltr-head-text">
+                    <p class="ltr-kicker"><?= e(($isFr ?? true) ? 'Transcription en direct' : 'Live transcription') ?></p>
+                    <h5 class="ltr-title" id="live-rec-title"><?= e($P['recorder_title'] ?? 'Recording') ?></h5>
+                </div>
+                <div class="ltr-eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+                <button type="button" class="btn-close btn-close-white ltr-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ltr-body">
+                <div class="ltr-statusbar">
+                    <span class="ltr-rec-badge"><span class="live-rec-dot" aria-hidden="true"></span>REC</span>
+                    <span id="live-rec-timer" class="ltr-timer">00:00</span>
+                    <select id="live-rec-from" class="form-select form-select-sm ltr-lang" aria-label="<?= e(($isFr ?? true) ? 'Langue de l\'audio' : 'Audio language') ?>">
+                        <option value=""><?= e(($isFr ?? true) ? 'Audio : auto' : 'Audio: auto') ?></option>
+                        <option value="mo">Mooré</option>
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                    </select>
+                    <select id="live-rec-lang" class="form-select form-select-sm ltr-lang" aria-label="<?= e($P['translate_to'] ?? 'Translate to') ?>">
+                        <option value=""><?= e(($isFr ?? true) ? 'Transcription brute' : 'Raw transcript') ?></option>
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                        <option value="mo">Mooré</option>
+                    </select>
+                    <span id="live-rec-state" class="ltr-state"></span>
+                </div>
+                <div id="live-rec-text" class="live-rec-transcript ltr-transcript" aria-live="polite"></div>
+            </div>
+            <div class="modal-footer ltr-footer">
+                <button type="button" class="ltr-btn ltr-btn-ghost" id="live-rec-pause" title="<?= e(($isFr ?? true) ? 'Pause' : 'Pause') ?>" aria-label="Pause">
+                    <svg id="live-rec-pause-ic" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H6v16h4zM18 4h-4v16h4z"/></svg>
+                </button>
+                <button type="button" class="ltr-btn ltr-btn-stop" id="live-rec-stop" title="<?= e(($isFr ?? true) ? 'Arrêter' : 'Stop') ?>" aria-label="Stop">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

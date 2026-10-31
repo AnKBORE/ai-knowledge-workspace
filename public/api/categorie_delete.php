@@ -42,7 +42,7 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'do
     $respond(['error' => $T['permission_denied']], 403);
 }
 
-if (!$dependencies['csrf']->validate($_POST['_csrf'] ?? null)) {
+if (!$dependencies['csrf']->validateRequest()) {
     $respond(['error' => $T['session_expired']], 419);
 }
 

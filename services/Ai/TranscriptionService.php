@@ -16,13 +16,13 @@ final class TranscriptionService
     /**
      * Transcribe a local audio file and return the recognised text.
      */
-    public function transcribe(string $audioPath): string
+    public function transcribe(string $audioPath, ?string $lang = null): string
     {
         if (!is_file($audioPath)) {
             throw new \RuntimeException('Audio file not found: ' . $audioPath);
         }
 
-        return trim($this->client->transcribe($audioPath));
+        return trim($this->client->transcribe($audioPath, $lang));
     }
 
     /**

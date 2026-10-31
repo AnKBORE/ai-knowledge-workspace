@@ -221,3 +221,19 @@ ANONYMISATION=1
 | `ANONYMISATION=1` | Les identifiants directs sont remplacés par `[EMAIL]`, `[TELEPHONE]`, `[IBAN]`, `[CARTE]` |
 
 > ✅ Implémenté dans `services/Anonymiseur.php`, testé par `tests/AnonymiseurTest.php`.
+---
+
+## 16. Purge légale du journal d'audit
+
+Le journal est **en ajout seul par conception**. Il existe **une** exception encadrée : la **purge légale** (droit à l'effacement, RGPD), réservée à l'**administrateur technique**.
+
+| Contrôle | Détail |
+|---|---|
+| **Permission** | `journal.lire` (administrateur technique uniquement) |
+| **Méthode** | **POST** + **CSRF** obligatoire |
+| **Re-authentification** | **Mot de passe du compte** exigé à chaque purge |
+| **Fenêtre** | Seules les entrées de **plus de 10 jours** peuvent être purgées |
+| **Traçabilité** | La purge est **elle-même journalisée** (`journal.purge`, avec le nombre d'entrées) |
+| **Refus** | Un mot de passe incorrect est **journalisé** (`journal.purge`, résultat `refus`) |
+
+> ✅ **Rien n'échappe au journal** : même la purge **laisse une trace**. Les entrées purgées sont **anciennes** (> 10 jours) et la purge est **restreinte, re-authentifiée et auditée**.

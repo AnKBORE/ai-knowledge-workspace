@@ -28,6 +28,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
+if (!$dependencies['csrf']->validateRequest()) {
+    http_response_code(419);
+    echo json_encode(['error' => $T['csrf'] ?? 'Session expirée. Rechargez la page.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 $input = json_decode((string) file_get_contents('php://input'), true);
 $input = is_array($input) ? $input : [];
@@ -59,6 +64,9 @@ try {
         . 'no reasoning, no quotation marks around the whole text. If the source is ambiguous, commit to the '
         . 'single most likely meaning.';
 
+    $system .= \App\Services\Ai\Glossaire::promptFor($to);
+    $system .= \App\Services\Ai\LexiqueMoore::promptFor($text, $from, $to);
+
     if ($from === 'mo' || $to === 'mo') {
         $system .= "\n\n" . \App\Services\Ai\MooreReference::prompt();
         $moore = $dependencies['pdo']->query(
@@ -77,6 +85,17 @@ try {
         null,
         0.1,
     );
+
+    // Length-ratio guard: an incomplete or distorted translation is retried once.
+    $ratio = strlen($text) > 0 ? strlen($translation) / strlen($text) : 1.0;
+    if (trim($translation) === '' || $ratio < 0.35 || $ratio > 3.5) {
+        $repair = sprintf($system, $languages[$from], $languages[$to])
+            . "\n\nYour previous attempt was rejected (incomplete or distorted). Translate the ENTIRE source faithfully, clause by clause; keep the same length and level of detail.";
+        $retry = $dependencies['meta']->chat($text, [['role' => 'system', 'content' => $repair]], null, 0.1);
+        if (trim($retry) !== '') {
+            $translation = $retry;
+        }
+    }
 
     $dependencies['journal']->log(
         $dependencies['auth']->id(),

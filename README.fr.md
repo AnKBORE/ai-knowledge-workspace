@@ -213,7 +213,7 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **79 tests automatisés · 179 assertions** |
+| **Tests** | **86 tests automatisés · 198 assertions** |
 | **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
 | **UI** | Bilingue EN/FR (EN par défaut) — mooré géré pour le contenu (réponses, tâches, traduction), Bootstrap + DataTables + Select2 |
 
@@ -299,13 +299,13 @@ Endpoints API (protégés par session) :
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**79 tests, 179 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan et la boucle d'agent. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**86 tests, 198 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan et la boucle d'agent. Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 
 ## Sécurité
 
-Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots de passe (Argon2/bcrypt) · verrouillage progressif anti-force brute · RBAC résolu centralement (`PermissionService`) · refus par défaut · fichiers stockés hors racine web · aucun secret dans le code ou les logs · journal d'audit (ajout seul) · en-têtes de sécurité (CSP).
+Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots de passe (Argon2/bcrypt) · verrouillage progressif anti-force brute · RBAC résolu centralement (`PermissionService`) · refus par défaut · fichiers stockés hors racine web · aucun secret dans le code ou les logs · journal d'audit (ajout seul ; purge légale restreinte, re-authentifiée et elle-même journalisée) · en-têtes de sécurité (CSP).
 
 ---
 

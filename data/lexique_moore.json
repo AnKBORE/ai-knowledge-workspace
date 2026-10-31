@@ -1,0 +1,4340 @@
+[
+    {
+        "mo": "bãg-peoogo",
+        "en": "shoulder blade",
+        "fr": "omoplate",
+        "theme": "corps"
+    },
+    {
+        "mo": "bãg-pʋga",
+        "en": "armpit",
+        "fr": "aisselle",
+        "theme": "corps"
+    },
+    {
+        "mo": "bãoko",
+        "en": "shoulder",
+        "fr": "épaule",
+        "theme": "corps"
+    },
+    {
+        "mo": "bĩis-noore",
+        "en": "nipple, teat",
+        "fr": "mamelon, tétine",
+        "theme": "corps"
+    },
+    {
+        "mo": "bĩisri1",
+        "en": "breast, teat, udder",
+        "fr": "sein, mamelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "dĩiri",
+        "en": "forehead",
+        "fr": "front",
+        "theme": "corps"
+    },
+    {
+        "mo": "fulfuugu",
+        "en": "lung",
+        "fr": "poumon",
+        "theme": "corps"
+    },
+    {
+        "mo": "gẽka",
+        "en": "endpoint of upper yaw",
+        "fr": "extrémité supérieure de la mâchoire",
+        "theme": "corps"
+    },
+    {
+        "mo": "gelle2",
+        "en": "egg, reproduction cell (ovum)",
+        "fr": "ovule",
+        "theme": "corps"
+    },
+    {
+        "mo": "gel-lobda",
+        "en": "ovary",
+        "fr": "ovaire",
+        "theme": "corps"
+    },
+    {
+        "mo": "gel-sore",
+        "en": "fallopian tube",
+        "fr": "trompe (femme)",
+        "theme": "corps"
+    },
+    {
+        "mo": "gere",
+        "en": "1 • thigh",
+        "fr": "cuisse",
+        "theme": "corps"
+    },
+    {
+        "mo": "ger-kõbre",
+        "en": "thigh-bone, femur",
+        "fr": "fémur",
+        "theme": "corps"
+    },
+    {
+        "mo": "gɛya",
+        "en": "tendon, muscle",
+        "fr": "tendon, muscle, nerf",
+        "theme": "corps"
+    },
+    {
+        "mo": "gĩindi",
+        "en": "tendon, muscle",
+        "fr": "tendon, muscle, nerf",
+        "theme": "corps"
+    },
+    {
+        "mo": "kãare",
+        "en": "nape, neck, the back of the head",
+        "fr": "nuque",
+        "theme": "corps"
+    },
+    {
+        "mo": "kalkõto",
+        "en": "brain",
+        "fr": "cervelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "kanga",
+        "en": "arm",
+        "fr": "bras",
+        "theme": "corps"
+    },
+    {
+        "mo": "kãnga2",
+        "en": "arm",
+        "fr": "bras",
+        "theme": "corps"
+    },
+    {
+        "mo": "kan-tɩɩga",
+        "en": "forearm. lower arm",
+        "fr": "avant-bras",
+        "theme": "corps"
+    },
+    {
+        "mo": "kãntɩɩga",
+        "en": "elbow",
+        "fr": "coude",
+        "theme": "corps"
+    },
+    {
+        "mo": "karga",
+        "en": "leg, foot",
+        "fr": "membre inférieur, jambe",
+        "theme": "corps"
+    },
+    {
+        "mo": "kar-koɛɛnga",
+        "en": "shin-bone, tibia, fibula",
+        "fr": "tibia, péroné, os de la jambe",
+        "theme": "corps"
+    },
+    {
+        "mo": "kar-lʋlga",
+        "en": "calf",
+        "fr": "mollet",
+        "theme": "corps"
+    },
+    {
+        "mo": "kãtɩzoobre",
+        "en": "forearm, lower arm",
+        "fr": "avant-bras",
+        "theme": "corps"
+    },
+    {
+        "mo": "kirga",
+        "en": "molar",
+        "fr": "molaire",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩgbre",
+        "en": "cheek, buttock",
+        "fr": "fesse",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩgdga",
+        "en": "temple",
+        "fr": "tempe",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩɩlga",
+        "en": "hip",
+        "fr": "hanche",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩɩl-kõbre",
+        "en": "pelvis (bone at base of spine)",
+        "fr": "os du bassin",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩn-boko",
+        "en": "vagina",
+        "fr": "vagin",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩn-bũmbri",
+        "en": "pubis, pubic region",
+        "fr": "pubis",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩnde",
+        "en": "vulva, vagina",
+        "fr": "vulve, vagin (grossier), sexe",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩn-kogre",
+        "en": "vulva lip",
+        "fr": "lèvres de la vulve",
+        "theme": "corps"
+    },
+    {
+        "mo": "kɩʋʋlgo",
+        "en": "hip, haunch",
+        "fr": "hanche, os iliaque, bassin",
+        "theme": "corps"
+    },
+    {
+        "mo": "kõabnenga",
+        "en": "1 • body-hair, fur, feather",
+        "fr": "poils",
+        "theme": "corps"
+    },
+    {
+        "mo": "kõb-fõr-fõre",
+        "en": "cartilage",
+        "fr": "cartilage",
+        "theme": "corps"
+    },
+    {
+        "mo": "kõbre",
+        "en": "bone, fish bone",
+        "fr": "os, arrête",
+        "theme": "corps"
+    },
+    {
+        "mo": "koe-wĩiri",
+        "en": "vocal cords",
+        "fr": "cordes vocales",
+        "theme": "corps"
+    },
+    {
+        "mo": "koko-bũnda",
+        "en": "saliva gland",
+        "fr": "glande salivaire",
+        "theme": "corps"
+    },
+    {
+        "mo": "koko-maasre",
+        "en": "gullet, oesophagus",
+        "fr": "œsophage",
+        "theme": "corps"
+    },
+    {
+        "mo": "koko-raoogo",
+        "en": "windpipe",
+        "fr": "trachée artère, larynx",
+        "theme": "corps"
+    },
+    {
+        "mo": "kokore",
+        "en": "throat, pharynx",
+        "fr": "gorge, gosier",
+        "theme": "corps"
+    },
+    {
+        "mo": "koko-yodre",
+        "en": "Adam's apple",
+        "fr": "pomme d'Adam",
+        "theme": "corps"
+    },
+    {
+        "mo": "kõto",
+        "en": "brains",
+        "fr": "cervelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "kud-gilli",
+        "en": "fist",
+        "fr": "poing",
+        "theme": "corps"
+    },
+    {
+        "mo": "kʋware1",
+        "en": "groin, especially when it hurts or is swollen",
+        "fr": "aine, notamment enflée ou douloureuse",
+        "theme": "corps"
+    },
+    {
+        "mo": "laka",
+        "en": "shoulder blade, scapula",
+        "fr": "omoplate",
+        "theme": "corps"
+    },
+    {
+        "mo": "lalga2",
+        "en": "spleen",
+        "fr": "rate",
+        "theme": "corps"
+    },
+    {
+        "mo": "lan-biiga",
+        "en": "testicle",
+        "fr": "testicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "lan-bila",
+        "en": "testicle",
+        "fr": "testicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "lande",
+        "en": "scrotum",
+        "fr": "bourse, scrotum",
+        "theme": "corps"
+    },
+    {
+        "mo": "laondgo",
+        "en": "spleen",
+        "fr": "rate",
+        "theme": "corps"
+    },
+    {
+        "mo": "lemde",
+        "en": "chin",
+        "fr": "menton",
+        "theme": "corps"
+    },
+    {
+        "mo": "lɩdga",
+        "en": "anus, ass-hole, buttock, behind",
+        "fr": "anus, cul, postérieur",
+        "theme": "corps"
+    },
+    {
+        "mo": "lɩdre",
+        "en": "baby tooth",
+        "fr": "dent de lait",
+        "theme": "corps"
+    },
+    {
+        "mo": "lʋgre",
+        "en": "flank, side (of the body)",
+        "fr": "flanc, côté",
+        "theme": "corps"
+    },
+    {
+        "mo": "naaba2",
+        "en": "afterbirth",
+        "fr": "placenta",
+        "theme": "corps"
+    },
+    {
+        "mo": "na-bila",
+        "en": "toe",
+        "fr": "orteil, doigt du pied",
+        "theme": "corps"
+    },
+    {
+        "mo": "naoa",
+        "en": "feet, paws, legs",
+        "fr": "pieds, pattes, roues de véhicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "nao-bila",
+        "en": "toe",
+        "fr": "orteil",
+        "theme": "corps"
+    },
+    {
+        "mo": "naoore1",
+        "en": "1 • foot, leg, paw, wheel",
+        "fr": "pied, patte, roue de véhicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "nao-pʋga",
+        "en": "foot palm",
+        "fr": "paume de pied",
+        "theme": "corps"
+    },
+    {
+        "mo": "nao-raoogo",
+        "en": "big toe",
+        "fr": "gros orteil",
+        "theme": "corps"
+    },
+    {
+        "mo": "nao-talle",
+        "en": "underneath \/ underside of heel",
+        "fr": "dessous du talon",
+        "theme": "corps"
+    },
+    {
+        "mo": "nemse1",
+        "en": "faces, visages",
+        "fr": "visages, faces",
+        "theme": "corps"
+    },
+    {
+        "mo": "nenga",
+        "en": "face, visage",
+        "fr": "visage, figure, face",
+        "theme": "corps"
+    },
+    {
+        "mo": "nifu",
+        "en": "1 • eye",
+        "fr": "œil",
+        "theme": "corps"
+    },
+    {
+        "mo": "nin-beele",
+        "en": "pupil",
+        "fr": "pupille, prunelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "nin-boko",
+        "en": "eye-socket",
+        "fr": "orbite de l’œil",
+        "theme": "corps"
+    },
+    {
+        "mo": "nin-kõbdo",
+        "en": "eyelash, brow",
+        "fr": "cils, sourcils",
+        "theme": "corps"
+    },
+    {
+        "mo": "nin-pako",
+        "en": "eyelid",
+        "fr": "paupière",
+        "theme": "corps"
+    },
+    {
+        "mo": "no-gãongo",
+        "en": "lip (lit. mouth skin)",
+        "fr": "lèvre (lit. peau de bouche)",
+        "theme": "corps"
+    },
+    {
+        "mo": "no-kõbdo",
+        "en": "moustache",
+        "fr": "moustache",
+        "theme": "corps"
+    },
+    {
+        "mo": "noore1",
+        "en": "1 • mouth, bill, beak (of a bird)",
+        "fr": "bouche, bec, gueule, museau",
+        "theme": "corps"
+    },
+    {
+        "mo": "nug-bila",
+        "en": "finger",
+        "fr": "doigt",
+        "theme": "corps"
+    },
+    {
+        "mo": "nug-dʋdre",
+        "en": "wrist",
+        "fr": "poignet",
+        "theme": "corps"
+    },
+    {
+        "mo": "nugu",
+        "en": "1 • hand, arm, hand-and-arm",
+        "fr": "main, bras",
+        "theme": "corps"
+    },
+    {
+        "mo": "paare",
+        "en": "1 • labium, lips of vulva",
+        "fr": "grande lèvre de la vulve",
+        "theme": "corps"
+    },
+    {
+        "mo": "pabre1",
+        "en": "cheek, buttock",
+        "fr": "fesse",
+        "theme": "corps"
+    },
+    {
+        "mo": "pekre1",
+        "en": "period (to have one's), menstruation",
+        "fr": "règles, menstrues",
+        "theme": "corps"
+    },
+    {
+        "mo": "pende",
+        "en": "1 • belly, lower part of the body, pubes, lower abdomen",
+        "fr": "bas-ventre",
+        "theme": "corps"
+    },
+    {
+        "mo": "põaaga1",
+        "en": "1 • digestive system as a whole, the stomach (internal), guts, belly",
+        "fr": "appareil digestif dans son ensemble. 2 • tummy as seat of emotions; ventre en tant que siège d’émotions",
+        "theme": "corps"
+    },
+    {
+        "mo": "poglem",
+        "en": "female genital organ, vulva, vagina",
+        "fr": "organe génital de la femme, sexe de la femme, vulve, vagin",
+        "theme": "corps"
+    },
+    {
+        "mo": "poore1",
+        "en": "back",
+        "fr": "dos",
+        "theme": "corps"
+    },
+    {
+        "mo": "po-raoogo",
+        "en": "spine",
+        "fr": "colonne vertébrale",
+        "theme": "corps"
+    },
+    {
+        "mo": "po-rʋdre",
+        "en": "dorsal vertebra",
+        "fr": "vertèbre",
+        "theme": "corps"
+    },
+    {
+        "mo": "pʋga1",
+        "en": "1 • abdomen, tummy, stomach (interior)",
+        "fr": "ventre",
+        "theme": "corps"
+    },
+    {
+        "mo": "pʋlemde2",
+        "en": "diaphragm",
+        "fr": "diaphragme",
+        "theme": "corps"
+    },
+    {
+        "mo": "pʋ-roogo",
+        "en": "abdomen, lower part of the body, belly",
+        "fr": "abdomen",
+        "theme": "corps"
+    },
+    {
+        "mo": "ragsendaka",
+        "en": "larynx, voice box",
+        "fr": "larynx, arrière gorge, voile du palais",
+        "theme": "corps"
+    },
+    {
+        "mo": "raoolem",
+        "en": "1 • penis, male genitals",
+        "fr": "verge, pénis",
+        "theme": "corps"
+    },
+    {
+        "mo": "rĩiri",
+        "en": "forehead",
+        "fr": "front",
+        "theme": "corps"
+    },
+    {
+        "mo": "rogse2",
+        "en": "internal genital apparatus of female, womb, uterus",
+        "fr": "appareil génitale interne de la femelle, utérus",
+        "theme": "corps"
+    },
+    {
+        "mo": "rũmdi",
+        "en": "knee",
+        "fr": "genou",
+        "theme": "corps"
+    },
+    {
+        "mo": "rʋdre2",
+        "en": "node, knot, vertebra",
+        "fr": "nœud, vertèbre",
+        "theme": "corps"
+    },
+    {
+        "mo": "saeega1",
+        "en": "buttocks, behind",
+        "fr": "cul, derrière",
+        "theme": "corps"
+    },
+    {
+        "mo": "saeega2",
+        "en": "1 • loins",
+        "fr": "reins",
+        "theme": "corps"
+    },
+    {
+        "mo": "salenvũ",
+        "en": "fontanelle",
+        "fr": "fontanelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "sanenvũ",
+        "en": "frontal muscle, fontanelle",
+        "fr": "muscle frontal, fontanelle",
+        "theme": "corps"
+    },
+    {
+        "mo": "sãoore1",
+        "en": "1 • liver",
+        "fr": "foie",
+        "theme": "corps"
+    },
+    {
+        "mo": "sɛɛga1",
+        "en": "loins, waist, lower back, lumbar region",
+        "fr": "reins",
+        "theme": "corps"
+    },
+    {
+        "mo": "sũuri",
+        "en": "1 • heart",
+        "fr": "cœur",
+        "theme": "corps"
+    },
+    {
+        "mo": "sʋka2",
+        "en": "thorax, trunk",
+        "fr": "thorax, tronc (d'une personne, partie d'une bête, arbre)",
+        "theme": "corps"
+    },
+    {
+        "mo": "toɛɛnga",
+        "en": "a beard",
+        "fr": "barbe",
+        "theme": "corps"
+    },
+    {
+        "mo": "tʋbre",
+        "en": "ear",
+        "fr": "oreille",
+        "theme": "corps"
+    },
+    {
+        "mo": "tʋʋlgo",
+        "en": "1 • heat (weather), hot season, period of warm weather",
+        "fr": "période de chaleur, temps chaud",
+        "theme": "corps"
+    },
+    {
+        "mo": "vɩre",
+        "en": "foetus, fetus",
+        "fr": "fœtus",
+        "theme": "corps"
+    },
+    {
+        "mo": "weoore",
+        "en": "tip of penis, glans, bell-end",
+        "fr": "débout de la verge, gland",
+        "theme": "corps"
+    },
+    {
+        "mo": "wilga1",
+        "en": "component of, constituent, element of, member, area, district",
+        "fr": "composante, membre, quartier. Karg yaa yĩng wilga. The leg is a member of the body. La jambe est un membre du corps",
+        "theme": "corps"
+    },
+    {
+        "mo": "yaab-yẽnde",
+        "en": "wisdom tooth",
+        "fr": "dent de sagesse",
+        "theme": "corps"
+    },
+    {
+        "mo": "yaam-bila",
+        "en": "kidney",
+        "fr": "rein",
+        "theme": "corps"
+    },
+    {
+        "mo": "yagdga",
+        "en": "cheek",
+        "fr": "joue",
+        "theme": "corps"
+    },
+    {
+        "mo": "yagre2",
+        "en": "cheek",
+        "fr": "joue",
+        "theme": "corps"
+    },
+    {
+        "mo": "yam2",
+        "en": "gall bladder, bile",
+        "fr": "vésicule biliaire, bile",
+        "theme": "corps"
+    },
+    {
+        "mo": "yam-koom",
+        "en": "gall",
+        "fr": "bile",
+        "theme": "corps"
+    },
+    {
+        "mo": "yãoogo1",
+        "en": "intestine, guts, entrails, bowel",
+        "fr": "intestin, boyaux",
+        "theme": "corps"
+    },
+    {
+        "mo": "yãoogo2",
+        "en": "1 • chest, thorax",
+        "fr": "poitrine, thorax",
+        "theme": "corps"
+    },
+    {
+        "mo": "yão-roogo",
+        "en": "chest, ribcage, thorax",
+        "fr": "cage thoracique",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽbre2",
+        "en": "vulva (vulgar)",
+        "fr": "vulve (vulgaire)",
+        "theme": "corps"
+    },
+    {
+        "mo": "yedbre",
+        "en": "clavicle, collar-bone",
+        "fr": "clavicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽdga",
+        "en": "1 • anus, ass-hole, buttock, behind",
+        "fr": "anus, cul, postérieur",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽd-killi",
+        "en": "buttock, cheek",
+        "fr": "fesse",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽd-nifu",
+        "en": "anus, ass-hole",
+        "fr": "anus",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽega",
+        "en": "1 • nail, fingernail",
+        "fr": "ongle. Nu-yẽega. Fingernail. Ongle du doigt",
+        "theme": "corps"
+    },
+    {
+        "mo": "yegre1",
+        "en": "cheek",
+        "fr": "joue",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽn-daoogo",
+        "en": "molar, fang",
+        "fr": "molaire, croc",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽnde",
+        "en": "tooth",
+        "fr": "dent",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽn-nemse",
+        "en": "gum",
+        "fr": "gencive",
+        "theme": "corps"
+    },
+    {
+        "mo": "yẽn-sɩlenga",
+        "en": "canine tooth",
+        "fr": "canine (dent)",
+        "theme": "corps"
+    },
+    {
+        "mo": "yerb-kongo",
+        "en": "hollow \/ cavity between neck and collar-bone",
+        "fr": "creux entre le cou et la clavicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "yerbre",
+        "en": "collar-bone, clavicle",
+        "fr": "clavicule",
+        "theme": "corps"
+    },
+    {
+        "mo": "yɛgdga",
+        "en": "cheek, temple",
+        "fr": "joue, tempe",
+        "theme": "corps"
+    },
+    {
+        "mo": "yiimdi",
+        "en": "kidney",
+        "fr": "rognon",
+        "theme": "corps"
+    },
+    {
+        "mo": "yilgimdi",
+        "en": "pancreas",
+        "fr": "pancréas",
+        "theme": "corps"
+    },
+    {
+        "mo": "yĩnga1",
+        "en": "body (living)",
+        "fr": "corps (vivant)",
+        "theme": "corps"
+    },
+    {
+        "mo": "yo-biiga",
+        "en": "glans",
+        "fr": "gland",
+        "theme": "corps"
+    },
+    {
+        "mo": "yõ-boko",
+        "en": "nostril",
+        "fr": "narine",
+        "theme": "corps"
+    },
+    {
+        "mo": "yo-gãongo",
+        "en": "1 • foreskin",
+        "fr": "prépuce",
+        "theme": "corps"
+    },
+    {
+        "mo": "yo-koom",
+        "en": "sperm",
+        "fr": "sperme",
+        "theme": "corps"
+    },
+    {
+        "mo": "yoore",
+        "en": "penis",
+        "fr": "pénis",
+        "theme": "corps"
+    },
+    {
+        "mo": "yõore",
+        "en": "1 • nose",
+        "fr": "nez",
+        "theme": "corps"
+    },
+    {
+        "mo": "yoor-ko-bila",
+        "en": "sperm cell, sperm",
+        "fr": "spermatozoïde",
+        "theme": "corps"
+    },
+    {
+        "mo": "yubla1",
+        "en": "a neck",
+        "fr": "cou",
+        "theme": "corps"
+    },
+    {
+        "mo": "yũbla",
+        "en": "neck",
+        "fr": "cou",
+        "theme": "corps"
+    },
+    {
+        "mo": "yũuga2",
+        "en": "navel, belly button, umbilicus",
+        "fr": "nombril",
+        "theme": "corps"
+    },
+    {
+        "mo": "zãn-kudga",
+        "en": "back",
+        "fr": "dos. A gãee a zãn-kudgã zugu. He is lying on his back. Il est couché sur son dos",
+        "theme": "corps"
+    },
+    {
+        "mo": "zig-bila",
+        "en": "clitoris",
+        "fr": "clitoris",
+        "theme": "corps"
+    },
+    {
+        "mo": "zigri1",
+        "en": "clitoris",
+        "fr": "clitoris",
+        "theme": "corps"
+    },
+    {
+        "mo": "zigri2",
+        "en": "vulva (outer part of woman's sexual organ)",
+        "fr": "vulve",
+        "theme": "corps"
+    },
+    {
+        "mo": "zɩɩm",
+        "en": "blood",
+        "fr": "sang",
+        "theme": "corps"
+    },
+    {
+        "mo": "zɩlemde",
+        "en": "1 • tongue (organ)",
+        "fr": "langue (organe)",
+        "theme": "corps"
+    },
+    {
+        "mo": "zɩ-pelle",
+        "en": "blood clot",
+        "fr": "caillot de sang",
+        "theme": "corps"
+    },
+    {
+        "mo": "zɩ-wĩiga",
+        "en": "blood vessel, artery, vein",
+        "fr": "vaisseaux sanguins, veine",
+        "theme": "corps"
+    },
+    {
+        "mo": "zoobgo",
+        "en": "a hair of the head",
+        "fr": "cheveu de la tête",
+        "theme": "corps"
+    },
+    {
+        "mo": "zugu1",
+        "en": "1 • head",
+        "fr": "tête",
+        "theme": "corps"
+    },
+    {
+        "mo": "zu-kõto",
+        "en": "brains (physical)",
+        "fr": "cervelle, cerveau",
+        "theme": "corps"
+    },
+    {
+        "mo": "zu-wanga",
+        "en": "skull",
+        "fr": "crâne, boite crânienne",
+        "theme": "corps"
+    },
+    {
+        "mo": "zʋ-kɛɛga",
+        "en": "coccyx, tail-bone",
+        "fr": "coccyx",
+        "theme": "corps"
+    },
+    {
+        "mo": "ãadre",
+        "en": "plum (black), blackberry",
+        "fr": "prune noire",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "albasle",
+        "en": "onion",
+        "fr": "oignon",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "alkam",
+        "en": "white rice",
+        "fr": "riz blanc",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "alkamdo",
+        "en": "wheat",
+        "fr": "blé",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "banande",
+        "en": "banana tree, banana",
+        "fr": "bananier, banane",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "baninga",
+        "en": "white sorghum, white guinea-corn",
+        "fr": "sorgho blanc",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bãnkãna",
+        "en": "taro root",
+        "fr": "taro",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "basɩ",
+        "en": "couscous",
+        "fr": "couscous",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bazorgo",
+        "en": "long sorghum sp",
+        "fr": "sorgho à épi très long",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bẽere",
+        "en": "mush, porridge, gruel",
+        "fr": "bouillie",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bengdo",
+        "en": "1 • bean leaves",
+        "fr": "feuilles de haricot",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bengre",
+        "en": "1 • grain of bean",
+        "fr": "haricot (grain de)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bĩis-gõeem",
+        "en": "clotted milk, yoghurt",
+        "fr": "lait caillé, yaourt",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bĩisim",
+        "en": "milk",
+        "fr": "lait",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bĩis-naare",
+        "en": "fresh milk",
+        "fr": "lait frais",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bɩɩm",
+        "en": "soup, brew",
+        "fr": "soupe",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bɩrba",
+        "en": "bean balls cooked in steam",
+        "fr": "boulettes de farine de haricot cuites à la vapeur",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "bordɩ",
+        "en": "plantain",
+        "fr": "banane plantain",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "busri",
+        "en": "yams",
+        "fr": "ignames",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "dãam",
+        "en": "beer",
+        "fr": "bière",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gãaga2",
+        "en": "fruit of the diospyros tree",
+        "fr": "fruit du diospyros mespiliformis",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gãoore",
+        "en": "ball of cooked been or millet flour",
+        "fr": "boulette de farine de haricot ou de petit mil cuite",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gebre",
+        "en": "onion",
+        "fr": "oignon",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gelle1",
+        "en": "egg",
+        "fr": "œuf",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gere",
+        "en": "1 • thigh",
+        "fr": "cuisse",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gɛba",
+        "en": "onions",
+        "fr": "oignons",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gũudu",
+        "en": "mushroom",
+        "fr": "champignon",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "gʋʋre",
+        "en": "cola nut, kola-nut",
+        "fr": "cola (noix de)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kal-koonde",
+        "en": "sauce made of dawadawa seasoning, of salt and of water",
+        "fr": "sauce composée de soumbala, de sel et d'eau",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kamaande",
+        "en": "maize, sweet corn",
+        "fr": "épi de maïs",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kamaan-wãoore",
+        "en": "corn with different colours",
+        "fr": "épi de maïs dont les grains présentent des couleurs différentes",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kampẽbre",
+        "en": "plant producing small sweetish fruits",
+        "fr": "plante donnant des petites tubercules sucrées",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ka-naka",
+        "en": "red beans sp",
+        "fr": "haricot rouge (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kankamde",
+        "en": "wild fig sp, fruit of the fig tree",
+        "fr": "figue, fruit du kankanga",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kãobengo",
+        "en": "scorched food at the bottom of the cooking pan",
+        "fr": "nourriture cramé et\/ou attachée au fond de la marmite",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kaolgo",
+        "en": "dried dawadawa seeds boiled and kneaded into balls for use in cooking, dawadawa seasoning, African maggi",
+        "fr": "soumbala, condiment fait des grains de néré",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kaolkaondgo",
+        "en": "cookie \/ biscuit \/ cracker made of peanuts or sesame",
+        "fr": "tourteau d'arachide ou de sésame",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "karaaga",
+        "en": "1 • red sorghum",
+        "fr": "sorgho rouge. synonyme: kãnkãoko. 2 • millet farm \/ field around the house; champs de mil autour de la maison",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ka-zẽega1",
+        "en": "red sorghum",
+        "fr": "sorgho \/mil rouge",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kazʋy",
+        "en": "millet",
+        "fr": "petit mil, mil chandelle",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kɛgelle2",
+        "en": "fruit sp",
+        "fr": "fruit (espèce), dattes du désert",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ki1",
+        "en": "millet (plant or grain, seed), grain",
+        "fr": "mil (plante ou graine), céréale",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kipare",
+        "en": "chilli pepper, spice",
+        "fr": "piment, poivre, épice",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kiu1",
+        "en": "fonio",
+        "fr": "fonio",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kom",
+        "en": "1 • hunger, famine",
+        "fr": "faim",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ko-rɩtem",
+        "en": "subsistent farming, subsistence crop",
+        "fr": "culture vivrière. Koob sẽn ya rɩɩb yĩnga. Culture destinée à la consommation",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ku2",
+        "en": "yam",
+        "fr": "igname",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kudbade",
+        "en": "plant sp producing edible tubers",
+        "fr": "plante donnant des tubercules comestibles (espèce) du même nom",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kura-kura",
+        "en": "drayed groundnut cookies",
+        "fr": "tourteaux d'arachide séchés",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "kʋmbre",
+        "en": "bitter tomato",
+        "fr": "tomate amère (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "lamboeere",
+        "en": "edible fruit sp",
+        "fr": "fruit comestible d'arbre (boscia senengalensis)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "lamde2",
+        "en": "wild tuber",
+        "fr": "tubercule de brousse de forme ovale",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "laoore1",
+        "en": "boiled millet",
+        "fr": "mil bouilli. Ka-laoore. Cooked millet. Mil bouilli",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "lay",
+        "en": "garlic",
+        "fr": "ail",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "lemburi",
+        "en": "lemon, lime",
+        "fr": "citron",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "lɛɛla",
+        "en": "fruits of tree sp",
+        "fr": "fruits d'arbre (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "maasa2",
+        "en": "pancakes, griddle-cakes, fried-cakes, corn-cakes",
+        "fr": "galettes",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "maka2",
+        "en": "red sorghum sp",
+        "fr": "sorgho rouge (espèce de)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "mangre",
+        "en": "mango",
+        "fr": "mangue",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "mantaamde",
+        "en": "papaya",
+        "fr": "papaye",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "marmatigi",
+        "en": "groundnuts that are salted and roasted",
+        "fr": "arachides salées et grillées",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "milga",
+        "en": "corn sp, maize sp",
+        "fr": "maïs (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "mugdgu",
+        "en": "cooked flour balls that one sucks",
+        "fr": "boulettes de farine cuites qu'on suce",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "mui",
+        "en": "rice",
+        "fr": "riz",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "mui-zẽedo",
+        "en": "rice with sauce",
+        "fr": "riz à sauce",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "naado",
+        "en": "millet sp producing in 60 days",
+        "fr": "petit mil de 60 jours",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "nanguri1",
+        "en": "groundnuts, peanuts",
+        "fr": "arachide, cacahuète",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "nema",
+        "en": "meat, flesh",
+        "fr": "viande, chaire",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "nemdo",
+        "en": "meat, flesh",
+        "fr": "viande, chaire",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "noosem",
+        "en": "1 • tastiness",
+        "fr": "bon goût (sucré). 2 • nutritive element (of soil); élément nutritif (du sol)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "no-soaka",
+        "en": "breakfast",
+        "fr": "petit déjeuner",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "peesre",
+        "en": "Frafra potato",
+        "fr": "fabirama",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "pɛɛsa",
+        "en": "Frafra potatoes",
+        "fr": "fabirama",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "pigri",
+        "en": "ball of flour cooked with steam",
+        "fr": "boulette de farine cuite à la vapeur",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "pulli",
+        "en": "dish made of a kind of leaves mixed with potash",
+        "fr": "plat fait de feuilles cuites et malaxé avec de la potasse (bèrenga)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "pʋlga",
+        "en": "beer that is sold",
+        "fr": "dolo qui se vend",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "reezẽ",
+        "en": "grape",
+        "fr": "raisin",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "rõodo",
+        "en": "1 • dawadawa pods",
+        "fr": "gousse de néré",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "rõogo",
+        "en": "dawadawa-pod \/fruit, dawadawa powder",
+        "fr": "fruit du néré, poudre ou farine du néré, gousse du néré",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "saalem2",
+        "en": "okra powder",
+        "fr": "poudre de gombo",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sagbo",
+        "en": "millet porridge, t.z",
+        "fr": "tô, gâteau de mil, pâte de mil, bouillie de il ou de maïs",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sag-ma",
+        "en": "porridge put on the bottom of the dish",
+        "fr": "tô étalé au fond du plat sur lequel on dispose les petites boulettes appelées «sag-biisi»",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sag-muuga",
+        "en": "porridge made as a big chunk",
+        "fr": "tô constitué d'un seul gros bloc",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "salaato",
+        "en": "salad",
+        "fr": "salade",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "salbsale",
+        "en": "onions",
+        "fr": "oignons",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "samsre",
+        "en": "been doughnut mad in oil",
+        "fr": "beignet de haricot sauté à l'huile",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sẽonego",
+        "en": "edible wild tuber",
+        "fr": "tubercule sauvage comestible",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sɛnsɛnga",
+        "en": "kebab, skewer",
+        "fr": "brochette",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sɛoglgo",
+        "en": "cooking, preparing food",
+        "fr": "action de faire la cuisine",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "siilfu",
+        "en": "sesame",
+        "fr": "sésame",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sɩɩdo",
+        "en": "honey",
+        "fr": "miel",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sɩtorgo",
+        "en": "lemon",
+        "fr": "citron",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "soaka3",
+        "en": "breakfast",
+        "fr": "déjeuner",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "su1",
+        "en": "cabbage",
+        "fr": "chou",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "subri",
+        "en": "tree fruit sp",
+        "fr": "fruit d'arbre (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sũma",
+        "en": "Bambara beans, Bambara groundnuts",
+        "fr": "pois de terre",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sũm-kaam",
+        "en": "ground-nuts, peanuts",
+        "fr": "arachides",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sũm-moogo",
+        "en": "Bambara beans cooked with their hulls \/ husks",
+        "fr": "pois de terre bouillis avec la coque",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "sʋkre",
+        "en": "sugar",
+        "fr": "sucre",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "taamde1",
+        "en": "Shea fruit",
+        "fr": "fruit du karité",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "toe-neega",
+        "en": "1 • powder of dried baobab leaves",
+        "fr": "poudre de feuilles de baobab séchées",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "tomaato",
+        "en": "tomatoes",
+        "fr": "tomates",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "tubãani",
+        "en": "steamed bean paste",
+        "fr": "pâte de haricot cuit à la vapeur",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "vidbri",
+        "en": "edible tuber sp",
+        "fr": "tubercule comestible (espèce)",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "wed-zʋʋre",
+        "en": "kind of white millet \/ sorghum",
+        "fr": "variété de mil \/ sorgho blanc",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "wɛdga1",
+        "en": "1 • liana sp",
+        "fr": "liane (espèce de plante grimpante) donnant des fruits à goût aigre",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "wɛsla",
+        "en": "flour balls cooked with steam",
+        "fr": "boulettes de farine cuite à la vapeur",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yag-biiga",
+        "en": "banana",
+        "fr": "banane",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yamsem",
+        "en": "salt",
+        "fr": "sel",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yams-sɩɩdo",
+        "en": "sugar",
+        "fr": "sucre",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yão2",
+        "en": "dish with millet flour and leaves (steamed)",
+        "fr": "met fait de farine de mil et de feuilles cuit à la vapeur",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yẽg-lʋmbre",
+        "en": "tuber",
+        "fr": "tubercule",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yẽg-rɩtem",
+        "en": "edible tubers",
+        "fr": "tubercules comestibles",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yogre",
+        "en": "marrow, pumpkin, gourd sp",
+        "fr": "courge",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yũ-noodo",
+        "en": "sweet potatoes",
+        "fr": "patate douce",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yũuri1",
+        "en": "sweet potato",
+        "fr": "patate douce",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "yʋbga",
+        "en": "vegetable sauce",
+        "fr": "sauce de légumes",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "zabɩ2",
+        "en": "couscous dish with beans",
+        "fr": "sorte de met (couscous) à base de haricot",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "zẽedo1",
+        "en": "sauce, gravy, soup, stew",
+        "fr": "sauce",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "zeyõ",
+        "en": "onion",
+        "fr": "oignon",
+        "theme": "nourriture"
+    },
+    {
+        "mo": "ãadga",
+        "en": "blackberry tree, plum tree",
+        "fr": "prunier noir",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ambreaka",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ãooga",
+        "en": "tree sp",
+        "fr": "arbre (espèce), faux caïlcédrat",
+        "theme": "plantes"
+    },
+    {
+        "mo": "arzãn-tɩɩga",
+        "en": "Moringa tree",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bagemd-baaga",
+        "en": "asparagus",
+        "fr": "asparagus, piège de la hyène",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bãgen-daaga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bãgende",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce) dont l'écorce fibreuse est utilisée comme cordelettes",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bãgen-yãanga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "balembaodgo",
+        "en": "water plant sp",
+        "fr": "plante aquatique (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bãnembãodgo",
+        "en": "water plant sp of which the leaves can cover the surface of a lake \/ pond",
+        "fr": "plante (espèce) aquatique dont les feuilles recouvrent la surface de l'eau",
+        "theme": "plantes"
+    },
+    {
+        "mo": "barkudga",
+        "en": "tree sp, cinnamon",
+        "fr": "arbre (espèce), pomme cannelle",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bazorgo",
+        "en": "long sorghum sp",
+        "fr": "sorgho à épi très long",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bɛnga",
+        "en": "bean",
+        "fr": "haricot (collectif)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bɛrenga",
+        "en": "1 • kind of hemp-plant",
+        "fr": "espèce de chanvre",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bɩt-kõbre",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bɩto",
+        "en": "kind of plant",
+        "fr": "espèce de plante",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bõan-tʋbre",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bog-fɩre",
+        "en": "papaya tree",
+        "fr": "papayer",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bulga2",
+        "en": "shoot of baobab tree",
+        "fr": "baobab qui bourgeonne, jeunes pousses du baobab",
+        "theme": "plantes"
+    },
+    {
+        "mo": "bulvãka",
+        "en": "plant used for sauce",
+        "fr": "plante dont les feuilles servent à faire la sauce",
+        "theme": "plantes"
+    },
+    {
+        "mo": "dõsendõaaga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ekaliptis",
+        "en": "tree sp, eucalyptus tree",
+        "fr": "arbre (espèce), eucalyptus",
+        "theme": "plantes"
+    },
+    {
+        "mo": "fɛfɛ",
+        "en": "seasoning, condiment",
+        "fr": "condiment",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gãaka",
+        "en": "swamp-ebony tree",
+        "fr": "arbre (espèce), ébénier de l'ouest Africain",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gãmdo",
+        "en": "vines, creepers (general term)",
+        "fr": "plante grimpante",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gãnsaaga",
+        "en": "plant sp (used for braiding)",
+        "fr": "herbe fine utilisée pour tresser",
+        "theme": "plantes"
+    },
+    {
+        "mo": "garga1",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce), indigotier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gebre",
+        "en": "onion",
+        "fr": "oignon",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gel-põosre",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gɩrga1",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõaaga2",
+        "en": "1 • thorn",
+        "fr": "épine",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõ-miiga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gomtɩ-laongo",
+        "en": "plant sp",
+        "fr": "plante (espèce) dont les feuilles ressemblent à celles du coton",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõ-payãndga",
+        "en": "tree sp",
+        "fr": "arbre (espèce), acacia à épines recourbées",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõ-pɛɛlga",
+        "en": "tree sp",
+        "fr": "arbre (espèce), acacia à épines blanches",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõ-põosgo",
+        "en": "tree sp",
+        "fr": "arbre (espèce), acacia à épines blanches",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gõ-sablga",
+        "en": "tree-sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "goyaaka",
+        "en": "tree sp, guava tree",
+        "fr": "arbre (espèce), goyavier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gũbdu",
+        "en": "water plant sp",
+        "fr": "plante aquatique (espèce de)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gũudu",
+        "en": "mushroom",
+        "fr": "champignon",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gʋɩɩla",
+        "en": "plant sp",
+        "fr": "plante aquatique (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gʋɩɩlle",
+        "en": "water potato",
+        "fr": "tubercule de nénuphar, patate d'eau",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gʋɩɩnga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce) amer",
+        "theme": "plantes"
+    },
+    {
+        "mo": "gʋnga",
+        "en": "cotton tree, kapok tree",
+        "fr": "fromager",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kãande",
+        "en": "1 • calabash tree",
+        "fr": "calebassier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kagdga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kãgre",
+        "en": "thicket, forest, woods",
+        "fr": "fourré, forêt, touffu, présence de beaucoup d'arbres, d'herbes . tɩɩsã la moodã waooga zĩigã pʋgẽ",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kakemsalle",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce) utilisé en décoction pour purger les enfants",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kalamde1",
+        "en": "corn plant growing at the beginning of the rainy season",
+        "fr": "plante à bulbe qui grandit au début de la saison des pluies",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kalidri",
+        "en": "thin grass sp",
+        "fr": "herbe fine \/mince (espèce) utilisée par les oiseaux pour construire leurs nids",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kalsaka",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kal-yãaga",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kalyãnga",
+        "en": "kind of thorny shrub, fruit of shrub",
+        "fr": "espèce d'arbuste épineux, fruit d'arbuste",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kampẽo",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ka-neda1",
+        "en": "plant sp, henna",
+        "fr": "plante (espèce), séné du Sénégal, faux sené",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kãn-kalga2",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kankanga",
+        "en": "local wild fig tree sp",
+        "fr": "figuier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kãnkãsĩiga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kãongo1",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kapẽbre",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ka-poko",
+        "en": "young millet plant",
+        "fr": "jeune plante de mil",
+        "theme": "plantes"
+    },
+    {
+        "mo": "katrpõaaga",
+        "en": "tree sp",
+        "fr": "arbre \/ fruit (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kẽkilba",
+        "en": "plant sp",
+        "fr": "plante (espèce), casse puante, faux kinkéliba",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kẽnbgo",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kẽsga1",
+        "en": "shrub sp with bitter leaves",
+        "fr": "arbuste à feuilles amères",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ke-zʋʋre",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kɛglga",
+        "en": "desert date palm",
+        "fr": "dattier du désert (arbre avec longues épines)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kipare",
+        "en": "chilli pepper, spice",
+        "fr": "piment, poivre, épice",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kitga",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kɩmbgo",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kɩ-sũmdi",
+        "en": "plant sp",
+        "fr": "plante (espèce ressemblante au pois de terre)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kɩʋmbgo",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "koaaga2",
+        "en": "dense forest, thick forest",
+        "fr": "forêt dense",
+        "theme": "plantes"
+    },
+    {
+        "mo": "koanga1",
+        "en": "palm-tree",
+        "fr": "rônier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kodbre1",
+        "en": "leaf sp",
+        "fr": "feuille (espèce) de la plante appelée «vidbri»",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kõod-poko",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kõtemde",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kudbade",
+        "en": "plant sp producing edible tubers",
+        "fr": "plante donnant des tubercules comestibles (espèce) du même nom",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kudglungu",
+        "en": "liana sp",
+        "fr": "liane (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kudugulungu",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kukur-gõaaga",
+        "en": "thorny plant sp",
+        "fr": "plante épineuse (espèce) qui pousse autour des champs autour des cases",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kulkutgu",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋka1",
+        "en": "mahogany tree",
+        "fr": "arbre (espèce), caïlcédrat",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋlg-n-bengdo",
+        "en": "plant sp, water spinach",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋl-moodo",
+        "en": "river grass",
+        "fr": "herbe de marigot",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋl-zibri",
+        "en": "liana sp",
+        "fr": "liane (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋmbre",
+        "en": "bitter tomato",
+        "fr": "tomate amère (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋmbrsaka",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋmbrwanga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "kʋware2",
+        "en": "plant sp (used for basket work)",
+        "fr": "plante \/ herbe (utilisée en vannerie)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lalle1",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce), henné",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lamboeega",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce d')",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lamboɛtga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lamdo",
+        "en": "cotton plant, cotton",
+        "fr": "cotonnier, coton",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lam-zʋʋdo",
+        "en": "grass sp used to make brooms",
+        "fr": "herbe (espèce) servant a faire des balais",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lelongo",
+        "en": "climbing plant sp",
+        "fr": "plante grimpante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lembu-tɩɩga",
+        "en": "lemon tree",
+        "fr": "citronnier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lɛbenga",
+        "en": "grass growing again",
+        "fr": "repousses d'herbe",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lɛɛnga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce), citron de mer, prune de mer",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lidri",
+        "en": "grass sp (very thin)",
+        "fr": "herbe très fine (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lɩɩnga",
+        "en": "plant sp of which the leaves are edible",
+        "fr": "plante (espèce) dont les feuilles sont comestibles",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lumesgo",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "lʋre2",
+        "en": "wild tuber",
+        "fr": "tubercule sauvage (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "maka2",
+        "en": "red sorghum sp",
+        "fr": "sorgho rouge (espèce de)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mang-tɩɩga",
+        "en": "mango tree",
+        "fr": "manguier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mantaanga",
+        "en": "papaya tree",
+        "fr": "papayer",
+        "theme": "plantes"
+    },
+    {
+        "mo": "marbuudu",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "meende",
+        "en": "wild onion",
+        "fr": "oignon sauvage",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mo-faoogo",
+        "en": "elephant grass",
+        "fr": "herbe à éléphant",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mogenfo",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mok-bĩisri",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mo-poaka",
+        "en": "grass sp used for making mats",
+        "fr": "herbe (espèce), utilisé pour confection de nattes",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mugunga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce), jujubier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "mui",
+        "en": "rice",
+        "fr": "riz",
+        "theme": "plantes"
+    },
+    {
+        "mo": "nag-lɛɛnga",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "naodgo",
+        "en": "climbing plant sp",
+        "fr": "plante grimpante",
+        "theme": "plantes"
+    },
+    {
+        "mo": "naogsgo",
+        "en": "plant sp used for sauce",
+        "fr": "plante (espèce) utilisée pour sauce",
+        "theme": "plantes"
+    },
+    {
+        "mo": "pitma",
+        "en": "grass used to make straw mats",
+        "fr": "herbe dont les pailles servent à faire des nattes",
+        "theme": "plantes"
+    },
+    {
+        "mo": "põaaga2",
+        "en": "plant sp (resembles an onion)",
+        "fr": "plante (espèce) ressemble à l'oignon, espèce de patate",
+        "theme": "plantes"
+    },
+    {
+        "mo": "pulgumdi",
+        "en": "kind of sisal plant, used to make ropes",
+        "fr": "sorte de sisal utilisé pour faire des cordes",
+        "theme": "plantes"
+    },
+    {
+        "mo": "pulimdi",
+        "en": "plant sp",
+        "fr": "plante (espèce), herbe baïonnette",
+        "theme": "plantes"
+    },
+    {
+        "mo": "pusumpuuga",
+        "en": "*",
+        "fr": "*",
+        "theme": "plantes"
+    },
+    {
+        "mo": "putrpuugu",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "puugu1",
+        "en": "flower",
+        "fr": "fleur",
+        "theme": "plantes"
+    },
+    {
+        "mo": "rabo-willi",
+        "en": "fodder plant sp",
+        "fr": "plante fourragère",
+        "theme": "plantes"
+    },
+    {
+        "mo": "rakõ-bɩto",
+        "en": "sorrel sp",
+        "fr": "oseille (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "rudumdi",
+        "en": "grass sp growing in the shallows \/ valleys used for basket work",
+        "fr": "herbe (espèce) qui pousse dans les bas-fonds et sert pour la vannerie",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sal-gende",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sãnensãaga",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sãngaaga",
+        "en": "grass sp",
+        "fr": "herbe, plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sẽonego",
+        "en": "edible wild tuber",
+        "fr": "tubercule sauvage comestible",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sẽoonego2",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce) servant à soigner les angines",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sɩgdre1",
+        "en": "shrub sp of which people use the branches to brush their teeth",
+        "fr": "arbuste (espèce) dont on utilise les branchettes pour se frotter les dents",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sɩlkoore",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "soom-piiga",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũbragãaga",
+        "en": "shrub sp (fruits are not edible)",
+        "fr": "arbuste (espèce), dont les fruits ne sont pas comestibles",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũdunga",
+        "en": "place overgrown by the grass called «aristida sp)»",
+        "fr": "étendu occupée par l'herbe nommée «aristida sp»",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũma",
+        "en": "Bambara beans, Bambara groundnuts",
+        "fr": "pois de terre",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũm-kaam",
+        "en": "ground-nuts, peanuts",
+        "fr": "arachides",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũmwaaga",
+        "en": "plant sp with strong odour",
+        "fr": "plante (espèce) à forte odeur",
+        "theme": "plantes"
+    },
+    {
+        "mo": "susutga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce), mimosa clochette",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũtu",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sũuga",
+        "en": "plant sp climbing up",
+        "fr": "plante rampante",
+        "theme": "plantes"
+    },
+    {
+        "mo": "sʋgdendaaga",
+        "en": "kind of thorny plant of which the shepherds make flutes",
+        "fr": "plante épineuse (espèce) dont se servent les bergers pour faire des flûtes",
+        "theme": "plantes"
+    },
+    {
+        "mo": "taanga",
+        "en": "Shea tree",
+        "fr": "karité (arbre)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tãan-saoolgo",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce) dont la sève est très visqueuse",
+        "theme": "plantes"
+    },
+    {
+        "mo": "taba",
+        "en": "tobacco",
+        "fr": "tabac",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tabdga",
+        "en": "tobacco field",
+        "fr": "champ de tabac",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tẽtemtẽega",
+        "en": "grass sp",
+        "fr": "herbe (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tɩɩga1",
+        "en": "tree (general word), plant",
+        "fr": "arbre (en général), plante",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tɩ-poɛɛga",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "toe-neega",
+        "en": "1 • powder of dried baobab leaves",
+        "fr": "poudre de feuilles de baobab séchées",
+        "theme": "plantes"
+    },
+    {
+        "mo": "toɛɛga",
+        "en": "1 • baobab tree",
+        "fr": "baobab",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tok-vugri",
+        "en": "shrub sp (thorny)",
+        "fr": "arbuste épineux (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tũngu",
+        "en": "calabash tree, calabash-vine plant",
+        "fr": "calebassier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tuugu1",
+        "en": "shrub, bush, small tree",
+        "fr": "buisson, arbuste, petit arbre",
+        "theme": "plantes"
+    },
+    {
+        "mo": "tʋbtaga",
+        "en": "plant sp",
+        "fr": "plante (espèce), pourpier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "vaooka",
+        "en": "kapok tree",
+        "fr": "kapokier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "voog-fulli",
+        "en": "petal of kapok tree flour",
+        "fr": "pétale de la fleure de kapokier",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wagsolgo",
+        "en": "plant sp used to cure fever",
+        "fr": "plante (espèce) utilisée pour soigner la fièvre",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wedg-m-yẽnde",
+        "en": "plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "werbre",
+        "en": "upper part of the male maize flower",
+        "fr": "partie supérieure de la fleur mâle du maïs. kamaan-werbre. kamaan-samui. Maize flower. Fleure du maïs",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wesbo2",
+        "en": "tillering",
+        "fr": "tallage",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wɛdga1",
+        "en": "1 • liana sp",
+        "fr": "liane (espèce de plante grimpante) donnant des fruits à goût aigre",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wilinwiiga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wob-bɛrenga",
+        "en": "elephant hemp",
+        "fr": "chanvre d'éléphant",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wom-sɛɛga",
+        "en": "fig tree sp bearing fruit at the trunk",
+        "fr": "figuier (espèce) produisant des fruits au niveau du tronc",
+        "theme": "plantes"
+    },
+    {
+        "mo": "wʋkemde",
+        "en": "climbing plant sp",
+        "fr": "plante rampante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "yɩlga",
+        "en": "tree sp",
+        "fr": "arbre (espèce), osier africain",
+        "theme": "plantes"
+    },
+    {
+        "mo": "yoabga1",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "yoadga",
+        "en": "1 • plant sp",
+        "fr": "plante (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "yoalga",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "yõng-tabdo",
+        "en": "kind of grass that sticks at the feet",
+        "fr": "espèce d'herbe qui colle aux pieds",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zaanga1",
+        "en": "tree sp",
+        "fr": "arbre (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zãbnega",
+        "en": "shrub sp of which the gains of the pods are edible",
+        "fr": "arbuste (espèce) dont les grains de gousse sont comestibles",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zeyõ",
+        "en": "onion",
+        "fr": "oignon",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zibri1",
+        "en": "kind of liana (the wood is used in roof construction for huts)",
+        "fr": "espèce de liane (bois utilisé dans la construction des toits de case)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zɩlbre",
+        "en": "plant with small and thick leaves",
+        "fr": "plante (espèce) à feuilles petites et épaisses",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zɩʋlgo",
+        "en": "shrub sp",
+        "fr": "arbuste (espèce)",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zorgo",
+        "en": "plant sp",
+        "fr": "plante (espèce) dont on s'en sert au moment de la famine",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zug-be-ligdi",
+        "en": "grass sp producing white flowers",
+        "fr": "herbe (espèce) donnant des fleurs blanches",
+        "theme": "plantes"
+    },
+    {
+        "mo": "zu-peoolgo2",
+        "en": "kind of grass",
+        "fr": "espèce d'herbe",
+        "theme": "plantes"
+    },
+    {
+        "mo": "ãbga1",
+        "en": "flea, tick",
+        "fr": "puce, tique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ãbga2",
+        "en": "panther, leopard",
+        "fr": "panthère, léopard",
+        "theme": "animaux"
+    },
+    {
+        "mo": "baaga1",
+        "en": "dog",
+        "fr": "chien",
+        "theme": "animaux"
+    },
+    {
+        "mo": "baalle",
+        "en": "sheep with long legs",
+        "fr": "mouton haut sur pattes",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ba-bila1",
+        "en": "puppy, pup, small dog",
+        "fr": "chiot",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bakaorgo",
+        "en": "bustard (bird), Denham's Bustard",
+        "fr": "outarde (petite), outarde de Denham",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bãnga2",
+        "en": "lizard, Agama lizard",
+        "fr": "margouillat",
+        "theme": "animaux"
+    },
+    {
+        "mo": "basoaka",
+        "en": "fish sp",
+        "fr": "poisson chien",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bazãabazã",
+        "en": "big spider",
+        "fr": "grosse araignée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "beng-ãodgo",
+        "en": "tree snake sp",
+        "fr": "couleuvre (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "beoko1",
+        "en": "Bohor reed-buck",
+        "fr": "antilope rédunca",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bɛdenga",
+        "en": "earthworm",
+        "fr": "ver de terre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bindingãasgo",
+        "en": "dung beetle",
+        "fr": "bousier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bõanga",
+        "en": "donkey",
+        "fr": "âne",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bõan-poaka",
+        "en": "lizard sp",
+        "fr": "margouillat",
+        "theme": "animaux"
+    },
+    {
+        "mo": "boɛɛga",
+        "en": "he goat",
+        "fr": "bouc",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bõn-vɩɩl-yalenga",
+        "en": "insect (lit. useless flying thing)",
+        "fr": "insecte (lit. chose vivante inutile, embêtante)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bõn-yẽega",
+        "en": "lion",
+        "fr": "lion",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bosemborgo",
+        "en": "Royal or Ball python",
+        "fr": "python royale",
+        "theme": "animaux"
+    },
+    {
+        "mo": "buglunvãre",
+        "en": "mole-cricket",
+        "fr": "taupe-grillon, courtilière",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bulumbuku",
+        "en": "toad sp",
+        "fr": "crapaud-bœuf",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bulwãoogo",
+        "en": "crowned crane",
+        "fr": "grue couronnée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "burgumdi1",
+        "en": "Water-buck",
+        "fr": "cobe Defassa",
+        "theme": "animaux"
+    },
+    {
+        "mo": "buri4",
+        "en": "bee without dart",
+        "fr": "abeille sans dard",
+        "theme": "animaux"
+    },
+    {
+        "mo": "bʋʋga",
+        "en": "goat",
+        "fr": "chèvre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "faoogo1",
+        "en": "Senegal coucal",
+        "fr": "coucal du Sénégal",
+        "theme": "animaux"
+    },
+    {
+        "mo": "faoogo3",
+        "en": "insect similar to a fly eating blood",
+        "fr": "insecte ressemblant à une mouche, se nourrissant du sang",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gãnga3",
+        "en": "hairy caterpillar",
+        "fr": "chenille aux poils",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gãoobgo",
+        "en": "crow, pied-crow",
+        "fr": "corbeau",
+        "theme": "animaux"
+    },
+    {
+        "mo": "garenga",
+        "en": "crab",
+        "fr": "crabe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "garweongo",
+        "en": "snail",
+        "fr": "escargot",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gẽoodre",
+        "en": "insect that attacks beehives",
+        "fr": "insecte qui s'attaque aux ruches",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gɩgem-baaga",
+        "en": "hunting dog, wolf",
+        "fr": "hyène, lycaon, chien chasseur, loup",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gɩgemde",
+        "en": "lion",
+        "fr": "lion",
+        "theme": "animaux"
+    },
+    {
+        "mo": "goɛtrgoɛɛga",
+        "en": "big red ant",
+        "fr": "grosse fourmi rouge",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gombgo",
+        "en": "praying mantis",
+        "fr": "mante religieuse",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gomtɩʋʋgo",
+        "en": "chameleon",
+        "fr": "caméléon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gũun-daoogo",
+        "en": "millipedes",
+        "fr": "myriapode, iule",
+        "theme": "animaux"
+    },
+    {
+        "mo": "gũuri2",
+        "en": "1 • ant sp",
+        "fr": "fourmi (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kãanzoeere",
+        "en": "bird sp, Yellow-crowned Gonolek",
+        "fr": "oiseau (espèce), pelage noir avec poitrine rouge, Gonolek de Barbarie",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kãanzukumdi",
+        "en": "beetle sp",
+        "fr": "coléoptère (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kamande",
+        "en": "sardine",
+        "fr": "sardine",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kãnenkãaga",
+        "en": "wasp sp",
+        "fr": "guêpe (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ka-noore",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kãoongo1",
+        "en": "guinea fowl",
+        "fr": "pintade",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kaorgo2",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "karenga",
+        "en": "louse (pl. lice)",
+        "fr": "pou (pl. poux)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "karsẽebga",
+        "en": "cicada",
+        "fr": "cigale",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kasenkaoore",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "katre",
+        "en": "hyena, wolf",
+        "fr": "hyène",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kã-zoobre",
+        "en": "Red-throated Bee-Eater",
+        "fr": "guêpier à rouge-gorge",
+        "theme": "animaux"
+    },
+    {
+        "mo": "keedre",
+        "en": "gadfly, horsefly",
+        "fr": "taon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kẽega2",
+        "en": "Senegal parrot, yellow-bellied corn-parrot",
+        "fr": "perruche, youyou de Sénégal, perroquet",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kẽen-zʋʋre",
+        "en": "Senegal long-tailed parakeet",
+        "fr": "perruche à collier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kẽnb-yẽoogo",
+        "en": "bird sp",
+        "fr": "oiseau (espèce), drongo",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kẽnkẽbre",
+        "en": "termite of big termite hills",
+        "fr": "termite des grandes termitières",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kitrkĩinga",
+        "en": "locust sp",
+        "fr": "criquet (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kɩɩga",
+        "en": "stripped ground squirrel",
+        "fr": "écureuil fouisseur, rat palmiste",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kɩn-pʋɩta",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kɩtrzĩgniga",
+        "en": "locust (kind of small)",
+        "fr": "criquet (espèce de petit)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "koadenga",
+        "en": "partridge",
+        "fr": "perdrix, francolin commun",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ko-biiga",
+        "en": "mosquito larvae",
+        "fr": "larve de moustique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kolokolo",
+        "en": "turkey",
+        "fr": "dinde, dindon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kõnekõogo",
+        "en": "salamander",
+        "fr": "salamandre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kõnekõtgo",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kõn-fʋrg-lalle",
+        "en": "bird sp, long-tailed parakeet",
+        "fr": "oiseau (espèce), perruche à collier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "konkobre",
+        "en": "chick of whom the feathers haven't grown yet",
+        "fr": "poussin dont les plumes n'ont pas encore poussé",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kõn-tʋk-raoogo",
+        "en": "big grasshopper \/ locust",
+        "fr": "espèce de grosse sauterelle \/criquet",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kõn-tʋk-waooga",
+        "en": "mantis",
+        "fr": "mante",
+        "theme": "animaux"
+    },
+    {
+        "mo": "koobre1",
+        "en": "red bishop finch",
+        "fr": "oiseau cardinal (euplecte franciscain)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ko-ralem",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kosenkonde",
+        "en": "bird sp",
+        "fr": "oiseau rapace (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kos-ki",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kukuri1",
+        "en": "pig",
+        "fr": "cochon, porc",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kulburgu",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kuri",
+        "en": "turtle, tortoise",
+        "fr": "tortue terrestre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-deoogo2",
+        "en": "fish sp",
+        "fr": "hélicoptère (poisson)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-kẽka",
+        "en": "fish sp",
+        "fr": "poisson (espèce), koki-koki",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-pondre",
+        "en": "fish sp",
+        "fr": "poisson ballon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-sʋʋre",
+        "en": "shrimp",
+        "fr": "crevette",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-waafo1",
+        "en": "fish sp",
+        "fr": "polyptère",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-waafo2",
+        "en": "fish sp",
+        "fr": "poisson serpent",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-walle",
+        "en": "palm tree pigeon",
+        "fr": "pigeon des rôniers",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋl-yaadga",
+        "en": "marabou stork",
+        "fr": "marabout",
+        "theme": "animaux"
+    },
+    {
+        "mo": "kʋnkʋdre",
+        "en": "Agama male lizard sp",
+        "fr": "margouillat mâle",
+        "theme": "animaux"
+    },
+    {
+        "mo": "laabo",
+        "en": "bird sp, Night-jar",
+        "fr": "engoulevent",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lade",
+        "en": "duck",
+        "fr": "canard",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lalanga",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "laooga",
+        "en": "rat sp",
+        "fr": "rat (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lilinga",
+        "en": "locust sp",
+        "fr": "criquet (espèce), sauterelle",
+        "theme": "animaux"
+    },
+    {
+        "mo": "liuula1",
+        "en": "a bird",
+        "fr": "un oiseau",
+        "theme": "animaux"
+    },
+    {
+        "mo": "loalga",
+        "en": "bull, bullock, ox",
+        "fr": "taureau, bœuf",
+        "theme": "animaux"
+    },
+    {
+        "mo": "loanda1",
+        "en": "Gambian Sun squirrel",
+        "fr": "écureuil de Gambie",
+        "theme": "animaux"
+    },
+    {
+        "mo": "loandfulgu",
+        "en": "Senegal Bush-baby",
+        "fr": "galago du Sénégal",
+        "theme": "animaux"
+    },
+    {
+        "mo": "loanga1",
+        "en": "frog",
+        "fr": "grenouille",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lond-furgu",
+        "en": "Senegal Bush-baby",
+        "fr": "galago du Sénégal",
+        "theme": "animaux"
+    },
+    {
+        "mo": "luiila",
+        "en": "bird",
+        "fr": "oiseau",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lʋlla",
+        "en": "young bull",
+        "fr": "taurillon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "lʋre1",
+        "en": "yellow-billed fruit-pigeon, a bush-dove",
+        "fr": "pigeon à épaulettes violettes",
+        "theme": "animaux"
+    },
+    {
+        "mo": "manem-bʋʋga",
+        "en": "big Savannah goat sp",
+        "fr": "grande chèvre (espèce, sahel)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "manwalle",
+        "en": "dove, pigeon",
+        "fr": "pigeon, tourterelle",
+        "theme": "animaux"
+    },
+    {
+        "mo": "maraoa",
+        "en": "rock hyrax",
+        "fr": "daman de rocher",
+        "theme": "animaux"
+    },
+    {
+        "mo": "mayaalle",
+        "en": "hammerhead",
+        "fr": "ombrette",
+        "theme": "animaux"
+    },
+    {
+        "mo": "mogdre",
+        "en": "big and fat rat sp",
+        "fr": "rat gros et gras (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "mo-golle",
+        "en": "snake",
+        "fr": "serpent",
+        "theme": "animaux"
+    },
+    {
+        "mo": "moko1",
+        "en": "kind of termite",
+        "fr": "espèce de termite",
+        "theme": "animaux"
+    },
+    {
+        "mo": "monfo",
+        "en": "Buffon's Kob, antelope type",
+        "fr": "cobe de Buffon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "naafo",
+        "en": "bovine animal, ox, cow",
+        "fr": "bovin, bœuf, vache",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nag-moogo",
+        "en": "stick insect",
+        "fr": "phasme",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nakomsugri",
+        "en": "long-tailed Helmet-shrike",
+        "fr": "bagadais casqué",
+        "theme": "animaux"
+    },
+    {
+        "mo": "namse2",
+        "en": "scorpions",
+        "fr": "scorpions",
+        "theme": "animaux"
+    },
+    {
+        "mo": "naneoongo",
+        "en": "ostrich",
+        "fr": "autruche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nanga",
+        "en": "scorpion",
+        "fr": "scorpion",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nangatengaorengo",
+        "en": "black scorpion",
+        "fr": "gros scorpion noir",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nangembeoolgo",
+        "en": "centipedes",
+        "fr": "scolopendre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nayĩiri",
+        "en": "hyena, spotted hyena, striped hyena",
+        "fr": "hyène, hyène tachetée, hyène rayée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "neoongo",
+        "en": "ostrich",
+        "fr": "autruche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nigi2",
+        "en": "lion-ant",
+        "fr": "fourmilion, fourmi-lion",
+        "theme": "animaux"
+    },
+    {
+        "mo": "niigi",
+        "en": "cattle, oxen, cows",
+        "fr": "bœufs",
+        "theme": "animaux"
+    },
+    {
+        "mo": "noaaga",
+        "en": "fowl, chicken, hen",
+        "fr": "gallinacé, poule en tant qu'espèce",
+        "theme": "animaux"
+    },
+    {
+        "mo": "no-bila",
+        "en": "chick, small fowl",
+        "fr": "poussin",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nogenga",
+        "en": "parasite",
+        "fr": "parasite",
+        "theme": "animaux"
+    },
+    {
+        "mo": "no-raoogo",
+        "en": "rooster, cock, cockerel",
+        "fr": "coq",
+        "theme": "animaux"
+    },
+    {
+        "mo": "no-yãanga",
+        "en": "hen",
+        "fr": "poule",
+        "theme": "animaux"
+    },
+    {
+        "mo": "nugi1",
+        "en": "ant-lion",
+        "fr": "fourmilion",
+        "theme": "animaux"
+    },
+    {
+        "mo": "padre",
+        "en": "buffalo",
+        "fr": "buffle",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pa-nand-tugri",
+        "en": "Bateleur eagle",
+        "fr": "aigle bateleur",
+        "theme": "animaux"
+    },
+    {
+        "mo": "paryẽoogo",
+        "en": "African civet",
+        "fr": "civette d'Afrique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pẽere",
+        "en": "carp fish, Tilapia",
+        "fr": "carpe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "peosgo",
+        "en": "sheep",
+        "fr": "mouton",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pesgo",
+        "en": "sheep",
+        "fr": "mouton",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pẽtre",
+        "en": "Tilapia fish, carp fish",
+        "fr": "carpe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pẽ-wɩbga",
+        "en": "fish sp (kind of Tilapia)",
+        "fr": "poisson (espèce de tilapia)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pezaoko",
+        "en": "caterpillar sp with many feet",
+        "fr": "chenille (espèce) avec beaucoup de pieds",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pezãongo",
+        "en": "big mosquito sp",
+        "fr": "grande moustique (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "piispĩim",
+        "en": "dragonfly sp",
+        "fr": "libellule (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pilimpi",
+        "en": "small butterflies (kind of)",
+        "fr": "petits papillons (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pɩgdre",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pɩɩlfo",
+        "en": "common Genet",
+        "fr": "genette commune",
+        "theme": "animaux"
+    },
+    {
+        "mo": "põeere",
+        "en": "carpet viper",
+        "fr": "échis, vipère",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pondre",
+        "en": "toad",
+        "fr": "crapaud",
+        "theme": "animaux"
+    },
+    {
+        "mo": "põrpõre",
+        "en": "kind of amphibian (like a frog)",
+        "fr": "genre de batracien (ressemble à la grenouille)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "pʋtenlʋɩɩnga",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rab-kuiuugu",
+        "en": "spitting cobra",
+        "fr": "cobra cracheur",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rakaoko",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "raobgo",
+        "en": "snake sp",
+        "fr": "serpent (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rayʋʋga",
+        "en": "giant Gambian rat, pouched rat",
+        "fr": "rat voleur, rat de Gambie",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rendeoogo",
+        "en": "leech, bloodsucker",
+        "fr": "sangsue",
+        "theme": "animaux"
+    },
+    {
+        "mo": "reoogo",
+        "en": "warthog, bush-pig",
+        "fr": "phacochère, sanglier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rindisga",
+        "en": "African lynx, caracal, desert lynx",
+        "fr": "caracal, lynx africain",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rindiubgu",
+        "en": "winged termite",
+        "fr": "termite ailé",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rõonde",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rulgu",
+        "en": "ground Hornbill",
+        "fr": "grand calao d’Abyssinie",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rũmpigla",
+        "en": "small honey-fly",
+        "fr": "petite mouche à miel",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rũm-tulli",
+        "en": "lizard",
+        "fr": "lézard (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "rũnga2",
+        "en": "mosquito",
+        "fr": "moustique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "ruruugu1",
+        "en": "black necked spitting cobra",
+        "fr": "cobra cracheur, naja",
+        "theme": "animaux"
+    },
+    {
+        "mo": "saalle2",
+        "en": "mud-fish",
+        "fr": "silure",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sãbtõaasga",
+        "en": "shrew mouse",
+        "fr": "musaraigne",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sag-fɩre",
+        "en": "water beetle",
+        "fr": "coléoptère aquatique, dytique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "salenkolooto",
+        "en": "larva of a small ant",
+        "fr": "larve de petite fourmi",
+        "theme": "animaux"
+    },
+    {
+        "mo": "salensaaga",
+        "en": "small black ant sp",
+        "fr": "petite fourmi noire (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sãoore2",
+        "en": "rat",
+        "fr": "rat maure",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sẽemde",
+        "en": "porcupine",
+        "fr": "porc-épic",
+        "theme": "animaux"
+    },
+    {
+        "mo": "seere",
+        "en": "grass cutter, cane rat",
+        "fr": "aulacode, agouti",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sẽnemde",
+        "en": "kind of multicoloured lizard with shiny skin",
+        "fr": "lézard à peau lisse et multi-coloré (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sẽoonego1",
+        "en": "cicada",
+        "fr": "cigale",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sĩifu1",
+        "en": "bee",
+        "fr": "abeille",
+        "theme": "animaux"
+    },
+    {
+        "mo": "silfu",
+        "en": "worm, vermin, parasite",
+        "fr": "vermine, parasite",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sɩbga",
+        "en": "Hartebeest",
+        "fr": "bubale",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sɩlaalle",
+        "en": "swallow, martin bird",
+        "fr": "hirondelle, martinet",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sɩl-faoogo",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sɩlga1",
+        "en": "1 • black kite, sparrow-hawk, hawk, a bird of prey",
+        "fr": "milan noir, épervier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "soaamba",
+        "en": "rabbit, hare",
+        "fr": "lapin, lièvre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "soaasa",
+        "en": "hyena",
+        "fr": "hyène",
+        "theme": "animaux"
+    },
+    {
+        "mo": "so-tũuda",
+        "en": "black beetle sp",
+        "fr": "coléoptère noir (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "subramalga",
+        "en": "glossy starling",
+        "fr": "merle métallique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sulfu",
+        "en": "serval cat",
+        "fr": "serval",
+        "theme": "animaux"
+    },
+    {
+        "mo": "susuku",
+        "en": "bird sp",
+        "fr": "oiseau (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sʋlga1",
+        "en": "spider",
+        "fr": "araignée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "sʋʋre",
+        "en": "grasshopper, locust",
+        "fr": "sauterelle, criquet",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tãmbeoko",
+        "en": "1 • termite hill of which the small termites are used as food for the chicken \/ fowls, termite-mound",
+        "fr": "termitière dont les petites termites servent à nourrir la volaille",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tãmbɛg-biiga",
+        "en": "termite sp",
+        "fr": "termite (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tãntãnnoaaga",
+        "en": "partridge",
+        "fr": "perdrix, poule de rochers",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tãntãre",
+        "en": "fish sp, sardine",
+        "fr": "poisson (espèce), sardine",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tãnturi",
+        "en": "aardvark",
+        "fr": "oryctérope, fourmilier",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tẽng-n-dõonde",
+        "en": "bird sp",
+        "fr": "oiseau (espèce) coureur ayant des rayures noires",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tẽng-n-libdri",
+        "en": "insect sp likening a spider, living underground",
+        "fr": "insecte (espèce) ressemble à une araignée vivant sous terre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tilyã",
+        "en": "giraffe",
+        "fr": "girafe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tɩdga",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tɩ-lilsa",
+        "en": "locust sp hiding behind of a tree",
+        "fr": "espèce de criquet qui tourne derrière un arbre pour se cacher",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tugri",
+        "en": "eagle sp able to carry away small ruminants",
+        "fr": "aigle (espèce) pouvant emporter des petits ruminants",
+        "theme": "animaux"
+    },
+    {
+        "mo": "tʋbga1",
+        "en": "slender mongoose",
+        "fr": "mangouste rouge",
+        "theme": "animaux"
+    },
+    {
+        "mo": "vẽoodre",
+        "en": "caterpillar",
+        "fr": "chenille",
+        "theme": "animaux"
+    },
+    {
+        "mo": "viuugu",
+        "en": "an owl",
+        "fr": "hibou",
+        "theme": "animaux"
+    },
+    {
+        "mo": "vũnunvũugu",
+        "en": "mud wasp",
+        "fr": "guêpe maçonne",
+        "theme": "animaux"
+    },
+    {
+        "mo": "waafo1",
+        "en": "snake",
+        "fr": "serpent",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wãamba",
+        "en": "monkey",
+        "fr": "singe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wãam-kãdga",
+        "en": "baboon, chimpanzee",
+        "fr": "babouin doguera, chimpanzé",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wãam-miiga",
+        "en": "red monkey",
+        "fr": "Patas ou singe rouge",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wag-kẽenfo",
+        "en": "rock python",
+        "fr": "python des rochers, boa",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wag-kẽoonfo",
+        "en": "rock python",
+        "fr": "python des rochers",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wag-maasre",
+        "en": "snake sp, sand-snake, grass snake",
+        "fr": "couleuvre",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wag-toogo",
+        "en": "viper",
+        "fr": "vipère",
+        "theme": "animaux"
+    },
+    {
+        "mo": "walga1",
+        "en": "oribi antelope",
+        "fr": "ourébi, biche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "walle",
+        "en": "turtle-dove, pigeon, dove",
+        "fr": "tourterelle, pigeon",
+        "theme": "animaux"
+    },
+    {
+        "mo": "watrguusga",
+        "en": "Guinea pigeon",
+        "fr": "pigeon de Guinée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "watrpɛndga",
+        "en": "cattle egret",
+        "fr": "héron garde-bœufs",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wed-moaaga",
+        "en": "horse",
+        "fr": "cheval",
+        "theme": "animaux"
+    },
+    {
+        "mo": "weefo",
+        "en": "1 • horse",
+        "fr": "cheval",
+        "theme": "animaux"
+    },
+    {
+        "mo": "we-no-raoogo",
+        "en": "hoopoe",
+        "fr": "huppe",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wiuugu",
+        "en": "Savannah monitor, monitor lizard",
+        "fr": "varan du sable, gueule tapée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wɩbga",
+        "en": "hawk",
+        "fr": "épervier, petit rapace",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wɩɩlwɩɩla",
+        "en": "duck sp",
+        "fr": "canard (espèce), dendrocygne veuf, siffleur",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wobgo",
+        "en": "elephant",
+        "fr": "éléphant",
+        "theme": "animaux"
+    },
+    {
+        "mo": "wʋʋga1",
+        "en": "Nile monitor lizard",
+        "fr": "varan du Nil",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yaafo1",
+        "en": "termite sp",
+        "fr": "termite (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yãka",
+        "en": "red-fronted gazelle",
+        "fr": "gazelle à front roux",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yalgenfo",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yalle",
+        "en": "cockroach, beetle, roach",
+        "fr": "blatte, cafard",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yaoofo",
+        "en": "mayfly, winged termite",
+        "fr": "éphémère, termite aillée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yaoore",
+        "en": "1 • termite hill, termite mound, termite's nest",
+        "fr": "termitière (des termites dont les ailées sont comestibles). synonyme: bɩmbɩʋlgo, kẽnkẽbre. 2 • termites; termites",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yẽbga1",
+        "en": "crocodile",
+        "fr": "crocodile, caïman",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yemde",
+        "en": "hippopotamus",
+        "fr": "hippopotame",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yẽsga",
+        "en": "black ant (painful bite)",
+        "fr": "fourmi noire (dont la piqûre est douloureuse)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yĩin-biiga",
+        "en": "Guinea worm (the worm itself)",
+        "fr": "ver de Guinée (le ver lui-même)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yĩinfu",
+        "en": "Guinea-worm, guinea-worm-swelling",
+        "fr": "ver de Guinée",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yĩisri",
+        "en": "Duiker (common Grimm's)",
+        "fr": "céphalophe de Grimm, biche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yirga1",
+        "en": "bird sp, sparrow",
+        "fr": "oiseau (espèce), moineau, amarante commun",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yiu",
+        "en": "winged termites, mayfly",
+        "fr": "termites aillées, éphémères",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yɩʋbrgo",
+        "en": "vulture",
+        "fr": "vautour, charognard",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yog-fibda",
+        "en": "secretary bird",
+        "fr": "serpentaire, secrétaire (oiseau)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yõgre",
+        "en": "kind of small insects that attack the calabashes",
+        "fr": "espèce de petits insectes qui attaquent les calebasses",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yõngre",
+        "en": "mouse",
+        "fr": "souris",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yoonde",
+        "en": "kind of little frog inflating when one touches it",
+        "fr": "petite grenouille (espèce) qui se gonfle lorsqu'on la touche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yurba",
+        "en": "mule",
+        "fr": "mulet",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yũudu",
+        "en": "lots of small fish",
+        "fr": "petits poissons",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yuuga",
+        "en": "cat",
+        "fr": "chat",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yũuga1",
+        "en": "cat",
+        "fr": "chat",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yʋgemde1",
+        "en": "camel, dromedary",
+        "fr": "chameau, chamelle, dromadaire",
+        "theme": "animaux"
+    },
+    {
+        "mo": "yʋgempende",
+        "en": "hedgehog",
+        "fr": "hérisson",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãabazã",
+        "en": "solifuge, running-spider, kind of big spider moving very quickly an having long legs",
+        "fr": "espèce de grosse araignée haute sur pattes que se déplace très rapidement",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãdre",
+        "en": "tapeworm",
+        "fr": "ténia (ver)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãgre",
+        "en": "fish sp",
+        "fr": "poisson (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãmboɛɛga2",
+        "en": "wild he-goat",
+        "fr": "bouc sauvage",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zanga1",
+        "en": "bat",
+        "fr": "roussette, chauve-souris",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãnga2",
+        "en": "bat",
+        "fr": "chauve-souris",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zankita",
+        "en": "small bat",
+        "fr": "petite chauve-souris",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãnkita",
+        "en": "kind of small bat living in holes of habitations",
+        "fr": "espèce de chauve-souris de petite taille vivant dans les trous des habitations",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zan-pondre",
+        "en": "fruit bat, hammer-headed-bat, flying fox",
+        "fr": "roussette",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãnzãnga",
+        "en": "bat",
+        "fr": "chauve-souris",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zãnzũuri",
+        "en": "worm, maggot, caterpillar",
+        "fr": "ver, chenille",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zeosgo",
+        "en": "electric catfish sp",
+        "fr": "poisson électrique (espèce)",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zesgo",
+        "en": "electric catfish",
+        "fr": "poisson électrique",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zigzãnga",
+        "en": "red bat",
+        "fr": "chauve-souris rouge",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zĩm-saalle",
+        "en": "mud-fish, catfish",
+        "fr": "silure",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zõaaga1",
+        "en": "a fly",
+        "fr": "mouche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zoomde",
+        "en": "small external parasite on chicken",
+        "fr": "petit parasite externe des poules",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zõ-ralle",
+        "en": "kind of big fly",
+        "fr": "espèce de grande mouche",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zulga",
+        "en": "Lilly trotter (African Jacana)",
+        "fr": "jacana africain",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zulli",
+        "en": "small larva in stagnating water",
+        "fr": "petite larve dans l'eau pourri",
+        "theme": "animaux"
+    },
+    {
+        "mo": "zulumdi1",
+        "en": "red ant",
+        "fr": "fourmi rouge",
+        "theme": "animaux"
+    }
+]

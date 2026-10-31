@@ -76,6 +76,7 @@ $displayRole = $T['role'];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="<?= e($csrf?->token() ?? '') ?>">
     <title><?= e($title ?? 'Assistant') ?> — <?= e($productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/select2/css/select2.min.css')) ?>">
