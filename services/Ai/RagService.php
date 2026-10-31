@@ -136,6 +136,7 @@ final class RagService
             }
 
                 $this->openQuestion = $this->isOpenQuestion($question);
+        $this->translationRequested = $this->wantsTranslation($question);
             $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
             $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
             $answer = $this->stripStrayNotFound($answer);
@@ -154,6 +155,7 @@ final class RagService
         }
 
             $this->openQuestion = $this->isOpenQuestion($question);
+        $this->translationRequested = $this->wantsTranslation($question);
             $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
         $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
 
@@ -164,6 +166,7 @@ final class RagService
             if (count($wider) > count($chunks)) {
                 $chunks = $wider;
                     $this->openQuestion = $this->isOpenQuestion($question);
+        $this->translationRequested = $this->wantsTranslation($question);
             $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
                 $answer = $this->client->chat($question, [['role' => 'system', 'content' => $system]], null, 0.2);
             }
@@ -185,6 +188,8 @@ final class RagService
      * @return list<string>
      */
     private bool $openQuestion = false;
+
+    private bool $translationRequested = false;
 
     private ?string $requestedLangue = null;
 
@@ -699,6 +704,14 @@ final class RagService
 
         return null;
     }
+    /**
+     * "Translate it" is an instruction, not a topic: the answer must contain a
+     * translation, not a description of the document.
+     */
+    private function wantsTranslation(string $question): bool
+    {
+        return preg_match('/\b(tradui[st]\w*|traduisez|traduire|traduction|translate|translation)\b/iu', $question) === 1;
+    }
     private function isOpenQuestion(string $question): bool
     {
         return preg_match(
@@ -711,6 +724,10 @@ final class RagService
     }
     private function answerPrompt(): string
     {
+        $translationNote = $this->translationRequested
+            ? ' · TRADUCTION DEMANDÉE : applique la règle 4h et fournis la traduction.'
+            : '';
+
         $mode = $this->openQuestion
             ? 'OUVERTE — applique 6b : réponse développée et structurée (150 mots max).'
             : 'FERMÉE — applique 6a : réponse directe en une à trois phrases, sans énumération.';
@@ -728,6 +745,7 @@ RÈGLES ABSOLUES :
 4b. Quand la réponse cite un titre, un en-tête ou un intitulé rédigé dans une autre langue que la question, donne d'abord sa traduction dans la langue de la réponse, suivie de l'original entre parenthèses. Exemple (question en anglais, titre en français) : "Death notice and fraternal communion" ("Avis de décès et communion fraternelle").
 4c. Mets en gras (**…**) la réponse directe à la question ainsi que les données clés citées (titres, dates, chiffres, noms propres).
 4d. Toute citation littérale entre guillemets DOIT être traduite dans la langue de la réponse ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage de la réponse ne doit rester dans une autre langue que celle de la question.
+4h. Si la question demande de TRADUIRE (« traduis-le », « traduit le », « translate it », « traduis ce document ») : tu dois PRODUIRE LA TRADUCTION, et non décrire le document. Structure : (a) une ligne indiquant la source utilisée (texte original ou version corrigée, avec sa langue et sa date) ; (b) une rubrique « Traduction : » suivie de la traduction complète du passage disponible, dans la langue de la question ; (c) les données exactes (noms, chiffres, dates) conservées. Si le contenu est déjà dans la langue demandée, dis-le en une phrase et recopie-le.
 4g. Si la question NOMME UNE LANGUE (« en mooré », « en anglais », « en français », « in English »…), CETTE LANGUE DÉSIGNE LE CONTENU À PRÉSENTER, et non la langue de ta réponse : tu réponds toujours dans la langue de la question (règle 5), tu présentes la version écrite dans la langue demandée, et tu cites le passage dans sa langue d'origine. Si cette version est une traduction corrigée, dis-le en une courte mention (nature et langue d'origine du document, date de la correction), puis donne le contenu — sans développer l'identité du document ni proposer les autres langues.
 4f. Pour DÉCRIRE un document (« parle-moi de X », « présente X », « qu'est-ce que X ») : commence par son identité RÉELLE — sa NATURE (enregistrement audio, PDF, scan, Word…) et sa LANGUE D'ORIGINE — puis, séparément, les versions corrigées disponibles en précisant qu'il s'agit de TRADUCTIONS, avec leur langue et leur date. Ne présente JAMAIS le texte d'une version corrigée comme le contenu d'origine, ni sa langue comme la langue du document.
 4e. N'emploie jamais un mot ou un passage visiblement tronqué en bord d'extrait : si un extrait se termine au milieu d'une phrase ou d'un mot, ignore cette fin plutôt que de la citer.
@@ -741,7 +759,7 @@ $langRule
    Dans les deux cas : termine par « Sources : [1], [2] » en citant uniquement les numéros réellement utilisés.
 7. Ton neutre et précis, sans remplissage ni formule de politesse. En mode 6a, la brièveté est une exigence : si deux formulations répondent, garde la plus courte.
 
-MODE DE CETTE QUESTION : {$mode}
+MODE DE CETTE QUESTION : {$mode}{$translationNote}
 PROMPT;
     }
 
@@ -940,6 +958,21 @@ PROMPT;
                 'score' => (float) ($chunk['score'] ?? 1.0),
             ];
 
+            // The original text must stay available: dropping it made "translate
+            // it" and "what does the original say" impossible to answer.
+            $originalText = trim((string) ($chunk['content'] ?? ''));
+
+            if ($originalText !== '' && $originalText !== trim((string) $row['texte_corrige'])) {
+                $out[] = [
+                    'document_id' => $documentId,
+                    'version_id' => (int) ($chunk['version_id'] ?? 0),
+                    'chunk_index' => 2,
+                    'title' => $title,
+                    'content' => 'Texte original ('
+                        . mb_strtoupper((string) ($row['doc_langue'] ?? '')) . ') : ' . $originalText,
+                    'score' => (float) ($chunk['score'] ?? 1.0),
+                ];
+            }
             $out[] = [
                 'document_id' => $documentId,
                 'version_id' => (int) ($chunk['version_id'] ?? 0),
