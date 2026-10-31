@@ -54,15 +54,39 @@
             var li = document.createElement('li');
             var strong = document.createElement('strong');
             strong.textContent = (source.num || (i + 1)) + '. ' + (source.title || 'Document');
+
+            // A corrected source is the reliable reference: say so and let the
+            // user download the exact text that was used.
+            if (source.corrige) {
+                var badge = document.createElement('span');
+                badge.className = 'src-badge-corrected';
+                var when = (source.correction && source.correction.date) ? ' · ' + String(source.correction.date).slice(0, 10) : '';
+                var lang = (source.correction && source.correction.langue) ? String(source.correction.langue).toUpperCase() : '';
+                badge.textContent = (document.documentElement.lang === 'fr' ? 'Version corrigée' : 'Corrected version')
+                    + (lang ? ' ' + lang : '') + when;
+                strong.appendChild(badge);
+            }
+
             var span = document.createElement('span');
             span.className = 'text-muted d-block';
             span.innerHTML = query ? highlightTerms(source.excerpt || '', query) : highlightTerms(source.excerpt || '', '');
             li.appendChild(strong);
             li.appendChild(span);
+
+            if (source.corrige && source.correction && source.correction.id) {
+                var corr = document.createElement('a');
+                corr.href = apiUrl('correction_download.php?id=' + encodeURIComponent(source.correction.id));
+                corr.className = 'small d-inline-block mt-1 src-corrected-dl';
+                corr.textContent = document.documentElement.lang === 'fr'
+                    ? 'Télécharger la version corrigée'
+                    : 'Download the corrected version';
+                li.appendChild(corr);
+            }
+
             if (source.document_id) {
                 var link = document.createElement('a');
                 link.href = apiUrl('download_document.php?document_id=' + encodeURIComponent(source.document_id));
-                link.className = 'small d-inline-block mt-1';
+                link.className = 'small d-inline-block mt-1 ms-3';
                 link.textContent = t('download_source');
                 li.appendChild(link);
             }

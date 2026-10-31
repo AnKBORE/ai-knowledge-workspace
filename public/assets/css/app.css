@@ -2083,3 +2083,23 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .correction-del svg { width: 15px; height: 15px; }
 
 .correction-del:hover { background: #fef3f2; }
+
+/* Source cited as a corrected version */
+.src-badge-corrected {
+    display: inline-block;
+    margin-left: .5rem;
+    padding: .1rem .45rem;
+    border-radius: 6px;
+    background: #e7f6ec;
+    color: #15803d;
+    font-size: .66rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.src-corrected-dl {
+    font-weight: 600;
+    color: #15803d;
+}
