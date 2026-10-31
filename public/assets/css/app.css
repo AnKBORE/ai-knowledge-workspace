@@ -1775,8 +1775,8 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 
 /* Rephrase icon button */
 .translate-form .translate-cta .translate-refresh {
-    width: 58px;
-    height: 58px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -1790,8 +1790,8 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 }
 
 .translate-form .translate-cta .translate-refresh svg {
-    width: 26px;
-    height: 26px;
+    width: 18px;
+    height: 18px;
 }
 
 .translate-form .translate-cta .translate-refresh:hover {
@@ -1825,5 +1825,5 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 }
 
 @media (max-width: 767px) {
-    .translate-form .translate-cta .translate-refresh { width: 52px; height: 52px; }
+    .translate-form .translate-cta .translate-refresh { width: 38px; height: 38px; }
 }
