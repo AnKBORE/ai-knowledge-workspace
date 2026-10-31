@@ -1,169 +1,170 @@
 # Architecture — Agentic Knowledge Workspace™
 
-> Document de référence technique. Il décrit **ce que fait réellement le code**,
-> pas ce qu'on aimerait qu'il fasse. Les limites connues sont signalées
-> explicitement (section 12).
+> Technical reference. It describes **what the code actually does**, not what we
+> wish it did. Known limitations are stated explicitly (section 12).
 
-| Métrique | Valeur |
+🇫🇷 French version: [ARCHITECTURE.fr.md](ARCHITECTURE.fr.md)
+
+| Metric | Value |
 |---|---|
-| Routes web | **8** |
-| Endpoints API | **20** |
+| Web routes | **8** |
+| API endpoints | **20** |
 | Migrations | **21** |
 | Services | **22** |
-| Modèles | **10** |
-| Vues | **17** |
-| Fichiers de test | **23** |
+| Models | **10** |
+| Views | **17** |
+| Test files | **23** |
 | Tests / assertions | **100 / 230** |
 | PHP | **8.4.27** · MySQL **8.4.13** |
 
 ---
 
-## 1. Principes d'architecture
+## 1. Architectural principles
 
-| Principe | Mise en œuvre |
+| Principle | Implementation |
 |---|---|
-| **MVC strict, sans framework** | `public/index.php` route, les contrôleurs (`controllers/`) orchestrent, les modèles (`models/`) parlent SQL, les vues (`views/`) affichent |
+| **Strict MVC, no framework** | `public/index.php` routes, controllers (`controllers/`) orchestrate, models (`models/`) own SQL, views (`views/`) render |
 | **PSR-4** | `App\Core\`, `App\Controllers\`, `App\Models\`, `App\Services\`, `App\Validators\`, `App\Services\Ai\` |
-| **Zéro dépendance lourde** | `dompdf` + `pdfparser` uniquement ; DOCX généré en OOXML natif via `ZipArchive` |
-| **Stockage hors racine web** | `storage/files/` — jamais accessible par URL directe |
-| **Point d'entrée unique** | `public/` est la seule racine exposée ; tout passe par le front controller ou `public/api/*` |
-| **Traçabilité** | Toute action sensible écrit dans `journal` (append-only) |
+| **No heavy dependency** | only `dompdf` + `pdfparser`; DOCX is generated as native OOXML through `ZipArchive` |
+| **Storage outside the web root** | `storage/files/` — never reachable by direct URL |
+| **Single entry point** | `public/` is the only exposed root; everything goes through the front controller or `public/api/*` |
+| **Traceability** | every sensitive action writes to `journal` (append-only) |
 
 ---
 
-## 2. Cartographie des dossiers
+## 2. Directory map
 
 ```
 ai-knowledge-workspace/
-├── bootstrap.php            # Assemblage des dépendances (conteneur simple)
+├── bootstrap.php            # Dependency assembly (simple container)
 ├── public/
-│   ├── index.php            # Routeur + rendu des vues
-│   ├── api/                 # 20 endpoints JSON / fichiers
+│   ├── index.php            # Router + view rendering
+│   ├── api/                 # 20 JSON / file endpoints
 │   └── assets/              # css, js, vendor (DataTables, jQuery, Bootstrap, Select2)
 ├── controllers/             # AiAssistantController, AuthController…
 ├── core/                    # Auth, Csrf, Session, Env, i18n, helpers
-├── models/                  # 10 modèles PDO
-├── services/                # 22 services (dont 10 dans Ai/)
+├── models/                  # 10 PDO models
+├── services/                # 22 services (10 of them in Ai/)
 ├── views/
 │   ├── layouts/             # app.php, auth.php, public.php
 │   ├── ai/                  # question, task, translate, upload, documents, journal, profil, categories
-│   ├── public/              # landing.php (page de présentation bilingue)
+│   ├── public/              # landing.php (bilingual presentation page)
 │   └── auth/                # login
-├── migrations/              # 21 paires .up.sql / .down.sql
-├── tests/                   # 23 fichiers, 100 tests (SQLite en mémoire)
-├── docs/                    # cette documentation
-└── storage/files/           # documents + corrections (hors web root)
+├── migrations/              # 21 .up.sql / .down.sql pairs
+├── tests/                   # 23 files, 100 tests (in-memory SQLite)
+├── docs/                    # this documentation
+└── storage/files/           # documents + corrections (outside the web root)
 ```
 
 ---
 
-## 3. Modèle de données
+## 3. Data model
 
-| Table | Rôle |
+| Table | Purpose |
 |---|---|
-| `utilisateur` | Comptes, `role_global` (membre / administrateur_fonctionnel / administrateur_technique), Argon2id |
-| `jeton_compte` | Jetons de vérification / réinitialisation |
-| `tentative_connexion` | Verrouillage progressif par e-mail + IP |
-| `espace` / `adhesion` / `historique_adhesions` | Cloisonnement multi-espaces, rôles locaux (lecteur → responsable), historique |
-| `documents` | Métadonnées : titre, fichier, `langue`, `categorie_id`, confidentialité, statut |
-| `version_document` | Versions immuables : numéro, empreinte SHA-256, auteur, commentaire |
-| `document_chunks` | Segments indexés (texte + vecteur JSON + `chunk_index`) |
-| `categorie` | Catégories métier (id auto, slug unique, couleur) |
-| `ingestion_jobs` | File d'ingestion en arrière-plan (upload non bloquant) |
-| `rate_limit` | Compteurs par fenêtre fixe (anti-abus) |
-| **`correction_document`** | **Versions corrigées validées : langue, texte corrigé, texte source, fichier d'origine, nom, auteur** |
-| `document_translations` | Cache de traduction par segment (karaoké audio) |
-| `moore_corpus` | Corpus mooré (phrases de référence) |
-| `journal` | Audit append-only (acteur, action, objet, résultat, IP, détails JSON) |
+| `utilisateur` | Accounts, `role_global` (membre / administrateur_fonctionnel / administrateur_technique), Argon2id |
+| `jeton_compte` | Verification / reset tokens |
+| `tentative_connexion` | Progressive lockout per e-mail + IP |
+| `espace` / `adhesion` / `historique_adhesions` | Multi-space isolation, local roles (lecteur → responsable), history |
+| `documents` | Metadata: title, file, `langue`, `categorie_id`, confidentiality, status |
+| `version_document` | Immutable versions: number, SHA-256 fingerprint, author, comment |
+| `document_chunks` | Indexed segments (text + JSON vector + `chunk_index`) |
+| `categorie` | Business categories (auto id, unique slug, colour) |
+| `ingestion_jobs` | Background ingestion queue (non-blocking upload) |
+| `rate_limit` | Fixed-window counters (abuse protection) |
+| **`correction_document`** | **Validated corrected versions: language, corrected text, source text, original file, name, author** |
+| `document_translations` | Per-segment translation cache (audio karaoke) |
+| `moore_corpus` | Mooré corpus (reference sentences) |
+| `journal` | Append-only audit (actor, action, object, result, IP, JSON details) |
 
-### Point de vigilance : collations
+### Pitfall: collations
 
-`correction_document` a été créée en `utf8mb4_unicode_ci` alors que `documents`
-est en `utf8mb4_0900_ai_ci`. **Toute comparaison SQL entre les deux colonnes
-`langue` lève `Illegal mix of collations`.** La préférence de langue est donc
-décidée **en PHP**, jamais en SQL (voir `RagService::preferCorrections()`).
+`correction_document` was created with `utf8mb4_unicode_ci` while `documents`
+uses `utf8mb4_0900_ai_ci`. **Any SQL comparison between their `langue` columns
+raises `Illegal mix of collations`.** Language preference is therefore decided
+**in PHP**, never in SQL (see `RagService::preferCorrections()`).
 
 ---
 
-## 4. Flux d'ingestion d'un document
+## 4. Document ingestion flow
 
 ```
 Upload (public/api/upload.php)
-   ├─ contrôle de taille / MIME / extension
-   ├─ version_document : empreinte SHA-256, numéro incrémental
-   ├─ fichier écrit dans storage/files/
-   └─ ingestion_jobs : tâche en file
-        ↓ (BackgroundWorker, hors requête HTTP)
+   ├─ size / MIME / extension checks
+   ├─ version_document: SHA-256 fingerprint, incremental number
+   ├─ file written to storage/files/
+   └─ ingestion_jobs: queued task
+        ↓ (BackgroundWorker, outside the HTTP request)
      IngestionService
         ├─ PDF          → `smalot/pdfparser`
-        ├─ DOCX         → `ZipArchive` sur word/document.xml
-        ├─ audio        → TranscriptionService (cascade ASR)
-        ├─ image / PDF scanné → VisionService (OCR page à page, appels parallèles)
-        ├─ anonymisation (Anonymiseur) si demandé
-        └─ RagService::indexDocument() → découpage 800 / chevauchement 100
-                                       → EmbeddingService (hashing local, 0 coût)
+        ├─ DOCX         → `ZipArchive` on word/document.xml
+        ├─ audio        → TranscriptionService (ASR cascade)
+        ├─ image / scanned PDF → VisionService (page-by-page OCR, parallel calls)
+        ├─ anonymisation (Anonymiseur) when requested
+        └─ RagService::indexDocument() → 800-char chunks / 100 overlap
+                                       → EmbeddingService (local hashing, zero cost)
                                        → INSERT document_chunks
 ```
 
-**Pourquoi un worker** : un PDF scanné de 40 pages prend plusieurs minutes.
-La requête HTTP rend la main immédiatement, `upload_status.php` expose l'avancement.
+**Why a worker:** a 40-page scanned PDF takes minutes. The HTTP request returns
+immediately and `upload_status.php` exposes progress.
 
 ---
 
-## 5. Moteur de récupération (RAG++)
+## 5. Retrieval engine (RAG++)
 
-### 5.1 Score hybride
+### 5.1 Hybrid score
 
 ```
-score = 0.6 × similarité cosinus (vecteurs)  +  0.4 × score lexical (recouvrement de tokens)
+score = 0.6 × cosine similarity (vectors) + 0.4 × lexical score (token overlap)
 ```
 
-Le mode d'embedding `META_EMBEDDING_MODE=local` calcule les vecteurs par
-**hashing** : l'indexation ne coûte **aucun appel API**, au prix d'une
-sémantique plus grossière qu'un vrai modèle d'embedding.
+With `META_EMBEDDING_MODE=local`, vectors are computed by **hashing**: indexing
+costs **no API call**, at the price of a coarser semantics than a real embedding
+model.
 
-### 5.2 Élargissement aux voisins
+### 5.2 Neighbour expansion
 
-Un titre ou un en-tête se trouve souvent dans le chunk **adjacent** au meilleur
-résultat. `expandWithNeighbors()` fusionne `chunk_index ± 1` **et** le premier
-chunk de la même version : le modèle voit le passage complet, pas un fragment.
+A title or heading often sits in the chunk **adjacent** to the best hit.
+`expandWithNeighbors()` merges `chunk_index ± 1` **and** the first chunk of the
+same version: the model sees the full passage, not a fragment.
 
-### 5.3 Priorité aux corrections — le cœur du module d'apprentissage
+### 5.3 Correction priority — the heart of the learning module
 
 ```
 retrieveSimilar()
-   ├─ recherche vectorielle + lexicale sur document_chunks
-   ├─ correctionHits()      ← recherche lexicale DÉDIÉE sur correction_document
-   │                          (une correction n'est pas dans l'index : sans cela,
-   │                           une question qui ne matche que le corrigé ne
-   │                           trouverait aucun document)
-   └─ preferCorrections()   ← remplace TOUS les chunks d'un document corrigé
-                              par le texte corrigé, un seul extrait par document
+   ├─ vector + lexical search over document_chunks
+   ├─ correctionHits()      ← DEDICATED lexical search over correction_document
+   │                          (a correction is not in the index: without this,
+   │                           a question matching only the corrected text
+   │                           would find no document at all)
+   └─ preferCorrections()   ← replaces ALL chunks of a corrected document with
+                              the corrected text, one extract per document
 ```
 
-Règles de choix de la correction :
+Correction selection rules:
 
-1. celle écrite dans la **langue du document** d'abord ;
-2. à défaut, la **plus récente**.
+1. the one written in the **document's own language** first;
+2. otherwise, the **most recent**.
 
-Le contexte envoyé au modèle est étiqueté :
+The context sent to the model is labelled:
 
 ```
 NOTE: an extract marked « VERSION CORRIGÉE » is the validated reference for that
 document. Always prefer it over any other extract of the same document, and say
 so when you cite it.
 
-[Extrait 1 — Meeting6 · VERSION CORRIGÉE MO du 2026-10-31]
+[Extract 1 — Meeting6 · VERSION CORRIGÉE MO of 2026-10-31]
 Ne y waoongo, nẽn y kende…
 ```
 
 ### 5.4 Sources
 
-`sourcesFor()` renvoie les extraits **cités** par le modèle ; si le modèle n'a
-rien cité (oubli, réponse coupée), les **trois premiers extraits** sont listés.
-Une réponse ancrée ne doit **jamais** paraître sans source.
+`sourcesFor()` returns the extracts the model **cited**; if it cited nothing
+(forgot, or the answer was cut), the **first three extracts** are listed. A
+grounded answer must **never** look sourceless.
 
-Chaque source exposée porte :
+Each exposed source carries:
 
 ```json
 {
@@ -176,221 +177,221 @@ Chaque source exposée porte :
 
 ---
 
-## 6. Tâche agentique — plan → retrieve → draft → verify → revise
+## 6. Agentic task — plan → retrieve → draft → verify → revise
 
-`AiAssistantController::task()` → `RagService::task()` :
+`AiAssistantController::task()` → `RagService::task()`:
 
-| Étape | Ce qui se passe |
+| Step | What happens |
 |---|---|
-| **plan** | Le modèle décompose l'instruction en 2 à 4 requêtes de recherche |
-| **retrieve** | Chaque requête interroge `retrieveSimilar()` (donc **bénéficie des corrections**), fusion par `document_id \| version_id \| chunk_index` |
-| **draft** | Rédaction ancrée, avec citations `[n]` obligatoires |
-| **verify** | Un second appel vérifie que chaque affirmation est **soutenue** par le contexte ; renvoie les affirmations non soutenues |
-| **revise** | Si des affirmations ne sont pas soutenues, un troisième appel corrige le brouillon |
+| **plan** | The model splits the instruction into 2 to 4 search queries |
+| **retrieve** | Each query calls `retrieveSimilar()` (so it **benefits from corrections**); results merged by `document_id \| version_id \| chunk_index` |
+| **draft** | Grounded writing, with mandatory `[n]` citations |
+| **verify** | A second call checks that each claim is **supported** by the context, and returns unsupported ones |
+| **revise** | If claims are unsupported, a third call fixes the draft |
 
-La trace complète (`steps`) est renvoyée à l'interface : c'est ce qui distingue
-une tâche **agentique** d'un simple prompt.
+The full trace (`steps`) is returned to the UI: this is what separates an
+**agentic** task from a plain prompt.
 
 ---
 
-## 7. Pipeline de traduction
+## 7. Translation pipeline
 
-### 7.1 Les six directions
+### 7.1 The six directions
 
-`fr ↔ en`, `fr ↔ mo`, `en ↔ mo` — aucune direction privilégiée.
+`fr ↔ en`, `fr ↔ mo`, `en ↔ mo` — no privileged direction.
 
-### 7.2 Composition du prompt (ordre d'importance)
+### 7.2 Prompt composition (by importance)
 
-| Couche | Source | Rôle |
+| Layer | Source | Role |
 |---|---|---|
-| **Règles strictes** | code | sortie seule, entités/chiffres/dates préservés, noms de mois localisés, pas d'omission |
-| **Glossaire métier** | `Glossaire` | 20 termes (catéchiste, suivi-évaluation, vicariat…), **désactivé pour une cible mooré** |
-| **Lexique SIL** | `LexiqueMoore` | 1 349 entrées vérifiées, recherche par **racine** (les formes fléchies `rabda` matchent `rabde`) |
-| **Proverbes** | `Proverbes` | 40 proverbes mooré, référence **culturelle** uniquement |
-| **Référence mooré** | `MooreReference` | orthographe (ɩ ʋ ã), pronoms, négation `ka…ye`, salutations |
-| **Corrections validées** | `Apprentissage` | exemples de style approuvés par l'organisation |
+| **Strict rules** | code | output only, entities/figures/dates preserved, month names localised, no omission |
+| **Business glossary** | `Glossaire` | 20 terms (catechist, monitoring and evaluation, vicariate…), **disabled for a Mooré target** |
+| **SIL lexicon** | `LexiqueMoore` | 1 349 verified entries, **stem** lookup (inflected `rabda` matches `rabde`) |
+| **Proverbs** | `Proverbes` | 40 Mooré proverbs, **cultural** reference only |
+| **Mooré reference** | `MooreReference` | orthography (ɩ ʋ ã), pronouns, negation `ka…ye`, greetings |
+| **Validated corrections** | `Apprentissage` | style examples approved by the organisation |
 
-### 7.3 Moteur d'apprentissage (`Apprentissage`)
+### 7.3 Learning engine (`Apprentissage`)
 
-Ce n'est **pas** un fine-tuning, et c'est un choix assumé : un fine-tuning sur
-quelques dizaines de corrections surapprendrait et serait indémontrable.
+This is **not** fine-tuning, and that is a deliberate choice: fine-tuning on a few
+dozen corrections would overfit and could not be demonstrated.
 
 ```
-1. Charge jusqu'à 500 corrections validées de la langue
-2. Calcule la fréquence documentaire de chaque terme de la requête
-3. Score = Σ IDF(terme) + bonus de récence + bonus de nombre de termes communs
-4. Un seul exemple par document, déduplication par signature, budget 2 600 caractères
-5. Extrait centré sur le terme commun, 480 caractères
+1. Load up to 500 validated corrections in the language
+2. Compute the document frequency of every query term
+3. Score = Σ IDF(term) + recency bonus + shared-term count bonus
+4. One example per document, de-duplicated by signature, 2 600-character budget
+5. Excerpt centred on the shared term, 480 characters
 ```
 
-Un terme rare (« vicariat ») pèse donc bien plus qu'un terme générique
-(« projet »). Vérifié par `ApprentissageTest` (6 tests).
+A rare term ("vicariate") therefore weighs far more than a generic one
+("project"). Verified by `ApprentissageTest` (6 tests).
 
-### 7.4 Garde-fous de production
+### 7.4 Production guardrails
 
-| Garde-fou | Effet |
+| Guardrail | Effect |
 |---|---|
-| `reasoning_effort: low` | supprime le « tâtonnement » du modèle sur une tâche mécanique |
-| `max_tokens: 3000` | évite les réponses tronquées (les traductions s'arrêtent d'elles-mêmes) |
-| Ratio de longueur | si la sortie est < 0,35× ou > 3,5× la source, **reprise** avec consigne de réparation |
-| Température 0.0 / 0.7 | 0.0 pour traduire (déterminisme), 0.7 pour reformuler (variation) |
-| Aucun `catch` muet | toute erreur remonte un `translation_error` explicite |
+| `reasoning_effort: low` | removes the model's "hesitation" on a mechanical task |
+| `max_tokens: 3000` | prevents truncated answers (translations stop on their own) |
+| Length ratio | if output is < 0.35× or > 3.5× the source, **retry** with a repair instruction |
+| Temperature 0.0 / 0.7 | 0.0 to translate (determinism), 0.7 to rephrase (variation) |
+| No silent `catch` | every failure surfaces an explicit `translation_error` |
 
-**Latence mesurée** : 4,6 s → **2,2-3,0 s** après ces réglages, sortie **stable**
-sur trois exécutions consécutives.
+**Measured latency**: 4.6 s → **2.2-3.0 s** after these settings, with a **stable**
+output across three consecutive runs.
 
 ---
 
-## 8. Enregistrement de réunion (transcription)
+## 8. Meeting recording (transcription)
 
-### 8.1 Choix d'architecture
+### 8.1 Architectural choice
 
-Le **streaming par tranches** a été implémenté puis **retiré** : la latence
-intrinsèque (ASR + traduction par tranche) rendait le temps réel instable.
+**Chunked streaming** was implemented and then **removed**: the intrinsic latency
+(ASR + translation per chunk) made real time unstable.
 
 ```
-Aujourd'hui : enregistrement → Stop → UN appel sur l'audio complet
+Today: record → Stop → ONE call over the complete audio
 ```
 
-Un seul appel est **mesurable et reproductible** ; le direct dépendait de la
-charge du modèle.
+A single call is **measurable and reproducible**; live depended on model load.
 
 ### 8.2 Interface
 
-| Zone | Contenu |
+| Area | Content |
 |---|---|
-| En-tête | micro, « Enregistrement de réunion », nom du document |
-| Barre | REC, chrono (gelé en pause), **niveau audio** |
-| Champs | **Langue parlée** (« Détection automatique » par défaut) · **Sortie** (« Même langue » = transcription) |
-| Note | « La transcription est générée à la fin de l'enregistrement… » |
-| Résultat | transcription + actions **↻ Reformuler · 📄 DOCX · ⤓ PDF** |
+| Header | microphone, "Meeting recording", document name |
+| Bar | REC, timer (frozen while paused), **audio level** |
+| Fields | **Spoken language** ("Automatic detection" by default) · **Output** ("Same language" = transcript) |
+| Note | "The transcript is generated when the recording ends…" |
+| Result | transcript + actions **↻ Rephrase · 📄 DOCX · ⤓ PDF** |
 
-### 8.3 Décisions de conception
+### 8.3 Design decisions
 
-- **Sortie = même langue** → transcription seule ; **autre langue** → traduction.
-- **Seuil RMS, pas pic** : un pic sous 0,012 jetait 6 s de parole calme — c'était
-  la cause des « mots manquants ».
-- **Pause réelle** : le chronomètre se fige et aucune tranche ne part.
+- **Output = same language** → transcript only; **another language** → translation.
+- **RMS threshold, not peak**: a peak below 0.012 discarded 6 s of quiet speech —
+  that was the cause of the "missing words".
+- **Real pause**: the timer freezes and no chunk is sent.
 
 ---
 
-## 9. Corrections humaines — le module d'apprentissage
+## 9. Human corrections — the learning module
 
-### 9.1 Pourquoi
+### 9.1 Why
 
-Un modèle laisse toujours passer des erreurs de vocabulaire ou d'expression.
-Un **locuteur natif** (ou l'auteur du document) dépose une version corrigée :
-le système la réutilise ensuite comme **référence fiable**.
+A model always lets vocabulary or phrasing errors through. A **native speaker**
+(or the document's author) uploads a corrected version: the system then reuses it
+as a **reliable reference**.
 
-### 9.2 Parcours
+### 9.2 Flow
 
 ```
-Documents indexés → ✏️  →  langues + nom proposé + fichier corrigé
-                        →  correction_document (+ fichier dans storage)
-                        →  immédiatement utilisable par le RAG
+Indexed documents → ✏️  →  languages + proposed name + corrected file
+                        →  correction_document (+ file in storage)
+                        →  immediately usable by the RAG
 ```
 
-### 9.3 Règles
+### 9.3 Rules
 
-| Règle | Raison |
+| Rule | Reason |
 |---|---|
-| **Aucune approbation** | celui qui dépose maîtrise la langue ou possède le document |
-| **Fichier original conservé** | `storage/files/corrections/<doc>/<sha256>.<ext>` — servi **à l'octet près** au téléchargement |
-| **Formats** | `.pdf`, `.docx`, `.txt`, `.md`, `.csv` — un `.docx` **reste** un `.docx` |
-| **Nom proposé** | `<document>_corrige_vN.<ext>`, **modifiable**, `N` = nombre de corrections + 1 |
-| **Suppression** | auteur de la correction **ou** `document.supprimer` ; effet **immédiat** sur les prompts |
-| **Liste** | visible dans le modal, avec langue, auteur, date, taille |
+| **No approval step** | whoever uploads masters the language or owns the document |
+| **Original file kept** | `storage/files/corrections/<doc>/<sha256>.<ext>` — served **byte for byte** on download |
+| **Formats** | `.pdf`, `.docx`, `.txt`, `.md`, `.csv` — a `.docx` **stays** a `.docx` |
+| **Proposed name** | `<document>_corrige_vN.<ext>`, **editable**, `N` = corrections + 1 |
+| **Deletion** | correction author **or** `document.supprimer`; **immediate** effect on prompts |
+| **Listing** | visible in the modal, with language, author, date, size |
 
-### 9.4 Extraction de texte
+### 9.4 Text extraction
 
-`TexteExtracteur` : `.pdf` via `smalot/pdfparser`, `.docx` via `ZipArchive`
-(paragraphes → lignes), texte brut sinon. Le texte extrait sert **uniquement** à
-l'apprentissage et au RAG — il ne reconstruit jamais le fichier.
+`TexteExtracteur`: `.pdf` via `smalot/pdfparser`, `.docx` via `ZipArchive`
+(paragraphs → lines), plain text otherwise. The extracted text is used **only**
+for learning and RAG — it never rebuilds the file.
 
 ---
 
-## 10. Sécurité
+## 10. Security
 
-| Mesure | Détail |
+| Measure | Detail |
 |---|---|
-| **Mots de passe** | Argon2id, politique de complexité, verrouillage progressif |
-| **Sessions** | cookie `HttpOnly`, `SameSite=Lax`, régénération à la connexion |
-| **CSRF** | 11/15 endpoints à effet de serre, champ `_csrf` **ou** en-tête `X-CSRF-Token` (wrapper `fetch` global) |
-| **RBAC** | 2 niveaux : global (`membre` → `administrateur_technique`), local (`lecteur` → `responsable`) |
-| **Rate limiting** | `rate_limit` : `ask` 30/5 min, `summarize` 20, `translate` 30, `reformulate` 30, `correction` 30 |
-| **En-têtes** | CSP, `X-Frame-Options`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` |
-| **Cache** | pages en `no-store` : une page ancienne ne peut plus épingler un ancien `?v=` |
-| **Fichiers** | stockage hors racine web, nom aléatoire (SHA-256), `basename()` sur tout nom servi |
-| **Journal** | append-only ; purge légale restreinte (RGPD), re-authentifiée et journalisée |
+| **Passwords** | Argon2id, complexity policy, progressive lockout |
+| **Sessions** | `HttpOnly` cookie, `SameSite=Lax`, regenerated on login |
+| **CSRF** | 11/15 state-changing endpoints, `_csrf` field **or** `X-CSRF-Token` header (global `fetch` wrapper) |
+| **RBAC** | 2 levels: global (`membre` → `administrateur_technique`), local (`lecteur` → `responsable`) |
+| **Rate limiting** | `rate_limit`: `ask` 30/5 min, `summarize` 20, `translate` 30, `reformulate` 30, `correction` 30 |
+| **Headers** | CSP, `X-Frame-Options`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` |
+| **Cache** | pages served `no-store`: an old page can no longer pin an old `?v=` |
+| **Files** | storage outside the web root, random name (SHA-256), `basename()` on every served name |
+| **Journal** | append-only; restricted legal purge (GDPR), re-authenticated and journaled |
 
 ---
 
 ## 11. Tests
 
-`vendor/bin/phpunit` — **100 tests, 230 assertions**, sans base de données ni API.
+`vendor/bin/phpunit` — **100 tests, 230 assertions**, with no database server and
+no API.
 
-| Fichier | Ce qu'il protège |
+| File | What it protects |
 |---|---|
-| `AuthTest`, `PermissionServiceTest` | authentification, RBAC, verrouillage |
-| `DocumentTest`, `DocumentServiceTest` | documents, versions, catégories |
-| `CategorieTest`, `AdhesionTest` | identifiants auto, slugs portables, adhésions |
-| `RateLimiterTest` | fenêtre fixe, clés séparées, réinitialisation |
-| `ApprentissageTest` | **moteur d'apprentissage** : isolation par langue, IDF, plafond d'exemples, suppression effective |
-| `MooreResourcesTest` | lexique chargé, recherche par racine, proverbes, glossaire bidirectionnel |
-| `AnonymiseurTest`, `AudioSplitterTest` | anonymisation, découpage audio |
-| `RagServiceTest`, `ExportServiceTest` | récupération, exports |
+| `AuthTest`, `PermissionServiceTest` | authentication, RBAC, lockout |
+| `DocumentTest`, `DocumentServiceTest` | documents, versions, categories |
+| `CategorieTest`, `AdhesionTest` | auto identifiers, portable slugs, memberships |
+| `RateLimiterTest` | fixed window, separate keys, reset |
+| `ApprentissageTest` | **learning engine**: language isolation, IDF, example cap, deletion taking effect |
+| `MooreResourcesTest` | lexicon loaded, stem search, proverbs, bidirectional glossary |
+| `AnonymiseurTest`, `AudioSplitterTest` | anonymisation, audio splitting |
+| `RagServiceTest`, `ExportServiceTest` | retrieval, exports |
 
-Les doubles (`FakeMetaClient`) rendent les tests **déterministes** et **gratuits**.
+Fakes (`FakeMetaClient`) keep the suite **deterministic** and **free**.
 
 ---
 
-## 12. Limites connues (assumées)
+## 12. Known limitations (accepted)
 
-| Limite | Réalité |
+| Limitation | Reality |
 |---|---|
-| **Mooré, langue à faible ressource** | le lexique couvre 1 349 entrées contre ~10 650 au dictionnaire SIL : les tournures complexes restent approximatives. C'est écrit sur la page de présentation. |
-| **Embeddings par hashing** | rapides et gratuits, mais moins sémantiques qu'un vrai modèle d'embedding |
-| **Apprentissage par récupération** | pas de fine-tuning : le modèle est **guidé**, pas réentraîné |
-| **CSP `unsafe-inline`** | hérité des scripts de vue ; à durcir (nonces) |
-| **Direct temps réel** | retiré au profit d'un appel unique fiable |
-| **Pas de pagination** sur certaines listes | acceptable jusqu'à quelques centaines de documents |
+| **Mooré, a low-resource language** | the lexicon covers 1 349 entries against ~10 650 in the SIL dictionary: complex constructions remain approximate. This is stated on the presentation page. |
+| **Hashing embeddings** | fast and free, but less semantic than a real embedding model |
+| **Retrieval-based learning** | no fine-tuning: the model is **guided**, not retrained |
+| **CSP `unsafe-inline`** | inherited from view scripts; to be hardened (nonces) |
+| **Real-time streaming** | removed in favour of a single reliable call |
+| **No pagination** on some lists | acceptable up to a few hundred documents |
 
 ---
 
-## 13. Décisions d'ingénierie notables
+## 13. Notable engineering decisions
 
-| Décision | Alternative écartée | Raison |
+| Decision | Rejected alternative | Reason |
 |---|---|---|
-| **Un appel à l'arrêt** pour l'enregistrement | streaming par tranches | latence modèle ≈ temps réel → instable |
-| **Retrieval** pour apprendre des corrections | fine-tuning | instantané, réversible, explicable, sans coût |
-| **DOCX natif** (ZipArchive) | bibliothèque Word | zéro dépendance, contrôle total |
-| **Hors-racine web** pour les fichiers | `public/` | évite toute exécution / fuite directe |
-| **SQLite en tests** | MySQL de test | tests rapides, sans serveur |
-| **`no-store` sur les pages** | cache navigateur | un correctif invisible est pire qu'un chargement lent |
+| **One call at stop** for recording | chunked streaming | model latency ≈ real time → unstable |
+| **Retrieval** to learn from corrections | fine-tuning | instant, reversible, explainable, free |
+| **Native DOCX** (ZipArchive) | Word library | zero dependency, full control |
+| **Outside the web root** for files | `public/` | prevents any execution / direct leak |
+| **SQLite in tests** | test MySQL server | fast tests, no server |
+| **`no-store` on pages** | browser cache | an invisible fix is worse than a slow load |
 
 ---
 
-## 14. Journal des incidents résolus
+## 14. Incident log (resolved)
 
-| Symptôme | Cause réelle | Correctif |
+| Symptom | Real cause | Fix |
 |---|---|---|
-| Réponses sans source | réponse tronquée (`max_tokens` 1200) → pas de citation | plafond 3 000 + repli sur les 3 premiers extraits |
-| Corrections ignorées (question/tâche) | `Illegal mix of collations` avalée par un `catch` | préférence de langue décidée en PHP |
-| « Are you going today? » → « Do you want it today? » | forme fléchie `rabda` ≠ entrée `rabde` | recherche par racine (4 lettres) |
-| Enregistrement muet pendant 47 s | deadlock : une tranche rejetée consommait un numéro de séquence | séquence allouée à l'envoi réel |
-| Mots manquants en transcription | seuil sur le **pic** au lieu du **RMS** | seuil RMS 0,0015 |
-| Correctif visible seulement en vidant le cache | pages HTML non versionnées | `Cache-Control: no-store` |
-| Correction `.docx` refusée | liste blanche limitée à `.txt/.md/.csv` | `.pdf` et `.docx` acceptés + extraction |
-| Téléchargement en `.txt` | fichier jeté, texte seul conservé | fichier original stocké et servi tel quel |
+| Answers with no source | truncated answer (`max_tokens` 1200) → no citation | ceiling 3 000 + fallback to the first three extracts |
+| Corrections ignored (question/task) | `Illegal mix of collations` swallowed by a `catch` | language preference decided in PHP |
+| "Are you going today?" rendered "Do you want it today?" | inflected `rabda` ≠ lexicon entry `rabde` | stem search (4 letters) |
+| Recording silent for 47 s | deadlock: a rejected chunk consumed a sequence number | sequence allocated at real send time |
+| Missing words in transcription | threshold on **peak** instead of **RMS** | RMS threshold 0.0015 |
+| Fix visible only after clearing the cache | HTML pages not versioned | `Cache-Control: no-store` |
+| `.docx` correction rejected | allow-list limited to `.txt/.md/.csv` | `.pdf` and `.docx` accepted + extraction |
+| Download delivered `.txt` | file discarded, only text kept | original file stored and served as-is |
 
 ---
 
-## 15. Pour aller plus loin
+## 15. Going further
 
-| Sujet | Document |
+| Topic | Document |
 |---|---|
-| Sécurité et données API | `docs/SECURITE_DONNEES_API.md` |
-| Marque et propriété | `docs/MARQUE_ET_PROPRIETE.md` |
-| Guide de réalisation | `docs/GUIDE_DE_REALISATION.md` |
-| Registre des problèmes | `docs/REGISTRE_PROBLEMES.md` |
-| Démonstration et soumission | `docs/DEMO_VIDEO_ET_SOUMISSION.md` |
+| API security and privacy | `docs/SECURITE_DONNEES_API.md` |
+| Brand and ownership | `docs/MARQUE_ET_PROPRIETE.md` |
+| Delivery guide | `docs/GUIDE_DE_REALISATION.md` |
+| Issue register | `docs/REGISTRE_PROBLEMES.md` |
+| Demo and submission | `docs/DEMO_VIDEO_ET_SOUMISSION.md` |
