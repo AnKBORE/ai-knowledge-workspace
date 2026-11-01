@@ -283,7 +283,17 @@ if ($method === 'GET') {
         ? count($documents)
         : (is_array($visibleDocuments) ? count($documents) : $dependencies['document_model']->count());
     $totalPages = max(1, (int) ceil($totalDocuments / $perPage));
-    $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
+    // The audit journal carries IP addresses and actor names: it is reserved
+    // to `journal.lire`, exactly like its CSV export and its purge.
+    $journalDenied = $path === '/journal'
+        && !$dependencies['permissions']->peutAilleurs((int) $auth->id(), 'journal.lire');
+
+    if ($journalDenied) {
+        http_response_code(403);
+        $dependencies['journal']->log((int) $auth->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'journal_interdit', 'chemin' => '/journal']);
+    }
+
+    $entries = $path === '/journal' && !$journalDenied ? $dependencies['journal']->recent() : [];
     $flashMessage = $dependencies['session']->get('profil_flash');
     $dependencies['session']->remove('profil_flash');
 
@@ -296,6 +306,7 @@ if ($method === 'GET') {
         'totalDocuments' => $totalDocuments,
         'search' => $search,
         'entries' => $entries,
+        'journalDenied' => $journalDenied ?? false,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],

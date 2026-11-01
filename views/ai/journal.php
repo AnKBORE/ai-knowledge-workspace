@@ -13,6 +13,30 @@ $labels = [
     'erreur' => 'warning',
 ];
 ?>
+<?php if (!empty($journalDenied)): ?>
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="space-admin">
+                <section class="panel space-list-panel technical-admin-panel panel-accent-slate">
+                    <div class="panel-head">
+                        <div>
+                            <p class="page-eyebrow"><?= e($S['assistant']) ?></p>
+                            <h2 class="panel-title"><?= e($T['pages']['/journal']) ?></h2>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <p class="technical-admin-empty">
+                            <?= e(($lang ?? 'en') === 'fr'
+                                ? "Le journal d'audit est réservé à l'administrateur technique."
+                                : 'The audit journal is restricted to the technical administrator.') ?>
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <?php return; ?>
+<?php endif; ?>
 <section class="dashboard-hero">
     <div class="dashboard-hero-copy">
         <p class="dashboard-eyebrow"><?= e($S['eyebrow_root']) ?> <span aria-hidden="true">/</span> <?= e($T['pages']['/journal']) ?></p>
