@@ -391,6 +391,48 @@ modifié **une trentaine de fois** entre le 24 octobre et le 1ᵉʳ novembre. La
 de création donne l'apparition d'une surface, pas son état final.
 ---
 
+## 4ter. Audit du MVP — 1ᵉʳ novembre 2026
+
+**Méthode** : chaque route et chaque endpoint a été appelé réellement avec une
+session authentifiée, puis une matrice statique (méthode HTTP, CSRF, limite de
+débit) a été construite pour les 20 endpoints. Des constats, pas des impressions.
+
+### Ce qui passe
+
+| Contrôle | Résultat |
+|---|---|
+| **9 pages** (`/`, `/tache`, `/traduire`, `/ajouter`, `/documents`, `/journal`, `/mon-profil`, `/categories`, `/presentation`) | **200** |
+| **6 endpoints de lecture** (documents, liste/téléchargement de correction, statut d'upload, téléchargement, CSV du journal) | **200** |
+| **Endpoints d'écriture** (question, tâche, traduction, reformulation, export, résumé) | **200** avec un contenu réel |
+| **Refus** (mot de passe erroné, fenêtre de purge trop large, `document_id` absent) | **403 / 422**, jamais un plantage |
+| **CSRF** sur chaque endpoint à effet de bord | présent |
+| **Journalisation** des écritures et des refus | présente |
+| **TODO / FIXME laissés dans le code** | **aucun** |
+
+### Ce qui était cassé, et corrigé le jour même
+
+| # | Constat | Risque | Correctif |
+|---|---|---|---|
+| 1 | `categorie_save` / `categorie_delete` ne rejetaient un GET que par le CSRF | fragile : la garde dépendait d'un autre mécanisme | **405 POST-only** explicite |
+| 2 | `delete_document` exigeait le mot de passe mais **sans limite de débit** | force brute du mot de passe avec une session volée | 10 / 5 min |
+| 3 | `export` sans limite de débit | la génération PDF coûte du CPU | 30 / 5 min |
+| 4 | `transcribe_chunk` sans limite de débit | abus de coût ASR | 60 / 5 min |
+| 5 | `translate_document` sans limite de débit | abus de coût de traduction | 300 / 5 min |
+| 6 | `upload` sans limite de débit | saturation du disque | 20 / 5 min |
+
+Vérifié après correction : `GET /api/categorie_save.php` → **405** ; les endpoints
+d'écriture répondent toujours **200** ; les 100 tests restent verts.
+
+### Limites connues, mesurées et non supposées
+
+| Limite | Réalité |
+|---|---|
+| **Couverture de test des endpoints** | **14 endpoints sur 20** ne sont jamais mentionnés dans un fichier de test. Les 100 tests couvrent les services et les règles métier, pas la couche HTTP |
+| **Ingestion en arrière-plan** | `forking is not supported on this platform` sous Windows : un dépôt lourd est traité en synchrone |
+| **Aucune mesure de qualité** | pas de précision@k, pas de score de traduction — rien ne mesure la qualité des réponses sur un jeu de référence |
+| **JavaScript** | zéro test automatisé ; la bascule de nettoyage, le sélecteur et l'enregistreur ont été vérifiés à la main |
+---
+
 ## 5. Les erreurs, écrites
 
 Un journal de construction sans erreur est un journal faux. Les plus

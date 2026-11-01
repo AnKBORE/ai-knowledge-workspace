@@ -392,6 +392,48 @@ the appearance of a surface, not its final state — `RagService` 31 commits,
 
 ---
 
+## 4ter. MVP audit — 1 November 2026
+
+**Method**: every route and endpoint was called for real with an authenticated
+session, then a static matrix (HTTP method, CSRF, rate limit) was built for the
+20 endpoints. Findings, not impressions.
+
+### What passed
+
+| Check | Result |
+|---|---|
+| **9 pages** (`/`, `/tache`, `/traduire`, `/ajouter`, `/documents`, `/journal`, `/mon-profil`, `/categories`, `/presentation`) | **200** |
+| **6 read endpoints** (documents, correction list/download, upload status, download, journal CSV) | **200** |
+| **Write endpoints** (ask, task, translate, reformulate, export, summarize) | **200** with real content |
+| **Refusals** (bad password, oversized purge window, missing document_id) | **403 / 422**, never a crash |
+| **CSRF** on every state-changing endpoint | present |
+| **Journaling** of writes and refusals | present |
+| **TODO / FIXME left in the code** | **none** |
+
+### What was broken, and fixed the same day
+
+| # | Finding | Risk | Fix |
+|---|---|---|---|
+| 1 | `categorie_save` / `categorie_delete` rejected a GET only through CSRF | fragile: the guard depended on another mechanism | explicit **405 POST-only** |
+| 2 | `delete_document` required the password but had **no rate limit** | password brute force with a stolen session | 10 / 5 min |
+| 3 | `export` had no rate limit | PDF generation is CPU-heavy | 30 / 5 min |
+| 4 | `transcribe_chunk` had no rate limit | ASR cost abuse | 60 / 5 min |
+| 5 | `translate_document` had no rate limit | translation cost abuse | 300 / 5 min |
+| 6 | `upload` had no rate limit | disk exhaustion | 20 / 5 min |
+
+Verified after the fix: `GET /api/categorie_save.php` → **405**; write endpoints
+still **200**; the 100 tests stay green.
+
+### Known limitations, measured not guessed
+
+| Limitation | Reality |
+|---|---|
+| **Endpoint test coverage** | **14 of 20** endpoints are never mentioned in a test file. The 100 tests cover services and business rules, not the HTTP layer |
+| **Background ingestion** | `forking is not supported on this platform` under Windows: a heavy upload is processed synchronously |
+| **No quality metric** | no precision@k, no translation score — nothing measures answer quality on a benchmark |
+| **JavaScript** | zero automated test; the clean toggle, the picker and the recorder were verified manually |
+---
+
 ## 5. The mistakes, written down
 
 A build journal without mistakes is a false journal. The most significant:
