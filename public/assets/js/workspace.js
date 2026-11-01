@@ -390,11 +390,15 @@
                     stepsHidden: resultSteps ? resultSteps.hidden : true
                 };
 
-                resultContent.innerHTML = stripCitations(resultContent.innerHTML);
+                // Work on the TEXT, not the HTML: headings wrapped in <strong>
+                // escaped the line-based patterns when the DOM was stripped.
+                var cleaned = stripCitations(String(currentResult ? currentResult.content : resultContent.textContent || ''));
 
                 if (currentResult) {
-                    currentResult.content = stripCitations(String(currentResult.content || ''));
+                    currentResult.content = cleaned;
                 }
+
+                resultContent.innerHTML = escapeThenBold(cleaned);
 
                 if (resultSources) { resultSources.hidden = true; }
                 if (resultSteps) { resultSteps.hidden = true; }
