@@ -200,6 +200,7 @@ text) tagged with its language. That correction immediately becomes the
   prompt immediately.
 - **It is honest about its scope.** This is retrieval-based learning, not
   fine-tuning: the model is guided by approved wording, never retrained.
+
 ### Content generation
 - Automatic summaries
 - Synthesis notes

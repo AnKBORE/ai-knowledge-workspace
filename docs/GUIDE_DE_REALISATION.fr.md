@@ -252,6 +252,7 @@ poids des termes rares (IDF), isolation par langue, plafond d'exemples et
 `correction_document` et `documents` n'ont pas la même collation. Toute
 comparaison SQL entre leurs colonnes `langue` lève `Illegal mix of collations` :
 la préférence de langue se décide **en PHP**.
+
 ## 10.2 Tâche agentique — périmètre, réponses ouvertes, conformité
 
 La boucle ne produit pas toujours un document administratif : la **forme de
@@ -297,6 +298,7 @@ Un second clic restaure l'état initial.
 
 Le nettoyage travaille sur le **texte** et non sur le DOM : un titre enveloppé
 dans `<strong>` échappait aux motifs ligne par ligne.
+
 ## 11. Phases d'exécution
 
 | Phase | Contenu | Statut |

@@ -490,7 +490,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 |---|---|---|
 | 01/11 | Journal created (retrospective 24/10 → 01/11) | `8c453f6` |
 | 01/11 | Detailed per-file inventory added | `38dd424` |
-| 01/11 | English version produced, French renamed to `.fr.md` | *(earlier)* |
+| 01/11 | English version produced, French renamed to `.fr.md` | `92407bd` |
 | 01/11 | Issue register translated (40 incidents) | `e5629d0` |
 | 01/11 | Data security note translated (18 sections) | `f554194` |
 | 01/11 | Delivery guide translated (13 sections) | `ca57984` |

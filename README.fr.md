@@ -201,6 +201,7 @@ texte) en précisant sa langue. Cette correction devient immédiatement la
   immédiatement d'alimenter le prompt.
 - **Elle reste honnête sur sa portée.** C'est de l'apprentissage par
   récupération, pas un fine-tuning : le modèle est guidé, jamais réentraîné.
+
 ### Génération de contenu
 - Résumés automatiques
 - Notes de synthèse
