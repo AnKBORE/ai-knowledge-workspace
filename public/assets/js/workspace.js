@@ -625,19 +625,51 @@
             applyLang(trTo.value, trFrom.value);
         });
 
-        // Live translation: debounce typing so the result refreshes without
-        // pressing the Translate button.
+        // Live translation: one call per stabilised phrase, never per keystroke.
+        //  - 1.2 s of silence before firing;
+        //  - nothing to do if the text and the languages did not change;
+        //  - after a 429, automatic translation pauses for the announced delay
+        //    instead of hammering the endpoint.
         var trDebounce = null;
+        var trSeq = 0;
+        var trPausedUntil = 0;
+        var lastTranslated = { text: '', from: '', to: '' };
+
+        function trPauseMessage(seconds) {
+            var fr = document.documentElement.lang === 'fr';
+            return fr
+                ? 'Traduction automatique en pause (' + seconds + ' s) — quota atteint.'
+                : 'Automatic translation paused (' + seconds + ' s) — quota reached.';
+        }
+
         trSource.addEventListener('input', function () {
             clearTimeout(trDebounce);
+
             if (!trSource.value.trim()) {
                 trResult.value = '';
                 trCopy.hidden = true;
                 trStatus.textContent = '';
+                lastTranslated = { text: '', from: '', to: '' };
                 return;
             }
+
             trForce.value = '0';
-            trDebounce = setTimeout(function () { translateForm.requestSubmit(); }, 700);
+
+            if (Date.now() < trPausedUntil) {
+                trStatus.textContent = trPauseMessage(Math.ceil((trPausedUntil - Date.now()) / 1000));
+                trStatus.className = 'small mt-2 text-muted';
+                return;
+            }
+
+            var text = trSource.value.trim();
+
+            if (text === lastTranslated.text
+                && trFrom.value === lastTranslated.from
+                && trTo.value === lastTranslated.to) {
+                return;
+            }
+
+            trDebounce = setTimeout(function () { translateForm.requestSubmit(); }, 1200);
         });
 
         translateForm.addEventListener('submit', async function (event) {
@@ -647,23 +679,43 @@
                 ? t('reformulating', 'Generating another wording…')
                 : t('translating', 'Translating…');
             trStatus.className = 'small mt-2 text-muted';
+            var seq = ++trSeq;
+            var sentText = trSource.value.trim();
+            var sentFrom = trFrom.value;
+            var sentTo = trTo.value;
+
             try {
                 var data = await postJson(apiUrl('translate.php'), {
-                    text: document.getElementById('translate-source').value,
-                    from: document.getElementById('translate-from').value,
-                    to: document.getElementById('translate-to').value,
+                    text: trSource.value,
+                    from: sentFrom,
+                    to: sentTo,
                     force: trForce.value === '1',
                     previous: trForce.value === '1' ? trResult.value : ''
                 });
+
+                // A newer request has been fired: ignore this late answer.
+                if (seq !== trSeq) { return; }
+
                 trForce.value = '0';
+
+                if (data.rate_limited) {
+                    var wait = Number(data.retry_after) > 0 ? Number(data.retry_after) : 60;
+                    trPausedUntil = Date.now() + wait * 1000;
+                    trStatus.textContent = trPauseMessage(wait);
+                    trStatus.className = 'small mt-2 text-muted';
+                    return;
+                }
+
                 if (data.error) {
                     trStatus.textContent = data.error;
                     trStatus.className = 'small mt-2 text-danger';
                     return;
                 }
+
                 trResult.value = data.translation || '';
                 trStatus.textContent = '';
                 trCopy.hidden = !trResult.value;
+                lastTranslated = { text: sentText, from: sentFrom, to: sentTo };
             } catch (err) {
                 trStatus.textContent = t('network_error');
                 trStatus.className = 'small mt-2 text-danger';

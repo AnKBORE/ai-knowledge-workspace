@@ -35,10 +35,17 @@ if (!$dependencies['csrf']->validateRequest()) {
     exit;
 }
 
-if (!$dependencies['rate_limiter']->allow('translate:' . (int) $dependencies['auth']->id(), 30, 300)) {
+// The page translates while typing: the quota must allow a normal writing
+// session (one call per stabilised phrase), not one call per keystroke.
+if (!$dependencies['rate_limiter']->allow('translate:' . (int) $dependencies['auth']->id(), 60, 300)) {
     http_response_code(429);
     header('Retry-After: 60');
-    echo json_encode(['error' => $T['rate_limited'] ?? 'Trop de requetes.'], JSON_UNESCAPED_UNICODE);
+    header('Retry-After: 60');
+    echo json_encode([
+        'error' => $T['rate_limited'] ?? 'Trop de requêtes. Réessayez dans une minute.',
+        'rate_limited' => true,
+        'retry_after' => 60,
+    ], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
