@@ -12,8 +12,24 @@
     var attempts = 0;
 
     function boot() {
-        if (!window.jQuery || !window.jQuery.fn || typeof window.jQuery.fn.select2 !== 'function') {
+        if (!window.jQuery || !window.jQuery.fn) {
             return false;
+        }
+
+        if (typeof window.jQuery.fn.select2 !== 'function') {
+            // The plugin is missing: say so in the console and keep the control
+            // usable with a native fallback instead of an unstyled box.
+            var field = document.querySelector('.task-docs-field');
+
+            if (field) {
+                field.classList.add('is-native');
+            }
+
+            if (window.console && console.warn) {
+                console.warn('[docs-picker] jQuery.fn.select2 is not available — native fallback applied.');
+            }
+
+            return true;
         }
 
         var $ = window.jQuery;

@@ -2363,3 +2363,13 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .task-docs-field .select2-selection__placeholder {
     line-height: 30px;
 }
+
+/* Native fallback when the plugin is unavailable */
+.task-docs-field.is-native select {
+    width: 100%;
+    min-height: 40px;
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: .92rem;
+}
