@@ -2307,3 +2307,18 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     border-radius: 8px;
     font-size: .92rem;
 }
+
+/* Empty state: the placeholder sits on the same baseline as a typed value */
+.task-docs-field .select2-selection--multiple .select2-selection__placeholder {
+    display: block;
+    margin: 0;
+    padding: 0;
+    font-size: .92rem;
+    line-height: 2rem;
+    color: #8a94a6;
+}
+
+/* Subtle hover on the closed control */
+.task-docs-field .select2-container:not(.select2-container--open) .select2-selection--multiple:hover {
+    border-color: #94a3b8;
+}
