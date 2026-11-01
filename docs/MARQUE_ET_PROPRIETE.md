@@ -1,126 +1,128 @@
-# Marque et propriété intellectuelle — Agentic Knowledge Workspace
+# Trademark and intellectual property — Agentic Knowledge Workspace
 
-> **Objet** : préparer le dépôt de la marque « Agentic Knowledge Workspace », vérifier la compatibilité avec le hackathon et définir les usages (`™` / `®`).
+> **Purpose**: prepare the filing of the "Agentic Knowledge Workspace" trademark, check compatibility with the hackathon and define usage (`™` / `®`).
+
+🇫🇷 French version: [MARQUE_ET_PROPRIETE.fr.md](MARQUE_ET_PROPRIETE.fr.md)
 
 ---
 
-## 1. Compatibilité avec le hackathon
+## 1. Compatibility with the hackathon
 
-| Point | Règle usuelle | Statut |
+| Point | Usual rule | Status |
 |---|---|---|
-| **Dépôt public** | Requis | ✅ Respecté |
-| **Licence libre** | Autorisée (MIT) | ✅ Respectée |
-| **Propriété du code** | Reste au **participant** | ✅ (aucune cession) |
-| **Droit de présenter le projet** | Accordé aux organisateurs (vitrine) | ✅ (usage limité) |
-| **Marque du projet** | **Non encadrée** par le règlement | ✅ **Compatible** |
+| **Public repository** | Required | ✅ Respected |
+| **Open-source licence** | Allowed (MIT) | ✅ Respected |
+| **Ownership of the code** | Remains with the **participant** | ✅ (no assignment) |
+| **Right to present the project** | Granted to the organisers (showcase) | ✅ (limited use) |
+| **Project trademark** | **Not covered** by the rules | ✅ **Compatible** |
 
-> ⚠️ **À vérifier** : relire les **conditions officielles** du hackathon (section « Propriété intellectuelle ») avant le dépôt. En cas de doute, contacter Cerebral Valley.
+> ⚠️ **To verify**: re-read the hackathon's **official terms** (intellectual property section) before filing. When in doubt, contact Cerebral Valley.
 
 ---
 
-## 2. La marque à déposer
+## 2. The mark to file
 
-| Élément | Valeur |
+| Element | Value |
 |---|---|
-| **Signe** | **Agentic Knowledge Workspace** (nom) |
-| **Logo** | Monogramme « AK » sur fond dégradé bleu-violet |
-| **Titulaire** | **Anatole KABORE** — Ouagadougou, Burkina Faso |
-| **Territoire** | **OAPI** (17 pays : Burkina Faso, Côte d'Ivoire, Sénégal, Cameroun…) |
-| **Type** | Marque **nominale** + **figurative** (logo) |
-| **Usage** | Logiciel de gestion des connaissances assisté par IA |
+| **Sign** | **Agentic Knowledge Workspace** (name) |
+| **Logo** | "AK" monogram on a blue-violet gradient background |
+| **Holder** | **Anatole KABORE** — Ouagadougou, Burkina Faso |
+| **Territory** | **OAPI** (17 countries: Burkina Faso, Côte d'Ivoire, Senegal, Cameroon…) |
+| **Type** | **Word** mark + **figurative** mark (logo) |
+| **Use** | AI-assisted knowledge management software |
 
 ---
 
-## 3. Classes de Nice recommandées
+## 3. Recommended Nice classes
 
-| Classe | Intitulé | Pertinence |
+| Class | Heading | Relevance |
 |---|---|---|
-| **9** | Logiciels ; applications téléchargeables | ✅ Le logiciel |
-| **42** | Services informatiques ; SaaS ; conception de logiciels | ✅ Le service en ligne |
-| **35** | Gestion de bases de données ; services administratifs | 🟡 Optionnel |
+| **9** | Software; downloadable applications | ✅ The software |
+| **42** | IT services; SaaS; software design | ✅ The online service |
+| **35** | Database management; administrative services | 🟡 Optional |
 
-> 💡 Déposer **classe 9 + classe 42** couvre l'essentiel (produit + service).
+> 💡 Filing **class 9 + class 42** covers the essentials (product + service).
 
 ---
 
-## 4. Procédure (OAPI)
+## 4. Procedure (OAPI)
 
-| Étape | Détail | Délai |
+| Step | Detail | Duration |
 |---|---|---|
-| **1. Recherche d'antériorité** | Vérifier que le signe est libre | 1-2 semaines |
-| **2. Dépôt** | Formulaire OAPI + logo + classes | Jour J |
-| **3. Examen** | Contrôle formel + fond | 2-4 mois |
-| **4. Publication** | Opposition possible (3 mois) | 3 mois |
-| **5. Enregistrement** | Certificat de marque | 6-12 mois |
-| **6. Validité** | **10 ans**, renouvelable | — |
+| **1. Prior-art search** | Check the sign is available | 1–2 weeks |
+| **2. Filing** | OAPI form + logo + classes | Day one |
+| **3. Examination** | Formal and substantive review | 2–4 months |
+| **4. Publication** | Opposition possible (3 months) | 3 months |
+| **5. Registration** | Trademark certificate | 6–12 months |
+| **6. Validity** | **10 years**, renewable | — |
 
-### Documents à fournir
+### Documents required
 
-- [ ] Formulaire OAPI de demande d'enregistrement
-- [ ] **Reproduction du signe** (nom + logo, haute résolution)
-- [ ] **Liste des produits/services** (classes 9 et 42)
-- [ ] **Justificatif d'identité** du titulaire
-- [ ] **Pouvoir** (si mandataire)
-- [ ] **Paiement des taxes**
+- [ ] OAPI application form
+- [ ] **Reproduction of the sign** (name + logo, high resolution)
+- [ ] **List of goods/services** (classes 9 and 42)
+- [ ] **Proof of identity** of the holder
+- [ ] **Power of attorney** (if using an agent)
+- [ ] **Payment of fees**
 
-### Coûts indicatifs (OAPI)
+### Indicative costs (OAPI)
 
-| Poste | Ordre de grandeur |
+| Item | Order of magnitude |
 |---|---|
-| **Taxe de dépôt** (1 classe) | ~200 000 FCFA |
-| **Classe supplémentaire** | ~50 000 FCFA / classe |
-| **Mandataire** (optionnel) | ~100 000 – 300 000 FCFA |
+| **Filing fee** (1 class) | ~200,000 FCFA |
+| **Additional class** | ~50,000 FCFA / class |
+| **Agent** (optional) | ~100,000 – 300,000 FCFA |
 
-> 💰 Prévoir **~300 000 – 500 000 FCFA** pour 2 classes, hors mandataire.
+> 💰 Budget **~300,000 – 500,000 FCFA** for 2 classes, excluding the agent.
 
 ---
 
 ## 5. `™` vs `®`
 
-| Symbole | Signification | Usage |
+| Symbol | Meaning | Use |
 |---|---|---|
-| **™** | Marque **non enregistrée** (revendication) | ✅ **Dès maintenant** |
-| **®** | Marque **enregistrée** | ⚠️ **Après** délivrance du certificat |
+| **™** | **Unregistered** mark (claim) | ✅ **Right now** |
+| **®** | **Registered** mark | ⚠️ **After** the certificate is issued |
 
-> ⚠️ Utiliser `®` **avant** l'enregistrement est **illégal** dans de nombreux pays.
+> ⚠️ Using `®` **before** registration is **illegal** in many countries.
 
 ---
 
-## 6. Ce que la marque protège (et ne protège pas)
+## 6. What the mark protects (and does not)
 
-| Protégé | Non protégé |
+| Protected | Not protected |
 |---|---|
-| Le **nom** « Agentic Knowledge Workspace » | Le **code** (déjà sous MIT) |
-| Le **logo** | Les **idées** / concepts |
-| L'**usage commercial** du signe | Les **données** |
+| The **name** "Agentic Knowledge Workspace" | The **code** (already under MIT) |
+| The **logo** | **Ideas** / concepts |
+| **Commercial use** of the sign | The **data** |
 
 ---
 
-## 7. Actions immédiates (sans dépôt)
+## 7. Immediate actions (without filing)
 
-1. **Ajouter `™`** au nom dans le README (revendication).
-2. **Conserver** les preuves d'usage (captures, dates, dépôt GitHub).
-3. **Réserver** les **noms de domaine** et les **comptes sociaux** (protection pratique).
-4. **Ne pas utiliser `®`** avant l'enregistrement.
+1. **Add `™`** to the name in the README (claim).
+2. **Keep** proof of use (screenshots, dates, the GitHub repository).
+3. **Reserve** the **domain names** and **social accounts** (practical protection).
+4. **Do not use `®`** before registration.
 
 ---
 
-## 8. Recommandation
+## 8. Recommendation
 
-| Priorité | Action |
+| Priority | Action |
 |---|---|
-| **1** | Vérifier les **conditions du hackathon** (propriété intellectuelle) |
-| **2** | **Réserver** le nom de domaine + les comptes |
-| **3** | **Recherche d'antériorité** OAPI |
-| **4** | **Déposer** la marque (classe 9 + 42) après le hackathon |
-| **5** | Passer à `®` **après** le certificat |
+| **1** | Check the **hackathon terms** (intellectual property) |
+| **2** | **Reserve** the domain name + accounts |
+| **3** | OAPI **prior-art search** |
+| **4** | **File** the trademark (classes 9 + 42) after the hackathon |
+| **5** | Switch to `®` **after** the certificate |
 
-> ⏳ **Le dépôt OAPI prend 6-12 mois** : commence la **recherche d'antériorité** maintenant, dépose **après** la soumission du hackathon (pour ne pas mobiliser le budget avant).
+> ⏳ **OAPI filing takes 6–12 months**: start the **prior-art search** now, file **after** the hackathon submission (so as not to commit budget beforehand).
 
 ---
 
-## 9. Références
+## 9. References
 
-- **OAPI** — Organisation Africaine de la Propriété Intellectuelle : <https://www.oapi.int>
-- **Classification de Nice** : <https://www.wipo.int/classifications/nice>
-- **Conditions du hackathon** — à relire (propriété intellectuelle).
+- **OAPI** — African Intellectual Property Organization: <https://www.oapi.int>
+- **Nice Classification**: <https://www.wipo.int/classifications/nice>
+- **Hackathon terms** — to re-read (intellectual property).

@@ -1,27 +1,29 @@
-# Démo vidéo (3 min) & soumission
+# Demo video (3 min) & submission
 
-> Feuille de route finale — état du produit au **1ᵉʳ novembre 2026**.
-> Enregistrement : **3 novembre**. Soumission : **avant le 4 novembre 2026, 21 h ET**.
+> Final roadmap — product state as of **1 November 2026**.
+> Recording: **3 November**. Submission: **before 4 November 2026, 9 pm ET**.
+
+🇫🇷 French version: [DEMO_VIDEO_ET_SOUMISSION.fr.md](DEMO_VIDEO_ET_SOUMISSION.fr.md)
 
 ---
 
-## 1. Ce que la démo doit prouver (et rien de plus)
+## 1. What the demo must prove (and nothing more)
 
-Trois idées, dans cet ordre. Tout le reste est du décor.
+Three ideas, in this order. Everything else is decoration.
 
-| # | Idée à faire passer | Preuve à l'écran |
+| # | Idea to land | Proof on screen |
 |---|---|---|
-| **1** | Les réponses sont **ancrées**, jamais inventées | Les sources numérotées sous chaque réponse |
-| **2** | Le système **sait se contraindre** | La trace agentique en 6 étapes, dont *Cadrage* et *Conformité* |
-| **3** | Il **apprend des humains** | Une version corrigée qui devient la référence, et qu'on peut télécharger |
+| **1** | Answers are **grounded**, never invented | The numbered sources under every answer |
+| **2** | The system **constrains itself** | The six-step agent trace, including *Scope* and *Conformity* |
+| **3** | It **learns from humans** | A corrected version that becomes the reference, and can be downloaded |
 
-> Un jury retient **une** chose. Fais en sorte que ce soit : *« il cite ses sources, et il refuse d'inventer. »*
+> A jury remembers **one** thing. Make it: *"it cites its sources, and it refuses to invent."*
 
 ---
 
-## 2. Pré-vol — à faire la veille, pas le jour J
+## 2. Pre-flight — done the day before, not on the day
 
-### 2.1 Vérifier que tout est poussé
+### 2.1 Verify everything is pushed
 
 ```powershell
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
@@ -29,192 +31,184 @@ git fetch origin
 git status -sb
 ```
 
-Attendu : `## main...origin/main` **sans** `[ahead N]`.
-Si `[ahead N]` apparaît → `git push origin main`.
+Expected: `## main...origin/main` **without** `[ahead N]`.
+If `[ahead N]` appears → `git push origin main`.
 
-### 2.2 Vérifier que la suite est verte
+### 2.2 Verify the suite is green
 
 ```powershell
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : `OK (100 tests, 230 assertions)` — **sans** avertissement.
+Expected: `OK (100 tests, 230 assertions)` — **without** warnings.
 
-### 2.3 Vérifier l'état de la base de démonstration
+### 2.3 Verify the demo database
 
 ```powershell
 C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -h 127.0.0.1 -P 3306 -u root -D ai_knowledge_workspace --default-character-set=utf8mb4 -e "SELECT id, title, langue, filename FROM documents WHERE supprime_le IS NULL ORDER BY id; SELECT id, document_id, langue, nom_fichier FROM correction_document;"
 ```
 
-**Règle d'or** : **une seule** correction en base, celle de Meeting6.
-Toute correction de test devient **prioritaire** dans les réponses et fausse la démo.
+**Golden rule**: **one** correction in the database, the Meeting6 one.
+Any test correction becomes **authoritative** in the answers and ruins the demo.
 
-### 2.4 Vérifier la clé API et le serveur
+### 2.4 Verify the API key and the server
 
 ```powershell
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 .\serve.bat
 ```
 
-Puis ouvrir **http://127.0.0.1:8080/** et faire **`Ctrl + F5`**.
-⚠️ **Obligatoire à chaque prise** : un onglet ouvert avant un correctif exécute l'ancien JavaScript.
+Then open **http://127.0.0.1:8080/** and press **`Ctrl + F5`**.
+⚠️ **Mandatory on every take**: a tab opened before a fix runs the old JavaScript.
 
-### 2.5 Réglages d'enregistrement
+### 2.5 Recording settings
 
-| Réglage | Valeur |
+| Setting | Value |
 |---|---|
-| Résolution | **1080p**, navigateur plein écran |
-| Zoom navigateur | **110 %** (125 % si la police paraît petite) |
-| Curseur | visible, mouvements lents |
-| Pièce | calme, micro-casque |
-| Onglets | **un seul** onglet du navigateur |
+| Resolution | **1080p**, browser full screen |
+| Browser zoom | **110 %** (125 % if text looks small) |
+| Cursor | visible, slow movements |
+| Room | quiet, headset |
+| Tabs | **one** browser tab only |
 
-> ⚠️ **Ne jamais montrer** : la clé API, `.env`, un terminal contenant la clé, les données personnelles d'un tiers.
+> ⚠️ **Never show**: the API key, `.env`, a terminal containing the key, a third party's personal data.
 
 ---
 
-## 3. Scénario minuté — 3 min 00
+## 3. Timed script — 3:00
 
-### Version française (recommandée)
+### English version
 
-| Temps | Action à l'écran | Narration |
+| Time | Action on screen | Narration |
 |---|---|---|
-| **0:00–0:10** | Page d'accueil `/` | « Bonjour, je suis Anatole KABORE, développeur indépendant au Burkina Faso. Voici l'Agentic Knowledge Workspace. » |
-| **0:10–0:25** | Scroll rapide sur la page de présentation | « Une organisation accumule des rapports, des procès-verbaux, des enregistrements. Le savoir est là — mais il est inexploitable. Les chatbots génériques, eux, inventent. » |
-| **0:25–0:55** | Poser la question : **« Parle-moi de Meeting6 »** | « Je pose une question sur un document réel. Regardez la réponse : elle décrit **un enregistrement audio transcrit en français**, et signale qu'il existe une **traduction corrigée en mooré**. » <br> « Et sous la réponse, les sources exactes, numérotées, avec un badge quand il s'agit d'une version corrigée. » |
-| **0:55–1:20** | Poser : **« Que dit Meeting6 en mooré ? »** | « La même question, en précisant la langue. La langue demandée l'emporte : il me donne le texte mooré, en citant la version corrigée du 31 octobre 2026. » |
-| **1:20–1:50** | Page **Tâche agentique** → cocher **Meeting6** + **Formation** → instruction : *« À base de Meeting6 et du dossier projet, propose un discours de lancement officiel »* | « Maintenant, une tâche, pas une question. Je **choisis mes documents sources**. Il planifie, cherche, **borne le périmètre** à mes deux documents, rédige, **vérifie chaque affirmation**, puis **contrôle que sa sortie répond bien à ma demande**. » <br> « Six étapes, toutes visibles. » |
-| **1:50–2:10** | Cliquer **✦ Nettoyer**, puis **DOCX** | « La proposition me convient. Un clic : les citations, les sources et les annotations de travail disparaissent. J'exporte en Word — le fichier ne contient que le discours, prêt à être prononcé. » |
-| **2:10–2:35** | Page **Documents indexés** → ouvrir le modal de correction de Meeting6 | « Et il apprend. Une version corrigée a été déposée par un locuteur natif. Elle devient la référence : le système la substitue au texte brut, l'annonce dans ses sources, et permet de **retélécharger le fichier d'origine à l'octet près**. » |
-| **2:35–3:00** | Retour à la page de présentation | « PHP 8.4, MySQL 8.4, cent tests automatisés, journal d'audit en ajout seul. Une connaissance métier réelle, amplifiée par les modèles de Meta. Merci. » |
+| **0:00–0:10** | Landing page `/` | "Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Knowledge Workspace." |
+| **0:10–0:25** | Quick scroll of the landing page | "An organisation piles up reports, minutes, recordings. The knowledge is there — but unusable. Generic chatbots, for their part, invent." |
+| **0:25–0:55** | Ask: **"Tell me about Meeting6"** | "A real document. Look at the answer: it describes **a French audio recording**, and mentions that a **corrected Mooré translation** exists." <br> "And below the answer, the exact sources, numbered, with a badge when it is a corrected version." |
+| **0:55–1:20** | Ask: **"What does Meeting6 say in Mooré?"** | "Same question, language specified. The named language wins: it gives me the Mooré text, citing the corrected version of 31 October 2026." |
+| **1:20–1:50** | **Agentic task** → check **Meeting6** + **Formation** → instruction: *"Based on Meeting6 and the project file, draft an official launch speech"* | "Now a task, not a question. I **choose my source documents**. It plans, retrieves, **restricts the scope** to my two documents, drafts, **verifies every claim**, then **checks that its output answers my request**." <br> "Six steps, all visible." |
+| **1:50–2:10** | Click **✦ Clean**, then **DOCX** | "The proposal works for me. One click: citations, sources and working annotations disappear. I export to Word — the file contains only the speech, ready to be delivered." |
+| **2:10–2:35** | **Indexed documents** → open Meeting6's correction modal | "And it learns. A corrected version was uploaded by a native speaker. It becomes the reference: substituted for the raw text, announced in the sources, and downloadable **byte for byte**." |
+| **2:35–3:00** | Back to the landing page | "PHP 8.4, MySQL 8.4, one hundred automated tests, append-only audit journal. Real domain knowledge, amplified by Meta's models. Thank you." |
 
-### Version anglaise (si le jury est international)
+### French version
 
-| Time | On screen | Narration (EN) |
-|---|---|---|
-| **0:00–0:10** | Landing | "Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Knowledge Workspace." |
-| **0:10–0:25** | Landing scroll | "An organisation piles up reports, minutes, recordings. The knowledge is there — but unusable. Generic chatbots invent." |
-| **0:25–0:55** | Ask **"Tell me about Meeting6"** | "A real document. The answer says what it actually is: **a French audio recording**, and mentions a **corrected Mooré translation**. Below it, the exact numbered sources." |
-| **0:55–1:20** | Ask **"What does Meeting6 say in Mooré?"** | "Same question, language specified. The named language wins: it gives me the Mooré text, citing the corrected version." |
-| **1:20–1:50** | **Agentic task** → select **Meeting6** + **Formation** → *"Based on Meeting6 and the project file, draft an official launch speech"* | "Now a task. I **pick the source documents**. It plans, retrieves, **restricts itself to my two documents**, drafts, **verifies every claim**, then **checks that its output answers my request**. Six steps, all visible." |
-| **1:50–2:10** | **✦ Clean**, then **DOCX** | "The proposal works. One click removes citations, sources and working notes. Exported to Word — a speech, ready to deliver." |
-| **2:10–2:35** | **Indexed documents** → Meeting6 correction modal | "And it learns. A corrected version was uploaded by a native speaker. It becomes the reference: substituted for the raw text, announced in the sources, and downloadable **byte for byte**." |
-| **2:35–3:00** | Landing | "PHP 8.4, MySQL 8.4, one hundred automated tests, append-only audit journal. Real domain knowledge, amplified by Meta's models. Thank you." |
+See [DEMO_VIDEO_ET_SOUMISSION.fr.md](DEMO_VIDEO_ET_SOUMISSION.fr.md) — same timings, French narration.
 
 ---
 
-## 4. Parcours de secours
+## 4. Fallback paths
 
-Si une séquence échoue pendant l'enregistrement, **ne t'arrête pas** — enchaîne sur le suivant.
+If a sequence fails while recording, **do not stop** — move to the next one.
 
-| Problème | Repli |
+| Problem | Fallback |
 |---|---|
-| La tâche dépasse 30 s | Coupe au moment du `Draft`, dis « six étapes » et passe à la suite |
-| La réponse est hors sujet | Reformule en une phrase plus courte, ou utilise une question déjà testée |
-| Le mooré ne sort pas | Montre la **traduction** FR→MO sur `/traduire` (2,5 s, vérifiée) |
-| Le modal de correction est vide | Montre le **badge** dans les sources de la réponse (même preuve, 3 s) |
-| Plus aucune connexion API | Montre les **100 tests verts** + la page de présentation : le produit tient sans démo live |
+| The task takes longer than 30 s | Cut at the `Draft` step, say "six steps" and move on |
+| The answer is off-topic | Rephrase in one shorter sentence, or use an already-tested question |
+| Mooré does not come out | Show the FR→MO **translation** on `/traduire` (2.5 s, verified) |
+| The correction modal is empty | Show the **badge** in the answer sources (same proof, 3 s) |
+| No API connection left | Show the **100 green tests** + the landing page: the product stands without a live demo |
 
-> **Filet de sécurité** : enregistre **deux** prises. Garde la meilleure. Une vidéo un peu moins fluide vaut mieux qu'une vidéo absente.
+> **Safety net**: record **two** takes. Keep the better one. A slightly less fluid video is better than no video.
 
 ---
 
-## 5. Pièges connus — appris à nos dépens cette semaine
+## 5. Known pitfalls — learned the hard way this week
 
-| Piège | Parade |
+| Pitfall | Guard |
 |---|---|
-| **Ancien JavaScript en cache** → un correctif invisible | **`Ctrl + F5`** avant chaque prise. Les pages sont en `no-store`, mais un onglet ouvert avant un correctif garde l'ancien script |
-| **Correction de test oubliée en base** → elle devient prioritaire et fausse les réponses | Vérifier `correction_document` avant de filmer (§2.3) |
-| **Sélection de documents vide** → la tâche interroge tout le corpus | Cocher explicitement les documents avant de lancer la tâche |
-| **Question trop ouverte** → réponse en 1 500 mots, illisible à l'écran | Utiliser les formulations testées du §3 |
-| **Date en format ISO** dans une phrase | Corrigé : les dates s'écrivent « 31 octobre 2026 » / « 31 October 2026 » |
-| **Bruit de notification Windows** | Mode « Ne pas déranger » activé |
+| **Stale JavaScript in cache** → an invisible fix | **`Ctrl + F5`** before every take. Pages are `no-store`, but a tab opened before a fix keeps the old script |
+| **Forgotten test correction** → it becomes authoritative and skews answers | Check `correction_document` before recording (§2.3) |
+| **Empty document selection** → the task queries the whole corpus | Explicitly check the documents before launching a task |
+| **Question too open** → a 1,500-word answer, unreadable on screen | Use the tested phrasings from §3 |
+| **ISO date** inside a sentence | Fixed: dates are written "31 October 2026" / "31 octobre 2026" |
+| **Windows notification noise** | "Do not disturb" enabled |
 
 ---
 
-## 6. Chiffres à citer (2 ou 3, pas plus)
+## 6. Numbers to quote (two or three, not more)
 
-| Métrique | Valeur |
+| Metric | Value |
 |---|---|
-| **Tests automatisés** | **100 tests · 230 assertions** (SQLite en mémoire, aucun serveur requis) |
-| **Traçabilité** | **21 types d'actions** journalisées, refus compris, journal **en ajout seul** |
-| **Pipeline agentique** | **6 étapes** : plan → retrieve → scope → draft → verify → conformity |
-| **Retrieval** | Score hybride `0,6 sémantique + 0,4 lexical`, expansion aux voisins, **priorité aux corrections** |
-| **Mooré** | Lexique SIL **1 349 entrées** vérifiées, **40 proverbes**, glossaire métier 20 termes, **6 directions** de traduction |
-| **Latence traduction** | **≈ 2,5 s** (mesurée, sortie stable sur 3 exécutions) |
-| **Sécurité** | Argon2id · CSRF · RBAC à 2 niveaux · rate limiting · journal append-only |
-| **Origine terrain** | Né de **GES-SACREMENTS-KTO-BF**, déployé dans plusieurs paroisses du Burkina Faso |
+| **Automated tests** | **100 tests · 230 assertions** (in-memory SQLite, no server needed) |
+| **Traceability** | **21 action types** journaled, refusals included, **append-only** journal |
+| **Agentic pipeline** | **6 steps**: plan → retrieve → scope → draft → verify → conformity |
+| **Retrieval** | Hybrid score `0.6 semantic + 0.4 lexical`, neighbour expansion, **priority to corrections** |
+| **Mooré** | SIL lexicon **1,349 entries**, **40 proverbs**, 20-term business glossary, **6 translation directions** |
+| **Translation latency** | **≈ 2.5 s** (measured, stable across 3 runs) |
+| **Security** | Argon2id · CSRF · two-level RBAC · rate limiting · append-only journal |
+| **Field origin** | Born from **GES-SACREMENTS-KTO-BF**, deployed in several parishes in Burkina Faso |
 
-> Pour la description écrite de la soumission : cite-les **tous**.
-> Dans la vidéo : **deux ou trois**, au moment de la clôture.
-
----
-
-## 7. Après l'enregistrement
-
-- [ ] Durée **≤ 3 min 00** (couper si nécessaire — jamais de dépassement)
-- [ ] Son audible, pas de pic de saturation
-- [ ] Upload sur **YouTube (non répertorié)** ou **Loom**
-- [ ] Vérifier la lecture **en navigation privée** (lien réellement partageable)
-- [ ] Copier le lien
+> For the written submission description: quote them **all**.
+> In the video: **two or three**, at the closing moment.
 
 ---
 
-## 8. Checklist de soumission
+## 7. After recording
 
-### Dépôt
+- [ ] Duration **≤ 3:00** (cut if necessary — never overrun)
+- [ ] Audible sound, no clipping
+- [ ] Upload to **YouTube (unlisted)** or **Loom**
+- [ ] Verify playback **in a private window** (the link is really shareable)
+- [ ] Copy the link
+
+---
+
+## 8. Submission checklist
+
+### Repository
 
 ```powershell
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 git fetch origin
-git status -sb          # doit afficher : ## main...origin/main
-git log --oneline -1    # noter le hash affiché
+git status -sb          # must show: ## main...origin/main
+git log --oneline -1    # note the hash
 ```
 
-- [ ] Dépôt **public** : `https://github.com/AnKBORE/ai-knowledge-workspace`
-- [ ] `README.md` + `README.fr.md` à jour
-- [ ] `docs/ARCHITECTURE.md` + `docs/ARCHITECTURE.fr.md` présents
+- [ ] Public repository: `https://github.com/AnKBORE/ai-knowledge-workspace`
+- [ ] `README.md` + `README.fr.md` up to date
+- [ ] `docs/ARCHITECTURE.md` + `docs/ARCHITECTURE.fr.md` present
+- [ ] `docs/JOURNAL_DE_CONSTRUCTION.md` + `.fr.md` present
 - [ ] `LICENSE` (MIT)
-- [ ] **Aucun secret** versionné (`git ls-files | Select-String -Pattern '\.env$'` → vide)
-- [ ] `composer install` + `php tools/migrate.php migrate` fonctionnent depuis un clone propre (§9)
+- [ ] **No secret** committed (`git ls-files | Select-String -Pattern '\.env$'` → empty)
+- [ ] `composer install` + `php tools/migrate.php migrate` work from a clean clone (§9)
 
-### Vidéo
+### Video
 
-- [ ] ≤ 3 min, lien copié, lecture vérifiée en navigation privée
+- [ ] ≤ 3 min, link copied, playback verified in a private window
 
-### Formulaire
+### Form
 
-- [ ] Nom : **Agentic Knowledge Workspace**
-- [ ] Piste : **Indie Developer**
-- [ ] Thème : **Build for Your World**
-- [ ] Description courte (2–3 phrases, voir §6)
-- [ ] URL du dépôt + URL de la vidéo
-- [ ] Équipe : toi seul
-- [ ] Identifiants de démo : compte de test, **jamais** la clé API
+- [ ] Name: **Agentic Knowledge Workspace**
+- [ ] Track: **Indie Developer**
+- [ ] Theme: **Build for Your World**
+- [ ] Short description (2–3 sentences, see §6)
+- [ ] Repository URL + video URL
+- [ ] Team: you alone
+- [ ] Demo credentials: test account, **never** the API key
 
 ---
 
-## 9. Test « clone propre » — à faire avant de soumettre
+## 9. Clean-clone test — before submitting
 
 ```powershell
 cd C:\wamp64\www
 git clone https://github.com/AnKBORE/ai-knowledge-workspace.git test-clone
 cd test-clone
 Copy-Item .env.example .env
-# renseigner META_MODEL_API_KEY, META_MODEL_API_BASE_URL, META_API_STYLE, META_MODEL_NAME
+# fill in META_MODEL_API_KEY, META_MODEL_API_BASE_URL, META_API_STYLE, META_MODEL_NAME
 C:\wamp64\bin\php\php8.4.27\php.exe tools\composer.phar install
 C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : migrations appliquées **et** `OK (100 tests, 230 assertions)`.
+Expected: migrations applied **and** `OK (100 tests, 230 assertions)`.
 
-> Si ça passe, le dépôt est **prêt pour le jury**.
+> If that passes, the repository is **ready for the jury**.
 
 ---
 
-## 10. Push — commandes exactes
+## 10. Push — exact commands
 
 ```powershell
 cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
@@ -224,7 +218,7 @@ git fetch origin
 git status -sb
 ```
 
-Attendu après le push :
+Expected after the push:
 
 ```
 Enumerating objects: …
@@ -233,25 +227,27 @@ To https://github.com/AnKBORE/ai-knowledge-workspace.git
 ## main...origin/main
 ```
 
-Si le push échoue avec `schannel: AcquireCredentialsHandle failed`, c'est que les identifiants GitHub ne sont pas disponibles dans cette session : exécute la commande **dans ton propre PowerShell**, pas depuis un environnement sandboxé.
+If the push fails with `schannel: AcquireCredentialsHandle failed`, GitHub
+credentials are not available in this session: run the command **in your own
+PowerShell**, not from a sandboxed environment.
 
 ---
 
-## 11. Après la soumission
+## 11. After submission
 
-- [ ] Recevoir la **confirmation par e-mail**
-- [ ] **Ne plus modifier** le dépôt pendant la période de jugement
-- [ ] Garder le dépôt **public**
-- [ ] Surveiller les annonces du hackathon
+- [ ] Receive the **confirmation e-mail**
+- [ ] **Do not modify** the repository during judging
+- [ ] Keep the repository **public**
+- [ ] Watch the hackathon announcements
 
 ---
 
-## 12. Critères du jury (Indie Developer)
+## 12. Jury criteria (Indie Developer)
 
-| Critère | Ce que la vidéo doit montrer |
+| Criterion | What the video must show |
 |---|---|
-| **Creativity** | L'angle « agentique + multimodal + mooré ». Le différenciateur n'est pas le chatbot : c'est le **pipeline low-resource** et la **boucle de correction humaine** |
-| **Technical ambition** | PHP/MySQL sans framework, RAG hybride, pipeline agentique à 6 étapes, journal d'audit |
-| **Functionality** | Une démo qui **fonctionne de bout en bout**, sans temps mort |
+| **Creativity** | The "agentic + multimodal + Mooré" angle. The differentiator is not the chatbot: it is the **low-resource pipeline** and the **human correction loop** |
+| **Technical ambition** | PHP/MySQL without a framework, hybrid RAG, six-step agentic pipeline, audit journal |
+| **Functionality** | A demo that **works end to end**, without dead time |
 
-> La vidéo est **l'élément central** : montre le produit **réel**. Les slides ne sont qu'un emballage.
+> The video is **the central element**: show the **real** product. Slides are only packaging.
