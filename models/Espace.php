@@ -18,6 +18,23 @@ final class Espace
     }
 
     /** @return array<string, mixed>|null */
+
+    /**
+     * Every active space, for the administration page.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function all(): array
+    {
+        $stmt = $this->db->query(
+            'SELECT id, nom, visibilite, parent_id, cree_le
+             FROM espace
+             WHERE supprime_le IS NULL
+             ORDER BY id'
+        );
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function find(int $id): ?array
     {
         $stmt = $this->db->prepare(

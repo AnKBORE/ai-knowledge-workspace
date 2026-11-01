@@ -50,6 +50,26 @@ final class Adhesion
     }
 
     /** @return list<array<string, mixed>> */
+
+    /**
+     * Every active membership with its user and space, for the administration page.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function all(): array
+    {
+        $stmt = $this->db->query(
+            "SELECT a.id, a.role_local, a.utilisateur_id, a.espace_id,
+                    u.prenom, u.nom, u.courriel, e.nom AS espace
+             FROM adhesion a
+             JOIN utilisateur u ON u.id = a.utilisateur_id
+             JOIN espace e ON e.id = a.espace_id
+             WHERE a.fin_le IS NULL
+             ORDER BY e.nom, u.nom"
+        );
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function listForUser(int $utilisateurId): array
     {
         $stmt = $this->db->prepare(

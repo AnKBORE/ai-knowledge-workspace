@@ -77,6 +77,23 @@ final class Utilisateur
     /**
      * Password hash of an account (for sensitive-action verification).
      */
+
+    /**
+     * Every account, for the administration page.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function all(): array
+    {
+        $stmt = $this->db->query(
+            'SELECT id, courriel, nom, prenom, role_global, statut, cree_le
+             FROM utilisateur
+             WHERE supprime_le IS NULL
+             ORDER BY id'
+        );
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function motDePasseHash(int $id): ?string
     {
         $stmt = $this->db->prepare(

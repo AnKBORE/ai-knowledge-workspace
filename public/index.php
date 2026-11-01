@@ -251,6 +251,7 @@ if ($method === 'GET') {
         '/journal' => ['view' => 'ai/journal'],
         '/mon-profil' => ['view' => 'ai/profil'],
         '/categories' => ['view' => 'ai/categories'],
+        '/administration' => ['view' => 'ai/administration'],
     ];
 
     foreach ($pages as $pagePath => &$pageDef) {
@@ -293,6 +294,24 @@ if ($method === 'GET') {
         $dependencies['journal']->log((int) $auth->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'journal_interdit', 'chemin' => '/journal']);
     }
 
+    // Administration: each form has its own permission, so the page is open to
+    // anyone who can do at least one of them.
+    $canInvite = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'compte.inviter');
+    $canCreateSpace = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.creer');
+    $canManageAdhesion = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'adhesion.gerer');
+
+    $adminDenied = $path === '/administration' && !($canInvite || $canCreateSpace || $canManageAdhesion);
+
+    if ($adminDenied) {
+        http_response_code(403);
+    }
+
+    $adminData = $path === '/administration' && !$adminDenied;
+    $adminUsers = $adminData ? $dependencies['users']->all() : [];
+    $adminEspaces = $adminData ? $dependencies['espaces']->all() : [];
+    $adminAdhesions = $adminData ? $dependencies['adhesions']->all() : [];
+    $adminFlash = $dependencies['session']->get('admin_flash');
+    $dependencies['session']->remove('admin_flash');
     $entries = $path === '/journal' && !$journalDenied ? $dependencies['journal']->recent() : [];
     $flashMessage = $dependencies['session']->get('profil_flash');
     $dependencies['session']->remove('profil_flash');
@@ -307,6 +326,13 @@ if ($method === 'GET') {
         'search' => $search,
         'entries' => $entries,
         'journalDenied' => $journalDenied ?? false,
+        'adminUsers' => $adminUsers ?? [],
+        'adminEspaces' => $adminEspaces ?? [],
+        'adminAdhesions' => $adminAdhesions ?? [],
+        'adminFlash' => $adminFlash ?? null,
+        'canInvite' => $canInvite ?? false,
+        'canCreateSpace' => $canCreateSpace ?? false,
+        'canManageAdhesion' => $canManageAdhesion ?? false,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],

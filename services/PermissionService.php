@@ -19,7 +19,14 @@ final class PermissionService
 {
     /** @var array<string, list<string>> */
     private const GLOBAL = [
-        'administrateur_technique' => ['compte.inviter', 'journal.lire', 'dashboard.systeme'],
+        // The technical administrator owns the installation: the role is a
+        // superset of the functional one, otherwise a fresh install (whose
+        // seeded account is technical) could never create its first space.
+        'administrateur_technique' => [
+            'compte.inviter', 'journal.lire', 'dashboard.systeme',
+            'espace.administrer', 'espace.creer', 'adhesion.gerer',
+            'espace.archiver', 'dashboard.espaces',
+        ],
         'administrateur_fonctionnel' => [
             'compte.inviter', 'espace.administrer', 'espace.creer', 'adhesion.gerer',
             'espace.archiver', 'dashboard.espaces',
