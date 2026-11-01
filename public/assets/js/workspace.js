@@ -2163,3 +2163,90 @@
     bindDeleteButtons();
     bindDocConfirm();
 })();
+
+/* ---------------- Task page: source documents picker ---------------- */
+/* Initialised here rather than in select2-init.js: this file is loaded after
+   select2, so the plugin is guaranteed to exist, and the call does not depend
+   on the DOMContentLoaded timing. */
+(function () {
+    'use strict';
+
+    function boot() {
+        if (!window.jQuery || !window.jQuery.fn || typeof window.jQuery.fn.select2 !== 'function') {
+            return false;
+        }
+
+        var $ = window.jQuery;
+        var $docs = $('#task-docs');
+
+        if (!$docs.length) { return false; }
+        if ($docs.hasClass('select2-hidden-accessible')) { return true; }
+
+        var template = $docs.attr('data-count-template') || '%d';
+
+        var options = {
+            width: '100%',
+            placeholder: $docs.attr('data-placeholder') || 'Sélectionner une option',
+            closeOnSelect: false,
+            dropdownParent: $(document.body),
+            language: {
+                noResults: function () { return 'Aucun document trouvé'; },
+                searching: function () { return 'Recherche…'; }
+            }
+        };
+
+        // A multiple select places its search field inline by default. The
+        // request is a search bar INSIDE the dropdown, which Select2 supports
+        // by decorating the dropdown adapter.
+        try {
+            var Utils = $.fn.select2.amd.require('select2/utils');
+            var Dropdown = $.fn.select2.amd.require('select2/dropdown');
+            var DropdownSearch = $.fn.select2.amd.require('select2/dropdown/search');
+            var AttachBody = $.fn.select2.amd.require('select2/dropdown/attachBody');
+
+            options.dropdownAdapter = Utils.Decorate(
+                Utils.Decorate(Dropdown, DropdownSearch),
+                AttachBody
+            );
+            options.minimumResultsForSearch = Infinity;
+        } catch (error) {
+            options.minimumResultsForSearch = 0;
+        }
+
+        try {
+            $docs.select2(options);
+        } catch (error) {
+            return false;
+        }
+
+        var $count = $('#task-docs-count');
+        var $clear = $('#task-docs-clear');
+
+        function refresh() {
+            var values = $docs.val();
+            var n = values ? values.length : 0;
+
+            if ($count.length) {
+                $count.text(template.replace('%d', n)).prop('hidden', n === 0);
+            }
+
+            if ($clear.length) {
+                $clear.prop('hidden', n === 0);
+            }
+        }
+
+        $docs.on('change', refresh);
+        $clear.on('click', function () {
+            $docs.val(null).trigger('change');
+        });
+
+        refresh();
+        $docs.attr('data-select2-applied', '1');
+
+        return true;
+    }
+
+    if (!boot()) {
+        document.addEventListener('DOMContentLoaded', boot);
+    }
+})();

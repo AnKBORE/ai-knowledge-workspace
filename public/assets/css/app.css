@@ -2219,10 +2219,10 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
 .task-docs-meta {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: .75rem;
-    margin-top: .35rem;
-    min-height: 1.25rem;
+    margin: 0 0 .4rem;
+    min-height: 1.15rem;
 }
 
 .task-docs-count {

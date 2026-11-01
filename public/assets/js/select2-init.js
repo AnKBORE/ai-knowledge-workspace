@@ -30,54 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // ---- Documents picker (task page) ----
-    // A multi-select is unusable when the dropdown closes after every click:
-    // closeOnSelect is disabled, a live counter shows how many documents bound
-    // the task, and "clear all" resets the scope in one gesture.
-    function initDocsPicker() {
-        var $docs = $('#task-docs');
-        if (!$docs.length || $docs.hasClass('select2-hidden-accessible')) return;
-
-        $docs.select2({
-            width: '100%',
-            placeholder: $docs.attr('data-placeholder') || 'Sélectionner une option',
-            closeOnSelect: false,
-            minimumResultsForSearch: 0,
-            dropdownParent: $(document.body),
-            language: {
-                noResults: function () { return 'Aucun document trouvé'; },
-                searching: function () { return 'Recherche…'; },
-                removeAllItems: function () { return 'Tout effacer'; },
-                removeItem: function () { return 'Retirer'; }
-            }
-        });
-
-        var $count = $('#task-docs-count');
-        var $clear = $('#task-docs-clear');
-        var template = $docs.attr('data-count-template') || '%d';
-
-        function refresh() {
-            var values = $docs.val();
-            var n = values ? values.length : 0;
-
-            if ($count.length) {
-                $count.text(template.replace('%d', n)).prop('hidden', n === 0);
-            }
-
-            if ($clear.length) {
-                $clear.prop('hidden', n === 0);
-            }
-        }
-
-        $docs.on('change', refresh);
-        $clear.on('click', function () {
-            $docs.val(null).trigger('change');
-        });
-
-        refresh();
-    }
     window.initializeSpaceSelects = initializeSelects;
-    initDocsPicker();
 
     var $pageSelects = $('.space-admin select').filter(function () { return !this.closest('.modal'); });
     initializeSelects($pageSelects);
