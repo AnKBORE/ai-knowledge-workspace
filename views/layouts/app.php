@@ -197,5 +197,6 @@ window.WORKSPACE_I18N = <?= json_encode(app_i18n($lang)['js'], JSON_UNESCAPED_UN
 <script src="<?= e(url('/assets/js/workspace.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/workspace.js') ?>" defer></script>
 <script src="<?= e(url('/assets/js/shell.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/shell.js') ?>" defer></script>
 <script src="<?= e(url('/assets/js/scroll-top.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/scroll-top.js') ?>" defer></script>
+    <script src="<?= e(url('/assets/js/docs-picker.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/docs-picker.js') ?>" defer></script>
 </body>
 </html>

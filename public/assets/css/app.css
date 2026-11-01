@@ -2325,3 +2325,41 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     border-radius: 8px;
     box-shadow: 0 8px 22px rgba(15, 23, 42, .12);
 }
+
+/* Documents picker: compact control with a caret, like a native select */
+.task-docs-field .select2-selection--multiple {
+    position: relative;
+    min-height: 40px;
+    max-height: 76px;
+    padding: 4px 34px 4px 8px;
+    border-radius: 8px;
+    overflow-y: auto;
+}
+
+.task-docs-field .select2-selection--multiple::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #64748b;
+    pointer-events: none;
+}
+
+.task-docs-field .select2-container--open .select2-selection--multiple::after {
+    transform: rotate(180deg);
+    top: 17px;
+}
+
+.task-docs-field .select2-selection__choice {
+    margin: 2px 4px 2px 0 !important;
+    padding: 2px 6px 2px 3px;
+    font-size: .8rem;
+}
+
+.task-docs-field .select2-selection__placeholder {
+    line-height: 30px;
+}
