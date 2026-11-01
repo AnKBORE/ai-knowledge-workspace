@@ -57,6 +57,8 @@ function app_i18n(string $lang): array
             'label' => 'Instruction',
             'placeholder' => 'Ex. « Prépare une note pour le directeur sur les activités du trimestre »',
             'submit' => 'Générer un brouillon',
+            'docs_label' => 'Documents sources',
+            'docs_help' => 'Aucun document sélectionné : la recherche porte sur tout le corpus accessible. Une sélection borne la tâche à ces documents.',
             'footer' => 'Chaque demande est journalisée (mode, instruction, nombre de sources) et le document généré cite ses sources.',
         ],
         'documents' => [
@@ -397,6 +399,8 @@ function app_i18n(string $lang): array
             'label' => 'Instruction',
             'placeholder' => 'E.g. “Prepare a note for the director about the quarter activities”',
             'submit' => 'Generate a draft',
+            'docs_label' => 'Source documents',
+            'docs_help' => 'No document selected: the search covers the whole accessible corpus. A selection bounds the task to those documents.',
             'footer' => 'Every request is logged (mode, instruction, number of sources) and the generated document cites its sources.',
         ],
         'documents' => [

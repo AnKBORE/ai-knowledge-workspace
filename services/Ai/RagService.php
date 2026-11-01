@@ -698,18 +698,50 @@ final class RagService
      * recording is first an audio file transcribed in French; its Mooré
      * corrected version is a translation, not the document's own language.
      */
+    /** Pick the wording matching the interface language. */
+    private function t(string $fr, string $en): string
+    {
+        return $this->lang === 'fr' ? $fr : $en;
+    }
+
+    /**
+     * A date must be written the way the language writes it: "31 octobre 2026"
+     * in French, "31 October 2026" in English — never a raw ISO string in the
+     * middle of a sentence. The value itself is never altered.
+     */
+    private function formatDate(string $iso): string
+    {
+        $iso = substr(trim($iso), 0, 10);
+
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $iso, $m) !== 1) {
+            return $iso;
+        }
+
+        $monthsFr = [1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
+            'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+        $monthsEn = [1 => 'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+
+        $day = (int) $m[3];
+        $month = (int) $m[2];
+        $year = $m[1];
+
+        return $this->lang === 'fr'
+            ? $day . ' ' . $monthsFr[$month] . ' ' . $year
+            : $day . ' ' . $monthsEn[$month] . ' ' . $year;
+    }
     private function documentNature(string $filename): string
     {
         $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         return match ($ext) {
-            'wav', 'mp3', 'm4a', 'ogg', 'flac', 'aac', 'webm' => 'enregistrement audio (transcrit)',
-            'pdf' => 'document PDF',
-            'docx', 'doc' => 'document Word',
-            'jpeg', 'jpg', 'png', 'webp', 'gif' => 'image / scan (OCR)',
-            'csv' => 'fichier CSV',
-            'md' => 'texte Markdown',
-            default => 'document texte',
+            'wav', 'mp3', 'm4a', 'ogg', 'flac', 'aac', 'webm' => $this->t('enregistrement audio (transcrit)', 'audio recording (transcribed)'),
+            'pdf' => $this->t('document PDF', 'PDF document'),
+            'docx', 'doc' => $this->t('document Word', 'Word document'),
+            'jpeg', 'jpg', 'png', 'webp', 'gif' => $this->t('image / scan (OCR)', 'image / scan (OCR)'),
+            'csv' => $this->t('fichier CSV', 'CSV file'),
+            'md' => $this->t('texte Markdown', 'Markdown text'),
+            default => $this->t('document texte', 'text document'),
         };
     }
     private function catalogChunks(?int $userId): array
@@ -735,10 +767,11 @@ final class RagService
             $categorie = ($row['categorie'] ?? '') !== '' ? (string) $row['categorie'] : '—';
             $chunks[] = [
                 'document_id' => (int) $row['id'],
-                'content' => 'Titre : ' . trim((string) $row['title'])
-                    . ' · Catégorie : ' . $categorie
-                    . ' · Enregistré le : ' . substr((string) ($row['created_at'] ?? ''), 0, 10)
-                    . ' · Fichier : ' . (string) ($row['filename'] ?? ''),
+                'content' => $this->t('Titre', 'Title') . ' : ' . trim((string) $row['title'])
+                    . ' · ' . $this->t('Catégorie', 'Category') . ' : ' . $categorie
+                    . ' · ' . $this->t('Enregistré le', 'Registered on') . ' : '
+                    . $this->formatDate((string) ($row['created_at'] ?? ''))
+                    . ' · ' . $this->t('Fichier', 'File') . ' : ' . (string) ($row['filename'] ?? ''),
                 'title' => (string) ($row['title'] ?? 'Document'),
                 'score' => 1.0,
             ];
@@ -897,6 +930,7 @@ RÈGLES ABSOLUES :
 2b. Si la question filtre par PÉRIODE (mois, année) et qu'aucun document ne correspond : ne dis pas que l'information est absente (les dates SONT dans les extraits). Réponds en une ou deux phrases : « Aucun document n'a été enregistré en <période>. » puis, seulement pour situer, l'étendue réelle des dates présente dans les extraits. N'énumère PAS les autres documents : ce n'est pas demandé.
 3. Commence par une réponse DIRECTE à la question, formulée avec tes propres mots : synthétise, ne recopie pas l'extrait mot pour mot (sauf pour les citations exactes placées entre guillemets).
 4. Conserve les données exactes (chiffres, dates, noms, intitulés) telles quelles, sans les arrondir.
+4a. EXPRIME les dates dans la langue de la réponse : « 31 octobre 2026 » en français, « 31 October 2026 » en anglais. N'écris jamais une date au format ISO (2026-10-31) dans une phrase, sauf si la question le demande expressément. La valeur reste identique.
 4b. Quand la réponse cite un titre, un en-tête ou un intitulé rédigé dans une autre langue que la question, donne d'abord sa traduction dans la langue de la réponse, suivie de l'original entre parenthèses. Exemple (question en anglais, titre en français) : "Death notice and fraternal communion" ("Avis de décès et communion fraternelle").
 4c. Mets en gras (**…**) la réponse directe à la question ainsi que les données clés citées (titres, dates, chiffres, noms propres).
 4d. Toute citation littérale entre guillemets DOIT être traduite dans la langue de la réponse ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage de la réponse ne doit rester dans une autre langue que celle de la question.
@@ -1117,15 +1151,15 @@ PROMPT;
                 'version_id' => (int) ($chunk['version_id'] ?? 0),
                 'chunk_index' => 0,
                 'title' => $title,
-                'content' => 'Titre : ' . $title
-                    . ' · Nature : ' . $this->documentNature($filename)
-                    . ' · Langue d\'origine : ' . mb_strtoupper((string) ($row['doc_langue'] ?? ''))
-                    . ($categorie !== '' ? ' · Catégorie : ' . $categorie : '')
-                    . ' · Enregistré le : ' . mb_substr((string) ($row['created_at'] ?? ''), 0, 10)
+                'content' => $this->t('Titre', 'Title') . ' : ' . $title
+                    . ' · ' . $this->t('Nature', 'Type') . ' : ' . $this->documentNature($filename)
+                    . ' · ' . $this->t('Langue d\'origine', 'Original language') . ' : ' . mb_strtoupper((string) ($row['doc_langue'] ?? ''))
+                    . ($categorie !== '' ? ' · ' . $this->t('Catégorie', 'Category') . ' : ' . $categorie : '')
+                    . ' · ' . $this->t('Enregistré le', 'Registered on') . ' : ' . $this->formatDate((string) ($row['created_at'] ?? ''))
                     . (isset($available[$documentId])
-                        ? ' · Versions corrigées : ' . implode(', ', array_unique($available[$documentId]))
+                        ? ' · ' . $this->t('Versions corrigées', 'Corrected versions') . ' : ' . implode(', ', array_unique($available[$documentId]))
                         : '')
-                    . ' · Fichier : ' . $filename,
+                    . ' · ' . $this->t('Fichier', 'File') . ' : ' . $filename,
                 'score' => (float) ($chunk['score'] ?? 1.0),
             ];
 
@@ -1149,9 +1183,12 @@ PROMPT;
                 'version_id' => (int) ($chunk['version_id'] ?? 0),
                 'chunk_index' => 1,
                 'title' => $title,
-                'content' => 'Version corrigée ' . mb_strtoupper($correctionLangue)
-                    . ' du ' . mb_substr($correctionDate, 0, 10) . ' — traduction corrigée, '
-                    . 'et non la langue d\'origine du document :' . "\n"
+                'content' => $this->t('Version corrigée', 'Corrected version') . ' ' . mb_strtoupper($correctionLangue)
+                    . ' ' . $this->t('du', 'of') . ' ' . $this->formatDate($correctionDate) . ' — '
+                    . $this->t(
+                        'traduction corrigée, et non la langue d\'origine du document',
+                        'a corrected translation, not the document\'s original language'
+                    ) . ' :' . "\n"
                     . trim((string) $row['texte_corrige']),
                 'score' => (float) ($chunk['score'] ?? 1.0),
                 'correction' => [
@@ -1414,8 +1451,9 @@ PROMPT;
             ];
 
             $chunk['content'] = rtrim((string) $chunk['content'])
-                . ' · version corrigée ' . mb_strtoupper((string) $row['langue'])
-                . ' du ' . mb_substr((string) $row['cree_le'], 0, 10);
+                . ' · ' . $this->t('version corrigée', 'corrected version') . ' '
+                . mb_strtoupper((string) $row['langue'])
+                . ' ' . $this->t('du', 'of') . ' ' . $this->formatDate((string) $row['cree_le']);
         }
         unset($chunk);
 
