@@ -252,6 +252,7 @@ if ($method === 'GET') {
         '/mon-profil' => ['view' => 'ai/profil'],
         '/categories' => ['view' => 'ai/categories'],
         '/administration' => ['view' => 'ai/administration'],
+        '/espaces' => ['view' => 'ai/espaces'],
     ];
 
     foreach ($pages as $pagePath => &$pageDef) {
@@ -280,6 +281,14 @@ if ($method === 'GET') {
         ? $dependencies['document_model']->search($search, 200, $visibleDocuments)
         : $dependencies['document_model']->listRecent(200, 0, $visibleDocuments);
 
+    // Working inside a workspace scopes the list to that workspace.
+    if (($espaceActif ?? 0) > 0 && $documents !== []) {
+        $documents = array_values(array_filter(
+            $documents,
+            static fn (array $doc): bool => (int) ($doc['espace_id'] ?? 0) === (int) $espaceActif
+        ));
+    }
+
     $totalDocuments = $search !== ''
         ? count($documents)
         : (is_array($visibleDocuments) ? count($documents) : $dependencies['document_model']->count());
@@ -294,6 +303,32 @@ if ($method === 'GET') {
         $dependencies['journal']->log((int) $auth->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'journal_interdit', 'chemin' => '/journal']);
     }
 
+    // The sidebar follows the permissions: a member never sees an entry they
+    // would only get a 403 on.
+    $navPerms = [
+        0 => true,
+        1 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'assistant.tacher'),
+        2 => true,
+        3 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.consulter'),
+        4 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.deposer'),
+        5 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.supprimer'),
+        6 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'journal.lire'),
+        7 => true,
+        8 => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'compte.inviter')
+            || $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.creer')
+            || $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'adhesion.gerer'),
+        9 => true,
+    ];
+
+    $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
+    $estAdminGlobal = in_array(
+        (string) ($dependencies['permissions']->roleGlobal((int) $auth->id()) ?? ''),
+        ['administrateur_technique', 'administrateur_fonctionnel'],
+        true
+    );
+    $mesEspaces = $path === '/espaces'
+        ? $dependencies['espaces']->pourUtilisateur((int) $auth->id(), $estAdminGlobal)
+        : [];
     // Administration: each form has its own permission, so the page is open to
     // anyone who can do at least one of them.
     $canInvite = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'compte.inviter');
@@ -335,6 +370,9 @@ if ($method === 'GET') {
         'canCreateSpace' => $canCreateSpace ?? false,
         'canManageAdhesion' => $canManageAdhesion ?? false,
         'canArchive' => $canArchive ?? false,
+        'navPerms' => $navPerms ?? [],
+        'mesEspaces' => $mesEspaces ?? [],
+        'espaceActif' => $espaceActif ?? null,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],

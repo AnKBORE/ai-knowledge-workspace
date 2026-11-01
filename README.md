@@ -69,6 +69,10 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Progressive lockout against attacks
 
 ### Governance and access control
+
+- **Permission-driven menu.** A member only sees the entries they can actually use: Categories, Audit journal and Administration appear only for those allowed.
+- **Active workspace.** Each member chooses the workspace they work in; the document list and the deposits follow that choice. A workspace can be **closed** (no further deposits, documents stay readable) and **reopened**.
+- **Time-bounded access.** A membership carries a start and an end date; ending it revokes access **immediately** (the end bound is inclusive, so revocation writes yesterday).
 - Multi-level RBAC
 - Global permissions
 - Per-workspace permissions

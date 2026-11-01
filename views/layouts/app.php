@@ -23,7 +23,7 @@ $T = [
         'nav_label' => 'Espace de travail',
         'crumb' => 'Assistant',
         'signout' => 'Déconnexion',
-        'nav' => ['Question', 'Tâche agentique', 'Traduction', 'Documents indexés', 'Ajouter un document', 'Catégories', "Journal d'audit", 'Mon profil', 'Administration'],
+        'nav' => ['Question', 'Tâche agentique', 'Traduction', 'Documents indexés', 'Ajouter un document', 'Catégories', "Journal d'audit", 'Mon profil', 'Administration', 'Espaces'],
         'logout_title' => 'Se déconnecter',
         'logout_text' => 'Voulez-vous vraiment fermer votre session ?',
         'cancel' => 'Annuler',
@@ -41,7 +41,7 @@ $T = [
         'nav_label' => 'Workspace',
         'crumb' => 'Assistant',
         'signout' => 'Sign out',
-        'nav' => ['Question', 'Agentic task', 'Translation', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile', 'Administration'],
+        'nav' => ['Question', 'Agentic task', 'Translation', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile', 'Administration', 'Espaces'],
         'logout_title' => 'Sign out',
         'logout_text' => 'Are you sure you want to close your session?',
         'cancel' => 'Cancel',
@@ -65,8 +65,15 @@ $navItems = [
     ['path' => '/journal', 'icon' => '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/>'],
     ['path' => '/mon-profil', 'icon' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/>'],
         ['path' => '/administration', 'icon' => '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>'],
+        ['path' => '/espaces', 'icon' => '<path d="M4 7h7v7H4zM13 10h7v7h-7z"/>'],
 ];
 foreach ($navItems as $i => $item) {
+    // A menu entry the user cannot use is not shown at all.
+    if (!($navPerms[$i] ?? true)) {
+        unset($navItems[$i]);
+        continue;
+    }
+
     $navItems[$i]['label'] = $T['nav'][$i];
 }
 $displayRole = $T['role'];

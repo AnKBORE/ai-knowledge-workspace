@@ -76,7 +76,7 @@ final class Document
         }
 
         $stmt = $this->db->prepare(
-            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id,
+            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
@@ -96,7 +96,7 @@ final class Document
     public function byCategorie(int $categorieId, int $limit = 200): array
     {
         $stmt = $this->db->prepare(
-            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id,
+            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
@@ -128,7 +128,7 @@ final class Document
             : '';
 
         $stmt = $this->db->prepare(
-            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id,
+            'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d

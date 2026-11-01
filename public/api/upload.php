@@ -99,6 +99,14 @@ if ($espaceCibleRow !== null && ($espaceCibleRow['statut'] ?? 'actif') === 'arch
     exit;
 }
 
+// Work happens inside a workspace: the one chosen on /espaces, as long as
+// the user is allowed to deposit there.
+$espaceActifSession = (int) $dependencies['session']->get('espace_actif', 0);
+$espaceDepot = $espaceActifSession > 0
+    && $dependencies['permissions']->peut((int) $dependencies['auth']->id(), 'document.deposer', $espaceActifSession)
+    ? $espaceActifSession
+    : null;
+
 $ingestion = $dependencies['ingestion'];
 
 try {
@@ -137,7 +145,7 @@ try {
 
     // Fast files (text, PDF with a text layer): processed synchronously.
     $content = $ingestion->extract($tmp, $extension);
-    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content);
+    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content, $espaceDepot);
 
     echo json_encode([
         'title' => $title,

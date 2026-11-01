@@ -24,6 +24,38 @@ final class Espace
      *
      * @return list<array<string, mixed>>
      */
+
+    /**
+     * Spaces the user may enter: an active membership, an internal public
+     * space, or every space for a global administrator.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function pourUtilisateur(int $userId, bool $admin = false): array
+    {
+        $sql = 'SELECT e.id, e.nom, e.visibilite, e.statut,
+                       (SELECT COUNT(*) FROM documents d
+                        WHERE d.espace_id = e.id AND d.supprime_le IS NULL) AS documents
+                FROM espace e
+                WHERE e.supprime_le IS NULL';
+        $params = [];
+
+        if (!$admin) {
+            $sql .= " AND (e.visibilite = 'public_interne'
+                OR EXISTS (SELECT 1 FROM adhesion a
+                           WHERE a.espace_id = e.id AND a.utilisateur_id = :uid
+                             AND a.debut_le <= CURRENT_DATE
+                             AND (a.fin_le IS NULL OR a.fin_le >= CURRENT_DATE)))";
+            $params['uid'] = $userId;
+        }
+
+        $sql .= ' ORDER BY e.nom';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     public function all(): array
     {
         $stmt = $this->db->query(
