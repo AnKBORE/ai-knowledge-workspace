@@ -35,3 +35,6 @@ _tmp_*.pdf
 
 # Test audio samples
 _jfk.wav
+# Sauvegardes locales (jamais versionnees : donnees personnelles)
+/storage/backup*
+/storage/files-backup*
