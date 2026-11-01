@@ -289,6 +289,106 @@ DOCX/PDF contenant **le texte seul**.
 
 ---
 
+## 4bis. Inventaire détaillé — ce qui a été créé, et quand
+
+Cette section ne cite pas des intentions : elle liste **les fichiers qui existent
+aujourd'hui dans le dépôt**, avec la date de leur premier commit. Vérifiable par
+`git log --diff-filter=A --format=%ad -- <chemin>`.
+
+### 24 octobre — socle technique (9 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| API | `ask.php` |
+| SQL | `001_ai_rag` |
+| Services | `MetaClient`, `EmbeddingService`, `RagService` |
+| Tests | `EmbeddingServiceTest`, `EnvTest`, `RagServiceTest`, `RagServiceIntegrationTest` |
+
+### 26 octobre — ouverture : gouvernance et multimodal (43 fichiers)
+
+| Type | Fichiers créés |
+|---|---|
+| **API (5)** | `upload`, `documents`, `delete_document`, `export`, `summarize` |
+| **SQL (11)** | `utilisateur`, `jeton_compte`, `tentative_connexion`, `securite_compte`, `espace`, `adhesion`, `historique_adhesions`, `journal`, `document`, `version_document`, `document_chunks_version` |
+| **Modèles (7)** | `Utilisateur`, `JetonCompte`, `TentativeConnexion`, `Espace`, `Adhesion`, `Document`, `VersionDocument` |
+| **Services (8)** | `AuthentificationService`, `PermissionService`, `DocumentService`, `JournalService`, `ExportService`, `TranscriptionService`, `VisionService`, `AudioSplitter` |
+| **Tests (11)** | `AuthentificationServiceTest`, `PermissionServiceTest`, `PolitiqueMotDePasseTest`, `DocumentServiceTest`, `ExportServiceTest`, `JournalServiceTest`, `MultiModalServicesTest`, `AudioSplitterTest`, `FakeMetaClient`… |
+
+C'est la journée la plus dense en **structure** : le modèle de données complet
+(utilisateurs, espaces, adhésions, documents, versions, journal) est posé en une
+seule journée, avec ses tests.
+
+### 27 octobre — catégories, exports, anonymisation (10 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| API | `categorie_save`, `categorie_delete`, `download_document`, `journal_export` |
+| SQL | `014_indexes`, `015_categories` |
+| Modèle | `Categorie` |
+| Service | `Anonymiseur` |
+| Tests | `AnonymiseurTest`, `DocumentTest` |
+
+### 28 octobre — précision de la récupération (2 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| API | `journal_purge` |
+| Tests | `RagServiceScopeTest` |
+
+Peu de fichiers nouveaux : la journée porte sur la **réécriture** du moteur de
+récupération, pas sur de nouvelles surfaces. C'est le sens des 3 187 lignes
+ajoutées pour seulement 3 commits.
+
+### 29 octobre — ingestion en arrière-plan et ASR (7 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| API | `upload_status` |
+| SQL | `016_ingestion_jobs` |
+| Modèle | `IngestionJob` |
+| Services | `IngestionService`, `BackgroundWorker` |
+| Tests | `AgentTaskTest`, `IngestionServiceTest` |
+
+### 30 octobre — le mooré entre dans le produit (6 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| API | `translate`, `translate_document` |
+| SQL | `017_document_translations`, `018_moore_corpus` |
+| Services | `DocumentTranslationService`, `MooreReference` |
+
+### 31 octobre — sécurité, corrections, apprentissage (24 fichiers)
+
+| Type | Fichiers |
+|---|---|
+| **API (6)** | `correction_save`, `correction_list`, `correction_delete`, `correction_download`, `reformulate`, `transcribe_chunk` |
+| **SQL (4)** | `016_rate_limit`, `017_corrections`, `018_correction_filename`, `019_correction_file` |
+| **Modèle (1)** | `Correction` |
+| **Services (6)** | `Apprentissage`, `LexiqueMoore`, `Glossaire`, `Proverbes`, `RateLimiter`, `TexteExtracteur` |
+| **Tests (5)** | `ApprentissageTest`, `MooreResourcesTest`, `RateLimiterTest`, `CategorieTest`, `AdhesionTest` |
+
+### Récapitulatif par catégorie
+
+| Catégorie | Total | Répartition par jour |
+|---|---|---|
+| **Endpoints API** | 20 | 1 · 5 · 4 · 1 · 1 · 2 · 6 |
+| **Migrations SQL** | 21 | 1 · 11 · 2 · — · 1 · 2 · 4 |
+| **Modèles** | 10 | — · 7 · 1 · — · 1 · — · 1 |
+| **Services** | 22 | 3 · 8 · 1 · — · 2 · 2 · 6 |
+| **Fichiers de test** | 23 | 4 · 11 · 2 · 1 · 2 · — · 5 |
+
+> **Note honnête sur les migrations** : trois numéros sont utilisés deux fois
+> (`016`, `017`, `018`), car deux chantiers distincts ont été menés le même jour.
+> Le runner applique les fichiers par ordre alphabétique : les 21 migrations
+> passent, mais la numérotation n'est pas propre.
+
+### Ce que l'inventaire ne dit pas
+
+Un fichier créé le 31 octobre n'est pas né en une fois : `RagService.php` a été
+modifié **une trentaine de fois** entre le 24 octobre et le 1ᵉʳ novembre. La date
+de création donne l'apparition d'une surface, pas son état final.
+---
+
 ## 5. Les erreurs, écrites
 
 Un journal de construction sans erreur est un journal faux. Les plus
