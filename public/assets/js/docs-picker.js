@@ -90,7 +90,12 @@
             var n = values ? values.length : 0;
 
             if ($count.length) {
-                $count.text(template.replace('%d', n)).prop('hidden', n === 0);
+                // Icon-only design: the badge carries the number, the full
+                // sentence stays available to screen readers and on hover.
+                $count.text(n)
+                    .attr('title', template.replace('%d', n))
+                    .attr('aria-label', template.replace('%d', n))
+                    .prop('hidden', n === 0);
             }
 
             if ($clear.length) {

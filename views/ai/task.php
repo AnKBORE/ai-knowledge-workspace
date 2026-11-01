@@ -31,10 +31,16 @@ $P = $T['task'];
                     <div class="panel-head-tools">
                         <label for="task-docs" class="panel-tools-label"><?= e($P['docs_label'] ?? 'Documents sources') ?></label>
                         <div class="task-docs-field task-docs-field--compact">
-                            <div class="task-docs-meta">
+                                                        <div class="task-docs-meta">
                                 <span id="task-docs-count" class="task-docs-count" hidden></span>
-                                <button type="button" class="task-docs-clear" id="task-docs-clear" hidden>
-                                    <?= e($P['docs_clear'] ?? '') ?>
+                                <button type="button" class="task-docs-icon" id="task-docs-clear" hidden
+                                        title="<?= e($P['docs_clear'] ?? '') ?>"
+                                        aria-label="<?= e($P['docs_clear'] ?? '') ?>">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/>
+                                        <path d="M10 11v6M14 11v6"/>
+                                    </svg>
                                 </button>
                             </div>
                             <select id="task-docs"
