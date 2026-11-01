@@ -20,6 +20,18 @@ if (!$dependencies['auth']->check()) {
     exit;
 }
 
+if (!$dependencies['rate_limiter']->allow('export:' . (int) $dependencies['auth']->id(), 30, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode([
+        'error' => $T['rate_limited'] ?? 'Trop de requêtes.',
+        'rate_limited' => true,
+        'retry_after' => 60,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     header('Content-Type: application/json; charset=utf-8');

@@ -27,6 +27,18 @@ if (!$dependencies['auth']->check()) {
     echo json_encode(['error' => 'auth_required']);
     exit;
 }
+
+if (!$dependencies['rate_limiter']->allow('transcribe_chunk:' . (int) $dependencies['auth']->id(), 60, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode([
+        'error' => $T['rate_limited'] ?? 'Trop de requêtes.',
+        'rate_limited' => true,
+        'retry_after' => 60,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if (!$dependencies['csrf']->validateRequest()) {
     http_response_code(419);
     echo json_encode(['error' => 'csrf']);

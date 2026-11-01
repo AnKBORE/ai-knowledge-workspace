@@ -39,6 +39,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
     exit;
 }
+if (!$dependencies['rate_limiter']->allow('upload:' . (int) $dependencies['auth']->id(), 20, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode(['error' => $T['rate_limited'] ?? 'Trop de requêtes.', 'rate_limited' => true, 'retry_after' => 60], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if (!$dependencies['csrf']->validateRequest()) {
     $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'csrf', 'chemin' => mb_substr((string) ($_SERVER['REQUEST_URI'] ?? ''), 0, 180)]);
     http_response_code(419);

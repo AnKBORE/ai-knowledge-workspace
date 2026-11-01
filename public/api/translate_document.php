@@ -31,6 +31,18 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'do
     exit;
 }
 
+if (!$dependencies['rate_limiter']->allow('translate_document:' . (int) $dependencies['auth']->id(), 300, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode([
+        'error' => $T['rate_limited'] ?? 'Trop de requêtes.',
+        'rate_limited' => true,
+        'retry_after' => 60,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+
 $documentId = (int) ($_GET['document_id'] ?? 0);
 $to = (string) ($_GET['to'] ?? '');
 $from = preg_match('/^(fr|en|mo)$/', (string)($_GET['from'] ?? '')) ? (string) $_GET['from'] : null;

@@ -42,6 +42,13 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'do
     $respond(['error' => $T['permission_denied']], 403);
 }
 
+// Refuse anything but POST: relying on CSRF alone to reject a GET is fragile.
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+    header('Allow: POST');
+    http_response_code(405);
+    echo json_encode(['error' => 'Method not allowed. Use POST.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 if (!$dependencies['csrf']->validateRequest()) {
     $respond(['error' => $T['session_expired']], 419);
 }

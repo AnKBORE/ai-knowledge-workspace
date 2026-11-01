@@ -29,6 +29,18 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), 'do
     exit;
 }
 
+if (!$dependencies['rate_limiter']->allow('delete_document:' . (int) $dependencies['auth']->id(), 10, 300)) {
+    http_response_code(429);
+    header('Retry-After: 60');
+    echo json_encode([
+        'error' => $T['rate_limited'] ?? 'Trop de requêtes.',
+        'rate_limited' => true,
+        'retry_after' => 60,
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => $T['method_post']], JSON_UNESCAPED_UNICODE);
