@@ -1,6 +1,6 @@
 # Journal de construction — Agentic Knowledge Workspace™
 
-🇬🇧 English version: [JOURNAL_DE_CONSTRUCTION.md](JOURNAL_DE_CONSTRUCTION.md)
+🇬🇧 English version: [JOURNAL_DE_CONSTRUCTION.md](JOURNAL_DE_CONSTRUCTION.fr.md)
 
 > **Document de traçabilité du travail réellement effectué**, du 26 octobre 2026
 > (ouverture du hackathon) à la soumission.

@@ -1,6 +1,6 @@
 # Architecture — Agentic Knowledge Workspace™
 
-🇬🇧 English version: [ARCHITECTURE.md](ARCHITECTURE.md)
+🇬🇧 English version: [ARCHITECTURE.md](ARCHITECTURE.fr.md)
 
 > Document de référence technique. Il décrit **ce que fait réellement le code**,
 > pas ce qu'on aimerait qu'il fasse. Les limites connues sont signalées

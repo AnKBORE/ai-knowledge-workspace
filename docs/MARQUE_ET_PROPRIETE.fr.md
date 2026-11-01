@@ -1,6 +1,6 @@
 # Marque et propriété intellectuelle — Agentic Knowledge Workspace
 
-🇬🇧 English version: [MARQUE_ET_PROPRIETE.md](MARQUE_ET_PROPRIETE.md)
+🇬🇧 English version: [MARQUE_ET_PROPRIETE.md](MARQUE_ET_PROPRIETE.fr.md)
 
 > **Objet** : préparer le dépôt de la marque « Agentic Knowledge Workspace », vérifier la compatibilité avec le hackathon et définir les usages (`™` / `®`).
 

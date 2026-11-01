@@ -1,6 +1,6 @@
 # Démo vidéo (3 min) & soumission
 
-🇬🇧 English version: [DEMO_VIDEO_ET_SOUMISSION.md](DEMO_VIDEO_ET_SOUMISSION.md)
+🇬🇧 English version: [DEMO_VIDEO_ET_SOUMISSION.md](DEMO_VIDEO_ET_SOUMISSION.fr.md)
 
 > Feuille de route finale — état du produit au **1ᵉʳ novembre 2026**.
 > Enregistrement : **3 novembre**. Soumission : **avant le 4 novembre 2026, 21 h ET**.

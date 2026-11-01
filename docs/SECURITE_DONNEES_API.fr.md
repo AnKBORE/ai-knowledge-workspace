@@ -1,6 +1,6 @@
 # Sécurité et confidentialité des données — API d'inférence
 
-🇬🇧 English version: [SECURITE_DONNEES_API.md](SECURITE_DONNEES_API.md)
+🇬🇧 English version: [SECURITE_DONNEES_API.md](SECURITE_DONNEES_API.fr.md)
 
 > **Objet** : préciser ce que le projet envoie (ou n'envoie pas) à l'API d'inférence (Baseten / Muse Spark Open), qui peut voir ces données, quels sont les risques réels et quelles protections sont en place.
 >
@@ -149,7 +149,7 @@ Le projet utilise un **modèle open-weight de Meta** (Muse Spark Open) **servi p
 - Politique de confidentialité du partenaire d'inférence (Baseten).
 - Conditions du **Meta Global AI Developer Hackathon** (§3.8 — modèles open-weight via partenaires).
 - RGPD — règlement (UE) 2016/679 (si données personnelles).
-- [`docs/GUIDE_DE_REALISATION.md`](GUIDE_DE_REALISATION.md) — architecture et sécurité du projet.
+- [`docs/GUIDE_DE_REALISATION.md`](GUIDE_DE_REALISATION.fr.md) — architecture et sécurité du projet.
 
 ---
 
