@@ -191,6 +191,22 @@ markers). The chosen mode is written into the prompt as an explicit instruction,
 so the same question always gets the same shape.
 ---
 
+### 5.6 Wording and dates follow the language
+
+Every label and date produced by the retrieval layer is built in the interface
+language, so the model reads `Registered on: 31 October 2026` and never a raw
+ISO string in the middle of a sentence.
+
+| Concept | French | English |
+|---|---|---|
+| Labels | Titre · Nature · Langue d'origine · Catégorie · Enregistré le · Versions corrigées · Fichier | Title · Type · Original language · Category · Registered on · Corrected versions · File |
+| Date | `31 octobre 2026` | `31 October 2026` |
+| Nature | enregistrement audio (transcrit) · document PDF · scan (OCR) · document Word | audio recording (transcribed) · PDF document · scan (OCR) · Word document |
+
+The answer prompt adds rule 4a: dates are written the way the language writes
+them, never ISO — the value itself is never altered.
+---
+
 ## 6. Agentic task — plan → retrieve → draft → verify → revise
 
 `AiAssistantController::task()` → `RagService::task()`:
@@ -359,6 +375,30 @@ Indexed documents → ✏️  →  languages + proposed name + corrected file
 (paragraphs → lines), plain text otherwise. The extracted text is used **only**
 for learning and RAG — it never rebuilds the file.
 
+---
+
+### 9.5 Deliverable mode — one click to a clean text
+
+The result modal's ✦ toggle turns a grounded answer into something a person can
+read out loud.
+
+| Removed | Kept |
+|---|---|
+| The `Sources : [n]` line and the inline `[n]` citations | every sentence that carries meaning |
+| Bracketed working markers (`[Proposition]`, `[Élément issu…]`, `[À compléter…]`) | the sentence they introduced |
+| The `Référence documentaire` and `Note de méthode` sections | the body |
+| Horizontal rules and the "— Proposition à partir de…" title suffix | the title |
+| The source panel and the agent trace (visually) | — |
+
+Two implementation details matter:
+
+1. it operates on the **text**, not the DOM — a heading wrapped in `<strong>`
+   escaped the line-based patterns when the markup was stripped;
+2. it updates the export payload too, so the DOCX and the PDF contain exactly
+   what is displayed. A second click restores everything.
+
+A bracketed year such as `[2026]` is preserved: only 1–2 digit citations are
+treated as references.
 ---
 
 ## 10. Security

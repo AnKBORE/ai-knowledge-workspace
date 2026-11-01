@@ -89,7 +89,22 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - Understanding of user context
 - Semantic search beyond keywords
 
-### Agentic task loop — plan → retrieve → draft → verify → revise
+### Agentic task loop — plan → retrieve → scope → draft → verify → conformity
+
+You pick the **source documents** in the form; the loop then plans its own
+search queries, retrieves only within that scope, drafts, verifies that every
+claim is supported by its extract, and finally checks that the output actually
+**answers the instruction** — a grounded draft can still be off-topic.
+
+| Instruction | Output |
+|---|---|
+| "Write a report on…", "draft a note…" | a **document** with the structure of its genre (memo, report, minutes, letter, APC/PI lesson plan) |
+| "Analyse the risks of…", "what are the obstacles?" | an **open answer**: a short synthesis, 3 to 6 titled and cited sections, one operational conclusion |
+
+Naming a document in the instruction ("based on Meeting6") restricts the whole
+task to it even without a selection. The six steps are exposed in the UI, so the
+reasoning is auditable.
+
 The task mode is not a single search followed by a generation. `RagService::task()` runs an agent loop, and every step is shown to the user ("Agent steps" panel in the result modal):
 
 | Step | What the agent does |
@@ -197,6 +212,16 @@ text) tagged with its language. That correction immediately becomes the
 - Immutable operation history
 
 ### Professional export
+
+PDF (dompdf) and DOCX (native OOXML) with title, styles, pagination and
+justified text.
+
+A **✦ clean** toggle in the result modal turns a grounded answer into a
+deliverable: it removes the `Sources : [n]` line, the inline citations, the
+bracketed working markers, the method note and the documentary-reference block,
+hides the source and agent panels, and updates the export payload — so the file
+contains **the answer only**. A second click restores everything.
+
 - PDF
 - DOCX
 - Simplified result sharing

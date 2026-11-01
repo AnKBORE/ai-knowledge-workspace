@@ -192,6 +192,22 @@ anglais et mooré). Le mode retenu est écrit dans le prompt comme consigne
 explicite : une même question garde donc toujours la même forme.
 
 ---
+### 5.6 Les libellés et les dates suivent la langue
+
+Chaque libellé et chaque date produits par la couche de récupération sont
+construits dans la langue de l'interface : le modèle lit
+`Enregistré le : 31 octobre 2026` et jamais une chaîne ISO au milieu d'une phrase.
+
+| Élément | Français | Anglais |
+|---|---|---|
+| Libellés | Titre · Nature · Langue d'origine · Catégorie · Enregistré le · Versions corrigées · Fichier | Title · Type · Original language · Category · Registered on · Corrected versions · File |
+| Date | `31 octobre 2026` | `31 October 2026` |
+| Nature | enregistrement audio (transcrit) · document PDF · scan (OCR) · document Word | audio recording (transcribed) · PDF document · scan (OCR) · Word document |
+
+Le prompt de réponse ajoute la règle 4a : les dates s'écrivent comme la langue
+les écrit, jamais en ISO — la valeur elle-même n'est jamais modifiée.
+---
+
 ## 6. Tâche agentique — plan → retrieve → draft → verify → revise
 
 `AiAssistantController::task()` → `RagService::task()` :
@@ -362,6 +378,30 @@ Documents indexés → ✏️  →  langues + nom proposé + fichier corrigé
 (paragraphes → lignes), texte brut sinon. Le texte extrait sert **uniquement** à
 l'apprentissage et au RAG — il ne reconstruit jamais le fichier.
 
+---
+
+### 9.5 Mode livrable — un clic pour un texte propre
+
+La bascule ✦ du modal de résultat transforme une réponse ancrée en un texte
+lisible à voix haute.
+
+| Retiré | Conservé |
+|---|---|
+| La ligne `Sources : [n]` et les citations `[n]` dans le corps | chaque phrase qui porte du sens |
+| Les marqueurs de travail (`[Proposition]`, `[Élément issu…]`, `[À compléter…]`) | la phrase qu'ils introduisaient |
+| Les sections `Référence documentaire` et `Note de méthode` | le corps du texte |
+| Les règles horizontales et le suffixe « — Proposition à partir de… » | le titre |
+| Le panneau des sources et la trace agentique (visuellement) | — |
+
+Deux détails d'implémentation comptent :
+
+1. le nettoyage travaille sur le **texte**, pas sur le DOM — un titre enveloppé
+   dans `<strong>` échappait aux motifs ligne par ligne ;
+2. il met aussi à jour la charge utile de l'export : le DOCX et le PDF
+   contiennent exactement ce qui est affiché. Un second clic restaure tout.
+
+Une année entre crochets, `[2026]`, est préservée : seules les citations de 1 à 2
+chiffres sont traitées comme des références.
 ---
 
 ## 10. Sécurité

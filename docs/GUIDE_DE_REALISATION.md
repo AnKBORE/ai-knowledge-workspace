@@ -250,6 +250,51 @@ poids des termes rares (IDF), isolation par langue, plafond d'exemples et
 `correction_document` et `documents` n'ont pas la même collation. Toute
 comparaison SQL entre leurs colonnes `langue` lève `Illegal mix of collations` :
 la préférence de langue se décide **en PHP**.
+## 10.2 Tâche agentique — périmètre, réponses ouvertes, conformité
+
+La boucle ne produit pas toujours un document administratif : la **forme de
+sortie dépend de l'instruction**.
+
+| Instruction | Sortie |
+|---|---|
+| « Rédige un rapport sur… », « fais une note… » | **document** avec la structure de son genre (note, rapport, compte rendu, courrier, leçon APC/PI) |
+| « Analyse les risques… », « quels sont les obstacles ? » | **réponse ouverte** : synthèse de 2-3 phrases, 3 à 6 sections titrées et citées, conclusion opérationnelle — 400 mots maximum |
+
+### Le cadrage documentaire
+
+Un document **nommé** dans l'instruction (« à base de Meeting6 ») ou **coché** dans
+le sélecteur de la page Tâche borne toute la tâche à ces documents :
+
+1. `documentScope()` compare l'instruction aux titres accessibles ;
+2. `document_ids` (sélection explicite) l'emporte sur la détection ;
+3. l'intersection avec les **droits d'accès** est toujours appliquée ;
+4. le contexte reçoit `SCOPE: … N'utilise aucun autre document` ;
+5. une étape `scope` apparaît dans la trace.
+
+Sans ce cadrage, un discours « à base de Meeting6 » citait la matrice d'un autre
+projet : extraits ancrés, mais mauvais document.
+
+### L'étape de conformité
+
+`verify` contrôle que chaque affirmation est **soutenue** par son extrait.
+`conformity` contrôle que la sortie **répond à l'instruction** — un brouillon
+peut être parfaitement ancré et hors sujet. En cas de rejet : une réécriture,
+puis un second contrôle. Un échec d'analyse du JSON vaut « conforme » : l'étape
+ne bloque jamais.
+
+## 10.3 Du brouillon au livrable
+
+Le bouton **✦** du modal de résultat retire la ligne `Sources : [n]`, les
+citations `[n]`, les marqueurs de travail (`[Proposition]`, `[À compléter…]`),
+les sections `Référence documentaire` et `Note de méthode`, les règles
+horizontales et le suffixe « — Proposition à partir de… ». Il masque aussi les
+sources et la trace, et **met à jour la charge utile de l'export**.
+
+Règle de sûreté : **on retire le marqueur, jamais la phrase qu'il introduisait**.
+Un second clic restaure l'état initial.
+
+Le nettoyage travaille sur le **texte** et non sur le DOM : un titre enveloppé
+dans `<strong>` échappait aux motifs ligne par ligne.
 ## 11. Phases d'exécution
 
 | Phase | Contenu | Statut |

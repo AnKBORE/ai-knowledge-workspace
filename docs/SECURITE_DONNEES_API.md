@@ -273,3 +273,28 @@ Les corrections déposées par un locuteur natif sont **validées par nature** :
 n'existe pas de workflow d'approbation. Le contrôle est **a posteriori** :
 n'importe quel ayant-droit peut lister et supprimer une correction erronée, et
 la suppression cesse immédiatement d'alimenter les prompts.
+
+---
+
+## 18. Actions journalisées (état au 1ᵉʳ novembre 2026)
+
+| Famille | Actions |
+|---|---|
+| **Authentification** | `connexion` (succès **et** refus, verrouillage inclus), `deconnexion` |
+| **Documents** | `document.depot`, `document.consultation`, `document.suppression`, `document.export`, `document.resume` |
+| **Corrections** | `document.correction`, `document.correction.consultation`, `document.correction.telechargement`, `document.correction.suppression` |
+| **Usage de l'IA** | `assistant.question`, `traduction`, `reformulation` |
+| **Administration** | `categorie.creation/modification/suppression`, `profil.maj`, `profil.mot_de_passe`, `journal.export`, `journal.purge` |
+| **Refus** | `securite.refus` — jeton CSRF périmé (419) ou permission manquante (403), avec le chemin demandé |
+
+### Ce qui est volontairement **non** tracé
+
+Une requête **non authentifiée** rejetée en 401 n'est pas enregistrée : le
+journal étant en ajout seul, un robot pourrait le noyer et enterrer les
+événements réels. Seuls les refus impliquant une **session réelle** sont tracés.
+
+### Garde-fous de la purge légale
+
+`journal.purge` exige : administrateur technique, POST + CSRF, **mot de passe
+re-saisi**, fenêtre **≤ 92 jours**, fin de période **≤ D-10**, et **5 tentatives
+par 5 minutes**. La purge est elle-même journalisée, refus compris.

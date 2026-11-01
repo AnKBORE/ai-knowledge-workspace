@@ -128,3 +128,21 @@ Quand un problème est résolu :
 | P-28 | Mots manquants en transcription live | seuil calculé sur le **pic** : une voix calme tombait sous 0,012 et 6 s étaient jetées | seuil **RMS** 0,0015 | ✅ |
 | P-29 | « Are you going today? » rendu « Do you want it today? » | la forme fléchie `rabda` ne matchait pas l'entrée `rabde` du lexique | recherche par **racine** (4 lettres) | ✅ |
 | P-30 | Corrections de test laissées en base, devenues prioritaires | vérifications d'API effectuées sans nettoyage | suppression des corrections de test, conservation de la correction réelle | ✅ |
+
+---
+
+## 6. Incidents de la phase 6 — précision documentaire et livrable
+
+| # | Symptôme observé | Cause réelle | Résolution | État |
+|---|---|---|---|---|
+| P-31 | « Parle-moi de Meeting6 » décrivait un texte mooré alors que le document est un audio français | `preferCorrections()` **remplaçait** tous les extraits par le corrigé : le document perdait son identité | carte d'identité (nature, langue d'origine, catégorie, date, fichier) **plus** les versions corrigées | ✅ |
+| P-32 | « Traduis-le » impossible ; la réponse affirmait que le transcript français manquait | le texte original était supprimé du contexte | troisième extrait « Texte original (FR) » conservé | ✅ |
+| P-33 | « Traduit le » produisait une description au lieu d'une traduction | aucune détection de l'intention de traduction | `wantsTranslation()` + règle 4h (produire la traduction) | ✅ |
+| P-34 | Discours « à base de Meeting6 » citant la matrice d'un autre projet | le plan cherchait dans **tout** le corpus ; aucune contrainte de périmètre | `documentScope()` + `document_ids` + étape `scope` + note `SCOPE` | ✅ |
+| P-35 | Les sources d'une question de liste ne portaient pas le badge « corrigé » | le chemin **catalogue** contournait `preferCorrections()` | `annotateCorrections()` : correction déclarée sans écraser les métadonnées | ✅ |
+| P-36 | « en mooré » répondait **en** mooré au lieu de présenter le contenu mooré | confusion entre langue du contenu et langue de réponse | règle 4g + `requestedLanguage()` + tri de l'extrait demandé en tête | ✅ |
+| P-37 | Le nettoyage laissait « Référence documentaire », « Note de méthode », `[Proposition]` | le nettoyage travaillait sur le **HTML** : les titres en `<strong>` échappaient aux motifs | nettoyage sur le **texte**, puis rendu reconstruit | ✅ |
+| P-38 | La mention « Sources removed… » apparaissait dans le texte et partait dans le DOCX | la mention était ajoutée **dans** `#result-content` | insérée en **frère** du contenu | ✅ |
+| P-39 | Dates au format ISO dans les phrases et dans les libellés | libellés et dates produits en dur, sans langue | `t()` + `formatDate()` + règle 4a (dates dans la langue de la réponse) | ✅ |
+| P-40 | Un correctif invisible malgré un déploiement | onglet exécutant l'ancien JavaScript | pages en `no-store` + `Ctrl+F5` documenté dans le protocole de démo | ✅ |
+

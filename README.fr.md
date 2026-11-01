@@ -89,7 +89,21 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Compréhension du contexte utilisateur
 - Recherche sémantique au-delà des mots-clés
 
-### Boucle d'agent — planifier → rechercher → rédiger → vérifier → corriger
+### Boucle d'agent — planifier → rechercher → cadrer → rédiger → vérifier → conformité
+
+Tu choisis les **documents sources** dans le formulaire ; la boucle planifie
+ensuite ses propres requêtes, ne récupère que dans ce périmètre, rédige, vérifie
+que chaque affirmation est soutenue par son extrait, puis contrôle que la sortie
+**répond réellement à l'instruction** — un brouillon ancré peut rester hors sujet.
+
+| Instruction | Sortie |
+|---|---|
+| « Rédige un rapport sur… », « fais une note… » | un **document** avec la structure de son genre (note, rapport, compte rendu, courrier, leçon APC/PI) |
+| « Analyse les risques de… », « quels sont les obstacles ? » | une **réponse ouverte** : synthèse courte, 3 à 6 sections titrées et citées, une conclusion opérationnelle |
+
+Nommer un document dans l'instruction (« à base de Meeting6 ») borne toute la
+tâche à ce document, même sans sélection. Les six étapes sont exposées dans
+l'interface : le raisonnement est auditable.
 Le mode tâche n'est pas une simple recherche suivie d'une génération. `RagService::task()` exécute une boucle d'agent, et chaque étape est montrée à l'utilisateur (panneau « Étapes de l'agent » dans la fenêtre de résultat) :
 
 | Étape | Ce que fait l'agent |
@@ -199,6 +213,16 @@ texte) en précisant sa langue. Cette correction devient immédiatement la
 - Historique immuable des opérations
 
 ### Export professionnel
+
+PDF (dompdf) et DOCX (OOXML natif) : titre, styles, pagination et texte justifié.
+
+Une bascule **✦ nettoyer** dans le modal de résultat transforme une réponse
+ancrée en livrable : elle retire la ligne `Sources : [n]`, les citations dans le
+corps, les marqueurs de travail, la note de méthode et le bloc de référence
+documentaire, masque les sources et la trace, et met à jour la charge utile de
+l'export — le fichier ne contient plus que la réponse. Un second clic restaure
+tout.
+
 - PDF
 - DOCX
 - Partage simplifié des résultats
