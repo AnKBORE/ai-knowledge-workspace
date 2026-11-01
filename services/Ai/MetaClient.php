@@ -60,7 +60,7 @@ class MetaClient
         $input[] = ['role' => 'user', 'content' => [['type' => 'input_text', 'text' => $prompt]]];
 
         $payload = $this->request('/v1/responses', [
-            'model' => $model ?? (string) ($this->config['chat_model'] ?? 'muse-wonder-1.0'),
+            'model' => $model ?? (string) ($this->config['chat_model'] ?? 'meta-models/muse-spark-open-1026'),
             'input' => $input,
             'stream' => false,
             'temperature' => $temperature ?? 0.2,

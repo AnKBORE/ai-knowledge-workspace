@@ -28,14 +28,16 @@ return [
     'api_key' => getenv('META_MODEL_API_KEY') ?: '',
 
     // Main conversational model (Muse Wonder, per the live API example).
-    'chat_model' => getenv('META_MODEL_NAME') ?: 'muse-wonder-1.0',
+    // The hackathon key only serves this exact model name: a stale fallback
+    // would make the app call a model the key cannot reach.
+    'chat_model' => getenv('META_MODEL_NAME') ?: 'meta-models/muse-spark-open-1026',
     'chat_reasoning_effort' => getenv('META_CHAT_REASONING_EFFORT') ?: 'low',
     // Answers and agentic drafts are long; translations stop on their own, so a
     // generous ceiling never slows them down but prevents truncated replies.
     'chat_max_tokens' => (int) (getenv('META_CHAT_MAX_TOKENS') ?: 3000),
 
     // Advanced model for report generation / decision support.
-    'advanced_model' => 'muse-wonder-1.0',
+    'advanced_model' => getenv('META_MODEL_NAME') ?: 'meta-models/muse-spark-open-1026',
 
     // Embedding model + mode. 'local' = hashing embedding (no endpoint needed);
     // 'api' = use the Meta embeddings endpoint.
