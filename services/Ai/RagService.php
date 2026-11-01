@@ -1115,7 +1115,7 @@ PROMPT;
 
         foreach ($rows as $row) {
             $available[(int) $row['document_id']][] = mb_strtoupper((string) $row['langue'])
-                . ' (' . mb_substr((string) $row['cree_le'], 0, 10) . ')';
+                . ' (' . $this->formatDate((string) $row['cree_le']) . ')';
         }
         $out = [];
         $done = [];
@@ -1310,7 +1310,7 @@ PROMPT;
 
         foreach ($rows as $row) {
             $available[(int) $row['document_id']][] = mb_strtoupper((string) $row['langue'])
-                . ' (' . mb_substr((string) $row['cree_le'], 0, 10) . ')';
+                . ' (' . $this->formatDate((string) $row['cree_le']) . ')';
         }
         $out = [];
 
