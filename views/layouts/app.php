@@ -64,6 +64,7 @@ $navItems = [
     ['path' => '/categories', 'icon' => '<path d="M4 4h6l2 2v6l-8 8Z"/><circle cx="7.5" cy="7.5" r="1"/>'],
     ['path' => '/journal', 'icon' => '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/>'],
     ['path' => '/mon-profil', 'icon' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/>'],
+        ['path' => '/administration', 'icon' => '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>'],
 ];
 foreach ($navItems as $i => $item) {
     $navItems[$i]['label'] = $T['nav'][$i];
