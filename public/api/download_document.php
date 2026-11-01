@@ -41,6 +41,18 @@ if ($document === null) {
     exit;
 }
 
+// Knowing a document id is not a right to read it: a 404 is returned rather
+// than a 403 so the existence of another tenant's document is not revealed.
+$visibleDocuments = $dependencies['permissions']->documentsVisibles((int) $dependencies['auth']->id());
+
+if ($visibleDocuments !== true && !isset($visibleDocuments[(int) $document['id']])) {
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'document', (int) $document['id'], 'refus', ['raison' => 'document_hors_perimetre']);
+    http_response_code(404);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => $T['document_not_found']], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $version = $versionNumero !== null
     ? $dependencies['version_model']->findByNumero($documentId, $versionNumero)
     : $dependencies['version_model']->latest($documentId);

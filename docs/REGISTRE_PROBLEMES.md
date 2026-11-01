@@ -147,3 +147,4 @@ When an issue is resolved:
 | P-38 | The "Sources removed…" notice appeared in the text and went into the DOCX | the notice was added **inside** `#result-content` | inserted as a **sibling** of the content | ✅ |
 | P-39 | ISO dates inside sentences and labels | labels and dates built in hard code, without language | `t()` + `formatDate()` + rule 4a (dates in the answer's language) | ✅ |
 | P-40 | A fix invisible despite a deployment | tab running the previous JavaScript | `no-store` pages + `Ctrl+F5` documented in the demo protocol | ✅ |
+| P-41 | A member could list, and download by id, documents of a space they do not belong to | the document list (page + API) and `download_document` only checked the GLOBAL permission `document.consulter`, never the document itself | `PermissionService::documentsVisibles()` shared with the retrieval engine; list, search and download are scoped, a hidden document returns 404 (existence not revealed) | ✅ |

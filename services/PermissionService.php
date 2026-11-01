@@ -175,6 +175,88 @@ final class PermissionService
      *
      * The refusal stays effective even if the audit table is unavailable.
      */
+
+    /**
+     * Documents the actor may read, under the same rules as retrieval:
+     * tenant scope, global administrators see all, a public internal space is
+     * open to the tenant, otherwise the space needs `document.consulter`.
+     * Private documents and unattached documents are owner-only.
+     *
+     * @return array<int, true>|true  ids map, or true for a global administrator
+     */
+    public function documentsVisibles(int $acteurId): array|bool
+    {
+        $actor = $this->compteActif($acteurId);
+
+        if ($actor === null) {
+            return [];
+        }
+
+        $tenantId = (int) $actor['tenant_id'];
+        $isAdmin = in_array($actor['role_global'], ['administrateur_technique', 'administrateur_fonctionnel'], true);
+
+        $stmt = $this->db->prepare(
+            'SELECT id, espace_id, confidentialite, proprietaire_id
+             FROM documents
+             WHERE tenant_id = :tenant AND supprime_le IS NULL'
+        );
+        $stmt->execute(['tenant' => $tenantId]);
+        $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($isAdmin) {
+            $all = [];
+
+            foreach ($documents as $document) {
+                $all[(int) $document['id']] = true;
+            }
+
+            return $all;
+        }
+
+        $publicSpaces = [];
+        $stmt = $this->db->prepare(
+            "SELECT id, (visibilite = 'public_interne') AS public
+             FROM espace
+             WHERE tenant_id = :tenant AND supprime_le IS NULL"
+        );
+        $stmt->execute(['tenant' => $tenantId]);
+
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $space) {
+            if ((int) $space['public'] === 1) {
+                $publicSpaces[(int) $space['id']] = true;
+            }
+        }
+
+        $spaceCache = [];
+        $allowed = [];
+
+        foreach ($documents as $document) {
+            $documentId = (int) $document['id'];
+            $spaceId = $document['espace_id'] === null ? null : (int) $document['espace_id'];
+
+            if ((int) ($document['proprietaire_id'] ?? 0) === $acteurId) {
+                $allowed[$documentId] = true;
+                continue;
+            }
+
+            if ($spaceId === null || $document['confidentialite'] === 'prive') {
+                continue;
+            }
+
+            if (isset($publicSpaces[$spaceId])) {
+                $allowed[$documentId] = true;
+                continue;
+            }
+
+            $spaceCache[$spaceId] ??= $this->peut($acteurId, 'document.consulter', $spaceId);
+
+            if ($spaceCache[$spaceId]) {
+                $allowed[$documentId] = true;
+            }
+        }
+
+        return $allowed;
+    }
     public function journaliserRefus(int $acteurId, string $action, ?int $espaceId, string $ip): void
     {
         if ($acteurId < 1) {

@@ -58,16 +58,30 @@ final class Document
         return (int) $this->db->lastInsertId();
     }
 
-    /** @return list<array<string, mixed>> */
-    public function listRecent(int $limit = 20, int $offset = 0): array
+    /**
+     * @param array<int, true>|bool|null $allowed ids the actor may read
+     *        (null or true = no restriction, [] = nothing visible)
+     * @return list<array<string, mixed>>
+     */
+    public function listRecent(int $limit = 20, int $offset = 0, array|bool|null $allowed = null): array
     {
+        if (is_array($allowed) && $allowed === []) {
+            return [];
+        }
+
+        $where = 'd.supprime_le IS NULL';
+
+        if (is_array($allowed)) {
+            $where .= ' AND d.id IN (' . implode(',', array_map('intval', array_keys($allowed))) . ')';
+        }
+
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
              LEFT JOIN categorie c ON c.id = d.categorie_id
-             WHERE d.supprime_le IS NULL
+             WHERE ' . $where . '
              ORDER BY d.id DESC
              LIMIT :limit OFFSET :offset'
         );
@@ -98,10 +112,20 @@ final class Document
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** @return list<array<string, mixed>> */
-    public function search(string $query, int $limit = 20): array
+    /**
+     * @param array<int, true>|bool|null $allowed ids the actor may read
+     * @return list<array<string, mixed>>
+     */
+    public function search(string $query, int $limit = 20, array|bool|null $allowed = null): array
     {
+        if (is_array($allowed) && $allowed === []) {
+            return [];
+        }
+
         $like = '%' . $query . '%';
+        $scope = is_array($allowed)
+            ? ' AND d.id IN (' . implode(',', array_map('intval', array_keys($allowed))) . ')'
+            : '';
 
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id,
@@ -109,7 +133,8 @@ final class Document
                     (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
              FROM documents d
              LEFT JOIN categorie c ON c.id = d.categorie_id
-             WHERE d.supprime_le IS NULL
+             WHERE d.supprime_le IS NULL'
+            . $scope . '
                AND (d.title LIKE :query OR d.filename LIKE :query)
              ORDER BY d.id DESC
              LIMIT :limit'

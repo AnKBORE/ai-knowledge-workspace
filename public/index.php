@@ -270,13 +270,18 @@ if ($method === 'GET') {
     $perPage = 20;
     $search = trim((string) ($_GET['q'] ?? ''));
 
+    // The list is scoped like retrieval: a member only sees the documents they
+    // are allowed to read, otherwise the permission model would only apply
+    // inside the RAG.
+    $visibleDocuments = $dependencies['permissions']->documentsVisibles((int) $auth->id());
+
     $documents = $search !== ''
-        ? $dependencies['document_model']->search($search, 200)
-        : $dependencies['document_model']->listRecent(200, 0);
+        ? $dependencies['document_model']->search($search, 200, $visibleDocuments)
+        : $dependencies['document_model']->listRecent(200, 0, $visibleDocuments);
 
     $totalDocuments = $search !== ''
-        ? $dependencies['document_model']->countSearch($search)
-        : $dependencies['document_model']->count();
+        ? count($documents)
+        : (is_array($visibleDocuments) ? count($documents) : $dependencies['document_model']->count());
     $totalPages = max(1, (int) ceil($totalDocuments / $perPage));
     $entries = $path === '/journal' ? $dependencies['journal']->recent() : [];
     $flashMessage = $dependencies['session']->get('profil_flash');

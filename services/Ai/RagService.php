@@ -1767,68 +1767,8 @@ PROMPT;
             return true;
         }
 
-        $actor = $this->permissions->compteActif($userId);
-        if ($actor === null) {
-            return [];
-        }
-
-        $tenantId = (int) $actor['tenant_id'];
-        $isAdmin = in_array($actor['role_global'], ['administrateur_technique', 'administrateur_fonctionnel'], true);
-
-        $stmt = $this->db->prepare(
-            'SELECT id, espace_id, confidentialite, proprietaire_id
-             FROM documents
-             WHERE tenant_id = :tenant AND supprime_le IS NULL'
-        );
-        $stmt->execute(['tenant' => $tenantId]);
-        $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if ($isAdmin) {
-            $all = [];
-            foreach ($documents as $doc) {
-                $all[(int) $doc['id']] = true;
-            }
-
-            return $all;
-        }
-
-        $publicSpaces = [];
-        $stmt = $this->db->prepare(
-            'SELECT id FROM espace
-             WHERE tenant_id = :tenant AND visibilite = \'public_interne\' AND supprime_le IS NULL'
-        );
-        $stmt->execute(['tenant' => $tenantId]);
-        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $spaceId) {
-            $publicSpaces[(int) $spaceId] = true;
-        }
-
-        $spaceCache = [];
-        $allowed = [];
-        foreach ($documents as $doc) {
-            $docId = (int) $doc['id'];
-            $spaceId = $doc['espace_id'] === null ? null : (int) $doc['espace_id'];
-
-            if ((int) ($doc['proprietaire_id'] ?? 0) === $userId) {
-                $allowed[$docId] = true;
-                continue;
-            }
-
-            if ($spaceId === null || $doc['confidentialite'] === 'prive') {
-                continue;
-            }
-
-            if (isset($publicSpaces[$spaceId])) {
-                $allowed[$docId] = true;
-                continue;
-            }
-
-            $spaceCache[$spaceId] ??= $this->permissions->peut($userId, 'document.consulter', $spaceId);
-            if ($spaceCache[$spaceId]) {
-                $allowed[$docId] = true;
-            }
-        }
-
-        return $allowed;
+        // Share the rule with the document list and the download endpoint.
+        return $this->permissions->documentsVisibles($userId);
     }
 
     /**

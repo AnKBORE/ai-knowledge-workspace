@@ -147,4 +147,5 @@ Quand un problème est résolu :
 | P-38 | La mention « Sources removed… » apparaissait dans le texte et partait dans le DOCX | la mention était ajoutée **dans** `#result-content` | insérée en **frère** du contenu | ✅ |
 | P-39 | Dates au format ISO dans les phrases et dans les libellés | libellés et dates produits en dur, sans langue | `t()` + `formatDate()` + règle 4a (dates dans la langue de la réponse) | ✅ |
 | P-40 | Un correctif invisible malgré un déploiement | onglet exécutant l'ancien JavaScript | pages en `no-store` + `Ctrl+F5` documenté dans le protocole de démo | ✅ |
+| P-41 | Un membre pouvait lister, et télécharger par identifiant, des documents d'un espace dont il n'est pas membre | la liste (page + API) et `download_document` ne vérifiaient que la permission **globale** `document.consulter`, jamais le document lui-même | `PermissionService::documentsVisibles()` partagée avec le moteur de récupération ; liste, recherche et téléchargement sont cloisonnés, un document inaccessible renvoie 404 (sans révéler son existence) | ✅ |
 

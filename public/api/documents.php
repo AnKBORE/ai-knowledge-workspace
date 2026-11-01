@@ -35,6 +35,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     exit;
 }
 
-$documents = $dependencies['document_model']->listRecent();
+// Same scope as the page and the retrieval engine.
+$visible = $dependencies['permissions']->documentsVisibles((int) $dependencies['auth']->id());
+$documents = $dependencies['document_model']->listRecent(20, 0, $visible);
 
 echo json_encode(['documents' => $documents], JSON_UNESCAPED_UNICODE);
