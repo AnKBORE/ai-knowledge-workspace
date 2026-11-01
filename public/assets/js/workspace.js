@@ -333,18 +333,47 @@
         // everything, so nothing is lost.
         var cleanBackup = null;
 
+        // Produces a deliverable: what a person would actually read out. It
+        // removes the citations, the "Sources : [n]" line, the bracketed working
+        // markers, the method note, the documentary-reference section and the
+        // horizontal rules — but never a sentence that carries meaning.
         var stripCitations = function (html) {
-            return html
-                // Trailing "Sources : [1], [2]" line, bold or not.
+            var text = html
                 .replace(/\s*(?:<strong>)?\s*Sources?\s*:\s*(?:\[\d{1,2}\]\s*(?:,\s*)?)+(?:<\/strong>)?\s*$/i, '')
-                // Inline citations, keeping a bracketed year such as [2026].
                 .replace(/\s*\[\d{1,2}(?:\s*,\s*\d{1,2})*\]/g, '')
-                // A line that is only a meta marker is dropped entirely.
-                .replace(/^[ \t]*\*?[ \t]*\[(?:Proposition|Élément issu|À compléter|Formule d|Adressez|Annoncer|Rappeler|Note de)[^\]]*\][ \t]*\*?[ \t]*:?[ \t]*$/gim, '')
-                // An inline meta marker is removed, the sentence it introduced is kept.
                 .replace(/\*?[ \t]*\[(?:Proposition|Élément issu|À compléter|Formule d|Adressez|Annoncer|Rappeler|Note de)[^\]]*\][ \t]*\*?[ \t]*:?[ \t]*/gi, '')
-                // Method note: pure scaffolding, not part of the deliverable.
-                .replace(/^[^\n]*Note de méthode[^\n]*$/gim, '')
+                // A meta suffix in the title: "Discours — Proposition à partir de …"
+                .replace(/[ \t]*[-–—][ \t]*Proposition[ \t]+(?:à|a)[ \t]+partir[^\n]*$/gim, '');
+
+            var scaffold = /^(?:#{1,6}[ \t]*)?\**\s*(?:référence documentaire|références?|note de méthode|notes de méthode)\b/i;
+            var lines = text.split('\n');
+            var out = [];
+            var skipping = false;
+
+            for (var i = 0; i < lines.length; i++) {
+                var trimmed = lines[i].trim();
+
+                if (scaffold.test(trimmed)) {
+                    skipping = true;
+                    continue;
+                }
+
+                if (skipping) {
+                    if (trimmed === '') {
+                        skipping = false;
+                        out.push('');
+                    }
+                    continue;
+                }
+
+                if (/^-{3,}$/.test(trimmed) || /^\*{3,}$/.test(trimmed)) {
+                    continue;
+                }
+
+                out.push(lines[i]);
+            }
+
+            return out.join('\n')
                 .replace(/[ \t]{2,}/g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
