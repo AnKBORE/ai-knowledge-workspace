@@ -199,17 +199,47 @@ $localRoles = ['lecteur', 'contributeur', 'animateur', 'responsable'];
                     </div>
                     <div class="col-md-4">
                         <h3 class="h6"><?= e($t('Espaces', 'Spaces')) ?> <span class="text-muted">(<?= count($adminEspaces ?? []) ?>)</span></h3>
-                        <ul class="small mb-0 ps-3">
+                                                <ul class="small mb-0 ps-3">
                             <?php foreach (($adminEspaces ?? []) as $es): ?>
-                                <li><?= e((string) $es['nom']) ?> — <span class="text-muted"><?= e((string) $es['visibilite']) ?></span></li>
+                                <?php $esActif = ($es['statut'] ?? 'actif') === 'actif'; ?>
+                                <li class="mb-2">
+                                    <?= e((string) $es['nom']) ?>
+                                    — <span class="text-muted"><?= e((string) $es['visibilite']) ?></span>
+                                    · <strong class="<?= $esActif ? 'text-success' : 'text-danger' ?>"><?= e((string) ($es['statut'] ?? 'actif')) ?></strong>
+                                    <?php if ($canArchive): ?>
+                                        <form method="post" action="<?= e(url('/api/admin_espace_statut.php')) ?>" class="d-inline">
+                                            <?= $csrf?->field() ?? '' ?>
+                                            <input type="hidden" name="espace_id" value="<?= (int) $es['id'] ?>">
+                                            <input type="hidden" name="statut" value="<?= $esActif ? 'archive' : 'actif' ?>">
+                                            <button type="submit" class="btn btn-sm btn-link p-0 align-baseline">
+                                                <?= e($esActif
+                                                    ? $t('Clore cet espace', 'Close this space')
+                                                    : $t('Réouvrir cet espace', 'Reopen this space')) ?>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
                     <div class="col-md-4">
                         <h3 class="h6"><?= e($t('Adhésions', 'Memberships')) ?> <span class="text-muted">(<?= count($adminAdhesions ?? []) ?>)</span></h3>
-                        <ul class="small mb-0 ps-3">
+                                                <ul class="small mb-0 ps-3">
                             <?php foreach (($adminAdhesions ?? []) as $ad): ?>
-                                <li><?= e(trim((string) ($ad['prenom'] ?? '') . ' ' . (string) ($ad['nom'] ?? ''))) ?> → <?= e((string) ($ad['espace'] ?? '')) ?> · <strong><?= e((string) ($ad['role_local'] ?? '')) ?></strong></li>
+                                <li class="mb-2">
+                                    <?= e(trim((string) ($ad['prenom'] ?? '') . ' ' . (string) ($ad['nom'] ?? ''))) ?>
+                                    → <?= e((string) ($ad['espace'] ?? '')) ?>
+                                    · <strong><?= e((string) ($ad['role_local'] ?? '')) ?></strong>
+                                    <?php if ($canManageAdhesion): ?>
+                                        <form method="post" action="<?= e(url('/api/admin_adhesion_end.php')) ?>" class="d-inline">
+                                            <?= $csrf?->field() ?? '' ?>
+                                            <input type="hidden" name="adhesion_id" value="<?= (int) $ad['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-link p-0 align-baseline text-danger">
+                                                <?= e($t("Terminer l'adhésion", 'End membership')) ?>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>

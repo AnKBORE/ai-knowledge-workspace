@@ -27,7 +27,7 @@ final class Espace
     public function all(): array
     {
         $stmt = $this->db->query(
-            'SELECT id, nom, visibilite, parent_id, cree_le
+            'SELECT id, nom, visibilite, statut, parent_id, cree_le
              FROM espace
              WHERE supprime_le IS NULL
              ORDER BY id'

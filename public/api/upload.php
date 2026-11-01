@@ -87,6 +87,18 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
     exit;
 }
 
+// A workspace is a piece of work with a lifecycle: once closed it accepts
+// no further deposits, while its documents remain readable.
+$espaceCible = $dependencies['espaces']->firstActive();
+$espaceCibleRow = $espaceCible !== null ? $dependencies['espaces']->find($espaceCible) : null;
+
+if ($espaceCibleRow !== null && ($espaceCibleRow['statut'] ?? 'actif') === 'archive') {
+    http_response_code(422);
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'espace', $espaceCible, 'refus', ['raison' => 'espace_clos']);
+    echo json_encode(['error' => $T['espace_clos'] ?? ($lang === 'fr' ? 'Espace de travail clos : dépôt refusé.' : 'Workspace closed: deposit refused.')], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $ingestion = $dependencies['ingestion'];
 
 try {

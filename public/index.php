@@ -299,6 +299,7 @@ if ($method === 'GET') {
     $canInvite = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'compte.inviter');
     $canCreateSpace = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.creer');
     $canManageAdhesion = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'adhesion.gerer');
+    $canArchive = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.archiver');
 
     $adminDenied = $path === '/administration' && !($canInvite || $canCreateSpace || $canManageAdhesion);
 
@@ -333,6 +334,7 @@ if ($method === 'GET') {
         'canInvite' => $canInvite ?? false,
         'canCreateSpace' => $canCreateSpace ?? false,
         'canManageAdhesion' => $canManageAdhesion ?? false,
+        'canArchive' => $canArchive ?? false,
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],
