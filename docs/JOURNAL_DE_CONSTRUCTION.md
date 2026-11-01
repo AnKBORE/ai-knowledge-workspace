@@ -1,466 +1,469 @@
-# Journal de construction — Agentic Knowledge Workspace™
+# Build Journal — Agentic Knowledge Workspace™
 
-> **Document de traçabilité du travail réellement effectué**, du 26 octobre 2026
-> (ouverture du hackathon) à la soumission.
+> **Traceability document for the work actually performed**, from 26 October 2026
+> (hackathon opening) to submission.
 >
-> Ce journal n'est pas une présentation : c'est une **preuve**. Chaque ligne
-> renvoie à des commits réels, vérifiables par n'importe qui avec `git log`.
+> This is not a pitch: it is **evidence**. Every line points to real commits that
+> anyone can verify with `git log`.
+
+🇫🇷 French version: [JOURNAL_DE_CONSTRUCTION.fr.md](JOURNAL_DE_CONSTRUCTION.fr.md)
 
 ---
 
-## 0. Comment ce document est tenu
+## 0. How this document is kept
 
-| Règle | Application |
+| Rule | Application |
 |---|---|
-| **Une entrée par jour travaillé** | ajoutée en fin de journée, jamais réécrite ensuite |
-| **Chiffres, pas d'adjectifs** | nombre de commits, lignes, tests, fichiers |
-| **Les erreurs sont écrites** | un incident résolu vaut mieux qu'un incident caché |
-| **Vérifiable** | chaque affirmation renvoie à un hash, un fichier ou une commande |
+| **One entry per working day** | appended at the end of the day, never rewritten afterwards |
+| **Numbers, not adjectives** | commits, lines, tests, files |
+| **Mistakes are written down** | a resolved incident is worth more than a hidden one |
+| **Verifiable** | every claim points to a hash, a file or a command |
 
-**Pour compléter ce journal :** ajouter une section datée dans la chronologie
-(§3), puis une ligne dans le tableau de suivi (§8). Ne jamais modifier une
-entrée passée — les corrections se font par une nouvelle entrée.
+**To extend this journal:** add a dated section to the chronology (§3), then a
+row to the tracking table (§8). Never modify a past entry — corrections go into a
+new entry.
 
 ---
 
-## 1. État au 1ᵉʳ novembre 2026
+## 1. State as of 1 November 2026
 
-### Volume produit
+### Volume produced
 
-| Métrique | Valeur | Vérification |
+| Metric | Value | Verification |
 |---|---|---|
-| **Commits** | **220** (dont **210** depuis l'ouverture) | `git rev-list --count HEAD` |
-| **Lignes ajoutées** | **+47 880** (dont +44 290 depuis le 26/10) | `git log --shortstat` |
-| **Lignes supprimées** | **−6 145** | idem |
-| **Période couverte** | 24 → 1ᵉʳ novembre (8 jours de travail) | `git log --date=short` |
+| **Commits** | **220** (**210** since the opening) | `git rev-list --count HEAD` |
+| **Lines added** | **+47,880** (+44,290 since 26/10) | `git log --shortstat` |
+| **Lines deleted** | **−6,145** | idem |
+| **Period covered** | 24 Oct → 1 Nov (8 working days) | `git log --date=short` |
 
-### Le produit
+### The product
 
-| Domaine | Volume |
+| Area | Volume |
 |---|---|
-| Pages web | **8** routes |
-| Endpoints API | **20** |
-| Migrations SQL | **21** |
-| Services métier | **22** (dont 10 dans `Ai/`) |
-| Modèles | **10** |
-| Vues | **17** |
-| Fichiers de test | **23** |
-| **Tests automatisés** | **100 tests · 230 assertions** |
-| Documentation | **8 fichiers · ≈ 160 Ko** |
+| Web pages | **8** routes |
+| API endpoints | **20** |
+| SQL migrations | **21** |
+| Business services | **22** (10 in `Ai/`) |
+| Models | **10** |
+| Views | **17** |
+| Test files | **23** |
+| **Automated tests** | **100 tests · 230 assertions** |
+| Documentation | **9 files · ≈ 180 KB** |
 
-### La pile
+### The stack
 
 ```
-PHP 8.4.27 · MySQL 8.4.13 · MVC strict · PSR-4 · aucun framework
-RAG hybride (0,6 vectoriel + 0,4 lexical) · embeddings locaux
-Modèle : Muse Spark Open (Baseten) · ASR : cascade Baseten + whisper.cpp local
-PDF : smalot/pdfparser · DOCX : ZipArchive (OOXML natif) · PDF : dompdf
+PHP 8.4.27 · MySQL 8.4.13 · strict MVC · PSR-4 · no framework
+Hybrid RAG (0.6 vector + 0.4 lexical) · local embeddings
+Model: Muse Spark Open (Baseten) · ASR: Baseten cascade + local whisper.cpp
+PDF: smalot/pdfparser · DOCX: ZipArchive (native OOXML) · PDF: dompdf
 ```
 
 ---
 
-## 2. Les 8 jours en un tableau
+## 2. The eight days in one table
 
-| Date | Commits | Lignes | Ce qui a été construit |
+| Date | Commits | Lines | What was built |
 |---|---|---|---|
-| **24/10** | 10 | +3 590 / −33 | *Avant l'ouverture* — socle : MVC, couche IA, démo RAG, extraction PDF |
-| **26/10** | 53 | +15 828 / −1 184 | Repositionnement « agentique multimodal », UI web, premiers services multimodaux |
-| **27/10** | 51 | +4 079 / −1 984 | Gouvernance : journal d'audit, CSP, pagination, versions, export CSV |
-| **28/10** | 3 | +3 187 / −519 | Moteur RAG++ et interface bilingue EN/FR |
-| **29/10** | 8 | +1 677 / −299 | Modèle de hackathon branché, ASR robuste, OCR des PDF scannés |
-| **30/10** | 6 | +2 137 / −61 | Mooré : page de traduction, référence linguistique, banque de données |
-| **31/10** | 71 | +15 676 / −1 326 | Sécurité, lexique, corrections humaines, boucle agentique complète |
-| **01/11** | 18 | +1 706 / −739 | Livrable propre, i18n des dates, documentation, finitions UI |
+| **24/10** | 10 | +3,590 / −33 | *Before the opening* — foundation: MVC, AI layer, RAG demo, PDF extraction |
+| **26/10** | 53 | +15,828 / −1,184 | Repositioned as an "agentic multimodal workspace", web UI, first multimodal services |
+| **27/10** | 51 | +4,079 / −1,984 | Governance: audit journal, CSP, pagination, versions, CSV export |
+| **28/10** | 3 | +3,187 / −519 | RAG++ engine and bilingual EN/FR interface |
+| **29/10** | 8 | +1,677 / −299 | Hackathon model wired in, robust ASR, OCR for scanned PDFs |
+| **30/10** | 6 | +2,137 / −61 | Mooré: translation page, linguistic reference, data bank |
+| **31/10** | 71 | +15,676 / −1,326 | Security, lexicon, human corrections, complete agentic loop |
+| **01/11** | 18 | +1,706 / −739 | Clean deliverable, localised dates, documentation, UI polish |
 
 ---
 
-## 3. Chronologie détaillée
+## 3. Detailed chronology
 
-### 24 octobre — le socle (avant l'ouverture)
+### 24 October — the foundation (before the opening)
 
-**10 commits · +3 590 / −33**
+**10 commits · +3,590 / −33**
 
-Le hackathon n'est pas encore ouvert. Le travail commence par les fondations :
-`Initial commit` (scaffold PHP 8.4 / MySQL 8.4 structuré en MVC), `README.fr.md`,
-versions épinglées (**PHP 8.4.27**, **MySQL 8.4.13**), puis la couche IA :
-`MetaClient`, service d'embeddings, service RAG, contrôleur assistant.
+The hackathon is not open yet. Work starts with foundations: `Initial commit`
+(PHP 8.4 / MySQL 8.4 scaffold, MVC structure), `README.fr.md`, pinned versions
+(**PHP 8.4.27**, **MySQL 8.4.13**), then the AI layer: `MetaClient`, embedding
+service, RAG service, assistant controller.
 
-La journée se termine par une **démo RAG de bout en bout** : chargement `.env`,
-`bootstrap.php`, endpoint `ask.php`, CLI d'indexation, runner de migrations,
-extraction PDF.
+The day ends with an **end-to-end RAG demo**: `.env` loader, `bootstrap.php`,
+`ask.php` endpoint, indexing CLI, migration runner, PDF extraction.
 
-> **Pourquoi c'est noté ici** : ces 10 commits sont antérieurs à l'ouverture.
-> Ils sont mentionnés pour l'honnêteté du décompte, pas pour gonfler le total.
-
----
-
-### 26 octobre — le repositionnement (ouverture)
-
-**53 commits · +15 828 / −1 184**
-
-Le positionnement initial (« RAG sur des documents ») est **abandonné le premier
-jour** : le règlement exclut explicitement les applications RAG basiques.
-
-Décision : devenir un **espace de travail agentique multimodal**.
-
-| Commit représentatif | Ce qu'il change |
-|---|---|
-| `Reposition as agentic multimodal workspace` | le produit change de nature |
-| `Add Muse Voice Transcribe + SAM 3.1 services` | première brique audio et vision |
-| `Add web UI reusing the foundation design system` | upload + chat fonctionnels |
-| `Add serve.bat` | serveur de développement reproductible |
-| `Align MetaClient with live /v1/responses API` | le client parle la vraie API |
-| `Add detailed phased execution guide` | la feuille de route est écrite avant le code |
-
-**Volume** : 15 828 lignes en une journée — c'est la journée la plus lourde du
-projet, avant même le travail sur la langue.
+> **Why this is recorded here**: these 10 commits predate the opening. They are
+> listed for the honesty of the count, not to inflate the total.
 
 ---
 
-### 27 octobre — la gouvernance
+### 26 October — repositioning (opening day)
 
-**51 commits · +4 079 / −1 984**
+**53 commits · +15,828 / −1,184**
 
-Une application qui répond sur des documents d'organisation doit **prouver** ce
-qu'elle fait. Cette journée construit la couche de confiance.
+The initial positioning ("RAG over documents") is **abandoned on day one**: the
+rules explicitly exclude basic RAG applications.
 
-| Commit représentatif | Ce qu'il change |
+Decision: become an **agentic multimodal workspace**.
+
+| Representative commit | What it changes |
 |---|---|
-| `Audit journal page (/journal), CSP and security headers` | la piste d'audit devient consultable |
-| `Documents pagination (20 per page) with total count` | la base tient dans l'interface |
-| `Performance indexes migration + Document model tests` | **les premiers tests** |
-| `Document version history` (date, taille, SHA-256) | chaque dépôt est immuable et traçable |
-| `Journal CSV export (journal.lire permission)` | l'audit devient exportable |
+| `Reposition as agentic multimodal workspace` | the product changes nature |
+| `Add Muse Voice Transcribe + SAM 3.1 services` | first audio and vision bricks |
+| `Add web UI reusing the foundation design system` | working upload + chat |
+| `Add serve.bat` | reproducible dev server |
+| `Align MetaClient with live /v1/responses API` | the client speaks the real API |
+| `Add detailed phased execution guide` | the roadmap is written before the code |
 
-Le solde de lignes supprimées (−1 984) est le signe d'un **premier nettoyage**,
-pas d'un ajout.
+**Volume**: 15,828 lines in a single day — the heaviest day of the project,
+before any work on language.
 
 ---
 
-### 28 octobre — la précision
+### 27 October — governance
 
-**3 commits · +3 187 / −519**
+**51 commits · +4,079 / −1,984**
 
-Peu de commits, gros volume : la journée est consacrée à un seul sujet, le
-**moteur de récupération**.
+An application that answers questions about an organisation's documents must
+**prove** what it does. This day builds the trust layer.
 
-| Commit | Ce qu'il apporte |
+| Representative commit | What it changes |
 |---|---|
-| `Precision RAG engine + bilingual EN/FR UI (68 tests)` | score hybride, interface bilingue, **68 tests** |
-| `RAG++ hardening: vector cache, not-found retry, title boost, whisper.cpp` | la récupération devient robuste |
-| `Stats widget, query-term highlighting` | la réponse devient lisible |
+| `Audit journal page (/journal), CSP and security headers` | the audit trail becomes visible |
+| `Documents pagination (20 per page) with total count` | the base fits in the UI |
+| `Performance indexes migration + Document model tests` | **the first business tests** |
+| `Document version history` (date, size, SHA-256) | every upload is immutable and traceable |
+| `Journal CSV export (journal.lire permission)` | the audit becomes exportable |
 
-C'est le passage de « ça répond » à « ça répond **et on peut vérifier** ».
+The negative line balance (−1,984) signals a **first cleanup**, not an addition.
 
 ---
 
-### 29 octobre — le modèle réel et l'ASR
+### 28 October — precision
 
-**8 commits · +1 677 / −299**
+**3 commits · +3,187 / −519**
 
-| Commit | Ce qu'il apporte |
+Few commits, large volume: the whole day goes into one subject — the
+**retrieval engine**.
+
+| Commit | What it brings |
 |---|---|
-| `Connect Baseten hackathon model muse-spark-open-1026` | le modèle du hackathon est réellement utilisé |
-| `Audio transcription back on Baseten Muse Spark Open; reject guardrail refusals` | l'audio entre dans le périmètre |
-| `Local whisper.cpp re-enabled with auto language, resilient ASR fallback cascade` | **deux** moteurs ASR, avec repli |
-| `OCR for scanned PDFs: page image extraction, downscaling, parallel vision calls` | les scans deviennent lisibles |
-| `Fresh-clone install fixes: auto-create database, portable composer` | le dépôt devient installable par un tiers |
+| `Precision RAG engine + bilingual EN/FR UI (68 tests)` | hybrid score, bilingual UI, **68 tests** |
+| `RAG++ hardening: vector cache, not-found retry, title boost, whisper.cpp` | retrieval becomes robust |
+| `Stats widget, query-term highlighting` | the answer becomes readable |
 
-Ce dernier point compte : **un projet que le jury ne peut pas installer n'existe
-pas.**
+This is the shift from "it answers" to "it answers **and you can check**".
 
 ---
 
-### 30 octobre — le mooré
+### 29 October — the real model and ASR
 
-**6 commits · +2 137 / −61**
+**8 commits · +1,677 / −299**
 
-La journée la plus déterminante sur le plan du différenciateur.
-
-| Commit | Ce qu'il apporte |
+| Commit | What it brings |
 |---|---|
-| `Mooré translation page with SIL/Peace Corps linguistic reference` | une page de traduction dédiée, avec un socle linguistique **sourcé** |
-| `Live karaoke audio translation in documents modal` | l'audio devient explorable segment par segment |
-| `Mooré data bank: corpus+lexicon tables, corpus-aware prompts` | la langue devient une **donnée**, pas un prompt |
-| `LAN-accessible server (0.0.0.0)` | testable depuis un téléphone |
+| `Connect Baseten hackathon model muse-spark-open-1026` | the hackathon model is actually used |
+| `Audio transcription back on Baseten Muse Spark Open; reject guardrail refusals` | audio enters the scope |
+| `Local whisper.cpp re-enabled with auto language, resilient ASR fallback cascade` | **two** ASR engines, with fallback |
+| `OCR for scanned PDFs: page image extraction, downscaling, parallel vision calls` | scans become readable |
+| `Fresh-clone install fixes: auto-create database, portable composer` | the repo becomes installable by a third party |
 
-**Le choix structurant** : ne pas « espérer » qu'un modèle généraliste sache le
-mooré, mais **construire une banque de données** et l'injecter.
+That last point matters: **a project the jury cannot install does not exist.**
 
 ---
 
-### 31 octobre — la sécurité, puis l'apprentissage
+### 30 October — Mooré
 
-**71 commits · +15 676 / −1 326**
+**6 commits · +2,137 / −61**
 
-La journée la plus longue : **deux chantiers menés en parallèle**.
+The most decisive day for the differentiator.
 
-**Matin — durcissement**
-
-| Commit | Ce qu'il apporte |
+| Commit | What it brings |
 |---|---|
-| `Security, tests and Mooré enrichment: CSRF on state-changing endpoints, MIT license` | CSRF généralisé, licence |
-| `Rate limit: fixed-window limiter (table, service, 3 tests)` | protection anti-abus |
-| `Mooré lexicon: merge the recent full SIL dictionary (+734 entries)` | **1 349 entrées** vérifiées |
-| `Mooré proverbs: ship 40 proverbs (KABORÉ/MooreBurkina)` | référence culturelle |
-| `Landing: transparency note on the low-resource limit` | **la limite est écrite dans le produit** |
+| `Mooré translation page with SIL/Peace Corps linguistic reference` | a dedicated translation page with a **sourced** linguistic base |
+| `Live karaoke audio translation in documents modal` | audio becomes explorable segment by segment |
+| `Mooré data bank: corpus+lexicon tables, corpus-aware prompts` | the language becomes **data**, not a prompt |
+| `LAN-accessible server (0.0.0.0)` | testable from a phone |
 
-**Après-midi — le module de corrections humaines**
-
-Le constat : un modèle laisse toujours passer des erreurs. Plutôt que d'espérer
-un modèle parfait, **capter la correction humaine**.
-
-| Fonction livrée | Effet |
-|---|---|
-| Dépôt d'une version corrigée (PDF, DOCX, texte) | le natif corrige le système |
-| Priorité dans la récupération | le corrigé remplace le texte brut |
-| Badge + téléchargement du fichier d'origine | la source est vérifiable |
-| Moteur d'apprentissage (`Apprentissage`) | pondération IDF, un exemple par document |
-| Liste et suppression | la correction est réversible |
-
-**Soir — la boucle agentique complète**
-
-| Étape ajoutée | Question à laquelle elle répond |
-|---|---|
-| `scope` | « sur **quels** documents ? » |
-| `conformity` | « la sortie **répond-elle** à la demande ? » |
-| Mode réponse ouverte | « une analyse n'est pas un rapport » |
+**The structuring choice**: stop hoping a general model knows Mooré, and **build a
+data bank** to inject instead.
 
 ---
 
-### 1ᵉʳ novembre — le livrable
+### 31 October — security, then learning
 
-**18 commits · +1 706 / −739**
+**71 commits · +15,676 / −1,326**
 
-Le produit savait répondre ; il ne savait pas encore **livrer**.
+The longest day: **two workstreams in parallel**.
 
-| Commit | Ce qu'il apporte |
+**Morning — hardening**
+
+| Commit | What it brings |
 |---|---|
-| `Result modal gains a clean toggle` | une réponse devient un texte prononçable |
-| `The clean toggle strips the TEXT, not the DOM` | correction d'un vrai défaut (§5) |
-| `Language-aware wording and dates` | « 31 octobre 2026 », jamais `2026-10-31` |
-| `Documentation update across the board` | 8 documents alignés |
-| `Task page: source-document picker` (5 commits) | sélection explicite du périmètre |
-| `Translate page no longer exhausts its quota` | la traduction à la frappe respecte le quota |
+| `Security, tests and Mooré enrichment: CSRF on state-changing endpoints, MIT license` | CSRF everywhere, licence |
+| `Rate limit: fixed-window limiter (table, service, 3 tests)` | abuse protection |
+| `Mooré lexicon: merge the recent full SIL dictionary (+734 entries)` | **1,349** verified entries |
+| `Mooré proverbs: ship 40 proverbs (KABORÉ/MooreBurkina)` | cultural reference |
+| `Landing: transparency note on the low-resource limit` | **the limit is written inside the product** |
+
+**Afternoon — the human correction module**
+
+The observation: a model always lets errors through. Rather than hoping for a
+perfect model, **capture the human correction**.
+
+| Feature delivered | Effect |
+|---|---|
+| Upload a corrected version (PDF, DOCX, text) | a native speaker improves the system |
+| Priority in retrieval | the correction replaces the raw text |
+| Badge + download of the original file | the source is verifiable |
+| Learning engine (`Apprentissage`) | IDF weighting, one example per document |
+| Listing and deletion | the correction is reversible |
+
+**Evening — the complete agentic loop**
+
+| Step added | The question it answers |
+|---|---|
+| `scope` | "on **which** documents?" |
+| `conformity` | "does the output **answer** the request?" |
+| Open-answer mode | "an analysis is not a report" |
 
 ---
 
-## 4. Ce qui a été produit, par domaine
+### 1 November — the deliverable
+
+**18 commits · +1,706 / −739**
+
+The product could answer; it could not yet **deliver**.
+
+| Commit | What it brings |
+|---|---|
+| `Result modal gains a clean toggle` | an answer becomes a readable text |
+| `The clean toggle strips the TEXT, not the DOM` | a real defect fixed (§5) |
+| `Language-aware wording and dates` | "31 October 2026", never `2026-10-31` |
+| `Documentation update across the board` | 8 documents aligned |
+| `Task page: source-document picker` (5 commits) | explicit scope selection |
+| `Translate page no longer exhausts its quota` | live translation respects the quota |
+
+---
+
+## 4. What was produced, by domain
 
 ### Ingestion
 
-PDF, DOCX, CSV, Markdown, images, **PDF scannés (OCR page à page)**, **audio
-(ASR)**. Chaque dépôt crée une **version immuable** avec empreinte SHA-256.
+PDF, DOCX, CSV, Markdown, images, **scanned PDFs (page-by-page OCR)**, **audio
+(ASR)**. Every upload creates an **immutable version** with a SHA-256 fingerprint.
 
-### Recherche
+### Retrieval
 
-Score hybride `0,6 × cosinus + 0,4 × lexical`, expansion aux segments voisins,
-détection d'intention « catalogue », recherche élargie en cas d'échec,
-**priorité aux corrections**.
+Hybrid score `0.6 × cosine + 0.4 × lexical`, neighbour expansion, "catalogue"
+intent detection, widened search on failure, **priority to corrections**.
 
-### Agentique
+### Agentic
 
-`plan → retrieve → scope → draft → verify → conformity`, avec trace exposée dans
-l'interface. Forme de sortie adaptée à l'instruction (document ou réponse
-ouverte).
+`plan → retrieve → scope → draft → verify → conformity`, with the trace exposed
+in the UI. Output shape adapts to the instruction (document or open answer).
 
-### Langue
+### Language
 
-6 directions FR ↔ EN ↔ MO. Quatre couches injectées : référence linguistique,
-glossaire métier, lexique SIL (1 349 entrées), proverbes. **Aucun fine-tuning** :
-apprentissage par récupération d'exemples validés.
+6 directions FR ↔ EN ↔ MO. Four injected layers: linguistic reference, business
+glossary, SIL lexicon (1,349 entries), proverbs. **No fine-tuning**: learning by
+retrieving validated examples.
 
 ### Audio
 
-Enregistreur intégré (WAV navigateur, vu-mètre, anti-silence), transcription en
-un appel unique à l'arrêt, traduction, export DOCX/PDF, reformulation **à partir
-de l'audio**.
+Built-in recorder (browser WAV, level meter, silence guard), transcription in one
+call at stop, translation, DOCX/PDF export, rephrasing **from the audio**.
 
-### Gouvernance
+### Governance
 
-Journal **en ajout seul** (21 types d'actions, refus compris), RBAC à 2 niveaux,
-CSRF, rate limiting, CSP, stockage hors racine web, purge légale sous conditions
-strictes.
+**Append-only** journal (21 action types, refusals included), two-level RBAC,
+CSRF, rate limiting, CSP, storage outside the web root, legal purge under strict
+conditions.
 
-### Livrable
+### Deliverable
 
-Bascule ✦ : retire citations, sources et annotations de travail, puis export
-DOCX/PDF contenant **le texte seul**.
+✦ toggle: removes citations, sources and working annotations, then exports
+DOCX/PDF containing **the text alone**.
 
 ---
 
-## 4bis. Inventaire détaillé — ce qui a été créé, et quand
+## 4bis. Detailed inventory — what was created, and when
 
-Cette section ne cite pas des intentions : elle liste **les fichiers qui existent
-aujourd'hui dans le dépôt**, avec la date de leur premier commit. Vérifiable par
-`git log --diff-filter=A --format=%ad -- <chemin>`.
+This section does not quote intentions: it lists **the files that exist in the
+repository today**, with the date of their first commit. Verifiable with
+`git log --diff-filter=A --format=%ad -- <path>`.
 
-### 24 octobre — socle technique (9 fichiers)
+### 24 October — technical foundation (9 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | API | `ask.php` |
 | SQL | `001_ai_rag` |
 | Services | `MetaClient`, `EmbeddingService`, `RagService` |
 | Tests | `EmbeddingServiceTest`, `EnvTest`, `RagServiceTest`, `RagServiceIntegrationTest` |
 
-### 26 octobre — ouverture : gouvernance et multimodal (43 fichiers)
+### 26 October — opening: governance and multimodality (43 files)
 
-| Type | Fichiers créés |
+| Type | Files created |
 |---|---|
 | **API (5)** | `upload`, `documents`, `delete_document`, `export`, `summarize` |
 | **SQL (11)** | `utilisateur`, `jeton_compte`, `tentative_connexion`, `securite_compte`, `espace`, `adhesion`, `historique_adhesions`, `journal`, `document`, `version_document`, `document_chunks_version` |
-| **Modèles (7)** | `Utilisateur`, `JetonCompte`, `TentativeConnexion`, `Espace`, `Adhesion`, `Document`, `VersionDocument` |
+| **Models (7)** | `Utilisateur`, `JetonCompte`, `TentativeConnexion`, `Espace`, `Adhesion`, `Document`, `VersionDocument` |
 | **Services (8)** | `AuthentificationService`, `PermissionService`, `DocumentService`, `JournalService`, `ExportService`, `TranscriptionService`, `VisionService`, `AudioSplitter` |
 | **Tests (11)** | `AuthentificationServiceTest`, `PermissionServiceTest`, `PolitiqueMotDePasseTest`, `DocumentServiceTest`, `ExportServiceTest`, `JournalServiceTest`, `MultiModalServicesTest`, `AudioSplitterTest`, `FakeMetaClient`… |
 
-C'est la journée la plus dense en **structure** : le modèle de données complet
-(utilisateurs, espaces, adhésions, documents, versions, journal) est posé en une
-seule journée, avec ses tests.
+The densest day in terms of **structure**: the complete data model (users, spaces,
+memberships, documents, versions, journal) laid down in a single day, with its
+tests.
 
-### 27 octobre — catégories, exports, anonymisation (10 fichiers)
+### 27 October — categories, exports, anonymisation (10 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | API | `categorie_save`, `categorie_delete`, `download_document`, `journal_export` |
 | SQL | `014_indexes`, `015_categories` |
-| Modèle | `Categorie` |
+| Model | `Categorie` |
 | Service | `Anonymiseur` |
 | Tests | `AnonymiseurTest`, `DocumentTest` |
 
-### 28 octobre — précision de la récupération (2 fichiers)
+### 28 October — retrieval precision (2 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | API | `journal_purge` |
 | Tests | `RagServiceScopeTest` |
 
-Peu de fichiers nouveaux : la journée porte sur la **réécriture** du moteur de
-récupération, pas sur de nouvelles surfaces. C'est le sens des 3 187 lignes
-ajoutées pour seulement 3 commits.
+Few new files: the day is spent **rewriting** the retrieval engine, not adding
+surface. Hence 3,187 added lines for only 3 commits.
 
-### 29 octobre — ingestion en arrière-plan et ASR (7 fichiers)
+### 29 October — background ingestion and ASR (7 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | API | `upload_status` |
 | SQL | `016_ingestion_jobs` |
-| Modèle | `IngestionJob` |
+| Model | `IngestionJob` |
 | Services | `IngestionService`, `BackgroundWorker` |
 | Tests | `AgentTaskTest`, `IngestionServiceTest` |
 
-### 30 octobre — le mooré entre dans le produit (6 fichiers)
+### 30 October — Mooré enters the product (6 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | API | `translate`, `translate_document` |
 | SQL | `017_document_translations`, `018_moore_corpus` |
 | Services | `DocumentTranslationService`, `MooreReference` |
 
-### 31 octobre — sécurité, corrections, apprentissage (24 fichiers)
+### 31 October — security, corrections, learning (24 files)
 
-| Type | Fichiers |
+| Type | Files |
 |---|---|
 | **API (6)** | `correction_save`, `correction_list`, `correction_delete`, `correction_download`, `reformulate`, `transcribe_chunk` |
 | **SQL (4)** | `016_rate_limit`, `017_corrections`, `018_correction_filename`, `019_correction_file` |
-| **Modèle (1)** | `Correction` |
+| **Model (1)** | `Correction` |
 | **Services (6)** | `Apprentissage`, `LexiqueMoore`, `Glossaire`, `Proverbes`, `RateLimiter`, `TexteExtracteur` |
 | **Tests (5)** | `ApprentissageTest`, `MooreResourcesTest`, `RateLimiterTest`, `CategorieTest`, `AdhesionTest` |
 
-### Récapitulatif par catégorie
+### 1 November — no new surface (0 files)
 
-| Catégorie | Total | Répartition par jour |
+Eighteen commits, zero new files: the day goes into **finishing** — clean
+deliverable, localised dates, documentation, the source-document picker, the
+translation quota. A project that stops adding files while still growing is a
+project that is **fixing**, not sprawling.
+
+### Recap by category
+
+| Category | Total | Per day |
 |---|---|---|
-| **Endpoints API** | 20 | 1 · 5 · 4 · 1 · 1 · 2 · 6 |
-| **Migrations SQL** | 21 | 1 · 11 · 2 · — · 1 · 2 · 4 |
-| **Modèles** | 10 | — · 7 · 1 · — · 1 · — · 1 |
+| **API endpoints** | 20 | 1 · 5 · 4 · 1 · 1 · 2 · 6 |
+| **SQL migrations** | 21 | 1 · 11 · 2 · — · 1 · 2 · 4 |
+| **Models** | 10 | — · 7 · 1 · — · 1 · — · 1 |
 | **Services** | 22 | 3 · 8 · 1 · — · 2 · 2 · 6 |
-| **Fichiers de test** | 23 | 4 · 11 · 2 · 1 · 2 · — · 5 |
+| **Test files** | 23 | 4 · 11 · 2 · 1 · 2 · — · 5 |
 
-> **Note honnête sur les migrations** : trois numéros sont utilisés deux fois
-> (`016`, `017`, `018`), car deux chantiers distincts ont été menés le même jour.
-> Le runner applique les fichiers par ordre alphabétique : les 21 migrations
-> passent, mais la numérotation n'est pas propre.
+> **Honest note on migrations**: three numbers are used twice (`016`, `017`,
+> `018`), because two separate workstreams ran the same day. The runner applies
+> files alphabetically: all 21 migrations pass, but the numbering is not clean.
 
-### Ce que l'inventaire ne dit pas
+### What the inventory does not say
 
-Un fichier créé le 31 octobre n'est pas né en une fois : `RagService.php` a été
-modifié **une trentaine de fois** entre le 24 octobre et le 1ᵉʳ novembre. La date
-de création donne l'apparition d'une surface, pas son état final.
+A file created on 31 October was not born in one go: `RagService.php` was
+modified **30+ times** between 24 October and 1 November. The creation date marks
+the appearance of a surface, not its final state — `RagService` 31 commits,
+`workspace.js` 49, `app.css` 46.
+
 ---
 
-## 5. Les erreurs, écrites
+## 5. The mistakes, written down
 
-Un journal de construction sans erreur est un journal faux. Les plus
-significatives :
+A build journal without mistakes is a false journal. The most significant:
 
-| Incident | Cause réelle | Correctif |
+| Incident | Real cause | Fix |
 |---|---|---|
-| Corrections ignorées dans les réponses | `Illegal mix of collations` avalée par un `catch` | préférence de langue décidée en PHP |
-| Réponses tronquées, sans sources | plafond `max_tokens` à 1 200 | 3 000 + repli sur les 3 premiers extraits |
-| Discours citant un autre projet | plan cherchant dans **tout** le corpus | `documentScope()` + sélection explicite |
-| Le corrigé **remplaçait** l'identité du document | substitution destructive | identité + original + corrigé = **trois** extraits |
-| Nettoyage laissant les titres | traitement du **HTML** au lieu du **texte** | nettoyage sur `currentResult.content` |
-| Barre de défilement dans le sélecteur | `max-height` + `overflow-y: auto` | hauteur libre, étiquettes sur plusieurs lignes |
-| « Trop de requêtes » sur la traduction | traduction à chaque frappe, quota inadapté | silence 1,2 s + texte inchangé ignoré + pause après 429 |
-| Correctif invisible après déploiement | onglet exécutant l'ancien JavaScript | pages en `no-store`, `Ctrl+F5` documenté |
+| Corrections ignored in answers | `Illegal mix of collations` swallowed by a `catch` | language preference decided in PHP |
+| Truncated answers, no sources | `max_tokens` ceiling at 1,200 | 3,000 + fallback to the first three extracts |
+| Speech citing another project | planner searching the **whole** corpus | `documentScope()` + explicit selection |
+| The correction **replaced** the document identity | destructive substitution | identity + original + corrected = **three** extracts |
+| Cleaning left headings behind | processed the **HTML** instead of the **text** | cleaning runs on `currentResult.content` |
+| Scrollbar inside the picker | `max-height` + `overflow-y: auto` | free height, tags wrap onto several lines |
+| "Too many requests" on translation | translation on every keystroke, mismatched quota | 1.2 s of silence + unchanged text skipped + pause after 429 |
+| Fix invisible after deployment | tab running the previous JavaScript | `no-store` pages, `Ctrl+F5` documented |
 
-Détail complet : `docs/REGISTRE_PROBLEMES.md` (40 entrées).
+Full detail: `docs/REGISTRE_PROBLEMES.md` (40 entries).
 
 ---
 
-## 6. Preuves vérifiables par le jury
+## 6. Proof the jury can verify
 
 ```powershell
-# Volume et rythme
+# Volume and rhythm
 git rev-list --count HEAD
 git log --date=short --pretty=format:'%ad' | Group-Object | Sort-Object Name
 
-# Une journée précise
+# One specific day
 git log --since="2026-10-31 00:00" --until="2026-11-01 00:00" --oneline
 
-# Le détail d'une décision
+# The detail of a decision
 git show <hash>
 
-# L'état de la suite de tests
+# State of the test suite
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
 ---
 
-## 7. Ce que le journal ne prétend pas
+## 7. What this journal does not claim
 
-| Affirmation | Réalité |
+| Claim | Reality |
 |---|---|
-| « 8 jours » | 8 jours **calendaires**, avec des journées de 3 à 71 commits ; le 28 et le 30 comptent peu de commits mais de gros volumes |
-| « 100 tests » | ils couvrent la logique métier, **pas** le JavaScript ni les endpoints de correction |
-| « Traduction mooré » | lexique limité à 1 349 entrées ; les tournures complexes restent approximatives |
-| « RAG sémantique » | embeddings par **hachage**, moins sémantiques qu'un vrai modèle |
-| « Production ready » | projet de hackathon : CSP à durcir, pagination partielle, pas de mesure qualité métier |
+| "8 days" | 8 **calendar** days, with days ranging from 3 to 71 commits; 28 and 30 October have few commits but large volumes |
+| "100 tests" | they cover business logic, **not** the JavaScript nor the correction endpoints |
+| "Mooré translation" | lexicon limited to 1,349 entries; complex constructions remain approximate |
+| "Semantic RAG" | **hashing** embeddings, less semantic than a real model |
+| "Production ready" | hackathon project: CSP to harden, partial pagination, no quality measurement |
 
 ---
 
-## 8. Suivi des mises à jour de ce document
+## 8. Update log for this document
 
-| Date | Événement | Commit |
+| Date | Event | Commit |
 |---|---|---|
-| 01/11 | Création du journal (rétrospectif 24/10 → 01/11) | `8c453f6` |
-| | | |
+| 01/11 | Journal created (retrospective 24/10 → 01/11) | `8c453f6` |
+| 01/11 | Detailed per-file inventory added | `38dd424` |
+| 01/11 | English version produced, French renamed to `.fr.md` | *(this commit)* |
 | | | |
 | | | |
 
 ---
 
-## 9. À remplir jusqu'à la soumission
+## 9. To be filled until submission
 
-| Étape | Échéance | État |
+| Step | Deadline | State |
 |---|---|---|
-| Répétition chronométrée de la démonstration | 1ᵉʳ novembre | ☐ |
-| Seconde répétition + prise de secours | 2 novembre | ☐ |
-| **Enregistrement de la vidéo** | 3 novembre | ☐ |
-| **Soumission** | 4 novembre, 21 h ET | ☐ |
-| Confirmation reçue | — | ☐ |
+| Timed rehearsal of the demonstration | 1 November | ☐ |
+| Second rehearsal + backup take | 2 November | ☐ |
+| **Video recording** | 3 November | ☐ |
+| **Submission** | 4 November, 9 pm ET | ☐ |
+| Confirmation received | — | ☐ |
 
 ---
 
-*Dernière mise à jour : 1ᵉʳ novembre 2026.*
+*Last updated: 1 November 2026.*

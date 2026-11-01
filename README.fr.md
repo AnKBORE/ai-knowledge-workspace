@@ -359,7 +359,7 @@ Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots
 
 ## Documentation
 
-- [docs/JOURNAL_DE_CONSTRUCTION.md](docs/JOURNAL_DE_CONSTRUCTION.md) — **journal de construction** : ce qui a réellement été fait, jour par jour, depuis l'ouverture du hackathon (commits, lignes, incidents)\n- [docs/ARCHITECTURE.fr.md](docs/ARCHITECTURE.fr.md) — **référence technique** : modèle de données, ingestion, RAG++, pipeline de traduction, corrections et apprentissage, limites
+- [docs/JOURNAL_DE_CONSTRUCTION.fr.md](docs/JOURNAL_DE_CONSTRUCTION.fr.md) (🇬🇧 [en](docs/JOURNAL_DE_CONSTRUCTION.md)) — **journal de construction** : ce qui a réellement été fait, jour par jour, depuis l'ouverture du hackathon (commits, lignes, incidents)\n- [docs/ARCHITECTURE.fr.md](docs/ARCHITECTURE.fr.md) — **référence technique** : modèle de données, ingestion, RAG++, pipeline de traduction, corrections et apprentissage, limites
 - [docs/GUIDE_DE_REALISATION.md](docs/GUIDE_DE_REALISATION.md) — feuille de route d'exécution (phases, checklists, jalons)
 - [docs/REGISTRE_PROBLEMES.md](docs/REGISTRE_PROBLEMES.md) — registre des problèmes et résolutions
 - [docs/MARQUE_ET_PROPRIETE.md](docs/MARQUE_ET_PROPRIETE.md) — marque et propriété intellectuelle
