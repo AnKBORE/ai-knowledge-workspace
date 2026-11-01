@@ -21,18 +21,16 @@ $P = $T['task'];
 <div class="row g-4">
     <div class="col-12">
         <div class="space-admin">
-            <section class="panel space-list-panel technical-admin-panel panel-accent-violet" aria-labelledby="task-title">
+            <section class="panel space-list-panel technical-admin-panel panel-accent-violet task-panel" aria-labelledby="task-title">
                 <div class="panel-head">
-                    <div>
+                    <div class="panel-head-copy">
                         <p class="page-eyebrow"><?= e($S['assistant']) ?></p>
                         <h2 class="panel-title" id="task-title"><?= e($P['panel_title']) ?></h2>
                         <p class="panel-sub"><?= e($P['panel_sub']) ?></p>
                     </div>
-                </div>
-                <div class="panel-body">
-                    <form id="task-form">
-                        <label for="task-docs" class="form-label"><?= e($P['docs_label'] ?? 'Documents sources') ?></label>
-                        <div class="task-docs-field">
+                    <div class="panel-head-tools">
+                        <label for="task-docs" class="panel-tools-label"><?= e($P['docs_label'] ?? 'Documents sources') ?></label>
+                        <div class="task-docs-field task-docs-field--compact">
                             <div class="task-docs-meta">
                                 <span id="task-docs-count" class="task-docs-count" hidden></span>
                                 <button type="button" class="task-docs-clear" id="task-docs-clear" hidden>
@@ -40,6 +38,7 @@ $P = $T['task'];
                                 </button>
                             </div>
                             <select id="task-docs"
+                                    form="task-form"
                                     class="form-select"
                                     multiple
                                     aria-describedby="task-docs-help"
@@ -51,12 +50,16 @@ $P = $T['task'];
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <p id="task-docs-help" class="form-text"><?= e($P['docs_help'] ?? '') ?></p>
-
-                        <label for="instruction" class="form-label mt-3"><?= e($P['label']) ?></label>
+                        <p id="task-docs-help" class="panel-tools-help"><?= e($P['docs_help'] ?? '') ?></p>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <form id="task-form">
+                        <label for="instruction" class="form-label"><?= e($P['label']) ?></label>
                         <textarea id="instruction" class="form-control" rows="4" placeholder="<?= e($P['placeholder']) ?>" required></textarea>
 
-                        <button type="submit" class="btn btn-primary mt-3"><?= e($P['submit']) ?></button>                    </form>
+                        <button type="submit" class="btn btn-primary mt-3"><?= e($P['submit']) ?></button>
+                    </form>
                 </div>
                 <p class="technical-admin-note technical-admin-footer"><?= e($P['footer']) ?></p>
             </section>
