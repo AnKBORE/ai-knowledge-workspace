@@ -360,13 +360,13 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 
 | Document | 🇬🇧 English | 🇫🇷 Français |
 |---|---|---|
-| **Build journal — what was really done, day by day** | [\`JOURNAL_DE_CONSTRUCTION.md\`](docs/JOURNAL_DE_CONSTRUCTION.md) | [\`JOURNAL_DE_CONSTRUCTION.fr.md\`](docs/JOURNAL_DE_CONSTRUCTION.fr.md) |
-| **Technical reference** | [\`ARCHITECTURE.md\`](docs/ARCHITECTURE.md) | [\`ARCHITECTURE.fr.md\`](docs/ARCHITECTURE.fr.md) |
-| **Delivery guide** | [\`GUIDE_DE_REALISATION.md\`](docs/GUIDE_DE_REALISATION.md) | [\`GUIDE_DE_REALISATION.fr.md\`](docs/GUIDE_DE_REALISATION.fr.md) |
-| **Data security and privacy** | [\`SECURITE_DONNEES_API.md\`](docs/SECURITE_DONNEES_API.md) | [\`SECURITE_DONNEES_API.fr.md\`](docs/SECURITE_DONNEES_API.fr.md) |
-| **Issue register (40 incidents)** | [\`REGISTRE_PROBLEMES.md\`](docs/REGISTRE_PROBLEMES.md) | [\`REGISTRE_PROBLEMES.fr.md\`](docs/REGISTRE_PROBLEMES.fr.md) |
-| **Demo video & submission** | [\`DEMO_VIDEO_ET_SOUMISSION.md\`](docs/DEMO_VIDEO_ET_SOUMISSION.md) | [\`DEMO_VIDEO_ET_SOUMISSION.fr.md\`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) |
-| **Trademark and intellectual property** | [\`MARQUE_ET_PROPRIETE.md\`](docs/MARQUE_ET_PROPRIETE.md) | [\`MARQUE_ET_PROPRIETE.fr.md\`](docs/MARQUE_ET_PROPRIETE.fr.md) |
+| **Build journal — what was really done, day by day** | [`JOURNAL_DE_CONSTRUCTION.md`](docs/JOURNAL_DE_CONSTRUCTION.md) | [`JOURNAL_DE_CONSTRUCTION.fr.md`](docs/JOURNAL_DE_CONSTRUCTION.fr.md) |
+| **Technical reference** | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | [`ARCHITECTURE.fr.md`](docs/ARCHITECTURE.fr.md) |
+| **Delivery guide** | [`GUIDE_DE_REALISATION.md`](docs/GUIDE_DE_REALISATION.md) | [`GUIDE_DE_REALISATION.fr.md`](docs/GUIDE_DE_REALISATION.fr.md) |
+| **Data security and privacy** | [`SECURITE_DONNEES_API.md`](docs/SECURITE_DONNEES_API.md) | [`SECURITE_DONNEES_API.fr.md`](docs/SECURITE_DONNEES_API.fr.md) |
+| **Issue register (40 incidents)** | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) |
+| **Demo video & submission** | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) |
+| **Trademark and intellectual property** | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) |
 
 
 Every document exists in **both languages**, with the English as the base name and the French as `.fr.md`.

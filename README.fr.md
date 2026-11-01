@@ -361,13 +361,13 @@ Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots
 
 | Document | 🇫🇷 Français | 🇬🇧 English |
 |---|---|---|
-| **Journal de construction — ce qui a réellement été fait, jour par jour** | [\`JOURNAL_DE_CONSTRUCTION.fr.md\`](docs/JOURNAL_DE_CONSTRUCTION.fr.md) | [\`JOURNAL_DE_CONSTRUCTION.md\`](docs/JOURNAL_DE_CONSTRUCTION.md) |
-| **Référence technique** | [\`ARCHITECTURE.fr.md\`](docs/ARCHITECTURE.fr.md) | [\`ARCHITECTURE.md\`](docs/ARCHITECTURE.md) |
-| **Guide de réalisation** | [\`GUIDE_DE_REALISATION.fr.md\`](docs/GUIDE_DE_REALISATION.fr.md) | [\`GUIDE_DE_REALISATION.md\`](docs/GUIDE_DE_REALISATION.md) |
-| **Sécurité et confidentialité des données** | [\`SECURITE_DONNEES_API.fr.md\`](docs/SECURITE_DONNEES_API.fr.md) | [\`SECURITE_DONNEES_API.md\`](docs/SECURITE_DONNEES_API.md) |
-| **Registre des problèmes (40 incidents)** | [\`REGISTRE_PROBLEMES.fr.md\`](docs/REGISTRE_PROBLEMES.fr.md) | [\`REGISTRE_PROBLEMES.md\`](docs/REGISTRE_PROBLEMES.md) |
-| **Démo vidéo & soumission** | [\`DEMO_VIDEO_ET_SOUMISSION.fr.md\`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [\`DEMO_VIDEO_ET_SOUMISSION.md\`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
-| **Marque et propriété intellectuelle** | [\`MARQUE_ET_PROPRIETE.fr.md\`](docs/MARQUE_ET_PROPRIETE.fr.md) | [\`MARQUE_ET_PROPRIETE.md\`](docs/MARQUE_ET_PROPRIETE.md) |
+| **Journal de construction — ce qui a réellement été fait, jour par jour** | [`JOURNAL_DE_CONSTRUCTION.fr.md`](docs/JOURNAL_DE_CONSTRUCTION.fr.md) | [`JOURNAL_DE_CONSTRUCTION.md`](docs/JOURNAL_DE_CONSTRUCTION.md) |
+| **Référence technique** | [`ARCHITECTURE.fr.md`](docs/ARCHITECTURE.fr.md) | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| **Guide de réalisation** | [`GUIDE_DE_REALISATION.fr.md`](docs/GUIDE_DE_REALISATION.fr.md) | [`GUIDE_DE_REALISATION.md`](docs/GUIDE_DE_REALISATION.md) |
+| **Sécurité et confidentialité des données** | [`SECURITE_DONNEES_API.fr.md`](docs/SECURITE_DONNEES_API.fr.md) | [`SECURITE_DONNEES_API.md`](docs/SECURITE_DONNEES_API.md) |
+| **Registre des problèmes (40 incidents)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
+| **Démo vidéo & soumission** | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
+| **Marque et propriété intellectuelle** | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) |
 
 
 Chaque document existe **dans les deux langues**, l'anglais en nom de base et le français en `.fr.md`.
