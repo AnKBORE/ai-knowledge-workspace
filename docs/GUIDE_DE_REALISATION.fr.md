@@ -1,5 +1,7 @@
 # Guide de réalisation — Agentic Knowledge Workspace
 
+🇬🇧 English version: [GUIDE_DE_REALISATION.md](GUIDE_DE_REALISATION.md)
+
 > **Gestion collaborative des connaissances, réinventée par l'IA.**
 >
 > Pour les **administrations publiques et privées, les entreprises et les organisations de développement** : centralisez vos documents, préservez votre mémoire institutionnelle et transformez vos connaissances en un **actif stratégique**, interrogeable en langage naturel grâce à l'intelligence artificielle.
