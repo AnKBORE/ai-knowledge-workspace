@@ -447,8 +447,13 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 | Date | Événement | Commit |
 |---|---|---|
 | 01/11 | Création du journal (rétrospectif 24/10 → 01/11) | `8c453f6` |
-| | | |
-| | | |
+| 01/11 | Inventaire détaillé, fichier par fichier | `38dd424` |
+| 01/11 | Version anglaise, français renommé en `.fr.md` | `92407bd` |
+| 01/11 | Démo & soumission et marque traduites | `f14e7e6` |
+| 01/11 | Note de sécurité traduite (18 sections) | `f554194` |
+| 01/11 | Registre des problèmes traduit (40 incidents) | `e5629d0` |
+| 01/11 | Guide de réalisation traduit (13 sections) | `ca57984` |
+| 01/11 | Audit des liens : les docs FR renvoient aux versions FR | `dcb6d1f` |
 | | | |
 
 ---
