@@ -344,7 +344,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 
 | Date | Événement | Commit |
 |---|---|---|
-| 01/11 | Création du journal (rétrospectif 24/10 → 01/11) | *(à compléter)* |
+| 01/11 | Création du journal (rétrospectif 24/10 → 01/11) | `8c453f6` |
 | | | |
 | | | |
 | | | |
