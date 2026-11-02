@@ -8,6 +8,24 @@ $T = app_i18n($lang ?? 'en');
 $S = $T['shared'];
 $P = $T['categories'];
 ?>
+<?php if (!empty($categoriesDenied)): ?>
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="space-admin">
+                <section class="panel space-list-panel technical-admin-panel panel-accent-slate">
+                    <div class="panel-body">
+                        <p class="technical-admin-empty">
+                            <?= e(($lang ?? 'en') === 'fr'
+                                ? 'Les catégories sont gérées par les personnes autorisées à déposer ou supprimer des documents.'
+                                : 'Categories are managed by people allowed to deposit or delete documents.') ?>
+                        </p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <?php return; ?>
+<?php endif; ?>
 <section class="dashboard-hero">
     <div class="dashboard-hero-copy">
         <p class="dashboard-eyebrow"><?= e($S['eyebrow_root']) ?> <span aria-hidden="true">/</span> <?= e($T['pages']['/categories']) ?></p>

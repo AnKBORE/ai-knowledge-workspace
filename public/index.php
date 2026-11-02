@@ -336,6 +336,18 @@ if ($method === 'GET') {
         $dependencies['journal']->log((int) $auth->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'journal_interdit', 'chemin' => '/journal']);
     }
 
+    // Categories are managed by whoever may deposit or delete documents: the
+    // page offers exactly those two actions, so anyone else gets a clean refusal
+    // instead of buttons that would answer 403.
+    $categoriesDenied = $path === '/categories'
+        && !$dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.deposer')
+        && !$dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.supprimer');
+
+    if ($categoriesDenied) {
+        http_response_code(403);
+        $dependencies['journal']->log((int) $auth->id(), 'securite.refus', 'securite', null, 'refus', ['raison' => 'categories_interdites', 'chemin' => '/categories']);
+    }
+
     // The sidebar follows the permissions: a member never sees an entry they
     // would only get a 403 on.
     $navPerms = [
@@ -434,6 +446,7 @@ if ($method === 'GET') {
         'navPerms' => $navPerms ?? [],
         'canControlDocuments' => $canControlDocuments ?? false,
         'documentsFlash' => $documentsFlash ?? null,
+        'categoriesDenied' => $categoriesDenied ?? false,
         'mesEspaces' => $mesEspaces ?? [],
         'espaceActif' => $espaceActif ?? null,
         'espacesDepot' => $espacesDepot ?? [],
