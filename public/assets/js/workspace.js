@@ -248,8 +248,14 @@
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
+
+        // Emphasis is a few words, not a paragraph. Models often wrap whole
+        // sentences in **..**, which turns the answer into a bold wall and makes
+        // it unreadable: short spans stay bold, long ones lose their markers.
         return escaped
-            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*\*([^*\n]{1,60})\*\*/g, '<strong>$1</strong>')
+            .replace(/\*\*([\s\S]{61,}?)\*\*/g, '$1')
+            .replace(/\*\*/g, '')
             .replace(/\n/g, '<br>');
     }
 
@@ -884,7 +890,9 @@
                     return;
                 }
 
-                trResult.value = data.translation || '';
+                // The pane is a plain textarea: markdown markers would show
+                // as literal asterisks, so they are removed.
+                trResult.value = String(data.translation || '').replace(/\*\*/g, '');
                 trStatus.textContent = '';
                 trCopy.hidden = !trResult.value;
                 lastTranslated = { text: sentText, from: sentFrom, to: sentTo };
