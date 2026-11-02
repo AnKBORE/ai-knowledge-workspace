@@ -540,7 +540,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 | 01/11 | Registre des problèmes traduit (40 incidents) | `e5629d0` |
 | 01/11 | Guide de réalisation traduit (13 sections) | `ca57984` |
 | 01/11 | Audit des liens : les docs FR renvoient aux versions FR | `dcb6d1f` |
-| 02/11 | Audit complet, N-N document↔espaces, comptes protégés, CSP par nonce | `42263e5` |
+| 02/11 | Audit complet, N-N document↔espaces, comptes protégés, CSP par nonce | `ffeef40` |
 | | | |
 
 ---
