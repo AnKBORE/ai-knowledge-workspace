@@ -55,6 +55,7 @@ one; these captures exist for the jury, which cannot run the machine.
 | `02-audio-indexed.png` | the same document, status **indexed** | the pipeline ran: transcription, chunks, versions |
 | `03-answer-with-sources.png` ✅ | a question about that recording, with numbered sources | the answer comes from the new document, and it cites it |
 | `03b-answer-cleaned.png` ✅ | the same answer after the clean step | the export strips the scaffolding and keeps the sentence |
+| `04b-document-summary.png` ✅ | the summary of one document, with its sources | a single document can be summarised on demand, and the summary cites it |
 | `04-agentic-trace.png` | the task page during or after the run: plan, retrieve, draft, verify | the agentic loop is real, not a description |
 | `05-docx-export.png` | the clean result and the export button state | the document leaves the app with its citations |
 | `06b-workspace-refusal.png` ✅ | the same question asked in a workspace that does not hold the recording | the answer refuses and names the workspace instead of inventing |
