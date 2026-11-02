@@ -9,7 +9,7 @@
 
 ## 1. What the demo must prove (and nothing more)
 
-Four ideas, in this order. Everything else is decoration.
+Five ideas, in this order. Everything else is decoration.
 
 | # | Idea to land | Proof on screen |
 |---|---|---|
@@ -17,6 +17,7 @@ Four ideas, in this order. Everything else is decoration.
 | **2** | The system **constrains itself** | The six-step agent trace, including *Scope* and *Conformity* |
 | **3** | It **learns from humans** | A corrected version that becomes the reference, and can be downloaded |
 | **4** | **The interface and the server agree** | The member session: six menu entries, zero documents, `/journal` answering 403 |
+| **5** | **The recording is the original, not a by-product** | The audio, its SHA-256 and its transcript side by side; a correction keeps the source text next to the corrected one |
 
 > A jury remembers **one** thing. Make it: *"it cites its sources, and it refuses to invent."*
 
@@ -94,6 +95,8 @@ read: about 240 words, which leaves room for pauses and for the interface to loa
 | **2:15–2:30** | `/administration` → the three tabs → crown again | "Three tabs: accounts, workspaces, memberships. The crown protects an account: a protected Super Admin can never be deleted, suspended or demoted." |
 | **2:30–2:45** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: six menu entries instead of ten, zero documents, and the audit journal answers 403. That is the whole claim — the interface and the server agree." |
 | **2:45–3:00** | Back to `/` | "PHP 8.4, MySQL 8.4, 121 automated tests, append-only audit. Built solo in nine days. The repository is public, the link is right there." |
+
+> **With five extra seconds** (0:40–1:00): *“...and the audio is kept as the original — the transcript is only one reading of it.”* That sentence is worth the whole demonstration: it says the evidence is the voice, not the text.
 
 **Two rules for the voice-over.** Do not read the table; speak these sentences at
 a natural pace and let the screen do the work. And never apologise for an accent:

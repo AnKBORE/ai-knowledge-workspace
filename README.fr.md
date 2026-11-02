@@ -163,6 +163,10 @@ Le mooré est une langue **peu dotée** : peu de textes écrits, presque aucun c
 - des **corrections humaines** qui deviennent la référence et alimentent l'apprentissage ;
 - un **refus explicite d'inventer** quand l'extrait manque — la limite est dite, pas masquée.
 
+**L'oral est la source, pas le brouillon.** Un savoir **dit** — un témoignage d'ancien, une réunion de village, un chant de cérémonie — n'est pas une version dégradée d'un texte : c'est souvent sa **forme d'origine**. L'enregistrement audio est donc conservé **octet pour octet** (empreinte SHA-256, versions immuables), et la transcription, la traduction, la correction ne sont que des **lectures successives** de cette source. Chaque dérivé cite l'original ; la correction conserve côte à côte le texte corrigé **et** le texte source.
+
+C'est ce qui donne à la plateforme sa valeur de **preuve** : on peut toujours remonter à la voix, pas seulement à ce que quelqu'un en a écrit. Et cela vaut pour **toute langue** — y compris celles qui n'ont aucun corpus écrit : le point d'entrée est la voix, pas le texte.
+
 **Effet de terrain.** Une correction faite par un agent profite à tous les suivants : la ressource rare devient un **actif partagé**. C'est le contraire d'un gadget de traduction — c'est la condition pour que la mémoire d'une organisation serve réellement à ceux qui la font vivre.
 
 **Et sans compromis.** Le même moteur sert le français, l'anglais et le mooré : ajouter une langue est un travail de **données**, pas une réécriture.

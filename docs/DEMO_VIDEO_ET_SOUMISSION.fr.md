@@ -17,6 +17,7 @@ Trois idées, dans cet ordre. Tout le reste est du décor.
 | **2** | Le système **sait se contraindre** | La trace agentique en 6 étapes, dont *Cadrage* et *Conformité* |
 | **3** | Il **apprend des humains** | Une version corrigée qui devient la référence, et qu'on peut télécharger |
 | **4** | **L'interface et le serveur disent la même chose** | La session membre : six entrées de menu, zéro document, `/journal` en 403 |
+| **5** | **L'enregistrement est l'original, pas un sous-produit** | Le fichier audio, son SHA-256 et sa transcription côte à côte ; une correction conserve le texte source à côté du corrigé |
 
 > Un jury retient **une** chose. Fais en sorte que ce soit : *« il cite ses sources, et il refuse d'inventer. »*
 
@@ -94,6 +95,8 @@ lue : environ 240 mots, ce qui laisse la place aux pauses et aux chargements.
 | **2:15–2:30** | `/administration` → les trois onglets → couronne | « Trois onglets : comptes, espaces, adhésions. La couronne protège un compte : un Super Admin protégé ne peut être ni supprimé, ni suspendu, ni rétrogradé. » |
 | **2:30–2:45** | Se connecter en `membre.demo` → `/documents` → `/journal` | « Même application, un membre : six entrées de menu au lieu de dix, zéro document, et le journal d'audit répond 403. Tout est là — l'interface et le serveur disent la même chose. » |
 | **2:45–3:00** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests automatisés, journal d'audit append-only. Construit seul en neuf jours. Le dépôt est public, le lien est juste là. » |
+
+> **Si tu as cinq secondes de plus** (0:40–1:00) : *« And the audio is kept as the original — the transcript is only one reading of it. »* Cette phrase vaut la démonstration entière : elle dit que la preuve est la voix, pas le texte.
 
 **Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
 naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent — les

@@ -164,6 +164,10 @@ Mooré is a **low-resource** language: few written texts, almost no aligned corp
 - **human corrections** that become the reference and feed the learning loop;
 - an **explicit refusal to invent** when the extract is missing — the limit is stated, not hidden.
 
+**The spoken word is the source, not the draft.** Knowledge that is **said** — an elder's testimony, a village meeting, a ceremonial song — is not a degraded version of a text: it is often its **original form**. The audio recording is therefore kept **byte for byte** (SHA-256 fingerprint, immutable versions), and the transcript, the translation and the correction are only **successive readings** of that source. Every derivative cites the original; a correction keeps the corrected text **and** the source text side by side.
+
+This is what gives the platform its **evidentiary** value: you can always go back to the voice, not only to what somebody wrote down about it. And it holds for **any language** — including those with no written corpus at all: the entry point is the voice, not the text.
+
 **Field effect.** One correction made by one agent benefits every agent after them: a scarce resource becomes a **shared asset**. This is the opposite of a translation gadget — it is what makes an organisation's memory actually serve the people who keep it alive.
 
 **With no trade-off.** The same engine serves French, English and Mooré: adding a language is **data** work, not a rewrite.
