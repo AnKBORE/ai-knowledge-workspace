@@ -25,7 +25,7 @@
 | R-15 | **Rotate the Baseten API key** once the event is over | **open** | the key appeared in this conversation |
 | R-16 | Set a spending limit on the Baseten account | **open** | the calls are billed to the $100 credits granted to the author |
 | R-17 | Decide the fate of the two protected accounts | **decided** | two are kept on purpose: the model is a set, not a seat |
-| R-18 | Do not rewrite the Git history to erase the PDFs | **decided** | it would destroy the dated evidence the jury is asked to check |
+| R-18 | Remove the PDFs from the GitHub tree now (level 1), purge the history after submission (level 2) | **decided** | level 1: the removal commit is pushed with the rest; level 2: `tools/purge_history.ps1`, written and dry-run tested, refuses to run on a dirty tree, takes a bundle backup first |
 | R-19 | Functional tests for the 16 endpoints covered only by the anonymous sweep | **open** | optional, after submission |
 | R-20 | Remove the `--transfer` alias once the multiple model is explained everywhere | **open** | optional, cosmetic |
 | R-21 | Accessibility audit (keyboard, contrasts, screen reader) | **open** | never done; assumed limitation |

@@ -26,7 +26,7 @@
 | R-15 | **Renouveler la clé API Baseten** une fois l'événement terminé | **ouvert** | la clé est apparue dans cette conversation |
 | R-16 | Fixer une limite de dépense sur le compte Baseten | **ouvert** | les appels sont facturés sur les 100 $ de crédits accordés à l'auteur |
 | R-17 | Trancher le sort des deux comptes protégés | **décidé** | deux sont conservés volontairement : le modèle est un ensemble, pas un siège |
-| R-18 | Ne pas réécrire l'historique Git pour effacer les PDF | **décidé** | cela détruirait les preuves datées que le jury doit pouvoir vérifier |
+| R-18 | Retirer les PDF de l'arbre GitHub maintenant (niveau 1), purger l'historique après la soumission (niveau 2) | **décidé** | niveau 1 : le commit de retrait part avec le reste ; niveau 2 : `tools/purge_history.ps1`, écrit et testé en simulation, refuse de s'exécuter sur un arbre sale, prend une sauvegarde `.bundle` d'abord |
 | R-19 | Tests fonctionnels des 16 endpoints couverts seulement par le balayage anonyme | **ouvert** | optionnel, après soumission |
 | R-20 | Retirer l'alias `--transfer` quand le modèle multiple sera expliqué partout | **ouvert** | optionnel, cosmétique |
 | R-21 | Audit d'accessibilité (clavier, contrastes, lecteur d'écran) | **ouvert** | jamais fait ; limite assumée |
