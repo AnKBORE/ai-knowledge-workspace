@@ -104,6 +104,39 @@
         });
     })();
 
+    /* Document control modal: fill the selects from the clicked row. */
+    (function () {
+        var modal = document.getElementById('doc-control-modal');
+        if (!modal) { return; }
+
+        var idField = document.getElementById('doc-control-id');
+        var titleEl = document.getElementById('doc-control-title');
+        var espace = document.getElementById('doc-control-espace');
+        var conf = document.getElementById('doc-control-confidentialite');
+
+        modal.addEventListener('show.bs.modal', function (event) {
+            var trigger = event.relatedTarget;
+            if (!trigger) { return; }
+
+            if (idField) { idField.value = trigger.getAttribute('data-document-id') || ''; }
+            if (titleEl) { titleEl.textContent = trigger.getAttribute('data-document-title') || ''; }
+
+            if (espace) {
+                espace.value = trigger.getAttribute('data-document-espace') || '0';
+                if (window.jQuery && window.jQuery.fn.select2) {
+                    window.jQuery(espace).val(espace.value).trigger('change');
+                }
+            }
+
+            if (conf) {
+                conf.value = trigger.getAttribute('data-document-confidentialite') || 'restreint';
+                if (window.jQuery && window.jQuery.fn.select2) {
+                    window.jQuery(conf).val(conf.value).trigger('change');
+                }
+            }
+        });
+    })();
+
     function t(key, fallback) {
         return I18N[key] || fallback || key;
     }

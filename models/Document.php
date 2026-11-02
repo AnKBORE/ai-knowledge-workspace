@@ -94,6 +94,24 @@ final class Document
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
+    /**
+     * Change where a document lives and who may read it. Reserved to the
+     * administration: the deposit decides the default, this is the override.
+     */
+    public function updateControle(int $id, ?int $espaceId, string $confidentialite): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE documents
+             SET espace_id = :espace, confidentialite = :confidentialite
+             WHERE id = :id AND supprime_le IS NULL'
+        );
+        $stmt->execute([
+            'espace' => $espaceId,
+            'confidentialite' => $confidentialite,
+            'id' => $id,
+        ]);
+    }
     /** @return list<array<string, mixed>> */
     public function byCategorie(int $categorieId, int $limit = 200): array
     {

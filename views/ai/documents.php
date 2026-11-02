@@ -22,6 +22,12 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
     </div>
 </section>
 
+<?php if (!empty($documentsFlash)): ?>
+    <div class="alert alert-<?= e(($documentsFlash['type'] ?? '') === 'error' ? 'danger' : 'success') ?>" role="status">
+        <?= e((string) ($documentsFlash['text'] ?? '')) ?>
+    </div>
+<?php endif; ?>
+
 <div class="row g-4">
     <div class="col-12">
         <div class="space-admin">
@@ -110,6 +116,17 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                                 <button type="button" class="doc-action correction-btn" title="<?= e(($isFr ?? true) ? 'Déposer une version corrigée' : 'Upload a corrected version') ?>" data-document-id="<?= $docId ?>" data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>" data-document-langue="<?= e((string) ($doc['langue'] ?? 'fr')) ?>" aria-label="<?= e(($isFr ?? true) ? 'Déposer une version corrigée' : 'Upload a corrected version') ?>">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
                                                 </button>
+                                                <?php if (!empty($canControlDocuments)): ?>
+                                                    <button type="button" class="doc-action doc-control-btn" title="<?= e($isFr ? 'Espace et confidentialité' : 'Workspace and confidentiality') ?>"
+                                                            data-bs-toggle="modal" data-bs-target="#doc-control-modal"
+                                                            data-document-id="<?= $docId ?>"
+                                                            data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
+                                                            data-document-espace="<?= (int) ($doc['espace_id'] ?? 0) ?>"
+                                                            data-document-confidentialite="<?= e((string) ($doc['confidentialite'] ?? 'restreint')) ?>"
+                                                            aria-label="<?= e($isFr ? 'Espace et confidentialité' : 'Workspace and confidentiality') ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                                    </button>
+                                                <?php endif; ?>
                                                 <button type="button" class="doc-action doc-action-danger delete-btn" title="<?= e($P['delete_title']) ?>"
                                                         data-document-id="<?= $docId ?>"
                                                         data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
@@ -353,6 +370,57 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><?= e(($isFr ?? true) ? 'Annuler' : 'Cancel') ?></button>
                     <button type="submit" class="btn btn-primary" id="correction-submit">
                         <?= e(($isFr ?? true) ? 'Enregistrer la correction' : 'Save the correction') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade space-create-modal profil-modal" id="doc-control-modal" tabindex="-1" aria-labelledby="doc-control-heading" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form class="space-form" method="post" action="<?= e(url('/api/document_controle.php')) ?>" id="doc-control-form">
+                <?= $csrf?->field() ?? '' ?>
+                <input type="hidden" name="document_id" id="doc-control-id" value="">
+                <div class="modal-header space-create-header text-bg-primary border-bottom border-2 border-primary">
+                    <span class="space-create-head-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    </span>
+                    <div class="space-create-head-copy">
+                        <p class="space-modal-eyebrow"><?= e($isFr ? 'Administration' : 'Administration') ?></p>
+                        <h2 class="modal-title" id="doc-control-heading"><?= e($isFr ? 'Espace et confidentialité' : 'Workspace and confidentiality') ?></h2>
+                        <p id="doc-control-title" class="mb-0"></p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?= e($S['close']) ?>"></button>
+                </div>
+                <div class="modal-body space-create-body">
+                    <div class="space-create-fields">
+                        <label for="doc-control-espace"><?= e($isFr ? 'Espace de travail' : 'Workspace') ?>
+                            <select id="doc-control-espace" name="espace_id" class="form-select">
+                                <option value="0"><?= e($isFr ? 'Aucun espace (visible du propriétaire seul)' : 'No workspace (owner only)') ?></option>
+                                <?php foreach (($adminEspaces ?? []) as $espaceChoix): ?>
+                                    <option value="<?= (int) $espaceChoix['id'] ?>"><?= e((string) $espaceChoix['nom']) ?> (<?= e((string) $espaceChoix['visibilite']) ?>)</option>
+                                <?php endforeach; ?>
+                            </select>
+                        </label>
+                        <label for="doc-control-confidentialite"><?= e($isFr ? 'Confidentialité' : 'Confidentiality') ?>
+                            <select id="doc-control-confidentialite" name="confidentialite" class="form-select">
+                                <option value="restreint"><?= e($isFr ? 'Restreint — les membres de l\'espace' : 'Restricted — members of the workspace') ?></option>
+                                <option value="prive"><?= e($isFr ? 'Privé — le propriétaire uniquement' : 'Private — owner only') ?></option>
+                                <option value="public_interne"><?= e($isFr ? 'Public interne — toute l\'organisation' : 'Internal public — whole organisation') ?></option>
+                            </select>
+                        </label>
+                    </div>
+                    <p class="form-text mb-0"><?= e($isFr ? 'Le changement est journalisé avec les valeurs précédentes.' : 'The change is journaled with the previous values.') ?></p>
+                        <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Confirmez avec votre mot de passe' : 'Confirm with your password') ?>">
+                        <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Votre mot de passe confirme l\'action' : 'Your password confirms the action') ?>">
+                    </label>
+                </div>
+                <div class="modal-footer space-create-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= e($S['cancel']) ?></button>
+                    <button type="submit" class="btn btn-primary space-create-submit">
+                        <?= e($isFr ? 'Appliquer' : 'Apply') ?>
                     </button>
                 </div>
             </form>

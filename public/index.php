@@ -276,6 +276,11 @@ if ($method === 'GET') {
     // are allowed to read, otherwise the permission model would only apply
     // inside the RAG.
     $visibleDocuments = $dependencies['permissions']->documentsVisibles((int) $auth->id());
+    // Changing a document's workspace or confidentiality is an administrative act.
+    $canControlDocuments = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.administrer');
+    $documentsFlash = $dependencies['session']->get('documents_flash');
+    $dependencies['session']->remove('documents_flash');
+
     $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
     // The active workspace name is shown in the topbar on every page.
     $espaceActifNom = '';
@@ -393,6 +398,8 @@ if ($method === 'GET') {
         'canManageAdhesion' => $canManageAdhesion ?? false,
         'canArchive' => $canArchive ?? false,
         'navPerms' => $navPerms ?? [],
+        'canControlDocuments' => $canControlDocuments ?? false,
+        'documentsFlash' => $documentsFlash ?? null,
         'mesEspaces' => $mesEspaces ?? [],
         'espaceActif' => $espaceActif ?? null,
         'espacesDepot' => $espacesDepot ?? [],
