@@ -169,6 +169,23 @@ C'est ce qui donne à la plateforme sa valeur de **preuve** : on peut toujours r
 
 **Effet de terrain.** Une correction faite par un agent profite à tous les suivants : la ressource rare devient un **actif partagé**. C'est le contraire d'un gadget de traduction — c'est la condition pour que la mémoire d'une organisation serve réellement à ceux qui la font vivre.
 
+
+**Rien ne se perd, et c'est vérifiable.** Chaque dérivé — chunk transcrit, traduction, correction — porte l'identifiant du document **et** celui de la version dont il est une lecture ; la version porte elle-même l'empreinte SHA-256 du fichier d'origine. La chaîne remonte donc dans les deux sens, et une commande la contrôle au lieu de l'affirmer :
+
+```powershell
+php tools/prove_provenance.php 30
+```
+
+Elle recalcule l'empreinte du fichier sur disque, la compare à celle enregistrée, et vérifie que chaque traduction et chaque correction pointe bien la version source. Sortie réelle sur le document audio de démonstration :
+
+```
+v1 empreinte identique        a9a48cd651b10113… 969 644 o
+transcription indexée         1 chunk
+traductions en/fr/mo          liées à une version
+correction #8                 liée à la version 26 · source 373 car. · corrigé 234 car.
+Chaîne intacte : tout dérivé remonte à l'enregistrement d'origine.
+```
+
 **Et sans compromis.** Le même moteur sert le français, l'anglais et le mooré : ajouter une langue est un travail de **données**, pas une réécriture.
 
 - **De bout en bout** — une réunion en mooré enregistrée dans le navigateur est transcrite, traduite automatiquement (les deux versions indexées), retrouvée par une question en mooré et répondue **en mooré avec citations** ; les tâches agentiques en mooré produisent des documents en mooré — tout est vérifié en réel
@@ -374,6 +391,7 @@ php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
 php tools/smoke_admin_endpoints.php                 # 27 vérifications sur 9 endpoints
 php tools/smoke_endpoints_anonymous.php             # 31 endpoints × 2 méthodes, sans session
 php tools/lint_docs.php                             # structure de la documentation
+  php tools/prove_provenance.php 30                   # chaîne de provenance, octets vérifiés
 ```
 
 **121 tests, 281 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).

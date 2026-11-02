@@ -170,6 +170,23 @@ This is what gives the platform its **evidentiary** value: you can always go bac
 
 **Field effect.** One correction made by one agent benefits every agent after them: a scarce resource becomes a **shared asset**. This is the opposite of a translation gadget — it is what makes an organisation's memory actually serve the people who keep it alive.
 
+
+**Nothing is lost, and it is verifiable.** Every derivative — transcribed chunk, translation, correction — carries the document id **and** the id of the version it is a reading of; the version itself carries the SHA-256 fingerprint of the original file. The chain therefore runs both ways, and a command checks it instead of asserting it:
+
+```powershell
+php tools/prove_provenance.php 30
+```
+
+It recomputes the file fingerprint on disk, compares it to the stored one, and verifies that every translation and every correction points at the source version. Real output on the demo audio document:
+
+```
+v1 fingerprint identical      a9a48cd651b10113… 969,644 B
+indexed transcript            1 chunk
+translations en/fr/mo         linked to a version
+correction #8                 linked to version 26 · source 373 chars. · corrected 234 chars.
+Chain intact: every derivative traces back to the original recording.
+```
+
 **With no trade-off.** The same engine serves French, English and Mooré: adding a language is **data** work, not a rewrite.
 
 - **End to end** — a Mooré meeting recorded in the browser is transcribed, auto-translated (both versions indexed), searchable by a Mooré question and answered **in Mooré with citations**; agentic tasks in Mooré produce Mooré documents — all verified live
@@ -373,6 +390,7 @@ php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
 php tools/smoke_admin_endpoints.php                 # 27 checks over 9 endpoints
 php tools/smoke_endpoints_anonymous.php             # 31 endpoints x 2 methods, no session
 php tools/lint_docs.php                             # documentation structure
+  php tools/prove_provenance.php 30                   # provenance chain, bytes verified
 ```
 
 **121 tests, 281 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).

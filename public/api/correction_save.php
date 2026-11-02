@@ -170,13 +170,18 @@ if ($uploadedExt !== null) {
     }
 }
 
+// A correction is a reading of one precise version: storing the version id
+// keeps the chain document -> version (SHA-256) -> correction unbroken.
+$versionSource = $dependencies['version_model']->latest($documentId);
+$versionSourceId = $versionSource === null ? null : (int) $versionSource['id'];
+
 try {
     $correctionId = $dependencies['correction_model']->create(
         $documentId,
         $langue,
         $texteCorrige,
         $texteSource !== '' ? $texteSource : null,
-        null,
+        $versionSourceId,
         $userId,
         $nomFichier,
         $storedRelative
