@@ -153,4 +153,12 @@ final class DocumentService
             throw new RuntimeException('Missing uploaded file.');
         }
     }
+
+    /**
+     * Record the language detected from the extracted text.
+     */
+    public function setLangue(int $documentId, string $langue): void
+    {
+        $this->documents->setLangue($documentId, $langue);
+    }
 }

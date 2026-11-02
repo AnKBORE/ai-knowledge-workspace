@@ -242,4 +242,13 @@ final class Document
         $this->db->prepare('UPDATE documents SET supprime_le = CURRENT_TIMESTAMP WHERE id = :id')
             ->execute(['id' => $id]);
     }
+    /**
+     * Record the detected language of the document body.
+     */
+    public function setLangue(int $documentId, string $langue): void
+    {
+        $stmt = $this->db->prepare('UPDATE documents SET langue = :langue WHERE id = :id');
+        $stmt->execute(['langue' => $langue, 'id' => $documentId]);
+    }
+
 }

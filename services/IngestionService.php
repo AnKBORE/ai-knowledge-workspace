@@ -37,6 +37,30 @@ final class IngestionService
      * Slow files need AI calls (ASR / OCR) that can take minutes: they are
      * processed in the background instead of blocking the HTTP request.
      */
+    /**
+     * Guess the language of the extracted text.
+     *
+     * Mooré comes first: its diacritics (ɛ ɔ ã ẽ ĩ õ ũ) make it unmistakable, and
+     * a Latin-script detector would otherwise call it French. French and English
+     * are then separated by their most common function words.
+     */
+    public function detecterLangue(string $content): string
+    {
+        $letters = preg_match_all('/\p{L}/u', $content);
+
+        if ($letters >= 20) {
+            $moore = preg_match_all('/[ɛɔãẽĩõũƐƆÃẼĨÕŨ]/u', $content);
+
+            if ($moore >= 5 && ($moore / $letters) >= 0.004) {
+                return 'mo';
+            }
+        }
+
+        $fr = preg_match_all('/\b(le|la|les|des|une|du|est|pour|avec|dans|sur|pas|qui|que|au|aux)\b/iu', $content);
+        $en = preg_match_all('/\b(the|and|of|to|in|is|for|with|that|this|from|have)\b/iu', $content);
+
+        return $en > $fr * 1.2 ? 'en' : 'fr';
+    }
     public function isSlow(string $path, string $extension): bool
     {
         if (in_array($extension, self::AUDIO, true) || in_array($extension, self::IMAGE, true)) {
@@ -91,6 +115,10 @@ final class IngestionService
         // The active workspace is chosen by the user; the first active space
         // remains the fallback for the background worker.
         $result = $this->documents->createDocument($title, $espaceId ?? $this->espaces->firstActive(), $userId, $upload, $categorieId, $confidentialite, $espaceIds);
+
+        // The language of the body, not the default column value: a Mooré scan
+        // would otherwise be stored as French.
+        $this->documents->setLangue($result['document_id'], $this->detecterLangue($content));
 
         $chunks = count($this->rag->chunk($content));
         $this->rag->indexDocument($result['document_id'], $content, $result['version_id']);
