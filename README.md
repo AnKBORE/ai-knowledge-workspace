@@ -43,6 +43,18 @@ The result is a **structured document**, exportable to **PDF or DOCX**, with its
 
 ---
 
+## How it answers the four judging criteria
+
+| Criterion | Weight | What this project does about it |
+|---|---|---|
+| **Impact** | **30 %** | The knowledge that disappears is the knowledge that was never written down: a decision taken in a meeting, a page scanned in Mooré. The platform turns both into a source that can be questioned, cited and translated — measured: a spoken sentence becomes an answer in **9 seconds**, a scanned Mooré page becomes 1 093 searchable characters. |
+| **Use of Meta AI Tooling** | **25 %** | **Muse Spark Open** (`meta-models/muse-spark-open-1026`, served by Baseten) answers, plans the agentic task, translates, reads scanned pages (vision/OCR) and transcribes the audio. Every call is journaled to `storage/logs/model_calls.log` with endpoint, model, status and duration. |
+| **Technical Depth** | **20 %** | Hybrid retrieval (0.6 cosine + 0.4 lexical), a six-step agentic loop (plan · retrieve · scope · draft · verify · conformity), per-document access control on every route taking an id, workspace scoping at four call sites, SHA-256 versioning, human corrections that become the reference, an audit journal, and **124 automated tests**. |
+| **Demo** | **25 %** | 2 minutes 50, one take: record → indexed in 9 s → cited answer → refusal in another workspace → task → export → member session. Live model calls visible in a terminal. Nothing shown that is not built. |
+
+One precision, because it matters for the second criterion: the **vectors** used for retrieval are computed **locally** by a deterministic hashing model (`EmbeddingService`, 256 dimensions), so no text leaves the server to be embedded. A Meta embeddings endpoint can be used instead with `META_EMBEDDING_MODE=api`. The generative, vision, translation and audio work all goes through Muse Spark Open.
+---
+
 ## More than a simple RAG application
 
 The hackathon rules **explicitly exclude basic RAG applications**. Our approach goes beyond the *question → search → answer* pattern: the platform adopts an **agentic logic oriented towards business tasks**.

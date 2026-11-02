@@ -56,7 +56,7 @@ Five ideas, in this order. Everything else is decoration.
 | **1** | Answers are **grounded**, never invented | The numbered sources under every answer |
 | **2** | The system **constrains itself** | The six-step agent trace, including *Scope* and *Conformity* |
 | **3** | It **learns from humans** | A corrected version that becomes the reference, and can be downloaded |
-| **4** | **The interface and the server agree** | The member session: six menu entries, zero documents, `/journal` answering 403 |
+| **4** | **The interface and the server agree** | The member session: a reduced menu, **the two documents of their own workspace**, `/journal` answering 403 |
 | **5** | **The recording is the original, not a by-product** | The audio, its SHA-256 and its transcript side by side; a correction keeps the source text next to the corrected one |
 
 > A jury remembers **one** thing. Make it: *"it cites its sources, and it refuses to invent."*
@@ -91,8 +91,7 @@ Expected: `OK (124 tests, 295 assertions)` — **without** warnings.
 C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -h 127.0.0.1 -P 3306 -u root -D ai_knowledge_workspace --default-character-set=utf8mb4 -e "SELECT id, title, langue, filename FROM documents WHERE supprime_le IS NULL ORDER BY id; SELECT id, document_id, langue, nom_fichier FROM correction_document;"
 ```
 
-**Golden rule**: **one** correction in the database, the Meeting6 one.
-Any test correction becomes **authoritative** in the answers and ruins the demo.
+**Golden rule**: **no correction** in the database before the take — the corrected version is created **on camera**, in the documents block at 1:58. A leftover test correction becomes **authoritative** in the answers and would make the filmed correction pointless.
 
 ### 2.4 Verify the API key and the server
 
@@ -128,12 +127,12 @@ is accelerated in the edit — not cut.
 | Time | Action on screen | Narration |
 |---|---|---|
 | **0:00–0:08** | Landing page `/` | "Before this week, this organisation had no way to search its own recordings. In nine days I built one. Watch what happens to a voice in the next three minutes." |
-| **0:08–0:48** | `/ajouter` → **record 12 seconds**, stop, upload | "I record a sentence nobody has written anywhere: *the Koudougou site starts on 12 January, budget four million.* The audio is kept as the original, its fingerprint computed, then transcribed and indexed." |
-| **0:48–1:10** | `/` → ask **"When does the Koudougou site start?"** | "A fact that exists only as sound, thirty seconds ago. The answer comes back with the source: the recording. That is the whole point — a report nobody can hear does not exist." |
-| **1:10–1:30** | Ask **"What does Meeting6 say in Mooré?"** | "Same engine, another language. The reports are written in French, the agents work in Mooré. Mooré is low-resource, so generic models fail here: the platform builds the resource and refuses to invent." |
+| **0:08–0:48** | `/ajouter` → **record a few seconds**, stop, upload | "I record a sentence nobody has written anywhere: *the budget approved by the donor for the school construction is ten million CFA francs.* The audio is kept as the original, its fingerprint computed, then transcribed and indexed — nine seconds." |
+| **0:48–1:10** | `/` → ask **"What budget was approved for the school construction?"** | "A fact that exists only as sound, thirty seconds ago. The answer comes back with its source: the recording. That is the whole point — a decision nobody can hear does not exist." |
+| **1:10–1:30** | Ask **"What is the Mooré document about?"**, then **switch workspace and ask the budget question again** | "Same engine, another language: this page was a scan, the OCR read it. And here, in the other workspace, the same question refuses — it says it cannot find it, instead of answering about something else." |
 | **1:30–1:58** | `/tache` → select two documents → instruction → **✦ Clean** → **DOCX** | "Now a task: plan, retrieve, scope, draft, verify, conformity. One click cleans the scaffolding, one exports the document with its citations." |
-| **1:58–2:28** | `/documents` → filter → lock modal → `/administration` tabs + crown | "Nine documents, each with its workspaces; this private workspace returns zero. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
-| **2:28–2:40** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: zero documents, and the audit journal answers 403. The interface and the server agree." |
+| **1:58–2:28** | `/documents` → filter → **one human correction** → lock modal → `/administration` tabs + crown | "Four documents, each with its workspaces; the catalogue follows the workspace you are in. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
+| **2:28–2:40** | Sign in as `membre.recette@example.org` → `/documents` → `/journal` | "Same application, a member: the two documents of their own workspace, and the audit journal answers 403. The interface and the server agree." |
 | **2:40–2:47** | Terminal beside the browser: the call log | "Muse Spark Open is Meta's open-weight model, on Baseten — for the answers, the agentic task, the translation, the vision and the audio. Every call is written down: endpoint, model, status, duration. Live, and kept in the repository." |
 | **2:47–2:50** | Back to `/` | "124 tests, an audit trail, and knowledge that used to disappear now answers questions. Built solo, in nine days." |
 

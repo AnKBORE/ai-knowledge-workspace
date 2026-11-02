@@ -57,7 +57,7 @@ Trois idées, dans cet ordre. Tout le reste est du décor.
 | **1** | Les réponses sont **ancrées**, jamais inventées | Les sources numérotées sous chaque réponse |
 | **2** | Le système **sait se contraindre** | La trace agentique en 6 étapes, dont *Cadrage* et *Conformité* |
 | **3** | Il **apprend des humains** | Une version corrigée qui devient la référence, et qu'on peut télécharger |
-| **4** | **L'interface et le serveur disent la même chose** | La session membre : six entrées de menu, zéro document, `/journal` en 403 |
+| **4** | **L'interface et le serveur disent la même chose** | La session membre : un menu réduit, **les deux documents de son propre espace**, `/journal` qui répond 403 |
 | **5** | **L'enregistrement est l'original, pas un sous-produit** | Le fichier audio, son SHA-256 et sa transcription côte à côte ; une correction conserve le texte source à côté du corrigé |
 
 > Un jury retient **une** chose. Fais en sorte que ce soit : *« il cite ses sources, et il refuse d'inventer. »*
@@ -92,7 +92,7 @@ Attendu : `OK (124 tests, 295 assertions)` — **sans** avertissement.
 C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -h 127.0.0.1 -P 3306 -u root -D ai_knowledge_workspace --default-character-set=utf8mb4 -e "SELECT id, title, langue, filename FROM documents WHERE supprime_le IS NULL ORDER BY id; SELECT id, document_id, langue, nom_fichier FROM correction_document;"
 ```
 
-**Règle d'or** : **une seule** correction en base, celle de Meeting6.
+**Règle d'or** : **aucune correction** en base avant la prise — la version corrigée est créée **à la caméra**, dans le bloc documents de 1:58. Une correction de test oubliée devient **autoritaire** dans les réponses et rend la correction filmée inutile.
 Toute correction de test devient **prioritaire** dans les réponses et fausse la démo.
 
 ### 2.4 Vérifier la clé API et le serveur
@@ -129,12 +129,12 @@ transcription lente est **accélérée au montage**, jamais coupée.
 | Temps | Action à l'écran | Narration |
 |---|---|---|
 | **0:00–0:08** | Page d'accueil `/` | « Avant cette semaine, cette organisation n'avait aucun moyen de chercher dans ses propres enregistrements. En neuf jours, j'en ai construit un. Regardez ce qui arrive à une voix dans les trois prochaines minutes. » |
-| **0:08–0:48** | `/ajouter` → **enregistrer 12 secondes**, arrêter, envoyer | « J'enregistre une phrase que personne n'a écrite nulle part : *le chantier de Koudougou démarre le 12 janvier, budget quatre millions.* L'audio est conservé comme original, son empreinte calculée, puis transcrit et indexé. » |
-| **0:48–1:10** | `/` → poser **« Quand démarre le chantier de Koudougou ? »** | « Un fait qui n'existe que sous forme de son, il y a trente secondes. La réponse revient avec sa source : l'enregistrement. Tout est là — un rapport que personne ne peut entendre n'existe pas. » |
-| **1:10–1:30** | Poser **« Que dit Meeting6 en mooré ? »** | « Même moteur, autre langue. Les rapports sont écrits en français, les agents travaillent en mooré. Le mooré est peu doté, donc les modèles génériques échouent : la plateforme construit la ressource et refuse d'inventer. » |
+| **0:08–0:48** | `/ajouter` → **enregistrer quelques secondes**, arrêter, envoyer | « J'enregistre une phrase que personne n'a écrite nulle part : *le budget approuvé par le bailleur pour la construction de l'école est de dix millions de francs CFA.* L'audio est conservé comme original, son empreinte calculée, puis transcrit et indexé — neuf secondes. » |
+| **0:48–1:10** | `/` → poser **« Quel est le budget approuvé pour la construction de l'école ? »** | « Un fait qui n'existe que sous forme de son, il y a trente secondes. La réponse revient avec sa source : l'enregistrement. Tout est là — une décision que personne ne peut entendre n'existe pas. » |
+| **1:10–1:30** | Poser **« De quoi parle le document mooré ? »**, puis **changer d'espace et reposer la question du budget** | « Même moteur, autre langue : cette page était un scan, l'OCR l'a lue. Et ici, dans l'autre espace, la même question refuse — il dit qu'il ne trouve pas, au lieu de répondre à côté. » |
 | **1:30–1:58** | `/tache` → deux documents → instruction → **✦ Nettoyer** → **DOCX** | « Maintenant une tâche : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Un clic retire l'échafaudage, un autre exporte le document avec ses citations. » |
-| **1:58–2:28** | `/documents` → filtre → modale cadenas → `/administration` onglets + couronne | « Neuf documents, chacun avec ses espaces ; cet espace privé renvoie zéro. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
-| **2:28–2:40** | Connexion `membre.demo` → `/documents` → `/journal` | « Même application, un membre : zéro document, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
+| **1:58–2:28** | `/documents` → filtre → **une correction humaine** → modale cadenas → `/administration` onglets + couronne | « Quatre documents, chacun avec ses espaces ; le catalogue suit l'espace dans lequel on travaille. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
+| **2:28–2:40** | Connexion `membre.recette@example.org` → `/documents` → `/journal` | « Même application, un membre : les deux documents de son propre espace, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
 | **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Muse Spark Open est un modèle à poids ouverts de Meta, sur Baseten — pour les réponses, la tâche agentique, la traduction, la vision et l'audio. Chaque appel est écrit : point d'entrée, modèle, statut, durée. En direct, et conservé dans le dépôt. » |
 | **2:47–2:50** | Retour à `/` | « 124 tests, un journal d'audit, et un savoir qui disparaissait répond désormais aux questions. Construit seul, en neuf jours. » |
 
@@ -145,7 +145,7 @@ transcription lente est **accélérée au montage**, jamais coupée.
 | 1 | **Micro autorisé** dans Chrome pour `127.0.0.1` (un essai à blanc, puis recharger) |
 | 2 | Une **phrase que tu n'as écrite nulle part**, avec une date et un nombre : c'est elle qui prouve que la réponse vient de l'enregistrement |
 | 3 | **Répéter l'envoi deux fois** : enregistrer → arrêter → envoyer → attendre *indexé*. Noter la durée réelle ; si elle dépasse 20 s, prévoir l'accéléré |
-| 4 | **Repli** si le micro lâche devant la caméra : envoyer un WAV de 12 secondes par le même formulaire — la chaîne reste identique, seul l'enregistrement est préexistant |
+| 4 | **Repli** si le micro lâche devant la caméra : envoyer un WAV court par le même formulaire — la chaîne reste identique, seul l'enregistrement est préexistant |
 
 ```powershell
 # le plan sur le journal (2:40)

@@ -43,6 +43,18 @@ Le résultat est un **document structuré**, exportable en **PDF ou DOCX**, avec
 
 ---
 
+## Comment le projet répond aux quatre critères du jury
+
+| Critère | Poids | Ce que le projet fait pour y répondre |
+|---|---|---|
+| **Impact** | **30 %** | Le savoir qui disparaît est celui qu'on n'a jamais écrit : une décision prise en réunion, une page scannée en mooré. La plateforme transforme les deux en source interrogeable, citable et traduisible — mesuré : une phrase prononcée devient une réponse en **9 secondes**, une page mooré scannée devient 1 093 caractères cherchables. |
+| **Usage de l'outillage IA de Meta** | **25 %** | **Muse Spark Open** (`meta-models/muse-spark-open-1026`, servi par Baseten) répond, planifie la tâche agentique, traduit, lit les pages scannées (vision/OCR) et transcrit l'audio. Chaque appel est journalisé dans `storage/logs/model_calls.log` avec point d'entrée, modèle, statut et durée. |
+| **Profondeur technique** | **20 %** | Récupération hybride (0,6 cosinus + 0,4 lexical), boucle agentique en six étapes (planifier · récupérer · cadrer · rédiger · vérifier · conformité), contrôle d'accès **par document** sur chaque route prenant un identifiant, portée d'espace à quatre endroits, versions SHA-256, corrections humaines qui deviennent la référence, journal d'audit, et **124 tests automatisés**. |
+| **Démonstration** | **25 %** | 2 minutes 50, une seule prise : enregistrer → indexé en 9 s → réponse citée → refus dans un autre espace → tâche → export → session membre. Appels au modèle visibles en direct dans un terminal. Rien qui ne soit construit. |
+
+Une précision, parce qu'elle compte pour le deuxième critère : les **vecteurs** utilisés pour la recherche sont calculés **localement** par un modèle de hachage déterministe (`EmbeddingService`, 256 dimensions) — aucun texte ne quitte le serveur pour être vectorisé. Un point d'entrée d'embeddings Meta peut être utilisé à la place avec `META_EMBEDDING_MODE=api`. Le travail génératif, de vision, de traduction et d'audio passe, lui, entièrement par Muse Spark Open.
+---
+
 ## Plus qu'une simple application RAG
 
 Le règlement du hackathon **exclut explicitement les applications RAG basiques**. Notre approche va au-delà du simple modèle *question → recherche → réponse* : la plateforme adopte une **logique agentique orientée tâches métier**.
