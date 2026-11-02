@@ -462,6 +462,11 @@ runs when the model is unreachable, and it is declared as such in the table abov
 The retrieval vectors are computed by hashing in PHP, which is arithmetic, not a
 model.
 
+This setup is explicitly eligible: the organizers confirmed on 2 November that a
+project built on Meta's open-weight models **on compute you provide** is eligible,
+and that **not using the Model API does not count against it** (Hackathon Credit
+Terms, section 3.8). No Meta credits were needed, and none were claimed.
+
 ---
 
 ## Third-party assets and rights

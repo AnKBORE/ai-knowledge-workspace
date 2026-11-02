@@ -25,6 +25,7 @@
 | **The Model API key stays on the server, never in client code** | idem |
 | **Keep the repository public** | idem |
 | **Submit at** `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` **before Wed 4 Nov, 9:00 PM ET** | idem |
+| **Open-weight models on your own compute are eligible; not using the Model API does not count against you** (Credit Terms §3.8) | Cerebral Valley, 2 November |
 
 That last rule is why every model call now writes a line to
 `storage/logs/model_calls.log`, and why the recording shows it.

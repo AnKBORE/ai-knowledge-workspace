@@ -463,6 +463,12 @@ s'exécute que si le modèle est injoignable, et il est déclaré comme tel dans
 tableau ci-dessus. Les vecteurs de récupération sont calculés par hachage en PHP,
 ce qui est de l'arithmétique, pas un modèle.
 
+Cette configuration est explicitement éligible : les organisateurs ont confirmé le
+2 novembre qu'un projet construit sur les modèles à poids ouverts de Meta **sur une
+machine que vous fournissez** est éligible, et que **ne pas utiliser l'API Model ne
+pénalise pas** (Hackathon Credit Terms, section 3.8). Aucun crédit Meta n'était
+nécessaire, et aucun n'a été demandé.
+
 ---
 
 ## Ressources tierces et droits

@@ -25,6 +25,7 @@
 | **La clé de l'API Model reste sur le serveur, jamais dans le code client** | idem |
 | **Le dépôt doit rester public** | idem |
 | **Soumettre sur** `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` **avant mer. 4 nov., 21 h ET** | idem |
+| **Les modèles à poids ouverts sur votre propre machine sont éligibles ; ne pas utiliser l'API Model ne pénalise pas** (Credit Terms §3.8) | Cerebral Valley, 2 novembre |
 
 C'est pour cette dernière règle que chaque appel au modèle écrit désormais une
 ligne dans `storage/logs/model_calls.log`, et que l'enregistrement la montre.
