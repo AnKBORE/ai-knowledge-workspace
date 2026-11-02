@@ -154,8 +154,19 @@ upload.php ──(text / text PDF)──► extract → store → index → 200 
 - Large scans are downscaled to 1600 px (GD) before sending: text stays legible while avoiding provider timeouts; `META_VISION_TIMEOUT` (default 300 s) covers dense pages
 - **Measured bottleneck:** on a dense page, 82 % of the generated tokens were the model's internal reasoning (2 466 of 2 996). OCR calls therefore use `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`): −64 % completion tokens for an equivalent transcript, i.e. fewer credits
 
-### Mooré — a low-resource language pipeline
-Built for the field: in Burkina Faso, real institutional knowledge is often *spoken* in Mooré, not written in French. The platform treats it as a first-class language, not a checkbox.
+### Mooré — the language is not a detail, it is the condition of use
+
+In Burkina Faso, institutional knowledge is usually **produced** in French — reports, minutes, procedures — but it is **used** by field agents, community facilitators and association members who work in Mooré. A report nobody can read is a report that does not exist. The barrier is therefore not technical: it is **access to knowledge**.
+
+Mooré is a **low-resource** language: few written texts, almost no aligned corpus, and speech engines that distort it (whisper heard *"Ibe kibali kye mame"* for an ordinary sentence). That is exactly where generic models fail — and why this platform **builds the resource** instead of assuming it:
+
+- a versioned Mooré lexicon and corpus (`moore_corpus`, `appellations_moore_*.pdf`);
+- **human corrections** that become the reference and feed the learning loop;
+- an **explicit refusal to invent** when the extract is missing — the limit is stated, not hidden.
+
+**Field effect.** One correction made by one agent benefits every agent after them: a scarce resource becomes a **shared asset**. This is the opposite of a translation gadget — it is what makes an organisation's memory actually serve the people who keep it alive.
+
+**With no trade-off.** The same engine serves French, English and Mooré: adding a language is **data** work, not a rewrite.
 
 - **End to end** — a Mooré meeting recorded in the browser is transcribed, auto-translated (both versions indexed), searchable by a Mooré question and answered **in Mooré with citations**; agentic tasks in Mooré produce Mooré documents — all verified live
 - **Curated linguistic reference** (`services/Ai/MooreReference.php`) — a compact prompt-injected grammar/lexicon compiled from the SIL Mooré–French–English dictionary (U. Niggli, 10,650 entries), the Peace Corps Mooré manual and a field lexicon: official orthography (ɩ ʋ, nasal vowels ãẽĩõũ, doubled long vowels, -ã definite suffix, -me declarative marker), pronouns, SVO/negation rules, greetings and ~80 core terms

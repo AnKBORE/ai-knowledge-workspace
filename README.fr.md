@@ -153,8 +153,19 @@ upload.php ──(texte / PDF texte)──► extraction → stockage → index 
 - Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses
 - **Goulot mesuré :** sur une page dense, 82 % des tokens générés étaient le raisonnement interne du modèle (2 466 sur 2 996). Les appels OCR utilisent donc `reasoning_effort=low` (`META_VISION_REASONING_EFFORT`) : −64 % de tokens générés pour une transcription équivalente, donc moins de crédits
 
-### Mooré — un pipeline pour langue peu dotée
-Pensé pour le terrain : au Burkina Faso, la connaissance institutionnelle réelle est souvent **dite** en mooré, pas écrite en français. La plateforme la traite comme une langue à part entière, pas comme une case cochée.
+### Mooré — la langue n'est pas un détail, c'est la condition d'usage
+
+Au Burkina Faso, le savoir institutionnel se **produit** souvent en français — rapports, comptes rendus, procédures — mais il est **utilisé** par des agents de terrain, des animateurs communautaires, des membres d'associations qui travaillent en mooré. Un rapport que personne ne peut lire est un rapport qui n'existe pas. La barrière n'est donc pas technique : elle est **d'accès au savoir**.
+
+Le mooré est une langue **peu dotée** : peu de textes écrits, presque aucun corpus aligné, et des moteurs de transcription qui le déforment (whisper a entendu *« Ibe kibali kye mame »* pour une phrase banale). C'est précisément là que les modèles génériques échouent — et c'est pourquoi la plateforme **construit la ressource** au lieu de la supposer :
+
+- un lexique et un corpus mooré versionnés (`moore_corpus`, `appellations_moore_*.pdf`) ;
+- des **corrections humaines** qui deviennent la référence et alimentent l'apprentissage ;
+- un **refus explicite d'inventer** quand l'extrait manque — la limite est dite, pas masquée.
+
+**Effet de terrain.** Une correction faite par un agent profite à tous les suivants : la ressource rare devient un **actif partagé**. C'est le contraire d'un gadget de traduction — c'est la condition pour que la mémoire d'une organisation serve réellement à ceux qui la font vivre.
+
+**Et sans compromis.** Le même moteur sert le français, l'anglais et le mooré : ajouter une langue est un travail de **données**, pas une réécriture.
 
 - **De bout en bout** — une réunion en mooré enregistrée dans le navigateur est transcrite, traduite automatiquement (les deux versions indexées), retrouvée par une question en mooré et répondue **en mooré avec citations** ; les tâches agentiques en mooré produisent des documents en mooré — tout est vérifié en réel
 - **Référence linguistique dédiée** (`services/Ai/MooreReference.php`) — un glossaire compact injecté dans les prompts, compilé depuis le dictionnaire mooré-français-anglais du SIL (U. Niggli, 10 650 entrées), le manuel Peace Corps et un lexique de terrain : orthographe officielle (ɩ ʋ, nasales ãẽĩõũ, voyelles longues doublées, suffixe défini -ã, marqueur déclaratif -me), pronoms, règles SVO/négation, salutations et ~80 termes de base

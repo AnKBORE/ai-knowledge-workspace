@@ -86,7 +86,7 @@ read: about 240 words, which leaves room for pauses and for the interface to loa
 |---|---|---|
 | **0:00–0:15** | Landing page `/` | "I'm Anatole, a developer from Burkina Faso. Organisations there lose their knowledge: reports on paper, minutes in mailboxes, songs on phones. This is where I started." |
 | **0:15–0:40** | Ask: **"Tell me about Meeting6"** | "One question. The answer is built only from documents this account may read, and every claim carries a numbered source. If the extract is missing, it says so instead of inventing." |
-| **0:40–1:00** | Ask: **"What does Meeting6 say in Mooré?"** | "Same document, another language. Mooré is spoken by fifteen million people and almost never written — the platform treats it as a language, not a checkbox." |
+| **0:40–1:00** | Ask: **"What does Meeting6 say in Mooré?"** | "Same document, another language. The reports are written in French, but the agents who use them work in Mooré — and a report nobody can read is a report that does not exist. Mooré is low-resource, so generic models fail: here the platform builds the resource, and refuses to invent." |
 | **1:00–1:30** | `/tache` → select **Meeting6** + **Formation** → instruction | "Now a task, not a question: plan, retrieve, scope, draft, verify, conformity. The result is a structured document with its sources." |
 | **1:30–1:45** | Click **✦ Clean**, then **DOCX** | "One click removes the scaffolding, one exports it. The document leaves the browser with its citations." |
 | **1:45–2:00** | `/documents` → filter **"Espace demo"** | "Nine documents, each showing its workspaces. This filter is a private workspace: zero results. Access is computed per document, not per screen." |
