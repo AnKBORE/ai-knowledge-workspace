@@ -389,6 +389,8 @@ if ($method === 'GET') {
     $canCreateSpace = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.creer');
     $canManageAdhesion = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'adhesion.gerer');
     $canArchive = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.archiver');
+    // Only the protected account can hand the protection over from the interface.
+    $estSuperActeur = $dependencies['users']->compteSuperId() === (int) $auth->id();
 
     $adminDenied = $path === '/administration' && !($canInvite || $canCreateSpace || $canManageAdhesion);
 
@@ -426,6 +428,7 @@ if ($method === 'GET') {
         'canCreateSpace' => $canCreateSpace ?? false,
         'canManageAdhesion' => $canManageAdhesion ?? false,
         'canArchive' => $canArchive ?? false,
+        'estSuperActeur' => $estSuperActeur ?? false,
         'navPerms' => $navPerms ?? [],
         'canControlDocuments' => $canControlDocuments ?? false,
         'documentsFlash' => $documentsFlash ?? null,

@@ -155,6 +155,19 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                             </span>
                                         <?php else: ?>
                                             <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
+                                            <?php if (!empty($estSuperActeur)): ?>
+                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                                    <?= $csrf?->field() ?? '' ?>
+                                                    <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                    <button type="submit" class="doc-action admin-confirm"
+                                                            title="<?= e($t('Faire de ce compte le Super Admin', 'Make this account the Super Admin')) ?>"
+                                                            aria-label="<?= e($t('Faire de ce compte le Super Admin', 'Make this account the Super Admin')) ?>"
+                                                            data-confirm-title="<?= e($t('Transférer la protection ?', 'Transfer the protection?')) ?>"
+                                                            data-confirm-text="<?= e($t('Ce compte deviendra le Super Admin, et le vôtre perdra la protection. L\'action est journalisée.', 'This account becomes the Super Admin and yours loses the protection. The action is journaled.')) ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                             <form method="post" action="<?= e(url('/api/admin_user_statut.php')) ?>" class="d-inline">
                                                 <?= $csrf?->field() ?? '' ?>
                                                 <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">

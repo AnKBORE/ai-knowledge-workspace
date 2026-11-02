@@ -82,6 +82,7 @@ $endpoints = [
     'admin_user_statut.php',
     'admin_user_delete.php',
     'admin_user_role.php',
+    'admin_user_super.php',
     'admin_espace_save.php',
     'admin_espace_statut.php',
     'admin_adhesion_save.php',
