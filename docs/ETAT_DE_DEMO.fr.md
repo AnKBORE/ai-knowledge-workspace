@@ -1,204 +1,144 @@
-# État de démonstration — figé le 2 novembre 2026
+# État de démonstration — produit par la recette du 2 novembre 2026
 
 🇬🇧 English version: [ETAT_DE_DEMO.md](ETAT_DE_DEMO.md)
 
-> **⚠ Base remise à zéro le 2 novembre 2026.** Ce document décrit l'état **avant** la remise à zéro. Il sera réécrit dès que la recette (`RECETTE_AZ.fr.md`) aura produit un état stable.
-
-> **Objet.** Ce fichier décrit l'état exact de la base sur lequel reposent la vidéo
-> et le jury. Si cet état change, ce fichier doit être mis à jour dans le même
-> commit — sinon la démonstration ne correspond plus à ce qui est décrit.
+> **Objet.** Ce fichier décrit l'état exact sur lequel reposent la vidéo et le jury.
+> Il n'a **pas** été écrit à la main : c'est l'état que la recette a produit, puis
+> relu dans la base. Si cet état change, ce fichier change dans le même commit —
+> sinon la démonstration ne correspond plus à ce qui est décrit.
 >
-> Chaque chiffre ci-dessous a été lu dans la base le 2 novembre 2026, jamais de
-> mémoire.
-
-> 
----
-
-## 1. Comptes — 3 actifs, 2 protégés
-
-| # | Adresse | Nom | Rôle global | Protégé | Adhésions |
-|---|---|---|---|---|---|
-| 1 | `anatolekbore@gmail.com` | Anatole KABORE | administrateur_technique | **★ oui** | Général (responsable) · Espace demo (responsable) · Projet 001 (responsable) |
-| 6 | `admin@super.bf` | Admin Super | administrateur_technique | **★ oui** | Général (responsable) |
-| 4 | `membre.demo@local` | Membre Demo | membre | non | Espace demo (**lecteur**) · Projet 001 (**contributeur**) |
-
-**Les mots de passe ne sont volontairement pas écrits dans ce dépôt.** Il est
-public. Celui du compte protégé peut être régénéré à tout moment :
-
-```powershell
-php tools/seed_admin.php --reset
-```
-
-La commande l'affiche une fois et ne stocke qu'une empreinte Argon2id.
-
-> **Pourquoi deux comptes protégés ?** Pour montrer le modèle : la protection est
-> un **ensemble**, pas un siège unique. L'un ou l'autre peut récupérer
-> l'installation.
+> Chaque chiffre ci-dessous a été interrogé le 2 novembre 2026, après la recette.
 
 ---
 
-## 2. Espaces de travail — 3
+## 1. Comptes — 2, dont 1 protégé
 
-| # | Nom | Visibilité | Statut | Documents actifs |
+| # | Adresse | Rôle global | Protégé | Adhésions |
 |---|---|---|---|---|
-| 1 | **Général** | restreint | actif | **9** |
-| 3 | **Espace demo (cloisonnement)** | restreint | actif | 0 |
-| 5 | **Projet 001** | restreint | actif | 0 |
+| 1 | `anatolekbore@gmail.com` | administrateur_technique | **★ oui** | Général (responsable) · Chantier test (responsable) |
+| 2 | `membre.recette@example.org` | membre | non | Chantier test (**contributeur**) |
 
-Les espaces 3 et 5 sont vides **exprès** : ils prouvent qu'un membre rattaché à
-un autre espace ne voit rien de « Général ».
+**Les mots de passe ne sont pas dans ce dépôt** — il est public. Celui du compte
+protégé se régénère avec `php tools/seed_admin.php --reset`.
 
----
-
-## 3. Adhésions — 6
-
-| Compte | Espace | Rôle local | Ce que cela accorde |
-|---|---|---|---|
-| anatole | Général | responsable | lire, déposer, tâcher, supprimer, modérer |
-| anatole | Espace demo | responsable | idem, sur un espace vide |
-| anatole | Projet 001 | responsable | idem, sur un espace vide |
-| admin@super.bf | Général | responsable | lire, déposer, tâcher, supprimer, modérer |
-| membre.demo | Espace demo | **lecteur** | lecture seule |
-| membre.demo | Projet 001 | **contributeur** | lire, déposer, tâcher |
+Le second compte existe pour jouer le membre dans la vidéo : c'est lui qui montre
+ce que voit réellement un non-administrateur.
 
 ---
 
-## 4. Documents — 9 actifs
+## 2. Espaces de travail — 2
 
-| # | Titre | Catégorie | Confidentialité | Espace | Type |
-|---|---|---|---|---|---|
-| 13 | Formation | Formation | restreint | Général | PDF |
-| 17 | Audio | Chants | restreint | Général | audio |
-| 18 | Scan | Rapports | restreint | Général | image (OCR) |
-| 19 | chant1 | Chants | restreint | Général | PDF scanné |
-| 26 | Meeting2 | Rapports | restreint | Général | audio transcrit |
-| 27 | Meeting3 | Rapports | restreint | Général | audio transcrit |
-| 28 | Meeting4 | Rapports | restreint | Général | audio transcrit |
-| 29 | Meeting5 | Rapports | restreint | Général | audio transcrit |
-| 30 | Meeting6 | Formation | restreint | Général | audio transcrit **+ 1 correction** |
+| # | Nom | Visibilité | Statut | Documents |
+|---|---|---|---|---|
+| 1 | **Général** | restreint | actif | **4** |
+| 2 | **Chantier test** | restreint | actif | **2** |
 
-Volumes : **34 versions**, **2 732 chunks indexés**, **1 correction** (document 30).
-
-### Ce qui ne fait pas partie de cet état
-
-- **26 documents sont supprimés logiquement** (`supprime_le` renseigné) — résidus
-  des audits. Ils sont invisibles partout (liste, recherche, récupération,
-  téléchargement) mais toujours présents en table. Sans conséquence ; à purger
-  avec le `DELETE` ci-dessous si une base propre est souhaitée.
-- **11 tâches d'ingestion**, toutes `termine`. Aucune en attente.
+Les deux espaces contiennent des ensembles **différents** à dessein : c'est ce qui
+rend le cloisonnement visible à l'écran.
 
 ---
 
-## 5. Catégories — 5
+## 3. Documents — 4, un par nature
 
-`Rapports` · `Procédures` · `Formation` · `Administratif` · `Chants`
+| # | Titre | Type | Langue | Espaces | Chunks | Ce que ça prouve |
+|---|---|---|---|---|---|---|
+| 1 | Note chantier Koudougou | texte | fr | Général + Chantier test | 1 | classement multi-espaces |
+| 2 | Rapport scanné Koudougou | PDF | fr | Général + Chantier test | 4 | PDF scanné avec couche de texte |
+| 3 | **Doc mooré scanné** | PDF | **mo** | Général | 2 | OCR d'un scan mooré, 1 093 caractères |
+| 4 | **Meeting Validation** | audio (wav) | **en** | Général | 1 | **la voix devient source**, indexée en 9 s |
 
----
+Transcription du document 4 :
 
-## 6. Ce que voit chaque profil — résultats attendus
-
-Valeurs à contrôler à l'écran avant d'enregistrer. Toute différence signifie que
-l'état a dérivé.
-
-| Contrôle | anatole | admin@super.bf | membre.demo |
-|---|---|---|---|
-| `/documents` — lignes | **9** | **9** | **0** |
-| Filtre « Général » | 9 | 9 | 0 |
-| Filtre « Projet 001 » | 0 | 0 | 0 |
-| `/journal` | **200** | **200** | **403** |
-| `/administration` | **200** | **200** | **403** |
-| `/categories` | 200 | 200 | 200 *(contributeur)* |
-| `/espaces` — espaces listés | 3 | 1 | 2 |
-| API `/api/documents.php` | 9 | 9 | `[]` |
-| Téléchargement d'un document de « Général » | 200 | 200 | **404** |
-| Entrées de menu visibles | 10 | 10 | 6 |
-
-Menu d'un membre simple : Question · Traduction · Documents indexés · Mon profil ·
-Espaces — les entrées d'administration sont **masquées** et **refusées**.
+> *Welcome to this meeting. The budget approved by the donor for the school
+> construction is 10 million CFA francs.*
+> `[Traduction — French] Bienvenue à cette réunion. Le budget approuvé par le
+> bailleur pour la construction de l'école est de 10 millions de francs CFA.`
 
 ---
 
-## 7. Scénarios de démonstration — 8 gestes
+## 4. Ce que voit chaque profil — vérifié
 
-Chaque ligne indique le geste et **ce qui doit apparaître**, pour qu'un échec soit
-visible immédiatement plutôt qu'au montage.
+| Contrôle | anatole | membre.recette |
+|---|---|---|
+| `/documents` — documents visibles | **4** | **2** *(documents 1 et 2)* |
+| `/journal` | **200** | **403** |
+| `/administration` | **200** | **403** |
+| Déposer dans Chantier test | oui | oui *(contributeur)* |
+| Supprimer un document | oui | **non** |
+| Question sur le budget de l'école | **répond** avec l'enregistrement | **refuse** — l'enregistrement n'est pas dans son espace |
 
-| # | Geste | Où | Résultat attendu |
-|---|---|---|---|
-| 1 | Poser une question sur les rapports | `/` | Réponse + citations numérotées vers des documents de « Général » |
-| 2 | Demander une synthèse | `/tache` | Document structuré, sources listées, exports actifs |
-| 3 | Traduire un extrait français en mooré | `/traduire` | Traduction + panneau des extraits utilisés |
-| 4 | Montrer la liste des documents | `/documents` | 9 lignes, badges d'espaces, couleurs de catégories |
-| 5 | Filtrer sur « Espace demo » | `/documents` | **0 ligne** et l'état vide — preuve du cloisonnement |
-| 6 | Ouvrir la modale cadenas sur « Meeting6 » | `/documents` | Modale espace + confidentialité, mot de passe exigé |
-| 7 | Ouvrir les onglets d'administration | `/administration` | 3 onglets avec leurs compteurs : 3 comptes, 3 espaces, 6 adhésions |
-| 8 | Se connecter en `membre.demo` | `/login` | Menu de 6 entrées, `/documents` vide, `/journal` en 403 |
-
-Facultatif si le temps le permet : supprimer un document (fonctionne), ou
-accorder/retirer la protection par l'icône couronne (journalisé).
+Les deux documents du membre sont exactement ceux classés dans Chantier test. Rien
+de Général ne fuit, et le refus est explicite plutôt qu'une réponse fausse.
 
 ---
 
-## 8. Liste de contrôle avant tournage
+## 5. Scénario de démonstration — les dix gestes et ce qui doit apparaître
+
+| # | Geste | Attendu |
+|---|---|---|
+| 1 | Page d'accueil | le produit, pas une diapositive |
+| 2 | **Enregistrer 3 s, déposer** | statut *indexed* en **≈9 s** |
+| 3 | Poser la question sur l'enregistrement | **10 millions de francs CFA**, source = l'audio |
+| 4 | Poser la question sur le document mooré | la réponse vient du scan mooré |
+| 5 | Tâche agentique sur deux documents | plan · récupération · rédaction · vérification, puis un résultat structuré |
+| 6 | Nettoyer, puis exporter | la réponse sans échafaudage |
+| 7 | Résumer un document | un résumé avec sa source |
+| 8 | Changer d'espace, reposer la même question | **refus honnête** : *« Je ne trouve pas cette information dans l'espace de travail courant »* |
+| 9 | Session membre | 2 documents, `/journal` en 403 |
+| 10 | Journal des appels | point d'entrée, modèle, statut, durée — en direct |
+
+---
+
+## 6. Avant l'enregistrement
 
 ```powershell
-# 1. Le serveur répond
-curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8080/login      # 200
-
-# 2. L'état correspond à ce document
+# 1. L'état correspond à ce document
 C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace ^
-  -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"       # 9
+  -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"   # 4
 
-# 3. La protection est en place
-php tools/seed_admin.php                                                # 2 comptes protégés
+# 2. La suite est verte
+php vendor/phpunit/phpunit/phpunit                                 # 121 tests
 
-# 4. La suite est verte
-php vendor/phpunit/phpunit/phpunit                                      # 121 tests
+# 3. La chaîne tient
+php tools/prove_provenance.php 4
+
+# 4. Le journal d'appels est lisible en direct
+Get-Content storage\logs\model_calls.log -Tail 3
 ```
 
-Puis, dans le navigateur : **`Ctrl + F5`** sur chaque page utilisée pendant
-l'enregistrement — l'application envoie `no-store`, mais un onglet périmé reste la
-première cause d'un geste qui « ne marche pas ».
+Puis **`Ctrl + F5`** sur chaque page utilisée. Un onglet périmé est la première
+cause d'un geste qui « ne marche pas ».
 
 ---
 
-## 9. Revenir à cet état exact
+## 7. Ce que la recette a prouvé
 
-Si un geste de démonstration modifie l'état, voici comment revenir.
+**Dix défauts** ont été trouvés en **faisant les gestes**, pas en lisant le code.
+Tous corrigés et consignés dans `REGISTRE_PROBLEMES.md` (P-51 à P-60), dont quatre
+qui auraient été visibles à la caméra :
 
-```sql
--- Les 9 documents appartiennent à « Général »
-UPDATE documents SET supprime_le = NULL WHERE id IN (13,17,18,19,26,27,28,29,30);
+| Défaut | Ce que ça donnait à l'écran |
+|---|---|
+| P-52 | le formulaire annonçait *« Général — 0 document »* alors que Général en contenait deux |
+| P-58 | l'espace affiché en haut ne limitait pas la recherche |
+| P-59 | une réponse confiante sur le **mauvais** chantier, sans refus |
+| P-60 | le bouton *Résumer* ne faisait rien |
 
--- Chaque document est classé dans Général uniquement
-DELETE FROM document_espace WHERE document_id IN (13,17,18,19,26,27,28,29,30);
-INSERT INTO document_espace (document_id, espace_id)
-SELECT id, 1 FROM documents WHERE supprime_le IS NULL;
-
--- Confidentialité par défaut
-UPDATE documents SET confidentialite = 'restreint' WHERE supprime_le IS NULL;
-
--- Espaces ouverts
-UPDATE espace SET statut = 'actif';
-```
-
-```powershell
-# Les deux comptes protégés
-php tools/seed_admin.php --grant=anatolekbore@gmail.com
-php tools/seed_admin.php --grant=admin@super.bf
-```
+Cette liste vaut mieux qu'un rapport propre : c'est la preuve que l'état ci-dessus
+a été **mesuré**, pas imaginé.
 
 ---
 
-## 10. Ce que cet état ne contient volontairement pas
+## 8. Ce que cet état ne contient volontairement pas
 
 | Absent | Pourquoi |
 |---|---|
-| Espace « public interne » | la règle de visibilité est démontrée par le cas **privé**, plus fort |
-| Adhésion expirée | compliquerait l'explication sans apporter de preuve |
-| Document supprimé dans la liste | la liste doit rester stable pendant l'enregistrement |
-| Identifiants personnels dans git | le dépôt est public |
+| Un espace vide | le refus (geste 8) prouve le cloisonnement mieux qu'un filtre vide |
+| Un espace « public interne » | le cas privé est la démonstration la plus forte |
+| Les documents de test supprimés logiquement | exclus de toutes les requêtes par conception |
+| Les identifiants | le dépôt est public |
 
 ---
 
-*État figé le 2 novembre 2026 — vérifier le §6 avant chaque enregistrement.*
+*État produit et vérifié le 2 novembre 2026 pendant la recette (`RECETTE_AZ.fr.md`).
+À relire contre le §4 avant chaque enregistrement.*

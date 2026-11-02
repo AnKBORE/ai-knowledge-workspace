@@ -1,203 +1,144 @@
-# Demo state — frozen on 2 November 2026
+# Demo state — built by the acceptance run of 2 November 2026
 
 🇫🇷 Version française : [ETAT_DE_DEMO.fr.md](ETAT_DE_DEMO.fr.md)
 
-> **⚠ Database wiped on 2 November 2026.** This document describes the state **before** the wipe. It will be rewritten once the acceptance run (`RECETTE_AZ.md`) produces a stable state.
-
-> **Purpose.** This file describes the exact state of the database the video and
-> the jury rely on. If that state changes, this file must be updated in the same
+> **Purpose.** This file describes the exact state the video and the jury rely on.
+> It was **not** written by hand: it is the state the acceptance run produced, then
+> read back from the database. If the state changes, this file changes in the same
 > commit — otherwise the demonstration no longer matches what is described.
 >
-> Every figure below was read from the live database on 2 November 2026, not from
-> memory.
-
-> 
----
-
-## 1. Accounts — 3 active, 2 protected
-
-| # | Address | Name | Global role | Protected | Memberships |
-|---|---|---|---|---|---|
-| 1 | `anatolekbore@gmail.com` | Anatole KABORE | administrateur_technique | **★ yes** | Général (responsable) · Espace demo (responsable) · Projet 001 (responsable) |
-| 6 | `admin@super.bf` | Admin Super | administrateur_technique | **★ yes** | Général (responsable) |
-| 4 | `membre.demo@local` | Membre Demo | membre | no | Espace demo (**lecteur**) · Projet 001 (**contributeur**) |
-
-**Passwords are deliberately not written in this repository.** It is public. The
-protected account's password can be regenerated at any time:
-
-```powershell
-php tools/seed_admin.php --reset
-```
-
-The command prints the new password once and stores only an Argon2id hash.
-
-> **Why two protected accounts?** It demonstrates the model: protection is a set,
-> not a single seat. Either account can recover the installation.
+> Every figure below was queried on 2 November 2026, after the run.
 
 ---
 
-## 2. Workspaces — 3
+## 1. Accounts — 2, one protected
 
-| # | Name | Visibility | Status | Active documents |
+| # | Address | Global role | Protected | Memberships |
 |---|---|---|---|---|
-| 1 | **Général** | restreint | actif | **9** |
-| 3 | **Espace demo (cloisonnement)** | restreint | actif | 0 |
-| 5 | **Projet 001** | restreint | actif | 0 |
+| 1 | `anatolekbore@gmail.com` | administrateur_technique | **★ yes** | Général (responsable) · Chantier test (responsable) |
+| 2 | `membre.recette@example.org` | membre | no | Chantier test (**contributeur**) |
 
-Spaces 3 and 5 are empty **on purpose**: they prove that a member attached to
-another workspace sees nothing from « Général ».
+**Passwords are not written in this repository** — it is public. The protected
+account's password is regenerated with `php tools/seed_admin.php --reset`.
 
----
-
-## 3. Memberships — 6
-
-| Account | Workspace | Local role | What it grants |
-|---|---|---|---|
-| anatole | Général | responsable | read, deposit, task, delete, moderate |
-| anatole | Espace demo | responsable | same, on an empty workspace |
-| anatole | Projet 001 | responsable | same, on an empty workspace |
-| admin@super.bf | Général | responsable | read, deposit, task, delete, moderate |
-| membre.demo | Espace demo | **lecteur** | read only |
-| membre.demo | Projet 001 | **contributeur** | read, deposit, task |
+The second account exists to play the member in the video: it is the one that
+shows what a non-administrator actually sees.
 
 ---
 
-## 4. Documents — 9 active
+## 2. Workspaces — 2
 
-| # | Title | Category | Confidentiality | Workspace | Type |
-|---|---|---|---|---|---|
-| 13 | Formation | Formation | restreint | Général | PDF |
-| 17 | Audio | Chants | restreint | Général | audio |
-| 18 | Scan | Rapports | restreint | Général | image (OCR) |
-| 19 | chant1 | Chants | restreint | Général | scanned PDF |
-| 26 | Meeting2 | Rapports | restreint | Général | audio (transcribed) |
-| 27 | Meeting3 | Rapports | restreint | Général | audio (transcribed) |
-| 28 | Meeting4 | Rapports | restreint | Général | audio (transcribed) |
-| 29 | Meeting5 | Rapports | restreint | Général | audio (transcribed) |
-| 30 | Meeting6 | Formation | restreint | Général | audio (transcribed) **+ 1 correction** |
+| # | Name | Visibility | Status | Documents |
+|---|---|---|---|---|
+| 1 | **Général** | restreint | actif | **4** |
+| 2 | **Chantier test** | restreint | actif | **2** |
 
-Volumes: **34 versions**, **2 732 indexed chunks**, **1 correction** (document 30).
-
-### Not part of this state
-
-- **26 documents are soft-deleted** (`supprime_le` filled) — leftovers from the
-  audits. They are invisible everywhere (list, search, retrieval, download) but
-  still present in the table. Harmless; purge with the `DELETE` below if a clean
-  database is wanted.
-- **11 ingestion jobs**, all `termine`. No job is pending.
+The two workspaces hold **different** document sets on purpose: that is what makes
+the scoping visible on screen.
 
 ---
 
-## 5. Categories — 5
+## 3. Documents — 4, one per nature
 
-`Rapports` · `Procédures` · `Formation` · `Administratif` · `Chants`
+| # | Title | Type | Language | Workspaces | Chunks | What it proves |
+|---|---|---|---|---|---|---|
+| 1 | Note chantier Koudougou | text | fr | Général + Chantier test | 1 | multi-workspace filing |
+| 2 | Rapport scanné Koudougou | PDF | fr | Général + Chantier test | 4 | scanned PDF with a text layer |
+| 3 | **Doc mooré scanné** | PDF | **mo** | Général | 2 | OCR of a mooré scan, 1 093 characters |
+| 4 | **Meeting Validation** | audio (wav) | **en** | Général | 1 | **the voice becomes a source**, indexed in 9 s |
 
----
+Document 4's transcript:
 
-## 6. What each profile sees — expected results
-
-These are the values to check on screen before recording. Any difference means
-the state drifted.
-
-| Check | anatole | admin@super.bf | membre.demo |
-|---|---|---|---|
-| `/documents` — rows | **9** | **9** | **0** |
-| Workspace filter « Général » | 9 | 9 | 0 |
-| Workspace filter « Projet 001 » | 0 | 0 | 0 |
-| `/journal` | **200** | **200** | **403** |
-| `/administration` | **200** | **200** | **403** |
-| `/categories` | 200 | 200 | 200 *(contributeur)* |
-| `/espaces` — workspaces listed | 3 | 1 | 2 |
-| API `/api/documents.php` | 9 | 9 | `[]` |
-| Download of a « Général » document | 200 | 200 | **404** |
-| Menu entries visible | 10 | 10 | 6 |
-
-Menu of a plain member: Question · Traduction · Documents indexés · Mon profil ·
-Espaces — the administrative entries are hidden **and** refused.
+> *Welcome to this meeting. The budget approved by the donor for the school
+> construction is 10 million CFA francs.*
+> `[Traduction — French] Bienvenue à cette réunion. Le budget approuvé par le
+> bailleur pour la construction de l'école est de 10 millions de francs CFA.`
 
 ---
 
-## 7. Demonstration scenarios — 8 gestures
+## 4. What each profile sees — verified
 
-Each line states what to do and **what must appear**, so a failure is visible
-immediately rather than during the editing.
+| Check | anatole | membre.recette |
+|---|---|---|
+| `/documents` — visible documents | **4** | **2** *(docs 1 and 2)* |
+| `/journal` | **200** | **403** |
+| `/administration` | **200** | **403** |
+| Deposit in Chantier test | yes | yes *(contributeur)* |
+| Delete a document | yes | **no** |
+| Question about the school budget | **answers** with the recording | **refuses** — the recording is not in their workspace |
 
-| # | Gesture | Where | Expected result |
-|---|---|---|---|
-| 1 | Ask a question about the reports | `/` | Answer + numbered citations pointing to « Général » documents |
-| 2 | Ask for a synthesis task | `/tache` | Structured document, sources listed, export buttons active |
-| 3 | Translate a French extract into Mooré | `/traduire` | Translation + panel showing the extracts used |
-| 4 | Show the document list | `/documents` | 9 rows, workspace badges, category colours |
-| 5 | Filter by « Espace demo » | `/documents` | **0 rows** and the empty state — proves scoping |
-| 6 | Open the lock modal on « Meeting6 » | `/documents` | Modal with workspace + confidentiality, password required |
-| 7 | Open the administration tabs | `/administration` | 3 tabs with their counts: 3 accounts, 3 workspaces, 6 memberships |
-| 8 | Connect as `membre.demo` | `/login` | Menu of 6 entries, `/documents` empty, `/journal` answers 403 |
-
-Optional, if time allows: delete a document (works), or grant/revoke protection
-from the crown icon (journaled).
+The member's two documents are exactly the two filed in Chantier test. Nothing
+from Général leaks, and the refusal is explicit rather than a wrong answer.
 
 ---
 
-## 8. Pre-flight checklist
+## 5. Demonstration script — the ten beats and what must appear
+
+| # | Gesture | Expected |
+|---|---|---|
+| 1 | Landing page | the product, no slide |
+| 2 | **Record 3 s, deposit** | status moves to *indexed* in **≈9 s** |
+| 3 | Ask in English about the recording | **10 million CFA francs**, source = the audio |
+| 4 | Ask about the mooré document | the answer comes from the mooré scan |
+| 5 | Agentic task on two documents | plan · retrieve · draft · verify, then a structured result |
+| 6 | Clean, then export | the answer without scaffolding |
+| 7 | Summarise one document | a summary with its source |
+| 8 | Switch workspace, ask the same question | **honest refusal**: *"I cannot find this information in the current workspace"* |
+| 9 | Member session | 2 documents, `/journal` in 403 |
+| 10 | Model call log | endpoint, model, status, duration — live |
+
+---
+
+## 6. Pre-flight, before recording
 
 ```powershell
-# 1. The server answers
-curl.exe -s -o NUL -w "%{http_code}" http://127.0.0.1:8080/login      # 200
-
-# 2. The state matches this document
+# 1. The state matches this document
 C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace ^
-  -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"       # 9
+  -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"   # 4
 
-# 3. The protection is in place
-php tools/seed_admin.php                                                # 2 protected accounts
+# 2. The suite is green
+php vendor/phpunit/phpunit/phpunit                                 # 121 tests
 
-# 4. The suite is green
-php vendor/phpunit/phpunit/phpunit                                      # 121 tests
+# 3. The chain holds
+php tools/prove_provenance.php 4
+
+# 4. The call log is readable live
+Get-Content storage\logs\model_calls.log -Tail 3
 ```
 
-Then, in the browser: **`Ctrl + F5`** on every page used in the recording — the
-application sends `no-store`, but a stale tab is the most frequent cause of a
-gesture that "does not work".
+Then **`Ctrl + F5`** on every page used in the recording. A stale tab is the most
+frequent cause of a gesture that "does not work".
 
 ---
 
-## 9. Restoring this exact state
+## 7. What the acceptance run proved
 
-If a demo gesture changes the state, here is how to come back.
+Ten defects were found by **doing the gestures**, not by reading the code. All are
+fixed and recorded in `REGISTRE_PROBLEMES.md` (P-51 to P-60), including four that
+would have been visible on camera:
 
-```sql
--- The 9 documents belong to « Général »
-UPDATE documents SET supprime_le = NULL WHERE id IN (13,17,18,19,26,27,28,29,30);
+| Defect | What it looked like |
+|---|---|
+| P-52 | the deposit form announced *"Général — 0 documents"* while Général held two |
+| P-58 | the workspace at the top did not limit the search |
+| P-59 | a confident answer about the **wrong** site, with no refusal |
+| P-60 | the *Summarise* button did nothing |
 
--- Every document is filed in Général only
-DELETE FROM document_espace WHERE document_id IN (13,17,18,19,26,27,28,29,30);
-INSERT INTO document_espace (document_id, espace_id)
-SELECT id, 1 FROM documents WHERE supprime_le IS NULL;
-
--- Confidentiality back to the default
-UPDATE documents SET confidentialite = 'restreint' WHERE supprime_le IS NULL;
-
--- Workspaces open
-UPDATE espace SET statut = 'actif';
-```
-
-```powershell
-# Both protected accounts
-php tools/seed_admin.php --grant=anatolekbore@gmail.com
-php tools/seed_admin.php --grant=admin@super.bf
-```
+That list is worth more than a clean report: it is the proof that the state below
+was measured rather than imagined.
 
 ---
 
-## 10. What this state deliberately does not contain
+## 8. What this state deliberately does not contain
 
 | Absent | Why |
 |---|---|
-| Public-internal workspace | the visibility rule is demonstrated by the **private** case, which is stronger |
-| Expired membership | would complicate the explanation without adding proof |
-| Deleted document in the list | the list must stay stable during the recording |
-| Personal credentials in git | the repository is public |
+| An empty workspace | the refusal (beat 8) proves scoping better than an empty filter |
+| A public-internal workspace | the private case is the stronger demonstration |
+| Soft-deleted test documents in the list | excluded from every query by design |
+| Credentials | the repository is public |
 
 ---
 
-*State frozen on 2 November 2026 — verify against §6 before every recording.*
+*State produced and verified on 2 November 2026 during the acceptance run
+(`RECETTE_AZ.fr.md`). Read it back against §4 before every recording.*
