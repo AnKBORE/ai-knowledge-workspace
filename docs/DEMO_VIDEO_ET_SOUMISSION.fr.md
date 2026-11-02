@@ -135,7 +135,7 @@ transcription lente est **accélérée au montage**, jamais coupée.
 | **1:30–1:58** | `/tache` → deux documents → instruction → **✦ Nettoyer** → **DOCX** | « Maintenant une tâche : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Un clic retire l'échafaudage, un autre exporte le document avec ses citations. » |
 | **1:58–2:28** | `/documents` → filtre → modale cadenas → `/administration` onglets + couronne | « Neuf documents, chacun avec ses espaces ; cet espace privé renvoie zéro. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
 | **2:28–2:40** | Connexion `membre.demo` → `/documents` → `/journal` | « Même application, un membre : zéro document, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
-| **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Chaque appel au modèle est écrit : point d'entrée, modèle, statut, durée — en direct, et conservé dans le dépôt. » |
+| **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Muse Spark Open est un modèle à poids ouverts de Meta, sur Baseten — pour les réponses, la tâche agentique, la traduction, la vision et l'audio. Chaque appel est écrit : point d'entrée, modèle, statut, durée. En direct, et conservé dans le dépôt. » |
 | **2:47–2:50** | Retour à `/` | « 121 tests, un journal d'audit, et un savoir qui disparaissait répond désormais aux questions. Construit seul, en neuf jours. » |
 
 ### Avant la prise — les quatre choses qui font marcher l'ouverture
@@ -151,6 +151,15 @@ transcription lente est **accélérée au montage**, jamais coupée.
 # le plan sur le journal (2:40)
 Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\model_calls.log" -Wait -Tail 5
 ```
+
+
+> **Pourquoi cette phrase compte.** *Usage de l'outillage Meta* pèse 25 %. Un modèle
+> employé sur cinq capacités — réponses, tâche agentique, traduction, vision, audio —
+> est un argument plus fort qu'un modèle employé une fois, et le conseil donné par les
+> organisateurs à un participant SAM 3D dit la même chose : associer des modèles plutôt
+> qu'en utiliser un seul. La clé hackathon Baseten ne sert que
+> `meta-models/muse-spark-open-1026` ; l'étendue de l'usage est donc la façon honnête
+> de marquer ce critère.
 
 **Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
 naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent.

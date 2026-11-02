@@ -134,7 +134,7 @@ is accelerated in the edit — not cut.
 | **1:30–1:58** | `/tache` → select two documents → instruction → **✦ Clean** → **DOCX** | "Now a task: plan, retrieve, scope, draft, verify, conformity. One click cleans the scaffolding, one exports the document with its citations." |
 | **1:58–2:28** | `/documents` → filter → lock modal → `/administration` tabs + crown | "Nine documents, each with its workspaces; this private workspace returns zero. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
 | **2:28–2:40** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: zero documents, and the audit journal answers 403. The interface and the server agree." |
-| **2:40–2:47** | Terminal beside the browser: the call log | "Every model call is written down: endpoint, model, status, duration — live, and kept in the repository." |
+| **2:40–2:47** | Terminal beside the browser: the call log | "Muse Spark Open is Meta's open-weight model, on Baseten — for the answers, the agentic task, the translation, the vision and the audio. Every call is written down: endpoint, model, status, duration. Live, and kept in the repository." |
 | **2:47–2:50** | Back to `/` | "121 tests, an audit trail, and knowledge that used to disappear now answers questions. Built solo, in nine days." |
 
 ### Before the take — the four things that make the opening work
@@ -150,6 +150,14 @@ is accelerated in the edit — not cut.
 # the log shot (2:40)
 Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\model_calls.log" -Wait -Tail 5
 ```
+
+
+> **Why this sentence matters.** *Use of Meta AI Tooling* weighs 25 %. One model
+> used across five capabilities — answers, agentic task, translation, vision, audio —
+> is a stronger claim than one model used once, and the organizers' own advice to a
+> SAM 3D builder says the same thing: pair models rather than using a single one.
+> The Baseten hackathon key only serves `meta-models/muse-spark-open-1026`, so the
+> breadth of use is the honest way to score here.
 
 **Two rules for the voice-over.** Do not read the table; speak these sentences at
 a natural pace and let the screen do the work. And never apologise for an accent.
