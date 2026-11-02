@@ -32,11 +32,19 @@ final class VisionService
      */
     public function extractTextFromScannedPdf(\Smalot\PdfParser\Document $pdf): string
     {
+        $all = $pdf->getObjectsByType('XObject', 'Image');
         $images = array_values(array_filter(
-            $pdf->getObjectsByType('XObject', 'Image'),
-            // JPEG streams (DCTDecode) are valid image files as-is.
+            $all,
+            // JPEG streams (DCTDecode) are valid image files as-is. Flate-encoded
+            // bitmaps are raw samples, not an image file: they need a rasteriser.
             static fn ($image) => str_starts_with($image->getContent(), "\xFF\xD8\xFF"),
         ));
+
+        // Say why nothing can be read, instead of returning an empty string that
+        // the caller would report as "file empty or unreadable".
+        if ($images === [] && $all !== []) {
+            throw new \RuntimeException('Scanned PDF images are not JPEG');
+        }
 
         $paths = [];
         foreach ($images as $image) {

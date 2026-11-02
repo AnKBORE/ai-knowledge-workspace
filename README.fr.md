@@ -147,7 +147,7 @@ upload.php ──(texte / PDF texte)──► extraction → stockage → index 
 - `IngestionService` partagé par les deux chemins (extraction, stockage, indexation, messages d'erreur traduits) — couvert par des tests unitaires
 
 ### Documents scannés — pipeline OCR
-- Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open
+- Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open. Un PDF scanné n'est lu que si ses pages sont stockées en **JPEG** : une image encodée en Flate est une donnée brute, pas un fichier image, et l'OCR la refuse avec un message explicite plutôt que d'indexer du vide. Exportez les pages en JPEG, ou déposez directement l'image.
 - Un PDF dont l'extraction de texte est vide est détecté automatiquement : ses images de pages JPEG sont extraites et passées à l'OCR, puis concaténées avec des marqueurs `[Page n / N]` — vérifié sur un recueil de chants scanné de 4 pages en mooré
 - Les pages sont envoyées **en parallèle** (`curl_multi`) : le temps total est à peu près celui de la page la plus lente ; une page en échec est relancée seule sans perdre les autres
 - Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses

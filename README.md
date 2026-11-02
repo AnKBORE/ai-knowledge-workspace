@@ -148,7 +148,7 @@ upload.php ──(text / text PDF)──► extract → store → index → 200 
 - Shared `IngestionService` for both paths (extraction, storage, indexing, localized error mapping) — covered by unit tests
 
 ### Scanned documents — OCR pipeline
-- **Images** (png/jpg/tiff/webp) and **scanned PDFs** (no text layer) are read by Muse Spark Open vision
+- **Images** (png/jpg/tiff/webp) and **scanned PDFs** (no text layer) are read by Muse Spark Open vision. A scanned PDF is read only when its pages are stored as **JPEG** images: a Flate-encoded bitmap is raw sample data, not an image file, and the OCR refuses it with an explicit message instead of indexing nothing. Export the pages as JPEG, or deposit the image itself.
 - A PDF whose text extraction is empty is detected automatically: its embedded JPEG page images are extracted and OCR'd, then concatenated with `[Page n / N]` markers — verified on a 4-page scanned hymn booklet in Mooré
 - Pages are sent **in parallel** (`curl_multi`), so the total time is roughly that of the slowest page; a failed page is retried on its own without losing the others
 - Large scans are downscaled to 1600 px (GD) before sending: text stays legible while avoiding provider timeouts; `META_VISION_TIMEOUT` (default 300 s) covers dense pages

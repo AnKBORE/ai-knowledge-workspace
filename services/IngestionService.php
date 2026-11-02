@@ -119,6 +119,7 @@ final class IngestionService
             str_contains($message, 'Audio too long') => sprintf($T['audio_too_long'], intdiv($this->audioMaxSeconds, 60)),
             str_contains($message, 'Media could not be processed') => $T['media_failed'],
             str_contains($message, 'Transcription refused') => $T['transcription_refused'],
+            str_contains($message, 'Scanned PDF images are not JPEG') => $T['file_scanned_not_jpeg'],
             str_contains($message, 'File empty or unreadable') => $T['file_empty'],
             default => getenv('APP_DEBUG') === '1' ? $message : $T['upload_failed'],
         };
