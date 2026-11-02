@@ -276,7 +276,7 @@ final class RagService
      *
      * @return array{draft: string, sources: list<array<string, mixed>>, steps: list<array<string, mixed>>}
      */
-    public function task(string $instruction, int $topK = 8, ?int $userId = null, array $documentIds = []): array
+    public function task(string $instruction, int $topK = 8, ?int $userId = null, array $documentIds = [], ?int $espaceId = null): array
     {
         $steps = [];
 
@@ -286,7 +286,7 @@ final class RagService
         $merged = [];
         $trace = [];
         foreach ($queries as $query) {
-            $found = $this->retrieveSimilar($this->embeddings->embed($query), max(3, intdiv($topK, 2)), $query, $userId);
+            $found = $this->retrieveSimilar($this->embeddings->embed($query), max(3, intdiv($topK, 2)), $query, $userId, $espaceId);
             $new = 0;
             foreach ($found as $chunk) {
                 $key = ($chunk['document_id'] ?? 0) . '|' . ($chunk['version_id'] ?? 0) . '|' . ($chunk['chunk_index'] ?? md5((string) $chunk['content']));
@@ -312,6 +312,16 @@ final class RagService
         // cite the sources the user asked for.
         $scopeIds = [];
         $allowedScope = $userId === null ? true : $this->accessibleDocumentIds($userId);
+
+        // The workspace shown at the top of the page scopes the task too:
+        // a document filed elsewhere must not be pulled in silently.
+        if ($espaceId !== null && $espaceId > 0) {
+            $inSpace = $this->documentIdsInEspace($espaceId);
+
+            $allowedScope = $allowedScope === true
+                ? $inSpace
+                : array_intersect_key($allowedScope, $inSpace);
+        }
 
         foreach ($documentIds as $candidate) {
             $candidate = (int) $candidate;

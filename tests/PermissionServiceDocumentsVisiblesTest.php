@@ -154,4 +154,33 @@ final class PermissionServiceDocumentsVisiblesTest extends TestCase
 
         self::assertSame([], $this->permissions->documentsVisibles(2));
     }
-}
+
+    /*
+     * The single-document question every endpoint taking a document id must ask.
+     *
+     * These cases lock the rule the audit enforced: holding `document.consulter`
+     * somewhere never means "may read this document", and an id that the user
+     * cannot see must answer false rather than fall through.
+     */
+    public function testCanConsultDocumentFollowsTheSameRuleAsTheList(): void
+    {
+        self::assertTrue($this->permissions->peutConsulterDocument(2, 100));
+        self::assertTrue($this->permissions->peutConsulterDocument(2, 102));
+        self::assertFalse($this->permissions->peutConsulterDocument(2, 101), 'Another workspace must stay closed.');
+        self::assertFalse($this->permissions->peutConsulterDocument(2, 103), 'A private document never leaks.');
+        self::assertFalse($this->permissions->peutConsulterDocument(2, 105), 'An owner outside the workspace is closed.');
+    }
+
+    public function testCanConsultDocumentRefusesUnknownAndEmptyIds(): void
+    {
+        self::assertFalse($this->permissions->peutConsulterDocument(2, 0));
+        self::assertFalse($this->permissions->peutConsulterDocument(2, -3));
+        self::assertFalse($this->permissions->peutConsulterDocument(2, 9999));
+    }
+
+    public function testAdministratorCanConsultAnyListedDocument(): void
+    {
+        foreach ([100, 101, 102, 103, 104, 105] as $documentId) {
+            self::assertTrue($this->permissions->peutConsulterDocument(1, $documentId));
+        }
+    }}

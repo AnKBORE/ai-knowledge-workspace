@@ -53,6 +53,14 @@ $segment = (int) ($_GET['segment'] ?? 0);
 $languages = array_keys(\App\Services\Ai\DocumentTranslationService::LANGUAGES);
 
 $document = $documentId > 0 ? $dependencies['document_model']->find($documentId) : null;
+
+// The global right is not enough: this document must be readable.
+if (!$dependencies['permissions']->peutConsulterDocument((int) $dependencies['auth']->id(), $documentId)) {
+    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'document', $documentId, 'refus', ['raison' => 'document_hors_perimetre']);
+    http_response_code(403);
+    echo json_encode(['error' => $T['permission_denied']], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 if ($document === null) {
     http_response_code(404);
     echo json_encode(['error' => $T['document_not_found']], JSON_UNESCAPED_UNICODE);

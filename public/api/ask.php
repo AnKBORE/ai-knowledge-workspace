@@ -63,7 +63,7 @@ try {
     $espacePortee = $espaceActif > 0 ? $espaceActif : null;
 
     $response = $mode === 'task'
-        ? $controller->task($input, $dependencies['auth']->id())
+        ? $controller->task($input, $dependencies['auth']->id(), $espacePortee)
         : $controller->ask($input, $dependencies['auth']->id(), $espacePortee);
 
     $dependencies['journal']->log(

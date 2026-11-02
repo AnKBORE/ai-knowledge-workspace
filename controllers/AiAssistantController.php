@@ -41,7 +41,7 @@ final class AiAssistantController
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
-    public function task(array $input, ?int $userId = null): array
+    public function task(array $input, ?int $userId = null, ?int $espaceId = null): array
     {
         $instruction = trim((string) ($input['instruction'] ?? ''));
 
@@ -53,6 +53,6 @@ final class AiAssistantController
             array_map('intval', (array) ($input['document_ids'] ?? []))
         ));
 
-        return $this->rag->task($instruction, 8, $userId, $documentIds);
+        return $this->rag->task($instruction, 8, $userId, $documentIds, $espaceId);
     }
 }

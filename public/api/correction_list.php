@@ -42,6 +42,14 @@ if ($documentId < 1) {
     exit;
 }
 
+// The global right is not enough: this document must be readable.
+if (!$dependencies['permissions']->peutConsulterDocument($userId, $documentId)) {
+    $dependencies['journal']->log($userId, 'securite.refus', 'document', $documentId, 'refus', ['raison' => 'document_hors_perimetre']);
+    http_response_code(403);
+    echo json_encode(['error' => $T['permission_denied'] ?? 'Permission denied.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $canDeleteAny = $dependencies['permissions']->peutAilleurs($userId, 'document.supprimer');
 
 $stmt = $dependencies['pdo']->prepare(

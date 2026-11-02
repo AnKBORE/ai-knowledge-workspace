@@ -191,6 +191,23 @@ final class PermissionService
      *
      * @return array<int, true>|true  ids map, or true for a global administrator
      */
+    /**
+     * Whether one specific document may be consulted by this user.
+     *
+     * Every endpoint that takes a document id must ask this question, not only
+     * whether the user holds `document.consulter` somewhere: the global right
+     * says "may read documents", not "may read this one".
+     */
+    public function peutConsulterDocument(int $acteurId, int $documentId): bool
+    {
+        if ($documentId < 1) {
+            return false;
+        }
+
+        $visibles = $this->documentsVisibles($acteurId);
+
+        return $visibles === true || isset($visibles[$documentId]);
+    }
     public function documentsVisibles(int $acteurId): array|bool
     {
         $actor = $this->compteActif($acteurId);

@@ -39,7 +39,7 @@ if ($id < 1) {
 }
 
 $stmt = $dependencies['pdo']->prepare(
-    'SELECT c.id, c.langue, c.texte_corrige, c.nom_fichier, c.fichier, c.cree_le, d.title
+    'SELECT c.id, c.document_id, c.langue, c.texte_corrige, c.nom_fichier, c.fichier, c.cree_le, d.title
      FROM correction_document c
      JOIN documents d ON d.id = c.document_id
      WHERE c.id = :id AND c.statut = \'valide\''
@@ -51,6 +51,15 @@ if ($row === false) {
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['error' => 'Correction not found.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// The correction belongs to a document: that document must be readable.
+if (!$dependencies['permissions']->peutConsulterDocument($userId, (int) $row['document_id'])) {
+    $dependencies['journal']->log($userId, 'securite.refus', 'document', (int) $row['document_id'], 'refus', ['raison' => 'correction_hors_perimetre']);
+    http_response_code(403);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => 'Forbidden.'], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
