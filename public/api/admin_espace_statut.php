@@ -17,7 +17,7 @@ $isFr = $lang === 'fr';
 
 header('X-Content-Type-Options: nosniff');
 
-$respond = static function (array $data) use ($dependencies, $isFr): never {
+$respond = static function (array $data, int $code = 200) use ($dependencies, $isFr): never {
     $isXhr = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest'
         || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json');
 
@@ -30,21 +30,21 @@ $respond = static function (array $data) use ($dependencies, $isFr): never {
         exit;
     }
 
-    http_response_code(isset($data['error']) ? 422 : 200);
+    http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 };
 
 if (!$dependencies['auth']->check()) {
-    $respond(['error' => $T['auth_required']]);
+    $respond(['error' => $T['auth_required']], 401);
 }
 
 $userId = (int) $dependencies['auth']->id();
 
 if (!$dependencies['permissions']->peutAilleurs($userId, 'espace.archiver')) {
     $dependencies['journal']->log($userId, 'securite.refus', 'securite', null, 'refus', ['raison' => 'permission', 'chemin' => '/api/admin_espace_statut']);
-    $respond(['error' => $T['permission_denied']]);
+    $respond(['error' => $T['permission_denied']], 403);
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -56,25 +56,25 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 
 if (!$dependencies['csrf']->validateRequest()) {
     $dependencies['journal']->log($userId, 'securite.refus', 'securite', null, 'refus', ['raison' => 'csrf', 'chemin' => '/api/admin_espace_statut']);
-    $respond(['error' => $T['csrf'] ?? 'Session expirée.']);
+    $respond(['error' => $T['csrf'] ?? 'Session expirée.'], 419);
 }
 
 // Sensitive action: the actor's own password is required.
 if (!verifier_mot_de_passe_admin($dependencies, 'espace.archiver')) {
-    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 422);
 }
 
 $espaceId = (int) ($_POST['espace_id'] ?? 0);
 $statut = (string) ($_POST['statut'] ?? '');
 
 if ($espaceId < 1 || !in_array($statut, ['actif', 'archive'], true)) {
-    $respond(['error' => $isFr ? 'Espace ou statut invalide.' : 'Invalid space or status.']);
+    $respond(['error' => $isFr ? 'Espace ou statut invalide.' : 'Invalid space or status.'], 422);
 }
 
 $espace = $dependencies['espaces']->find($espaceId);
 
 if ($espace === null) {
-    $respond(['error' => $isFr ? 'Espace inconnu.' : 'Unknown space.']);
+    $respond(['error' => $isFr ? 'Espace inconnu.' : 'Unknown space.'], 422);
 }
 
 // A closed space still holds live documents: reopening must stay possible, so

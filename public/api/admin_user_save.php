@@ -63,7 +63,7 @@ if (!$dependencies['csrf']->validateRequest()) {
 
 // Sensitive action: the actor's own password is required.
 if (!verifier_mot_de_passe_admin($dependencies, 'compte.creer')) {
-    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 422);
 }
 
 $courriel = strtolower(trim((string) ($_POST['courriel'] ?? '')));

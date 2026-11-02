@@ -70,6 +70,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Gouvernance et contrôle d'accès
 
+- **Endpoints d'administration vérifiés.** `php tools/smoke_admin_endpoints.php` exerce les huit endpoints contre une instance locale : anonyme → 401, membre → 403, administrateur sans mot de passe → 422 (24 vérifications).
 - **La liste des documents montre les espaces de chaque document** (badges) et se filtre par espace, y compris combiné à la recherche.
 - **Un document, plusieurs espaces.** Un document peut être classé dans plusieurs espaces de travail, et retiré de l'un sans quitter les autres : l'accès suit l'union des espaces, et le propriétaire garde toujours l'accès.
 - **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité d'un document existant ; l'action exige son mot de passe et journalise les valeurs **avant** et **après**.

@@ -17,7 +17,7 @@ $isFr = $lang === 'fr';
 
 header('X-Content-Type-Options: nosniff');
 
-$respond = static function (array $data) use ($dependencies, $isFr): never {
+$respond = static function (array $data, int $code = 200) use ($dependencies, $isFr): never {
     $isXhr = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest'
         || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json');
 
@@ -30,21 +30,21 @@ $respond = static function (array $data) use ($dependencies, $isFr): never {
         exit;
     }
 
-    http_response_code(isset($data['error']) ? 422 : 200);
+    http_response_code($code);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 };
 
 if (!$dependencies['auth']->check()) {
-    $respond(['error' => $T['auth_required']]);
+    $respond(['error' => $T['auth_required']], 401);
 }
 
 $userId = (int) $dependencies['auth']->id();
 
 if (!$dependencies['permissions']->peutAilleurs($userId, 'adhesion.gerer')) {
     $dependencies['journal']->log($userId, 'securite.refus', 'securite', null, 'refus', ['raison' => 'permission', 'chemin' => '/api/admin_adhesion_end']);
-    $respond(['error' => $T['permission_denied']]);
+    $respond(['error' => $T['permission_denied']], 403);
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
@@ -56,18 +56,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
 
 if (!$dependencies['csrf']->validateRequest()) {
     $dependencies['journal']->log($userId, 'securite.refus', 'securite', null, 'refus', ['raison' => 'csrf', 'chemin' => '/api/admin_adhesion_end']);
-    $respond(['error' => $T['csrf'] ?? 'Session expirée.']);
+    $respond(['error' => $T['csrf'] ?? 'Session expirée.'], 419);
 }
 
 // Sensitive action: the actor's own password is required.
 if (!verifier_mot_de_passe_admin($dependencies, 'adhesion.fin')) {
-    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 422);
 }
 
 $adhesionId = (int) ($_POST['adhesion_id'] ?? 0);
 
 if ($adhesionId < 1) {
-    $respond(['error' => $isFr ? 'Adhésion invalide.' : 'Invalid membership.']);
+    $respond(['error' => $isFr ? 'Adhésion invalide.' : 'Invalid membership.'], 422);
 }
 
 $stmt = $dependencies['pdo']->prepare('SELECT id, utilisateur_id, espace_id FROM adhesion WHERE id = :id');
@@ -75,7 +75,7 @@ $stmt->execute(['id' => $adhesionId]);
 $adhesion = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($adhesion === false) {
-    $respond(['error' => $isFr ? 'Adhésion inconnue.' : 'Unknown membership.']);
+    $respond(['error' => $isFr ? 'Adhésion inconnue.' : 'Unknown membership.'], 422);
 }
 
 // `fin_le` is an INCLUSIVE bound (the permission query uses `fin_le >= CURRENT_DATE`),

@@ -70,6 +70,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 
 ### Governance and access control
 
+- **Administration endpoints checked.** `php tools/smoke_admin_endpoints.php` exercises the eight endpoints against a local instance: anonymous → 401, member → 403, administrator without the password → 422 (24 checks).
 - **The document list shows each document's workspaces** (badges) and filters by workspace, including combined with the search.
 - **One document, several workspaces.** A document can be filed in several workspaces and removed from one without leaving the others: access follows the union of the workspaces, and the owner always keeps access.
 - **Control roles are changed by administrators only.** From the document list, an administrator changes the workspace and confidentiality of an existing document; the action requires their password and journals the **before** and **after** values.
