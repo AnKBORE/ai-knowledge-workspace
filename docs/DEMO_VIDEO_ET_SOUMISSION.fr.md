@@ -11,6 +11,22 @@
 
 ---
 
+### Exigences confirmées par les organisateurs (2 novembre, 15:09)
+
+| Règle | Source |
+|---|---|
+| **Le montage est autorisé** — la vidéo n'a pas à être une prise continue | Cerebral Valley, `#office-hours` |
+| **3 min 00 maximum**, et les juges arrêtent à 3:00 | idem |
+| **Compréhensible en anglais** | idem |
+| **Les appels au modèle Meta doivent être visibles** | idem |
+| **Accélérer les étapes longues, sans couper le cœur du parcours** | idem |
+| Mettre des **preuves dans le dépôt** (sorties enregistrées, journaux, captures) | idem |
+
+C'est pour cette dernière règle que chaque appel au modèle écrit désormais une
+ligne dans `storage/logs/model_calls.log`, et que l'enregistrement la montre.
+
+---
+
 ## 1. Ce que la démo doit prouver (et rien de plus)
 
 Trois idées, dans cet ordre. Tout le reste est du décor.
@@ -82,25 +98,34 @@ Puis ouvrir **http://127.0.0.1:8080/** et faire **`Ctrl + F5`**.
 
 ---
 
-## 3. Scénario minuté — 3 min 00
+## 3. Scénario minuté — 2 min 50
 
-Dix séquences de 15 à 30 secondes. La narration est écrite pour être **dite**, pas
-lue : environ 240 mots, ce qui laisse la place aux pauses et aux chargements.
+Onze séquences courtes. Le montage est autorisé, donc rien n'a besoin d'être tourné
+d'une traite ; l'objectif est une vidéo qui se termine **avant 3:00**, parce que les
+juges coupent là.
 
 | Temps | Action à l'écran | Narration |
 |---|---|---|
 | **0:00–0:15** | Page d'accueil `/` | « Je suis Anatole, développeur au Burkina Faso. Ici, les organisations perdent leur savoir : rapports sur papier, comptes rendus dans les boîtes mail, chants sur des téléphones. C'est de là que je suis parti. » |
-| **0:15–0:40** | Poser : **« Parle-moi de Meeting6 »** | « Une question. La réponse n'est construite qu'avec les documents que ce compte a le droit de lire, et chaque affirmation porte une source numérotée. Si l'extrait manque, elle le dit au lieu d'inventer. » |
-| **0:40–1:00** | Poser : **« Que dit Meeting6 en mooré ? »** | « Même document, autre langue. Les rapports sont écrits en français, mais les agents qui les utilisent travaillent en mooré — et un rapport que personne ne peut lire est un rapport qui n'existe pas. Le mooré est peu doté, donc les modèles génériques échouent : ici, la plateforme construit la ressource, et refuse d'inventer. » |
-| **1:00–1:30** | `/tache` → cocher **Meeting6** + **Formation** → instruction | « Maintenant une tâche, pas une question : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Le résultat est un document structuré avec ses sources. » |
-| **1:30–1:45** | Cliquer **✦ Nettoyer**, puis **DOCX** | « Un clic retire l'échafaudage, un autre exporte. Le document quitte le navigateur avec ses citations. » |
-| **1:45–2:00** | `/documents` → filtrer **« Espace demo »** | « Neuf documents, chacun montre ses espaces. Ce filtre est un espace privé : zéro résultat. L'accès se calcule par document, pas par écran. » |
-| **2:00–2:15** | Icône cadenas sur **Meeting6** → modale | « L'administration reclasse un document et change qui le lit — avec son propre mot de passe, et l'avant comme l'après sont inscrits au journal. » |
-| **2:15–2:30** | `/administration` → les trois onglets → couronne | « Trois onglets : comptes, espaces, adhésions. La couronne protège un compte : un Super Admin protégé ne peut être ni supprimé, ni suspendu, ni rétrogradé. » |
-| **2:30–2:45** | Se connecter en `membre.demo` → `/documents` → `/journal` | « Même application, un membre : six entrées de menu au lieu de dix, zéro document, et le journal d'audit répond 403. Tout est là — l'interface et le serveur disent la même chose. » |
-| **2:45–3:00** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests automatisés, journal d'audit append-only. Construit seul en neuf jours. Le dépôt est public, le lien est juste là. » |
+| **0:15–0:38** | Poser : **« Parle-moi de Meeting6 »** | « Une question. La réponse n'est construite qu'avec les documents que ce compte a le droit de lire, et chaque affirmation porte une source numérotée. Si l'extrait manque, elle le dit au lieu d'inventer. » |
+| **0:38–0:58** | Poser : **« Que dit Meeting6 en mooré ? »** | « Même document, autre langue. Les rapports sont écrits en français, mais les agents qui les utilisent travaillent en mooré — et un rapport que personne ne peut lire est un rapport qui n'existe pas. Le mooré est peu doté, donc les modèles génériques échouent : ici, la plateforme construit la ressource, et refuse d'inventer. » |
+| **0:58–1:26** | `/tache` → cocher **Meeting6** + **Formation** → instruction | « Maintenant une tâche, pas une question : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Le résultat est un document structuré avec ses sources. » |
+| **1:26–1:40** | Cliquer **✦ Nettoyer**, puis **DOCX** | « Un clic retire l'échafaudage, un autre exporte. Le document quitte le navigateur avec ses citations. » |
+| **1:40–1:54** | `/documents` → filtrer **« Espace demo »** | « Neuf documents, chacun montre ses espaces. Ce filtre est un espace privé : zéro résultat. L'accès se calcule par document, pas par écran. » |
+| **1:54–2:08** | Icône cadenas sur **Meeting6** → modale | « L'administration reclasse un document et change qui le lit — avec son propre mot de passe, et l'avant comme l'après sont inscrits au journal. » |
+| **2:08–2:22** | `/administration` → les trois onglets → couronne | « Trois onglets : comptes, espaces, adhésions. La couronne protège un compte : un Super Admin protégé ne peut être ni supprimé, ni suspendu, ni rétrogradé. » |
+| **2:22–2:36** | Se connecter en `membre.demo` → `/documents` → `/journal` | « Même application, un membre : six entrées de menu au lieu de dix, zéro document, et le journal d'audit répond 403. Tout est là — l'interface et le serveur disent la même chose. » |
+| **2:36–2:44** | **Terminal à côté du navigateur** : le journal des appels | « Chaque appel au modèle est écrit : point d'entrée, modèle, statut, durée. Vous voyez les appels au modèle Meta en direct, et le journal reste dans le dépôt. » |
+| **2:44–2:50** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests automatisés. Construit seul en neuf jours. Le dépôt est public. » |
 
-> **Si tu as cinq secondes de plus** (0:40–1:00) : *« And the audio is kept as the original — the transcript is only one reading of it. »* Cette phrase vaut la démonstration entière : elle dit que la preuve est la voix, pas le texte.
+**Le plan sur le journal n'est pas décoratif** — les organisateurs demandent que
+les appels au modèle soient visibles. Prépare le terminal avant d'enregistrer :
+
+```powershell
+Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\model_calls.log" -Wait -Tail 5
+```
+
+Puis génère une réponse pour que deux ou trois lignes apparaissent pendant la prise.
 
 **Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
 naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent — les

@@ -688,6 +688,46 @@ class MetaClient
      * @param array<string, mixed> $body
      * @return array<string, mixed>
      */
+    /**
+     * Record one model call so the demo can show it and an auditor can replay it.
+     *
+     * No prompt and no answer content is written: only the endpoint, the model,
+     * the HTTP status, the duration and the payload sizes.
+     *
+     * @param array<string, mixed> $body
+     */
+    private function logModelCall(string $url, array $body, int $status, int $durationMs, int $bytesOut, ?string $error): void
+    {
+        try {
+            $dir = dirname(__DIR__, 2) . '/storage/logs';
+
+            // is_writable() reports false on some Windows ACL setups where the write
+            // actually succeeds, so the attempt itself is the only reliable test.
+            if (!is_dir($dir)) {
+                return;
+            }
+
+            $path = (string) (parse_url($url, PHP_URL_PATH) ?: '/');
+            $model = (string) ($body['model'] ?? '-');
+            $bytesIn = strlen((string) json_encode($body, JSON_UNESCAPED_UNICODE));
+
+            $line = sprintf(
+                "%s | POST %-22s | model=%-30s | %d | %5d ms | in=%6d o=%6d%s\n",
+                date('Y-m-d H:i:s'),
+                $path,
+                $model,
+                $status,
+                $durationMs,
+                $bytesIn,
+                $bytesOut,
+                $error === null ? '' : ' | ' . $error
+            );
+
+            file_put_contents($dir . '/model_calls.log', $line, FILE_APPEND | LOCK_EX);
+        } catch (\Throwable) {
+            // Never let observability break a model call.
+        }
+    }
     private function request(string $path, array $body, ?string $url = null, ?string $apiKey = null, ?int $timeout = null): array
     {
         $url ??= rtrim((string) ($this->config['base_url'] ?? ''), '/') . $path;
@@ -705,9 +745,21 @@ class MetaClient
         ]);
         $this->applyCaBundle($handle);
 
+        $startedAt = microtime(true);
         $response = curl_exec($handle);
         $error = curl_error($handle);
+        $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
         curl_close($handle);
+
+        // The jury has to see the live model calls: every request leaves a line.
+        $this->logModelCall(
+            $url,
+            $body,
+            $status,
+            (int) round((microtime(true) - $startedAt) * 1000),
+            $response === false ? 0 : strlen((string) $response),
+            $error !== '' ? $error : null
+        );
 
         if ($response === false) {
             throw new \RuntimeException('Meta API request failed: ' . $error);
