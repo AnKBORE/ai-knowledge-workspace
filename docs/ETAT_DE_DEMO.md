@@ -137,8 +137,8 @@ frequent cause of a gesture that "does not work".
 
 ## 7. What the acceptance run proved
 
-Ten defects were found by **doing the gestures**, not by reading the code. All are
-fixed and recorded in `REGISTRE_PROBLEMES.md` (P-51 to P-60), including four that
+Nineteen defects were found by **doing the gestures**, not by reading the code. All are
+fixed and recorded in `REGISTRE_PROBLEMES.md` (P-51 to P-69), including four that
 would have been visible on camera:
 
 | Defect | What it looked like |

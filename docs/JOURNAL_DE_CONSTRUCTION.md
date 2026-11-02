@@ -556,7 +556,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 ## 9. The acceptance run of 2 November, in the evening
 
 The database was wiped in the morning; the run rebuilt the state by hand and
-found **seventeen defects** that no unit test had caught, because they only
+found **nineteen defects** that no unit test had caught, because they only
 appear when a person does the gesture.
 
 What it cost, and what it bought:

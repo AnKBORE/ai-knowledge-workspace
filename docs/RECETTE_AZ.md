@@ -156,7 +156,7 @@ brand-new super admin account. Sections 1 to 4 were completed end to end;
 section 6 was partially covered (the refusal and the member session replace the
 "empty workspace" that no longer exists).
 
-**Seventeen defects were found and fixed** — `REGISTRE_PROBLEMES.md`, P-51 to
+**Nineteen defects were found and fixed** — `REGISTRE_PROBLEMES.md`, P-51 to
 P-67. Four would have been visible on camera:
 
 | Defect | What it looked like on screen |

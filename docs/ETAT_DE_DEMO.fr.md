@@ -137,8 +137,8 @@ cause d'un geste qui « ne marche pas ».
 
 ## 7. Ce que la recette a prouvé
 
-**Dix défauts** ont été trouvés en **faisant les gestes**, pas en lisant le code.
-Tous corrigés et consignés dans `REGISTRE_PROBLEMES.md` (P-51 à P-60), dont quatre
+**Dix-neuf défauts** ont été trouvés en **faisant les gestes**, pas en lisant le code.
+Tous corrigés et consignés dans `REGISTRE_PROBLEMES.md` (P-51 à P-69), dont quatre
 qui auraient été visibles à la caméra :
 
 | Défaut | Ce que ça donnait à l'écran |

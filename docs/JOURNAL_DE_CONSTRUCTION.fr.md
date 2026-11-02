@@ -564,7 +564,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 ## 9. La recette du 2 novembre, le soir
 
 La base avait été remise à zéro le matin ; la recette a reconstruit l'état à la
-main et trouvé **dix-sept défauts** qu'aucun test unitaire n'avait attrapés, parce
+main et trouvé **dix-neuf défauts** qu'aucun test unitaire n'avait attrapés, parce
 qu'ils n'apparaissent que quand une personne fait le geste.
 
 Ce que ça a coûté, et ce que ça a rapporté :

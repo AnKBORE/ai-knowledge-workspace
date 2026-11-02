@@ -156,8 +156,8 @@ le compte super administrateur fraîchement créé. Les sections 1 à 4 ont ét�
 parcourues de bout en bout ; la section 6 partiellement (le refus et la session
 membre remplacent l'« espace vide » qui n'existe plus).
 
-**Dix-sept défauts ont été trouvés et corrigés** — `REGISTRE_PROBLEMES.fr.md`,
-P-51 à P-67. Quatre auraient été visibles à la caméra :
+**Dix-neuf défauts ont été trouvés et corrigés** — `REGISTRE_PROBLEMES.fr.md`,
+P-51 à P-69. Quatre auraient été visibles à la caméra :
 
 | Défaut | Ce que ça donnait à l'écran |
 |---|---|
