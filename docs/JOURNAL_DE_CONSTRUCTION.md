@@ -25,30 +25,30 @@ new entry.
 
 ---
 
-## 1. State as of 1 November 2026
+## 1. State as of 2 November 2026
 
 ### Volume produced
 
 | Metric | Value | Verification |
 |---|---|---|
-| **Commits** | **220** (**210** since the opening) | `git rev-list --count HEAD` |
-| **Lines added** | **+47,880** (+44,290 since 26/10) | `git log --shortstat` |
-| **Lines deleted** | **−6,145** | idem |
-| **Period covered** | 24 Oct → 1 Nov (8 working days) | `git log --date=short` |
+| **Commits** | **264** (**254** since the opening) | `git rev-list --count HEAD` |
+| **Lines added** | **+56,241** (+52651 since 26/10) | `git log --shortstat` |
+| **Lines deleted** | **−7,624** | idem |
+| **Period covered** | 24 Oct → 2 Nov (9 working days) | `git log --date=short` |
 
 ### The product
 
 | Area | Volume |
 |---|---|
-| Web pages | **8** routes |
-| API endpoints | **20** |
-| SQL migrations | **21** |
+| Web pages | **10** routes |
+| API endpoints | **31** |
+| SQL migrations | **25** |
 | Business services | **22** (10 in `Ai/`) |
 | Models | **10** |
-| Views | **17** |
-| Test files | **23** |
-| **Automated tests** | **100 tests · 230 assertions** |
-| Documentation | **9 files · ≈ 180 KB** |
+| Views | **19** |
+| Test files | **25** |
+| **Automated tests** | **121 tests · 281 assertions** |
+| Documentation | **7 EN/FR pairs + README · ≈ 300 KB** |
 
 ### The stack
 
@@ -73,6 +73,7 @@ PDF: smalot/pdfparser · DOCX: ZipArchive (native OOXML) · PDF: dompdf
 | **30/10** | 6 | +2,137 / −61 | Mooré: translation page, linguistic reference, data bank |
 | **31/10** | 71 | +15,676 / −1,326 | Security, lexicon, human corrections, complete agentic loop |
 | **01/11** | 18 | +1,706 / −739 | Clean deliverable, localised dates, documentation, UI polish |
+| **02/11** | 22 | +3,712 / −416 | Full audit, N-N document↔workspaces, protected accounts, nonce CSP, bilingual documentation |
 
 ---
 
@@ -424,6 +425,21 @@ the appearance of a surface, not its final state — `RagService` 31 commits,
 
 ---
 
+### Additions of 2 November
+
+| File | Role |
+|---|---|
+| `public/api/admin_user_save.php` | account creation (`compte.inviter`) |
+| `admin_user_statut.php`, `admin_user_delete.php`, `admin_user_role.php` | suspension, soft deletion, role change |
+| `admin_user_super.php` | grant / revoke the Super Admin protection |
+| `admin_espace_save.php`, `admin_espace_statut.php` | workspace creation, closure and reopening |
+| `admin_adhesion_save.php`, `admin_adhesion_end.php` | membership, immediate revocation |
+| `document_controle.php` | workspace and confidentiality of an existing document |
+| `espace_actif.php` | choice of the active workspace |
+| `views/ai/administration.php`, `views/ai/espaces.php` | tabbed administration, workspace selection |
+| `migrations/023` → `026` | super admin, ingestion context, document‑workspace link |
+| `tools/smoke_admin_endpoints.php`, `smoke_endpoints_anonymous.php`, `lint_docs.php` | executable checks |
+| `tests/PermissionServiceDocumentsVisiblesTest.php`, `UtilisateurSuperTest.php` | union visibility, protected accounts |
 ## 4ter. MVP audit — 1 November 2026
 
 **Method**: every route and endpoint was called for real with an authenticated
@@ -549,4 +565,4 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 
 ---
 
-*Last updated: 1 November 2026.*
+*Last updated: 2 November 2026.*

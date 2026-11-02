@@ -25,30 +25,30 @@ entrée passée — les corrections se font par une nouvelle entrée.
 
 ---
 
-## 1. État au 1ᵉʳ novembre 2026
+## 1. État au 2 novembre 2026
 
 ### Volume produit
 
 | Métrique | Valeur | Vérification |
 |---|---|---|
-| **Commits** | **220** (dont **210** depuis l'ouverture) | `git rev-list --count HEAD` |
-| **Lignes ajoutées** | **+47 880** (dont +44 290 depuis le 26/10) | `git log --shortstat` |
-| **Lignes supprimées** | **−6 145** | idem |
-| **Période couverte** | 24 → 1ᵉʳ novembre (8 jours de travail) | `git log --date=short` |
+| **Commits** | **264** (dont **254** depuis l'ouverture) | `git rev-list --count HEAD` |
+| **Lignes ajoutées** | **+56 241** (dont +52651 depuis le 26/10) | `git log --shortstat` |
+| **Lignes supprimées** | **−7 624** | idem |
+| **Période couverte** | 24 octobre → 2 novembre (9 jours de travail) | `git log --date=short` |
 
 ### Le produit
 
 | Domaine | Volume |
 |---|---|
-| Pages web | **8** routes |
-| Endpoints API | **20** |
-| Migrations SQL | **21** |
+| Pages web | **10** routes |
+| Endpoints API | **31** |
+| Migrations SQL | **25** |
 | Services métier | **22** (dont 10 dans `Ai/`) |
 | Modèles | **10** |
-| Vues | **17** |
-| Fichiers de test | **23** |
-| **Tests automatisés** | **100 tests · 230 assertions** |
-| Documentation | **8 fichiers · ≈ 160 Ko** |
+| Vues | **19** |
+| Fichiers de test | **25** |
+| **Tests automatisés** | **121 tests · 281 assertions** |
+| Documentation | **7 paires EN/FR + README · ≈ 300 Ko** |
 
 ### La pile
 
@@ -61,7 +61,7 @@ PDF : smalot/pdfparser · DOCX : ZipArchive (OOXML natif) · PDF : dompdf
 
 ---
 
-## 2. Les 8 jours en un tableau
+## 2. Les 9 jours en un tableau
 
 | Date | Commits | Lignes | Ce qui a été construit |
 |---|---|---|---|
@@ -73,6 +73,7 @@ PDF : smalot/pdfparser · DOCX : ZipArchive (OOXML natif) · PDF : dompdf
 | **30/10** | 6 | +2 137 / −61 | Mooré : page de traduction, référence linguistique, banque de données |
 | **31/10** | 71 | +15 676 / −1 326 | Sécurité, lexique, corrections humaines, boucle agentique complète |
 | **01/11** | 18 | +1 706 / −739 | Livrable propre, i18n des dates, documentation, finitions UI |
+| **02/11** | 22 | +3 712 / −416 | Audit complet, N‑N document↔espaces, comptes protégés, CSP par nonce, documentation bilingue |
 
 ---
 
@@ -423,6 +424,21 @@ modifié **une trentaine de fois** entre le 24 octobre et le 1ᵉʳ novembre. La
 de création donne l'apparition d'une surface, pas son état final.
 ---
 
+### Ajouts du 2 novembre
+
+| Fichier | Rôle |
+|---|---|
+| `public/api/admin_user_save.php` | création de compte (`compte.inviter`) |
+| `admin_user_statut.php`, `admin_user_delete.php`, `admin_user_role.php` | suspension, suppression logique, changement de rôle |
+| `admin_user_super.php` | accorder / retirer la protection Super Admin |
+| `admin_espace_save.php`, `admin_espace_statut.php` | création d'espace, clôture et réouverture |
+| `admin_adhesion_save.php`, `admin_adhesion_end.php` | adhésion, révocation immédiate |
+| `document_controle.php` | espace et confidentialité d'un document existant |
+| `espace_actif.php` | choix de l'espace de travail actif |
+| `views/ai/administration.php`, `views/ai/espaces.php` | administration en onglets, sélection d'espace |
+| `migrations/023` → `026` | super admin, contexte d'ingestion, liaison document‑espace |
+| `tools/smoke_admin_endpoints.php`, `smoke_endpoints_anonymous.php`, `lint_docs.php` | vérifications exécutables |
+| `tests/PermissionServiceDocumentsVisiblesTest.php`, `UtilisateurSuperTest.php` | visibilité par union, comptes protégés |
 ## 4ter. Audit du MVP — 1ᵉʳ novembre 2026
 
 **Méthode** : chaque route et chaque endpoint a été appelé réellement avec une
@@ -557,4 +573,4 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 
 ---
 
-*Dernière mise à jour : 1ᵉʳ novembre 2026.*
+*Dernière mise à jour : 2 novembre 2026.*
