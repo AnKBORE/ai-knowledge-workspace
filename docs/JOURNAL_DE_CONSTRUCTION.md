@@ -61,7 +61,7 @@ PDF: smalot/pdfparser · DOCX: ZipArchive (native OOXML) · PDF: dompdf
 
 ---
 
-## 2. The eight days in one table
+## 2. The nine days in one table
 
 | Date | Commits | Lines | What was built |
 |---|---|---|---|
