@@ -45,6 +45,15 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
     </div>
 </section>
 
+<?php if (($nbSuperAdmins ?? 0) === 0 && !empty($canInvite)): ?>
+    <div class="alert alert-warning" role="status">
+        <?= e($t(
+            'Aucun compte n\'est protégé : la protection est désactivée. `php tools/seed_admin.php` la rétablit.',
+            'No account is protected: the protection is disabled. `php tools/seed_admin.php` restores it.'
+        )) ?>
+    </div>
+<?php endif; ?>
+
 <?php if (!empty($adminFlash)): ?>
     <div class="alert alert-<?= e($adminFlash['type'] === 'error' ? 'danger' : 'success') ?>" role="status">
         <?= e((string) $adminFlash['text']) ?>
@@ -160,7 +169,7 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                                   aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                             </span>
-                                            <?php if (($nbSuperAdmins ?? 0) > 1 && !empty($estSuperActeur)): ?>
+                                            <?php if (!empty($estSuperActeur)): ?>
                                                 <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline ms-1">
                                                     <?= $csrf?->field() ?? '' ?>
                                                     <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
@@ -169,7 +178,9 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                                             title="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
                                                             aria-label="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
                                                             data-confirm-title="<?= e($t('Retirer la protection ?', 'Remove the protection?')) ?>"
-                                                            data-confirm-text="<?= e($t('Ce compte redevient un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
+                                                            data-confirm-text="<?= e(($nbSuperAdmins ?? 0) <= 1
+                                                                ? $t('C\'est le dernier compte protégé : plus aucun ne le sera. La protection pourra être rétablie en ligne de commande.', 'This is the last protected account: none will remain. The protection can be restored from the command line.')
+                                                                : $t('Ce compte redevient un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M9 16h6"/></svg>
                                                     </button>
                                                 </form>

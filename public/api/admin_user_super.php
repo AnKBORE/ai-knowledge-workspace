@@ -109,22 +109,26 @@ if ($action === 'grant') {
     ]);
 }
 
-// Revocation: never the last one.
-try {
-    $dependencies['users']->retirerSuperAdmin($targetId);
-} catch (RuntimeException $e) {
-    $dependencies['journal']->log($userId, 'securite.refus', 'utilisateur', $targetId, 'refus', ['raison' => 'dernier_super_admin']);
+$dependencies['users']->retirerSuperAdmin($targetId);
 
-    $respond(['error' => $isFr
-        ? 'Impossible : il doit toujours rester au moins un compte protégé.'
-        : 'Impossible: at least one protected account must always remain.'], 409);
+$restants = count($dependencies['users']->superAdmins());
+
+// Reaching zero is allowed, but it is a distinct event: the installation
+// no longer has a protected account.
+if ($restants === 0) {
+    $dependencies['journal']->log($userId, 'compte.super_desactivation', 'utilisateur', $targetId, 'succes', [
+        'source' => 'interface',
+    ]);
+} else {
+    $dependencies['journal']->log($userId, 'compte.super_retrait', 'utilisateur', $targetId, 'succes', [
+        'source' => 'interface',
+    ]);
 }
-
-$dependencies['journal']->log($userId, 'compte.super_retrait', 'utilisateur', $targetId, 'succes', [
-    'source' => 'interface',
-]);
 
 $respond([
     'id' => $targetId,
-    'message' => $isFr ? 'Protection retirée.' : 'Protection removed.',
+    'protections' => $restants,
+    'message' => $restants === 0
+        ? ($isFr ? 'Protection désactivée : plus aucun compte n\'est protégé.' : 'Protection disabled: no account is protected anymore.')
+        : ($isFr ? 'Protection retirée.' : 'Protection removed.'),
 ]);

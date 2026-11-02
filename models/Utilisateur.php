@@ -149,10 +149,8 @@ final class Utilisateur
     }
 
     /**
-     * Removes the protection from one account. The installation must never be
-     * left without a protected account, so the last one cannot be removed.
-     *
-     * @throws \RuntimeException when the target is the last protected account
+     * Removes the protection from one account, including the last one: the
+     * protection can be switched off entirely.
      */
     public function retirerSuperAdmin(int $id): void
     {
@@ -160,13 +158,9 @@ final class Utilisateur
             return;
         }
 
-        $stmt = $this->db->query('SELECT COUNT(*) FROM utilisateur WHERE compte_super = 1 AND supprime_le IS NULL');
-        $proteges = (int) $stmt->fetchColumn();
-
-        if ($proteges <= 1) {
-            throw new \RuntimeException('dernier_super_admin');
-        }
-
+        // Protection is intentional, not mandatory: it may be switched off
+        // completely. The interface warns, and the bootstrap script restores
+        // a protected account on demand.
         $this->db->prepare('UPDATE utilisateur SET compte_super = 0 WHERE id = :id')
             ->execute(['id' => $id]);
     }

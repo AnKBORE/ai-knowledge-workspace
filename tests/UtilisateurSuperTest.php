@@ -102,18 +102,26 @@ final class UtilisateurSuperTest extends TestCase
         $this->assertCount(1, $this->users->superAdmins());
     }
 
-    public function test_the_last_protected_account_cannot_be_revoked(): void
+    public function test_the_protection_can_be_disabled_entirely(): void
     {
         $only = $this->users->create('only@org.org', 'Seul', 'Admin', 'hash', 'administrateur_technique', true);
 
-        try {
-            $this->users->retirerSuperAdmin($only);
-            $this->fail('The installation was left without a protected account.');
-        } catch (RuntimeException $e) {
-            $this->assertSame('dernier_super_admin', $e->getMessage());
-        }
+        $this->users->retirerSuperAdmin($only);
+
+        $this->assertFalse($this->users->estCompteSuper($only));
+        $this->assertNull($this->users->compteSuperId());
+        $this->assertSame([], $this->users->superAdmins());
+    }
+
+    public function test_removing_every_protection_is_reversible(): void
+    {
+        $only = $this->users->create('only@org.org', 'Seul', 'Admin', 'hash', 'administrateur_technique', true);
+
+        $this->users->retirerSuperAdmin($only);
+        $this->users->accorderSuperAdmin($only);
 
         $this->assertTrue($this->users->estCompteSuper($only));
+        $this->assertSame($only, $this->users->compteSuperId());
     }
 
     public function test_granting_restores_an_account_and_makes_it_technical(): void

@@ -131,19 +131,20 @@ if ($revoke !== null && $revoke !== '') {
         exit(1);
     }
 
-    try {
-        $users->retirerSuperAdmin((int) $cible['id']);
-    } catch (\RuntimeException $e) {
-        fwrite(STDERR, "Refused: the installation must keep at least one protected account.\n");
-        exit(1);
-    }
+    $users->retirerSuperAdmin((int) $cible['id']);
 
-    $journal->log(null, 'compte.super_retrait', 'utilisateur', (int) $cible['id'], 'succes', [
+    $restants = count($users->superAdmins());
+
+    $journal->log(null, $restants === 0 ? 'compte.super_desactivation' : 'compte.super_retrait', 'utilisateur', (int) $cible['id'], 'succes', [
         'courriel' => $revoke,
     ]);
 
     echo "Protection removed from {$revoke}\n";
-    echo 'Protected accounts left: ' . count($users->superAdmins()) . "\n";
+    echo 'Protected accounts left: ' . $restants . "\n";
+
+    if ($restants === 0) {
+        echo "No account is protected anymore. Run without arguments to restore one.\n";
+    }
     exit(0);
 }
 
