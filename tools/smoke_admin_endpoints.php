@@ -102,17 +102,35 @@ if ($memberToken === null || $adminToken === null) {
     exit(2);
 }
 
+// admin_user_super is only reachable by a protected account: for anyone else
+// the expected answer is 403, not 422. Detect it from the administration page.
+$adminIsSuper = str_contains(
+    http('GET', $base . '/administration', $adminJar)['body'],
+    'admin_user_super'
+);
+
 $probes = [
     ['anonymous', $anonymousJar, [], 401],
     ['member', $memberJar, ['_csrf' => $memberToken], 403],
     ['admin, no password', $adminJar, ['_csrf' => $adminToken], 422],
 ];
 
+if (!$adminIsSuper) {
+    echo "Note: the configured administrator is not a Super Admin; "
+        . "admin_user_super is expected to answer 403.\n\n";
+}
+
 $failures = 0;
 $rows = [];
 
 foreach ($endpoints as $endpoint) {
     foreach ($probes as [$label, $jar, $fields, $expected]) {
+        // A non-protected administrator is refused by admin_user_super before
+        // the password is even looked at.
+        if ($endpoint === 'admin_user_super.php' && !$adminIsSuper && $label === 'admin, no password') {
+            $expected = 403;
+        }
+
         $response = http('POST', $base . '/api/' . $endpoint, $jar, $fields);
         $ok = $response['status'] === $expected;
         $failures += $ok ? 0 : 1;
