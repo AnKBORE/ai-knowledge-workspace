@@ -30,6 +30,10 @@ final class JournalService
         array $details = [],
         ?string $ip = null,
     ): void {
+        // The column is an enum: an unknown value would be stored as an empty
+        // string, which is exactly how a failed deposit went unrecorded.
+        $resultat = in_array($resultat, ['succes', 'refus', 'erreur'], true) ? $resultat : 'erreur';
+
         try {
             $this->db->prepare(
                 'INSERT INTO journal (acteur_id, action, objet_type, objet_id, resultat, adresse_ip, details)

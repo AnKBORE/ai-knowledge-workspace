@@ -54,7 +54,7 @@ try {
 } catch (\Throwable $e) {
     error_log('[ingest_worker] job ' . $jobId . ' failed: ' . $e->getMessage());
     $jobs->fail($jobId, $dependencies['ingestion']->errorMessage($e, $T));
-    $dependencies['journal']->log((int) $job['utilisateur_id'], 'document.depot', 'document', null, 'echec', [
+    $dependencies['journal']->log((int) $job['utilisateur_id'], 'document.depot', 'document', null, 'erreur', [
         'titre' => (string) $job['titre'],
         'erreur' => mb_substr($e->getMessage(), 0, 200),
     ]);
