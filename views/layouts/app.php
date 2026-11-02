@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 /** @var string $content */
 $productName = (string) config('app.name', 'Agentic Knowledge Workspace');
-$locale = (string) config('app.locale', 'fr');
+// The declared document language follows the language actually rendered: the page
+// content comes from the session, so the config default must never contradict it.
+$locale = (string) ($lang ?? config('app.locale', 'en'));
 $currentUser = $currentUser ?? null;
 $csrf = $csrf ?? null;
 $displayName = is_array($currentUser)
