@@ -26,6 +26,10 @@
     // Bound before anything else: a later init error must never disable
     // deleting a document.
     bindDeleteButtons();
+
+    // The server-rendered rows carry .doc-confirm (summarize, download):
+    // binding them only after a dynamic refresh left the buttons inert on load.
+    bindDocConfirm();
     /* Category deletion asks for confirmation through a data attribute: inline
        handlers are forbidden by the CSP. */
     document.addEventListener('submit', function (event) {
