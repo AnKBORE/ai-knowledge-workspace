@@ -32,6 +32,21 @@ That last rule is why every model call now writes a line to
 
 ---
 
+### Judging weights — announced 2 November, 15:03
+
+| Criterion | Weight | What the video must therefore carry |
+|---|---|---|
+| **Impact** | **30 %** | the problem, the people, and why it changes their work |
+| **Use of Meta AI Tooling** | **25 %** | where the Meta models sit in the flow, shown live |
+| **Technical Depth and Execution** | **20 %** | the chain holds under real conditions |
+| **Demo** | **25 %** | the product, end to end, no slides |
+
+Consequences for the script below: the first line states **what existed before the
+event and what was built this week**, the Meta model calls are shown live at 2:40,
+and the closing sentence returns to the impact rather than to the stack.
+
+---
+
 ## 1. What the demo must prove (and nothing more)
 
 Five ideas, in this order. Everything else is decoration.
@@ -112,7 +127,7 @@ is accelerated in the edit — not cut.
 
 | Time | Action on screen | Narration |
 |---|---|---|
-| **0:00–0:08** | Landing page `/` | "In Burkina Faso, knowledge is spoken before it is written. Watch what happens to a voice in the next three minutes." |
+| **0:00–0:08** | Landing page `/` | "Before this week, this organisation had no way to search its own recordings. In nine days I built one. Watch what happens to a voice in the next three minutes." |
 | **0:08–0:48** | `/ajouter` → **record 12 seconds**, stop, upload | "I record a sentence nobody has written anywhere: *the Koudougou site starts on 12 January, budget four million.* The audio is kept as the original, its fingerprint computed, then transcribed and indexed." |
 | **0:48–1:10** | `/` → ask **"When does the Koudougou site start?"** | "A fact that exists only as sound, thirty seconds ago. The answer comes back with the source: the recording. That is the whole point — a report nobody can hear does not exist." |
 | **1:10–1:30** | Ask **"What does Meeting6 say in Mooré?"** | "Same engine, another language. The reports are written in French, the agents work in Mooré. Mooré is low-resource, so generic models fail here: the platform builds the resource and refuses to invent." |
@@ -120,7 +135,7 @@ is accelerated in the edit — not cut.
 | **1:58–2:28** | `/documents` → filter → lock modal → `/administration` tabs + crown | "Nine documents, each with its workspaces; this private workspace returns zero. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
 | **2:28–2:40** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: zero documents, and the audit journal answers 403. The interface and the server agree." |
 | **2:40–2:47** | Terminal beside the browser: the call log | "Every model call is written down: endpoint, model, status, duration — live, and kept in the repository." |
-| **2:47–2:50** | Back to `/` | "PHP 8.4, MySQL 8.4, 121 tests. Built solo in nine days." |
+| **2:47–2:50** | Back to `/` | "121 tests, an audit trail, and knowledge that used to disappear now answers questions. Built solo, in nine days." |
 
 ### Before the take — the four things that make the opening work
 

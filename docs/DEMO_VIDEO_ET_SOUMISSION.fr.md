@@ -32,6 +32,22 @@ ligne dans `storage/logs/model_calls.log`, et que l'enregistrement la montre.
 
 ---
 
+### Pondération du jury — annoncée le 2 novembre, 15:03
+
+| Critère | Poids | Ce que la vidéo doit donc porter |
+|---|---|---|
+| **Impact** | **30 %** | le problème, les personnes, et ce que ça change dans leur travail |
+| **Usage de l'outillage Meta** | **25 %** | où se situent les modèles Meta dans le parcours, montré en direct |
+| **Profondeur technique et exécution** | **20 %** | la chaîne tient dans des conditions réelles |
+| **Démo** | **25 %** | le produit, de bout en bout, sans diapositives |
+
+Conséquences pour le scénario ci-dessous : la première phrase dit **ce qui existait
+avant l'événement et ce qui a été construit cette semaine**, les appels au modèle Meta
+sont montrés en direct à 2:40, et la phrase de clôture revient sur l'impact plutôt
+que sur la pile technique.
+
+---
+
 ## 1. Ce que la démo doit prouver (et rien de plus)
 
 Trois idées, dans cet ordre. Tout le reste est du décor.
@@ -112,7 +128,7 @@ transcription lente est **accélérée au montage**, jamais coupée.
 
 | Temps | Action à l'écran | Narration |
 |---|---|---|
-| **0:00–0:08** | Page d'accueil `/` | « Au Burkina Faso, le savoir se dit avant de s'écrire. Regardez ce qui arrive à une voix dans les trois prochaines minutes. » |
+| **0:00–0:08** | Page d'accueil `/` | « Avant cette semaine, cette organisation n'avait aucun moyen de chercher dans ses propres enregistrements. En neuf jours, j'en ai construit un. Regardez ce qui arrive à une voix dans les trois prochaines minutes. » |
 | **0:08–0:48** | `/ajouter` → **enregistrer 12 secondes**, arrêter, envoyer | « J'enregistre une phrase que personne n'a écrite nulle part : *le chantier de Koudougou démarre le 12 janvier, budget quatre millions.* L'audio est conservé comme original, son empreinte calculée, puis transcrit et indexé. » |
 | **0:48–1:10** | `/` → poser **« Quand démarre le chantier de Koudougou ? »** | « Un fait qui n'existe que sous forme de son, il y a trente secondes. La réponse revient avec sa source : l'enregistrement. Tout est là — un rapport que personne ne peut entendre n'existe pas. » |
 | **1:10–1:30** | Poser **« Que dit Meeting6 en mooré ? »** | « Même moteur, autre langue. Les rapports sont écrits en français, les agents travaillent en mooré. Le mooré est peu doté, donc les modèles génériques échouent : la plateforme construit la ressource et refuse d'inventer. » |
@@ -120,7 +136,7 @@ transcription lente est **accélérée au montage**, jamais coupée.
 | **1:58–2:28** | `/documents` → filtre → modale cadenas → `/administration` onglets + couronne | « Neuf documents, chacun avec ses espaces ; cet espace privé renvoie zéro. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
 | **2:28–2:40** | Connexion `membre.demo` → `/documents` → `/journal` | « Même application, un membre : zéro document, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
 | **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Chaque appel au modèle est écrit : point d'entrée, modèle, statut, durée — en direct, et conservé dans le dépôt. » |
-| **2:47–2:50** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests. Construit seul en neuf jours. » |
+| **2:47–2:50** | Retour à `/` | « 121 tests, un journal d'audit, et un savoir qui disparaissait répond désormais aux questions. Construit seul, en neuf jours. » |
 
 ### Avant la prise — les quatre choses qui font marcher l'ouverture
 
