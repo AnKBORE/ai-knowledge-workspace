@@ -2383,6 +2383,29 @@
             var titleEl = document.getElementById('doc-audio-title');
             if (titleEl) titleEl.textContent = ltDocTitle || titleEl.textContent;
             ltReset();
+
+            // The language of the sound is known from the document itself:
+            // leaving the field on an empty "auto" made it look unfilled.
+            var docLang = (btn.getAttribute('data-document-lang') || '').toLowerCase();
+            var fromValue = '';
+
+            if (ltFrom && docLang) {
+                for (var oi = 0; oi < ltFrom.options.length; oi++) {
+                    if (ltFrom.options[oi].value === docLang) {
+                        fromValue = docLang;
+                        break;
+                    }
+                }
+            }
+
+            if (ltFrom) {
+                if (window.jQuery && jQuery(ltFrom).hasClass('select2-hidden-accessible')) {
+                    jQuery(ltFrom).val(fromValue).trigger('change.select2');
+                } else {
+                    ltFrom.value = fromValue;
+                }
+            }
+
             if (window.jQuery && jQuery(ltLang).hasClass('select2-hidden-accessible')) {
                 jQuery(ltLang).val('').trigger('change.select2');
             } else if (ltLang) {
