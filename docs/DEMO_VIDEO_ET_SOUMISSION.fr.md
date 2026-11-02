@@ -84,7 +84,7 @@ cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : `OK (121 tests, 281 assertions)` — **sans** avertissement.
+Attendu : `OK (124 tests, 295 assertions)` — **sans** avertissement.
 
 ### 2.3 Vérifier l'état de la base de démonstration
 
@@ -136,7 +136,7 @@ transcription lente est **accélérée au montage**, jamais coupée.
 | **1:58–2:28** | `/documents` → filtre → modale cadenas → `/administration` onglets + couronne | « Neuf documents, chacun avec ses espaces ; cet espace privé renvoie zéro. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
 | **2:28–2:40** | Connexion `membre.demo` → `/documents` → `/journal` | « Même application, un membre : zéro document, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
 | **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Muse Spark Open est un modèle à poids ouverts de Meta, sur Baseten — pour les réponses, la tâche agentique, la traduction, la vision et l'audio. Chaque appel est écrit : point d'entrée, modèle, statut, durée. En direct, et conservé dans le dépôt. » |
-| **2:47–2:50** | Retour à `/` | « 121 tests, un journal d'audit, et un savoir qui disparaissait répond désormais aux questions. Construit seul, en neuf jours. » |
+| **2:47–2:50** | Retour à `/` | « 124 tests, un journal d'audit, et un savoir qui disparaissait répond désormais aux questions. Construit seul, en neuf jours. » |
 
 ### Avant la prise — les quatre choses qui font marcher l'ouverture
 
@@ -184,7 +184,7 @@ Si une séquence échoue pendant l'enregistrement, **ne t'arrête pas** — ench
 | La réponse est hors sujet | Reformule en une phrase plus courte, ou utilise une question déjà testée |
 | Le mooré ne sort pas | Montre la **traduction** FR→MO sur `/traduire` (2,5 s, vérifiée) |
 | Le modal de correction est vide | Montre le **badge** dans les sources de la réponse (même preuve, 3 s) |
-| Plus aucune connexion API | Montre les **121 tests verts** + la page de présentation : le produit tient sans démo live |
+| Plus aucune connexion API | Montre les **124 tests verts** + la page de présentation : le produit tient sans démo live |
 
 > **Filet de sécurité** : enregistre **deux** prises. Garde la meilleure. Une vidéo un peu moins fluide vaut mieux qu'une vidéo absente.
 
@@ -207,7 +207,7 @@ Si une séquence échoue pendant l'enregistrement, **ne t'arrête pas** — ench
 
 | Métrique | Valeur |
 |---|---|
-| **Tests automatisés** | **121 tests · 281 assertions** (SQLite en mémoire, aucun serveur requis) |
+| **Tests automatisés** | **124 tests · 295 assertions** (SQLite en mémoire, aucun serveur requis) |
 | **Traçabilité** | **21 types d'actions** journalisées, refus compris, journal **en ajout seul** |
 | **Pipeline agentique** | **6 étapes** : plan → retrieve → scope → draft → verify → conformity |
 | **Retrieval** | Score hybride `0,6 sémantique + 0,4 lexical`, expansion aux voisins, **priorité aux corrections** |
@@ -279,7 +279,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : migrations appliquées **et** `OK (121 tests, 281 assertions)`.
+Attendu : migrations appliquées **et** `OK (124 tests, 295 assertions)`.
 
 > Si ça passe, le dépôt est **prêt pour le jury**.
 

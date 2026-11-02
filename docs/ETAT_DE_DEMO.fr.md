@@ -70,6 +70,30 @@ Transcription du document 4 :
 Les deux documents du membre sont exactement ceux classés dans Chantier test. Rien
 de Général ne fuit, et le refus est explicite plutôt qu'une réponse fausse.
 
+### 4.1 Routes prenant un identifiant de document — mesuré en session membre
+
+| Route, sur un document classé uniquement dans Général | anatole | membre.recette |
+|---|---|---|
+| `reformulate.php` | 200 | **403** |
+| `translate_document.php` | 200 | **403** |
+| `correction_list.php` | 200 | **403** |
+| `correction_download.php` | 200 | **403** |
+| `summarize.php` | un résumé | *« not accessible »* |
+| tâche agentique le demandant | acceptée | **refusée**, 0 source |
+
+La règle est figée par `testCanConsultDocument*` dans `PermissionServiceDocumentsVisiblesTest`.
+
+### 4.2 Même question, deux espaces — les valeurs exactes
+
+| Question | Général | Chantier test |
+|---|---|---|
+| « quel est le budget approuvé pour la construction de l'école ? » | **10 millions de francs CFA**, source : l'enregistrement | **refus** |
+| « liste tous les documents » (catalogue) | **4** documents | **2** documents |
+| tâche agentique sur les budgets | cite les documents **4 et 1** | cite les documents **1 et 2** |
+
+Ce sont les chiffres à retrouver à la caméra. Si l'un diffère, l'état a changé :
+relire ce fichier avant d'enregistrer.
+
 ---
 
 ## 5. Scénario de démonstration — les dix gestes et ce qui doit apparaître
@@ -97,7 +121,7 @@ C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace 
   -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"   # 4
 
 # 2. La suite est verte
-php vendor/phpunit/phpunit/phpunit                                 # 121 tests
+php vendor/phpunit/phpunit/phpunit                                 # 124 tests
 
 # 3. La chaîne tient
 php tools/prove_provenance.php 4

@@ -466,6 +466,12 @@ recorded. A bot could otherwise flood the append-only journal and bury the real
 events. Only refusals involving a real session are traced.
 ---
 
+### One question per document
+
+A route that accepts a `document_id` must answer "may this user read *this* document?", not only "does this user hold the right to consult documents?". `PermissionService::peutConsulterDocument()` answers it in one place, and every route taking a document id calls it: reformulation, translation, the correction list, the correction download. The refusal is journaled with the reason `document_hors_perimetre`.
+
+The active workspace narrows the same set at four call sites in `RagService`: `answer()`, the document catalogue, `task()`, and the documents a task explicitly requests. Measured: a workspace holding two documents refuses the question that `Général` answers, and lists two documents where it used to list four.
+
 ### Nonce-based CSP
 
 `script-src 'self' 'nonce-…'`: the nonce is generated once per request (`csp_nonce()`), carried by the three inline scripts, and **no inline script runs without it**. Inline event handlers (`onsubmit="…"`) were replaced by `data-*` attributes handled in JavaScript. `style-src` keeps `'unsafe-inline'` for the dynamic colours of the views.
@@ -480,7 +486,7 @@ An endpoint receiving `Accept: application/json` (or `X-Requested-With: XMLHttpR
 
 ## 11. Tests
 
-`vendor/bin/phpunit` — **121 tests, 281 assertions**, without a database or an API.
+`vendor/bin/phpunit` — **124 tests, 295 assertions**, without a database or an API.
 
 | File | What it protects |
 |---|---|

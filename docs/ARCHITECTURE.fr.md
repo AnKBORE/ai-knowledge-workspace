@@ -470,6 +470,12 @@ enregistrée. Un robot pourrait sinon noyer le journal en ajout seul et enterrer
 les événements réels. Seuls les refus impliquant une session réelle sont tracés.
 ---
 
+### Une question par document
+
+Une route qui accepte un `document_id` doit répondre à « cet utilisateur peut-il lire **ce** document ? », pas seulement « cet utilisateur a-t-il le droit de consulter des documents ? ». `PermissionService::peutConsulterDocument()` y répond en un seul endroit, et chaque route qui prend un identifiant de document l'appelle : réformulation, traduction, liste et téléchargement des corrections. Le refus est journalisé avec la raison `document_hors_perimetre`.
+
+L'espace actif resserre le même ensemble à quatre endroits de `RagService` : `answer()`, le catalogue des documents, `task()`, et les documents qu'une tâche demande explicitement. Mesuré : un espace qui contient deux documents refuse la question à laquelle « Général » répond, et liste deux documents là où il en listait quatre.
+
 ### CSP par nonce
 
 `script-src 'self' 'nonce-…'` : le nonce est généré une fois par requête (`csp_nonce()`), posé sur les trois scripts inline, et **aucun script inline ne s'exécute sans lui**. Les gestionnaires d'événements inline (`onsubmit="…"`) ont été remplacés par des attributs `data-*` traités en JavaScript. `style-src` conserve `'unsafe-inline'` pour les couleurs dynamiques des vues.
@@ -484,7 +490,7 @@ Un endpoint qui reçoit `Accept: application/json` (ou `X-Requested-With: XMLHtt
 
 ## 11. Tests
 
-`vendor/bin/phpunit` — **121 tests, 281 assertions**, sans base de données ni API.
+`vendor/bin/phpunit` — **124 tests, 295 assertions**, sans base de données ni API.
 
 | Fichier | Ce qu'il protège |
 |---|---|

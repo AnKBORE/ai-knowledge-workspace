@@ -349,6 +349,27 @@ Ces gardes ferment l'écart entre ce que l'interface montre et ce que le serveur
 
 Conséquence mesurée : un membre rattaché à un autre espace reçoit `[]` sur la liste et **404** sur un téléchargement par identifiant — l'existence du document n'est pas révélée.
 
+L'espace actif resserre ensuite cet ensemble à quatre endroits : la question (`answer`), le catalogue des documents, la tâche agentique et ses documents demandés. Mesuré : dans un espace qui contient deux documents, la même question refuse là où « Général » répond, et une question de catalogue cite deux documents là où elle en citait quatre.
+
+### 19.8 Le document, pas seulement le droit
+
+L'audit du 2 novembre 2026 a trouvé trois routes acceptant un `document_id` après avoir vérifié seulement le droit **global** de consulter des documents : la réformulation, la traduction, et la liste et le téléchargement des corrections. Un membre pouvait donc lire un document d'un espace dont il n'est pas membre en devinant son identifiant.
+
+`PermissionService::peutConsulterDocument()` répond désormais à cette question en un seul endroit, et chaque route qui prend un identifiant de document l'appelle. Un refus est journalisé en `securite.refus` avec la raison `document_hors_perimetre`.
+
+Mesuré, en session membre, sur un document classé uniquement dans « Général » :
+
+| Route | Résultat |
+|---|---|
+| `reformulate.php` | **403** |
+| `translate_document.php` | **403** |
+| `correction_list.php` | **403** |
+| `correction_download.php` | **403** |
+| `summarize.php` (via `RagService`) | *« not accessible with your permissions »* |
+| tâche agentique le demandant | **refusée**, zéro source |
+
+Trois tests figent la règle (`testCanConsultDocument*`), donc elle ne peut pas régresser en silence.
+
 ### 19.6 CSRF sur les appels JSON
 
 Un wrapper `fetch` (début de `workspace.js`) ajoute l'en-tête `X-CSRF-Token` lu depuis `<meta name="csrf-token">` à **tous** les appels. Côté serveur, `Csrf::validateRequest()` accepte `$_POST['_csrf']` ou l'un des en-têtes `X-CSRF-Token` / `X-XSRF-Token`.
@@ -359,7 +380,7 @@ Un wrapper `fetch` (début de `workspace.js`) ajoute l'en-tête `X-CSRF-Token` l
 php tools/smoke_admin_endpoints.php        # 27 vérifications, 9 endpoints
 php tools/smoke_endpoints_anonymous.php    # 31 endpoints × 2 méthodes, sans session
 php tools/lint_docs.php                    # structure de la documentation
-php vendor/phpunit/phpunit/phpunit         # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit         # 124 tests, 295 assertions
 ```
 
 Le balayage anonyme vérifie deux choses : le **statut** (401/403/405/419/422) et l'**absence de clé de données** dans le corps (`"documents"`, `"entries"`, `"chunks"`, `"url"`, `"answer"`, `"job_id"`).

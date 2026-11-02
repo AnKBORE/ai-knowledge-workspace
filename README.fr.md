@@ -75,6 +75,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - **Espace et confidentialité au dépôt.** Le déposant choisit l'espace et la confidentialité ; `public_interne` est réservé aux administrateurs ; le contexte survit à la file des dépôts différés (migration 026).
 - **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité ; son mot de passe est exigé et les valeurs **avant/après** sont journalisées.
 - **Il refuse plutôt que de deviner.** Quand le meilleur extrait tombe sous 0,25 — mesuré : une correspondance pertinente est à 0,53 et plus, un hors-sujet à 0,17 et moins — la réponse nomme l'espace et réclame le document manquant, plutôt que de produire une phrase confiante sur le mauvais sujet.
+- **Il vérifie le document, pas seulement le droit.** Chaque route qui prend un identifiant de document appelle `peutConsulterDocument()` : la réformulation, la traduction et les corrections sont refusées pour un document hors des espaces de l'utilisateur, refus journalisé.
 - **L'espace actif limite l'assistant.** L'espace affiché en haut de page n'est pas décoratif : une question n'est répondue qu'à partir des documents de cet espace. Change d'espace, et la même question renvoie ce que cet espace contient — c'est ainsi qu'un projet reste un projet.
 - **Liste des documents cloisonnée.** La page et l'API ne renvoient que les documents visibles ; un document inaccessible répond **404**, sans révéler son existence.
 - **Badges et filtre par espace.** La liste affiche les espaces de chaque document et se filtre par espace, y compris combiné à la recherche.
@@ -306,7 +307,7 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **121 tests automatisés · 281 assertions** |
+| **Tests** | **124 tests automatisés · 295 assertions** |
 | **Sécurité** | Argon2 · CSP par nonce · CSRF · journal d'audit |
 | **Périmètre** | **10 pages** · **31 endpoints** · **25 migrations** · **3 outils de vérification** |
 | **UI** | Bilingue EN/FR (EN par défaut) — mooré géré pour le contenu (réponses, tâches, traduction), Bootstrap + DataTables + Select2 |
@@ -390,14 +391,14 @@ Endpoints API (protégés par session) :
 ## Tests
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit                  # 124 tests, 295 assertions
 php tools/smoke_admin_endpoints.php                 # 27 vérifications sur 9 endpoints
 php tools/smoke_endpoints_anonymous.php             # 31 endpoints × 2 méthodes, sans session
 php tools/lint_docs.php                             # structure de la documentation
   php tools/prove_provenance.php 30                   # chaîne de provenance, octets vérifiés
 ```
 
-**121 tests, 281 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**124 tests, 295 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 

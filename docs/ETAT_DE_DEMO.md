@@ -70,6 +70,30 @@ Document 4's transcript:
 The member's two documents are exactly the two filed in Chantier test. Nothing
 from Général leaks, and the refusal is explicit rather than a wrong answer.
 
+### 4.1 Routes taking a document id — measured in a member session
+
+| Route, on a document filed only in Général | anatole | membre.recette |
+|---|---|---|
+| `reformulate.php` | 200 | **403** |
+| `translate_document.php` | 200 | **403** |
+| `correction_list.php` | 200 | **403** |
+| `correction_download.php` | 200 | **403** |
+| `summarize.php` | a summary | *"not accessible"* |
+| agentic task requesting it | accepted | **refused**, 0 sources |
+
+The rule is pinned by `testCanConsultDocument*` in `PermissionServiceDocumentsVisiblesTest`.
+
+### 4.2 Same question, two workspaces — the exact values
+
+| Question | Général | Chantier test |
+|---|---|---|
+| "what is the budget approved for the school construction?" | **10 million CFA francs**, source: the recording | **refusal** |
+| "list all documents" (catalogue) | **4** documents | **2** documents |
+| agentic task on budgets | cites documents **4 and 1** | cites documents **1 and 2** |
+
+These are the numbers to reproduce on camera. If one of them differs, the
+state changed: re-read this file before recording.
+
 ---
 
 ## 5. Demonstration script — the ten beats and what must appear
@@ -97,7 +121,7 @@ C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace 
   -e "SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL;"   # 4
 
 # 2. The suite is green
-php vendor/phpunit/phpunit/phpunit                                 # 121 tests
+php vendor/phpunit/phpunit/phpunit                                 # 124 tests
 
 # 3. The chain holds
 php tools/prove_provenance.php 4

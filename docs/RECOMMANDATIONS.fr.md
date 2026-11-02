@@ -36,6 +36,8 @@
 | R-25 | Déclarer quelles parties sont des appels au modèle Meta et lesquelles sont des fonctions du système | **fait** | section dans les deux README ; la transcription est Meta par défaut, locale en repli seulement |
 | R-26 | Dire quels modèles Meta ouverts sont utilisés et où ils tournent | **fait** | `muse-spark-open-1026` sur Baseten ; aucun modèle Meta sur la machine de l'auteur, dit explicitement |
 | R-27 | Établir qu'un modèle Meta à poids ouverts tournant sur sa propre machine est éligible | **fait** | Cerebral Valley, 2 novembre : ne pas utiliser l'API Model ne pénalise pas (Credit Terms §3.8), consigné dans les deux README |
+| R-28 | Refuser un document hors périmètre sur **chaque** route qui prend un identifiant | **fait** | `peutConsulterDocument()` appliqué à la réformulation, la traduction et les corrections ; 403 mesuré en session membre, refus journalisé, trois tests de verrouillage |
+| R-29 | Faire respecter l'espace affiché par la **tâche agentique** comme par la recherche | **fait** | `task()` reçoit l'espace, le transmet à la récupération et croise les documents demandés ; mesuré : Général cite 4 et 1, Chantier test cite 1 et 2 |
 
 ---
 

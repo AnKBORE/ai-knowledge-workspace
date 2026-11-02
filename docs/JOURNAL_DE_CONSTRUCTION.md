@@ -47,7 +47,7 @@ new entry.
 | Models | **10** |
 | Views | **19** |
 | Test files | **25** |
-| **Automated tests** | **121 tests · 281 assertions** |
+| **Automated tests** | **124 tests · 295 assertions** |
 | Documentation | **7 EN/FR pairs + README · ≈ 300 KB** |
 
 ### The stack
@@ -268,7 +268,7 @@ The product could answer; it could not yet **deliver**.
 | Check | Result |
 |---|---|
 | `git rev-list --count HEAD` | **262** |
-| `phpunit` | **121 tests · 281 assertions** |
+| `phpunit` | **124 tests · 295 assertions** |
 | `tools/smoke_admin_endpoints.php` | **27 checks** (9 endpoints × 3 profiles) |
 | `tools/smoke_endpoints_anonymous.php` | **31 endpoints × 2 methods**: everything refused, no data |
 | `tools/lint_docs.php` | no defect |
@@ -553,7 +553,39 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 
 ---
 
-## 9. To be filled until submission
+## 9. The acceptance run of 2 November, in the evening
+
+The database was wiped in the morning; the run rebuilt the state by hand and
+found **seventeen defects** that no unit test had caught, because they only
+appear when a person does the gesture.
+
+What it cost, and what it bought:
+
+| Finding | What it proved |
+|---|---|
+| P-54 — the OCR kept only JPEG streams | a mooré scan was refused all day; once raw bitmaps were wrapped into a PNG, the same file yielded **1 093 characters** in 8.6 s |
+| P-58 and P-65 — the workspace did not scope the search, then the catalogue | the badge said one thing, the answer another |
+| P-59 — a confident answer about the **wrong** site | a tool claiming grounding must refuse, not improvise; the threshold was measured at 0.25 |
+| P-66 — three routes took a document id after checking only the global right | a member could read a document from a workspace they do not belong to |
+| P-60, P-61 — two buttons that did nothing | a dead control is worse than a failing one |
+
+The rule that came out of it, and that now holds everywhere: **the workspace
+displayed at the top of the page decides what the assistant may see**, and
+**every route taking a document id asks whether this user may read this
+document**.
+
+Measured on the final state: audio deposited and indexed in **9 s**, question
+answered from the recording alone, the same question refused in another
+workspace, the catalogue listing 4 documents then 2, **124 tests** green.
+
+The defects are recorded in `REGISTRE_PROBLEMES.md`; the state they left is
+described in `ETAT_DE_DEMO.md`.
+
+---
+
+---
+
+## 10. To be filled until submission
 
 | Step | Deadline | State |
 |---|---|---|

@@ -125,7 +125,7 @@ C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace 
 ## 9. Preuves à collecter
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit            # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit            # 124 tests, 295 assertions
 php tools/smoke_admin_endpoints.php           # 27 vérifications
 php tools/smoke_endpoints_anonymous.php       # 31 endpoints × 2 méthodes
 php tools/lint_docs.php                       # documentation
@@ -146,3 +146,36 @@ php tools/prove_provenance.php <id>           # chaîne de provenance
 
 *Exécutée sur base neuve le 2 novembre 2026. Le document d'état de démonstration
 (`ETAT_DE_DEMO.md`) doit être réécrit dès que cette recette produit un état stable.*
+
+---
+
+## 11. Bilan de la passe du 2 novembre 2026
+
+La recette a été faite **en faisant les gestes**, sur une base remise à zéro, avec
+le compte super administrateur fraîchement créé. Les sections 1 à 4 ont été
+parcourues de bout en bout ; la section 6 partiellement (le refus et la session
+membre remplacent l'« espace vide » qui n'existe plus).
+
+**Dix-sept défauts ont été trouvés et corrigés** — `REGISTRE_PROBLEMES.fr.md`,
+P-51 à P-67. Quatre auraient été visibles à la caméra :
+
+| Défaut | Ce que ça donnait à l'écran |
+|---|---|
+| P-52 | le formulaire annonçait *« Général — 0 document »* alors que Général en contenait deux |
+| P-58 | l'espace affiché en haut ne limitait pas la recherche |
+| P-59 | une réponse confiante sur le **mauvais** chantier, sans refus |
+| P-60 | le bouton *Résumer* ne faisait rien |
+
+Ce que la passe a produit, mesuré :
+
+| Contrôle | Résultat |
+|---|---|
+| Dépôt audio → indexé | **9 s** |
+| Scan mooré refusé, puis lu | 0 caractère → **1 093 caractères** en 8,6 s |
+| Question sur l'enregistrement | **10 millions de francs CFA**, une seule source, l'audio |
+| Même question dans un autre espace | **refus**, zéro source |
+| Question de catalogue, deux espaces | **4** documents, puis **2** |
+| Suite de tests après la passe | **124 tests, 295 assertions** |
+
+L'état laissé derrière est décrit dans `ETAT_DE_DEMO.fr.md`, et c'est cet état que
+la vidéo doit montrer.

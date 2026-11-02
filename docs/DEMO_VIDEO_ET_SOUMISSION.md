@@ -83,7 +83,7 @@ cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Expected: `OK (121 tests, 281 assertions)` — **without** warnings.
+Expected: `OK (124 tests, 295 assertions)` — **without** warnings.
 
 ### 2.3 Verify the demo database
 
@@ -135,7 +135,7 @@ is accelerated in the edit — not cut.
 | **1:58–2:28** | `/documents` → filter → lock modal → `/administration` tabs + crown | "Nine documents, each with its workspaces; this private workspace returns zero. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
 | **2:28–2:40** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: zero documents, and the audit journal answers 403. The interface and the server agree." |
 | **2:40–2:47** | Terminal beside the browser: the call log | "Muse Spark Open is Meta's open-weight model, on Baseten — for the answers, the agentic task, the translation, the vision and the audio. Every call is written down: endpoint, model, status, duration. Live, and kept in the repository." |
-| **2:47–2:50** | Back to `/` | "121 tests, an audit trail, and knowledge that used to disappear now answers questions. Built solo, in nine days." |
+| **2:47–2:50** | Back to `/` | "124 tests, an audit trail, and knowledge that used to disappear now answers questions. Built solo, in nine days." |
 
 ### Before the take — the four things that make the opening work
 
@@ -204,7 +204,7 @@ If a sequence fails while recording, **do not stop** — move to the next one.
 
 | Metric | Value |
 |---|---|
-| **Automated tests** | **121 tests · 281 assertions** (in-memory SQLite, no server needed) |
+| **Automated tests** | **124 tests · 295 assertions** (in-memory SQLite, no server needed) |
 | **Traceability** | **21 action types** journaled, refusals included, **append-only** journal |
 | **Agentic pipeline** | **6 steps**: plan → retrieve → scope → draft → verify → conformity |
 | **Retrieval** | Hybrid score `0.6 semantic + 0.4 lexical`, neighbour expansion, **priority to corrections** |
@@ -277,7 +277,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Expected: migrations applied **and** `OK (121 tests, 281 assertions)`.
+Expected: migrations applied **and** `OK (124 tests, 295 assertions)`.
 
 > If that passes, the repository is **ready for the jury**.
 

@@ -47,7 +47,7 @@ entrée passée — les corrections se font par une nouvelle entrée.
 | Modèles | **10** |
 | Vues | **19** |
 | Fichiers de test | **25** |
-| **Tests automatisés** | **121 tests · 281 assertions** |
+| **Tests automatisés** | **124 tests · 295 assertions** |
 | Documentation | **7 paires EN/FR + README · ≈ 300 Ko** |
 
 ### La pile
@@ -271,7 +271,7 @@ Le produit savait répondre ; il ne savait pas encore **livrer**.
 | Contrôle | Résultat |
 |---|---|
 | `git rev-list --count HEAD` | **262** |
-| `phpunit` | **121 tests · 281 assertions** |
+| `phpunit` | **124 tests · 295 assertions** |
 | `tools/smoke_admin_endpoints.php` | **27 vérifications** (9 endpoints × 3 profils) |
 | `tools/smoke_endpoints_anonymous.php` | **31 endpoints × 2 méthodes** : tout refusé, aucune donnée |
 | `tools/lint_docs.php` | aucun défaut |
@@ -561,7 +561,38 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 
 ---
 
-## 9. À remplir jusqu'à la soumission
+## 9. La recette du 2 novembre, le soir
+
+La base avait été remise à zéro le matin ; la recette a reconstruit l'état à la
+main et trouvé **dix-sept défauts** qu'aucun test unitaire n'avait attrapés, parce
+qu'ils n'apparaissent que quand une personne fait le geste.
+
+Ce que ça a coûté, et ce que ça a rapporté :
+
+| Constat | Ce que ça a prouvé |
+|---|---|
+| P-54 — l'OCR ne gardait que les flux JPEG | un scan mooré était refusé depuis le matin ; une fois les bitmaps bruts encapsulés en PNG, le même fichier a rendu **1 093 caractères** en 8,6 s |
+| P-58 puis P-65 — l'espace ne limitait pas la recherche, puis pas le catalogue | le badge disait une chose, la réponse une autre |
+| P-59 — une réponse confiante sur le **mauvais** chantier | un outil qui revendique l'ancrage doit refuser, pas improviser ; le seuil a été mesuré à 0,25 |
+| P-66 — trois routes prenaient un identifiant de document après n'avoir vérifié que le droit global | un membre pouvait lire un document d'un espace dont il n'est pas membre |
+| P-60, P-61 — deux boutons qui ne faisaient rien | un contrôle mort est pire qu'un contrôle qui échoue |
+
+La règle qui en sort, et qui tient maintenant partout : **l'espace affiché en haut
+de page décide de ce que l'assistant peut voir**, et **chaque route qui prend un
+identifiant de document demande si cet utilisateur peut lire ce document**.
+
+Mesuré sur l'état final : audio déposé et indexé en **9 s**, question répondue à
+partir du seul enregistrement, même question refusée dans un autre espace,
+catalogue à 4 documents puis 2, **124 tests** verts.
+
+Les défauts sont consignés dans `REGISTRE_PROBLEMES.fr.md` ; l'état qu'ils ont
+laissé est décrit dans `ETAT_DE_DEMO.fr.md`.
+
+---
+
+---
+
+## 10. À remplir jusqu'à la soumission
 
 | Étape | Échéance | État |
 |---|---|---|

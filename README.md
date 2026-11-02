@@ -75,7 +75,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - **Workspace and confidentiality at deposit time.** The depositor chooses the workspace and the confidentiality; `public_interne` is reserved to administrators; the context survives the deferred-upload queue (migration 026).
 - **Control roles changed by administrators only.** From the document list, an administrator changes the workspace and the confidentiality; their password is required and the **before/after** values are journaled.
 - **It refuses instead of guessing.** When the best matching extract scores below 0.25 — measured: relevant matches score 0.53 and above, off-topic ones 0.17 and below — the answer names the workspace and asks for the missing document, rather than producing a confident sentence about the wrong subject.
-- **The active workspace scopes the assistant.** The workspace shown at the top of the page is not decoration: a question is answered only from the documents of that workspace. Switch workspace and the same question returns what that workspace holds - which is how a project stays a project.
+- **It checks the document, not only the right.** Every route that takes a document id asks `peutConsulterDocument()`: reformulation, translation and the correction routes are refused for a document outside the user's workspaces, with the refusal journaled.\n- **The active workspace scopes the assistant.** The workspace shown at the top of the page is not decoration: a question is answered only from the documents of that workspace. Switch workspace and the same question returns what that workspace holds - which is how a project stays a project.
 - **Scoped document list.** The page and the API only return visible documents; an inaccessible document answers **404**, without revealing its existence.
 - **Workspace badges and filter.** The list shows each document's workspaces and filters by workspace, including combined with the search.
 - **Workspaces.** Creation, closure (no further deposits, documents stay readable), reopening; dated memberships with immediate revocation; the `/espaces` page lets a member choose the active workspace.
@@ -305,7 +305,7 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **121 automated tests · 281 assertions** |
+| **Tests** | **124 automated tests · 295 assertions** |
 | **UI** | Bilingual EN/FR (EN default) — Mooré supported for content (answers, tasks, translation), Bootstrap + DataTables + Select2 |
 | **Security** | Argon2 · nonce-based CSP · CSRF · audit journal |
 | **Scope** | **10 pages** · **31 endpoints** · **25 migrations** · **3 verification tools** |
@@ -389,14 +389,14 @@ API endpoints (session-protected):
 ## Tests
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit                  # 124 tests, 295 assertions
 php tools/smoke_admin_endpoints.php                 # 27 checks over 9 endpoints
 php tools/smoke_endpoints_anonymous.php             # 31 endpoints x 2 methods, no session
 php tools/lint_docs.php                             # documentation structure
   php tools/prove_provenance.php 30                   # provenance chain, bytes verified
 ```
 
-**121 tests, 281 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).
+**124 tests, 295 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 

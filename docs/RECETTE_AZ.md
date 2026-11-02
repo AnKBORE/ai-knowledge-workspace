@@ -125,7 +125,7 @@ C:\wamp64\bin\mysql\mysql8.4.13\bin\mysql.exe -u root -D ai_knowledge_workspace 
 ## 9. Evidence to collect
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit            # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit            # 124 tests, 295 assertions
 php tools/smoke_admin_endpoints.php           # 27 checks
 php tools/smoke_endpoints_anonymous.php       # 31 endpoints x 2 methods
 php tools/lint_docs.php                       # documentation
@@ -146,3 +146,36 @@ php tools/prove_provenance.php <id>           # provenance chain
 
 *Run on a fresh database on 2 November 2026. The demo state document
 (`ETAT_DE_DEMO.md`) must be rewritten once this run produces a stable state.*
+
+---
+
+## 11. Result of the 2 November 2026 pass
+
+The run was performed by **doing the gestures**, on a wiped database, with the
+brand-new super admin account. Sections 1 to 4 were completed end to end;
+section 6 was partially covered (the refusal and the member session replace the
+"empty workspace" that no longer exists).
+
+**Seventeen defects were found and fixed** — `REGISTRE_PROBLEMES.md`, P-51 to
+P-67. Four would have been visible on camera:
+
+| Defect | What it looked like on screen |
+|---|---|
+| P-52 | the deposit form announced *"Général — 0 documents"* while Général held two |
+| P-58 | the workspace at the top did not limit the search |
+| P-59 | a confident answer about the **wrong** site, with no refusal |
+| P-60 | the *Summarise* button did nothing |
+
+What the pass produced, measured:
+
+| Check | Result |
+|---|---|
+| Audio deposit → indexed | **9 s** |
+| Mooré scan refused, then read | 0 characters → **1 093 characters** in 8.6 s |
+| Question on the recording | **10 million CFA francs**, one source, the recording |
+| Same question in another workspace | **refusal**, zero sources |
+| Catalogue question, two workspaces | **4** documents, then **2** |
+| Test suite after the run | **124 tests, 295 assertions** |
+
+The state left behind is described in `ETAT_DE_DEMO.md`, and it is the state the
+video must show.

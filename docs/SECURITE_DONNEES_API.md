@@ -349,6 +349,27 @@ These guards close the gap between what the interface shows and what the server 
 
 Measured consequence: a member attached to another workspace receives `[]` on the list and **404** on a download by identifier — the document's existence is not revealed.
 
+The active workspace then narrows that set at four call sites: the question (`answer`), the document catalogue, the agentic task and its requested documents. Measured: in a workspace holding two documents, the same question refuses where `Général` answers, and a catalogue question cites two documents where it used to cite four.
+
+### 19.8 The document, not only the right
+
+The audit of 2 November 2026 found three routes accepting a `document_id` after checking only the **global** right to consult documents: reformulation, translation, and the correction list and download. A member could therefore read a document from a workspace they do not belong to by guessing its identifier.
+
+`PermissionService::peutConsulterDocument()` now answers that question in one place, and every route taking a document id asks it. A refusal is journaled as `securite.refus` with the reason `document_hors_perimetre`.
+
+Measured, in a member session, on a document filed only in `Général`:
+
+| Route | Result |
+|---|---|
+| `reformulate.php` | **403** |
+| `translate_document.php` | **403** |
+| `correction_list.php` | **403** |
+| `correction_download.php` | **403** |
+| `summarize.php` (through `RagService`) | *"not accessible with your permissions"* |
+| agentic task requesting it | **refused**, zero sources |
+
+Three tests pin the rule (`testCanConsultDocument*`), so it cannot regress silently.
+
 ### 19.6 CSRF on JSON calls
 
 A `fetch` wrapper (top of `workspace.js`) adds the `X-CSRF-Token` header read from `<meta name="csrf-token">` to **every** call. On the server, `Csrf::validateRequest()` accepts `$_POST['_csrf']` or one of the `X-CSRF-Token` / `X-XSRF-Token` headers.
@@ -359,7 +380,7 @@ A `fetch` wrapper (top of `workspace.js`) adds the `X-CSRF-Token` header read fr
 php tools/smoke_admin_endpoints.php        # 27 checks, 9 endpoints
 php tools/smoke_endpoints_anonymous.php    # 31 endpoints x 2 methods, no session
 php tools/lint_docs.php                    # documentation structure
-php vendor/phpunit/phpunit/phpunit         # 121 tests, 281 assertions
+php vendor/phpunit/phpunit/phpunit         # 124 tests, 295 assertions
 ```
 
 The anonymous sweep checks two things: the **status** (401/403/405/419/422) and the **absence of a data key** in the body (`"documents"`, `"entries"`, `"chunks"`, `"url"`, `"answer"`, `"job_id"`).

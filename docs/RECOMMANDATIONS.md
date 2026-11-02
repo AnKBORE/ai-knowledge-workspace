@@ -35,6 +35,8 @@
 | R-25 | Declare which parts are Meta model calls and which are system features | **done** | section in both READMEs; speech-to-text is Meta by default, local only as a fallback |
 | R-26 | Say which open Meta models are used and where they run | **done** | `muse-spark-open-1026` on Baseten; no Meta model on the author's machine, stated explicitly |
 | R-27 | Establish that running an open-weight Meta model on own compute is eligible | **done** | Cerebral Valley, 2 November: not using the Model API does not count against a project (Credit Terms §3.8), recorded in both READMEs |
+| R-28 | Refuse an out-of-scope document on **every** route taking an id | **done** | `peutConsulterDocument()` applied to reformulation, translation and the corrections; 403 measured in a member session, refusal journaled, three lock tests |
+| R-29 | Make the **agentic task** respect the displayed workspace, like the search | **done** | `task()` receives the workspace, passes it to retrieval and intersects the requested documents; measured: Général cites 4 and 1, Chantier test cites 1 and 2 |
 
 ---
 
