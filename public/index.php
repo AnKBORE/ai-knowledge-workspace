@@ -41,6 +41,17 @@ $path = '/' . trim($path, '/');
 
 $view = new View(dirname(__DIR__) . '/views');
 $auth = $dependencies['auth'];
+
+// A page must load in the product language: English. The session only carries
+// a deliberate choice made inside the application, so a visitor who is not
+// signed in starts in English whatever an earlier page left in the session.
+if (!$auth->check()) {
+    $chosen = (string) $dependencies['session']->get('lang_choice', '');
+    $uiLang = $chosen === 'fr' || $chosen === 'en'
+        ? $chosen
+        : ((($_GET['lang'] ?? 'en') === 'fr') ? 'fr' : 'en');
+    $apiT = app_i18n($uiLang)['api'];
+}
 $csrf = $dependencies['csrf'];
 $authController = new AuthController($dependencies['auth_service'], $csrf, $view);
 
@@ -49,6 +60,8 @@ $authController = new AuthController($dependencies['auth_service'], $csrf, $view
 if ($method === 'GET' && isset($_GET['lang']) && $path !== '/presentation') {
     $lang = $_GET['lang'] === 'fr' ? 'fr' : 'en';
     $dependencies['session']->set('lang', $lang);
+    // Explicit choice, as opposed to a language left behind by an earlier visit.
+    $dependencies['session']->set('lang_choice', $lang);
     header('Location: ' . url($path));
     exit;
 }
@@ -76,6 +89,10 @@ if ($method === 'POST' && $path === '/login') {
     }
 
     if ($authController->login($_POST)) {
+        // Signing in starts from the product language; the switcher then applies
+        // inside the session, by explicit choice only.
+        $dependencies['session']->set('lang', 'en');
+        $dependencies['session']->set('lang_choice', 'en');
         header('Location: ' . url('/'));
         exit;
     }
@@ -90,6 +107,8 @@ if ($method === 'POST' && $path === '/login') {
 if ($method === 'POST' && $path === '/logout') {
     if ($csrf->validate($_POST['_csrf'] ?? null)) {
         $authController->logout();
+        $dependencies['session']->set('lang', 'en');
+        $dependencies['session']->set('lang_choice', 'en');
     }
 
     header('Location: ' . url('/login'));
