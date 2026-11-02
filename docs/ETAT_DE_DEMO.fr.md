@@ -91,6 +91,11 @@ La règle est figée par `testCanConsultDocument*` dans `PermissionServiceDocume
 | « liste tous les documents » (catalogue) | **4** documents | **2** documents |
 | tâche agentique sur les budgets | cite les documents **4 et 1** | cite les documents **1 et 2** |
 
+**Ce sont les comptes d'avant la prise.** Le geste 2 enregistre un nouveau document audio
+dans Général : la page des documents en affiche alors **5**, et la question de catalogue
+répond **5** là où elle répondait 4. Ce changement est la preuve que l'enregistrement a
+créé du savoir — pas une dérive, et rien à corriger avant de tourner.
+
 Ce sont les chiffres à retrouver à la caméra. Si l'un diffère, l'état a changé :
 relire ce fichier avant d'enregistrer.
 

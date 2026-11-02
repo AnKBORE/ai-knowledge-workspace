@@ -91,6 +91,11 @@ The rule is pinned by `testCanConsultDocument*` in `PermissionServiceDocumentsVi
 | "list all documents" (catalogue) | **4** documents | **2** documents |
 | agentic task on budgets | cites documents **4 and 1** | cites documents **1 and 2** |
 
+**These are the counts before the take.** Beat 2 records a new audio document into
+Général, so the documents page then shows **5**, and the catalogue question answers
+**5** where it answered 4. That change is the proof the recording created knowledge —
+not a drift, and not something to correct before filming.
+
 These are the numbers to reproduce on camera. If one of them differs, the
 state changed: re-read this file before recording.
 
