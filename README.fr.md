@@ -421,6 +421,30 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 
 Chaque document existe **dans les deux langues**, l'anglais en nom de base et le français en `.fr.md`.
 
+## Ressources tierces et droits
+
+Le règlement du hackathon exige de détenir les droits sur **chaque élément** d'un
+projet et de sa vidéo de démonstration. Cette section indique, élément par
+élément, à quel titre chacun est redistribué.
+
+| Élément | Emplacement | Droits |
+|---|---|---|
+| **Bootstrap 5.3.3** | `public/assets/vendor/bootstrap` | MIT — la mention est conservée dans les fichiers distribués |
+| **jQuery 3.7.1** | `public/assets/vendor/jquery` | MIT — la mention est conservée dans les fichiers distribués |
+| **DataTables** (intégration Bootstrap 5) | `public/assets/vendor/datatables` | MIT — la mention est conservée dans les fichiers distribués |
+| **Select2 4.1.0** | `public/assets/vendor/select2` | MIT — la mention est conservée dans les fichiers distribués |
+| **Dépendances PHP** — dompdf, PHPMailer, pdfparser | `vendor/` (installé par Composer, non versionné) | chaque paquet fournit sa licence |
+| **Ressources mooré** — `appellations_moore_en.pdf`, `appellations_moore_fr.pdf`, `apprendre_moore.pdf` | `storage/moore_sources` | ressources de référence que l'auteur détient le droit d'utiliser et de redistribuer ; elles sont la source des tables `moore_lexicon` et `moore_corpus` |
+| **Code de l'application** | le reste du dépôt | MIT, voir [LICENSE](LICENSE) |
+
+**Vidéo de démonstration.** Aucune musique, aucune image de banque, aucune capture
+ni logo tiers. Tout ce qui apparaît à l'écran est produit par l'application, à
+partir de documents que les comptes de démonstration ont le droit de lire. Si une
+piste sous licence est ajoutée un jour, sa source et sa licence figureront dans ce
+tableau.
+
+---
+
 ## Auteur
 
 **Anatole KABORE**

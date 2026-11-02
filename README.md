@@ -420,6 +420,29 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 
 Every document exists in **both languages**, with the English as the base name and the French as `.fr.md`.
 
+## Third-party assets and rights
+
+The hackathon rules require the rights to **every asset** used by a project and
+by its demo video. This section states, asset by asset, on what basis each one is
+redistributed.
+
+| Asset | Location | Rights |
+|---|---|---|
+| **Bootstrap 5.3.3** | `public/assets/vendor/bootstrap` | MIT — the notice is kept inside the distributed files |
+| **jQuery 3.7.1** | `public/assets/vendor/jquery` | MIT — the notice is kept inside the distributed files |
+| **DataTables** (Bootstrap 5 integration) | `public/assets/vendor/datatables` | MIT — the notice is kept inside the distributed files |
+| **Select2 4.1.0** | `public/assets/vendor/select2` | MIT — the notice is kept inside the distributed files |
+| **PHP dependencies** — dompdf, PHPMailer, pdfparser | `vendor/` (installed by Composer, not committed) | each package ships its own licence |
+| **Mooré reference material** — `appellations_moore_en.pdf`, `appellations_moore_fr.pdf`, `apprendre_moore.pdf` | `storage/moore_sources` | reference material the author holds the rights to use and redistribute; it is the source of the `moore_lexicon` and `moore_corpus` tables |
+| **Application source** | the rest of the repository | MIT, see [LICENSE](LICENSE) |
+
+**Demo video.** No music, no stock footage, no third-party screenshot or logo.
+Everything shown on screen is produced by this application, from documents the
+demo accounts are allowed to read. If a licensed track is ever added, its source
+and licence will be listed in this table.
+
+---
+
 ## Author
 
 **Anatole KABORE**
