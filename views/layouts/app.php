@@ -43,7 +43,7 @@ $T = [
         'nav_label' => 'Workspace',
         'crumb' => 'Assistant',
         'signout' => 'Sign out',
-        'nav' => ['Question', 'Agentic task', 'Translation', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile', 'Administration', 'Espaces'],
+        'nav' => ['Question', 'Agentic task', 'Translation', 'Indexed documents', 'Add a document', 'Categories', 'Audit journal', 'My profile', 'Administration', 'Workspaces'],
         'logout_title' => 'Sign out',
         'logout_text' => 'Are you sure you want to close your session?',
         'cancel' => 'Cancel',
@@ -209,7 +209,8 @@ $displayRole = $T['role'];
 window.WORKSPACE_I18N = <?= json_encode(app_i18n($lang)['js'], JSON_UNESCAPED_UNICODE) ?>;</script>
 <script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>" defer></script>
 <script src="<?= e(url('/assets/vendor/select2/js/select2.min.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/js/select2-init.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/select2-init.js') ?>" defer></script>
+<script src="<?= e(url('/assets/js/ui-i18n.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/ui-i18n.js') ?>"></script>
+    <script src="<?= e(url('/assets/js/select2-init.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/select2-init.js') ?>" defer></script>
 <script src="<?= e(url('/assets/js/workspace.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/workspace.js') ?>" defer></script>
 <script src="<?= e(url('/assets/js/shell.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/shell.js') ?>" defer></script>
 <script src="<?= e(url('/assets/js/scroll-top.js')) ?>?v=<?= (int) @filemtime(dirname(__DIR__, 2) . '/public/assets/js/scroll-top.js') ?>" defer></script>

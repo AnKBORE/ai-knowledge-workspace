@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.setAttribute('aria-pressed', show ? 'true' : 'false');
             button.setAttribute(
                 'aria-label',
-                show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'
+                show ? window.UI('pw_hide') : window.UI('pw_show')
             );
         });
     });

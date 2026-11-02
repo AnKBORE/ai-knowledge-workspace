@@ -268,7 +268,7 @@
     var resultContent = document.getElementById('result-content');
     var resultSources = document.getElementById('result-sources');
     var resultSourcesList = document.getElementById('result-sources-list');
-    var currentResult = { title: 'Résultat', content: '' };
+    var currentResult = { title: window.UI('result_title', 'Result'), content: '' };
 
     function showLoading(badge, title, sub) {
         if (!modal) { return; }
@@ -1934,17 +1934,17 @@
             var summarizeButton = document.createElement('button');
             summarizeButton.type = 'button';
             summarizeButton.className = 'doc-action summarize-btn';
-            summarizeButton.title = 'Résumer';
+            summarizeButton.title = window.UI('doc_summarize', 'Summarise');
             summarizeButton.setAttribute('data-document-id', String(doc.id));
             summarizeButton.setAttribute('data-document-title', doc.title || 'Document');
-            summarizeButton.setAttribute('aria-label', 'Résumer ' + (doc.title || 'le document'));
+            summarizeButton.setAttribute('aria-label', window.UI('doc_summarize_of', 'Summarise ') + (doc.title || window.UI('doc_default', 'the document')));
             summarizeButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>';
 
             var downloadLink = document.createElement('a');
             downloadLink.className = 'doc-action';
-            downloadLink.title = 'Télécharger la dernière version';
+            downloadLink.title = window.UI('doc_download', 'Download the latest version');
             downloadLink.href = apiUrl('download_document.php') + '?document_id=' + doc.id;
-            downloadLink.setAttribute('aria-label', 'Télécharger ' + (doc.title || 'le document'));
+            downloadLink.setAttribute('aria-label', window.UI('doc_download_of', 'Download ') + (doc.title || window.UI('doc_default', 'the document')));
             downloadLink.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
 
             var versionsModal = document.getElementById('versions-' + doc.id);

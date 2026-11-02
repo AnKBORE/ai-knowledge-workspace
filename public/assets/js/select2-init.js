@@ -12,19 +12,19 @@ document.addEventListener('DOMContentLoaded', function () {
             var $modal = $select.closest('.modal');
             $select.select2({
                 width: '100%',
-                placeholder: $select.attr('data-placeholder') || 'Sélectionner une option',
+                placeholder: $select.attr('data-placeholder') || window.UI('s2_placeholder'),
                 minimumResultsForSearch: 0,
                 dropdownParent: $modal.length ? $modal : $(document.body),
                 language: {
-                    errorLoading: function () { return 'Les résultats ne peuvent pas être chargés.'; },
-                    inputTooLong: function (args) { return 'Supprimez ' + (args.input.length - args.maximum) + ' caractère(s).'; },
-                    inputTooShort: function (args) { return 'Saisissez au moins ' + args.minimum + ' caractère(s).'; },
-                    loadingMore: function () { return 'Chargement de résultats supplémentaires…'; },
-                    noResults: function () { return 'Aucun résultat trouvé'; },
-                    searching: function () { return 'Recherche…'; },
-                    removeAllItems: function () { return 'Supprimer tous les éléments'; },
-                    removeItem: function () { return 'Supprimer l’élément'; },
-                    search: function () { return 'Rechercher'; }
+                    errorLoading: function () { return window.UI('s2_error'); },
+                    inputTooLong: function (args) { return window.UI('s2_too_long') + (args.input.length - args.maximum) + window.UI('s2_too_long_tail'); },
+                    inputTooShort: function (args) { return window.UI('s2_too_short') + args.minimum + window.UI('s2_too_short_tail'); },
+                    loadingMore: function () { return window.UI('s2_more'); },
+                    noResults: function () { return window.UI('s2_none'); },
+                    searching: function () { return window.UI('s2_searching'); },
+                    removeAllItems: function () { return window.UI('s2_remove_all'); },
+                    removeItem: function () { return window.UI('s2_remove_one'); },
+                    search: function () { return window.UI('s2_search'); }
                 }
             });
         });

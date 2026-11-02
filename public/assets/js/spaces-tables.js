@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     var number = cell.querySelector('.row-number-value');
                     if (number) number.textContent = page.start + index + 1;
                 });
-                var pagingLabels = { first: 'Première page', previous: 'Page précédente', next: 'Page suivante', last: 'Dernière page' };
+                var pagingLabels = { first: window.UI('dt_first'), previous: window.UI('dt_previous'), next: window.UI('dt_next'), last: window.UI('dt_last') };
                 api.table().container().querySelectorAll('.dt-paging-button[data-dt-idx]').forEach(function (button) {
                     var label = pagingLabels[button.getAttribute('data-dt-idx')];
                     if (label) {
@@ -46,15 +46,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 bottomEnd: 'paging'
             },
             language: {
-                emptyTable: 'Aucune donnée à afficher.',
-                info: 'Affichage de _START_ à _END_ sur _TOTAL_ résultats',
-                infoEmpty: 'Aucun résultat à afficher',
-                infoFiltered: '(filtrés parmi _MAX_ résultats)',
-                lengthMenu: 'Afficher _MENU_ entrées',
-                loadingRecords: 'Chargement…',
-                processing: 'Traitement…',
-                search: 'Rechercher :',
-                zeroRecords: 'Aucun résultat ne correspond à votre recherche',
+                emptyTable: window.UI('dt_empty'),
+                info: window.UI('dt_info'),
+                infoEmpty: window.UI('dt_info_empty'),
+                infoFiltered: window.UI('dt_info_filtered'),
+                lengthMenu: window.UI('dt_length_menu'),
+                loadingRecords: window.UI('dt_loading'),
+                processing: window.UI('dt_processing'),
+                search: window.UI('dt_search'),
+                zeroRecords: window.UI('dt_zero'),
                 paginate: {
                     first: '«',
                     last: '»',
@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     previous: '‹'
                 },
                 aria: {
-                    sortAscending: ': activer pour trier par ordre croissant',
-                    sortDescending: ': activer pour trier par ordre décroissant'
+                    sortAscending: window.UI('dt_sort_asc'),
+                    sortDescending: window.UI('dt_sort_desc')
                 }
             }
         });
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var button = row.node().querySelector('.dtr-control-btn');
             if (button) {
                 button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-                button.setAttribute('aria-label', expanded ? 'Masquer les informations complémentaires' : 'Afficher les informations complémentaires');
+                button.setAttribute('aria-label', expanded ? window.UI('row_hide') : window.UI('row_show'));
                 var icon = button.querySelector('span');
                 if (icon) icon.textContent = expanded ? '−' : '+';
             }

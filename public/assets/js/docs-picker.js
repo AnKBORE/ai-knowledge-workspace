@@ -47,11 +47,11 @@
 
         var options = {
             width: '100%',
-            placeholder: $docs.attr('data-placeholder') || 'Sélectionner une option',
+            placeholder: $docs.attr('data-placeholder') || window.UI('s2_placeholder'),
             closeOnSelect: false,
             dropdownParent: $(document.body),
             language: {
-                noResults: function () { return 'Aucun document trouvé'; },
+                noResults: function () { return window.UI('picker_none'); },
                 searching: function () { return 'Recherche…'; }
             }
         };

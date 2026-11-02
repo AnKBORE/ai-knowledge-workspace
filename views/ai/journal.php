@@ -7,6 +7,9 @@ declare(strict_types=1);
 $T = app_i18n($lang ?? 'en');
 $S = $T['shared'];
 $P = $T['journal'];
+  // Action codes are technical identifiers: display a readable label and keep
+  // the code in the tooltip, so the audit trail stays traceable.
+  $actions = $T['journal_actions'] ?? [];
 $labels = [
     'succes' => 'success',
     'refus' => 'danger',
@@ -96,7 +99,7 @@ $labels = [
                                         <td>
                                             <?= e(trim((string) ($entry['prenom'] ?? '') . ' ' . (string) ($entry['nom'] ?? '')) ?: $P['system']) ?>
                                         </td>
-                                        <td><code><?= e($entry['action'] ?? '') ?></code></td>
+                                        <td><code title="<?= e($entry['action'] ?? '') ?>"><?= e($actions[$entry['action'] ?? ''] ?? ($entry['action'] ?? '')) ?></code></td>
                                         <td class="small">
                                             <?= e($entry['objet_type'] ?? '') ?>
                                             <?= $entry['objet_id'] !== null ? '#' . (int) $entry['objet_id'] : '' ?>
