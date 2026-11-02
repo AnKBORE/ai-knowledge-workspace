@@ -1,6 +1,6 @@
 # Registre des problèmes & résolutions
 
-🇬🇧 English version: [REGISTRE_PROBLEMES.md](REGISTRE_PROBLEMES.fr.md)
+🇬🇧 English version: [REGISTRE_PROBLEMES.md](REGISTRE_PROBLEMES.md)
 
 > **Document vivant** : suivi de tous les blocages et écarts du projet.
 > Chaque problème reçoit un **ID**. Quand il est résolu :

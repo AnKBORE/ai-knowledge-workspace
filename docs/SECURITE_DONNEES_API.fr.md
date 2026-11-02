@@ -1,6 +1,6 @@
 # Sécurité et confidentialité des données — API d'inférence
 
-🇬🇧 English version: [SECURITE_DONNEES_API.md](SECURITE_DONNEES_API.fr.md)
+🇬🇧 English version: [SECURITE_DONNEES_API.md](SECURITE_DONNEES_API.md)
 
 > **Objet** : préciser ce que le projet envoie (ou n'envoie pas) à l'API d'inférence (Baseten / Muse Spark Open), qui peut voir ces données, quels sont les risques réels et quelles protections sont en place.
 >

@@ -1,9 +1,13 @@
 # Démo vidéo (3 min) & soumission
 
-🇬🇧 English version: [DEMO_VIDEO_ET_SOUMISSION.md](DEMO_VIDEO_ET_SOUMISSION.fr.md)
+🇬🇧 English version: [DEMO_VIDEO_ET_SOUMISSION.md](DEMO_VIDEO_ET_SOUMISSION.md)
 
-> Feuille de route finale — état du produit au **1ᵉʳ novembre 2026**.
+> Feuille de route finale — état du produit au **2 novembre 2026**.
 > Enregistrement : **3 novembre**. Soumission : **avant le 4 novembre 2026, 21 h ET**.
+
+> **Décision (2 novembre 2026) :** la voix off est en **anglais**. Le scénario anglais
+> fait foi pour l'enregistrement ; cette version française conserve les mêmes minutages et
+> sert de référence de traduction, pour un sous-titrage éventuel.
 
 ---
 

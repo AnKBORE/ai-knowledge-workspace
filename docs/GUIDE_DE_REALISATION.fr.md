@@ -1,6 +1,6 @@
 # Guide de réalisation — Agentic Knowledge Workspace
 
-🇬🇧 English version: [GUIDE_DE_REALISATION.md](GUIDE_DE_REALISATION.fr.md)
+🇬🇧 English version: [GUIDE_DE_REALISATION.md](GUIDE_DE_REALISATION.md)
 
 > **Gestion collaborative des connaissances, réinventée par l'IA.**
 >

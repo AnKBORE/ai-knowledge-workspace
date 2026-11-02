@@ -1,7 +1,11 @@
 # Demo video (3 min) & submission
 
-> Final roadmap — product state as of **1 November 2026**.
+> Final roadmap — product state as of **2 November 2026**.
 > Recording: **3 November**. Submission: **before 4 November 2026, 9 pm ET**.
+
+> **Decision (2 November 2026):** the narration is in **English**. The script below is
+> the reference to record; the French version keeps the same timings and serves as a
+> translation, for subtitles if they are ever needed.
 
 🇫🇷 French version: [DEMO_VIDEO_ET_SOUMISSION.fr.md](DEMO_VIDEO_ET_SOUMISSION.fr.md)
 
