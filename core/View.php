@@ -15,7 +15,7 @@ final class View
     }
 
     /** @param array<string, mixed> $data */
-    public function render(string $template, array $data = [], string $layout = 'main'): string
+    public function render(string $template, array $data = [], string $layout = 'app'): string
     {
         $file = $this->viewsPath . '/' . $template . '.php';
         if (!is_file($file)) {

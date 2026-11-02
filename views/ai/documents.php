@@ -443,9 +443,8 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                         </label>
                     </div>
                     <p class="form-text mb-0"><?= e($isFr ? 'Aucun espace sélectionné = le document reste privé à son propriétaire. Le changement est journalisé.' : 'No workspace selected = the document stays private to its owner. The change is journaled.') ?></p>
-                        <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Confirmez avec votre mot de passe' : 'Confirm with your password') ?>">
-                        <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Votre mot de passe confirme l\'action' : 'Your password confirms the action') ?>">
-                    </label>
+                    <label for="doc-control-password" class="form-label mt-3"><?= e($isFr ? 'Mot de passe administrateur' : 'Administrator password') ?></label>
+                    <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" class="form-control" placeholder="<?= e($isFr ? 'Saisissez votre mot de passe' : 'Enter your password') ?>">
                 </div>
                 <div class="modal-footer space-create-footer">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal"><?= e($S['cancel']) ?></button>
