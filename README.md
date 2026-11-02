@@ -415,6 +415,7 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 | **Demo video & submission** | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) |
 | **Demo state — accounts, workspaces, documents, scenarios** | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) |
 | **Acceptance test — real execution on a fresh database** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
+| **Recommendations register — what is done, what remains** | [`RECOMMANDATIONS.fr.md`](docs/RECOMMANDATIONS.fr.md) | [`RECOMMANDATIONS.md`](docs/RECOMMANDATIONS.md) |
 | **Trademark and intellectual property** | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) |
 
 

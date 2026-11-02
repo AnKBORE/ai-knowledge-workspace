@@ -416,6 +416,7 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 | **Démo vidéo & soumission** | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
 | **État de démonstration — comptes, espaces, documents, scénarios** | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) |
 | **Recette — exécution réelle sur base neuve** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
+| **Registre des recommandations — ce qui est fait, ce qui reste** | [`RECOMMANDATIONS.fr.md`](docs/RECOMMANDATIONS.fr.md) | [`RECOMMANDATIONS.md`](docs/RECOMMANDATIONS.md) |
 | **Marque et propriété intellectuelle** | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) |
 
 

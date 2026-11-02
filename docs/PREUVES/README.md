@@ -24,6 +24,10 @@ model=meta-models/muse-spark-open-1026 | 200 | 1573 ms | in=180 o=864
 No prompt and no answer content is written: the line proves the call without
 exposing what was asked.
 
+**What pays for it.** The author received **100 USD of Baseten credits** for
+the event, and every call runs on that key against a Meta open-weight model.
+No Meta Model API credits were claimed, and none were needed.
+
 ## How to reproduce it
 
 ```powershell
