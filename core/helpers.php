@@ -113,3 +113,19 @@ if (!function_exists('compte_super_protege')) {
         return $targetId > 0 && $dependencies['users']->estCompteSuper($targetId);
     }
 }
+
+if (!function_exists('csp_nonce')) {
+    /**
+     * Per-request CSP nonce: the only thing an inline script may carry.
+     * Stored in $GLOBALS so the layout and the views share the same value
+     * without threading it through every render call.
+     */
+    function csp_nonce(): string
+    {
+        if (!isset($GLOBALS['__csp_nonce'])) {
+            $GLOBALS['__csp_nonce'] = base64_encode(random_bytes(16));
+        }
+
+        return $GLOBALS['__csp_nonce'];
+    }
+}

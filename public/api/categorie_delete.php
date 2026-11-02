@@ -19,7 +19,12 @@ header('X-Content-Type-Options: nosniff');
  * so the app root is derived from the script location instead.
  */
 $respond = static function (array $data, int $code = 200) use ($dependencies): never {
-    if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') !== 'XMLHttpRequest') {
+    // A client that asks for JSON is not a browser form: never answer with a
+    // redirect, which a fetch cannot read.
+    $wantsJson = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest'
+        || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json');
+
+    if (!$wantsJson) {
         $flash = isset($data['error'])
             ? ['type' => 'error', 'text' => (string) $data['error']]
             : ['type' => 'success', 'text' => 'OK'];

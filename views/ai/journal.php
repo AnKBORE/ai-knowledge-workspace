@@ -174,7 +174,7 @@ $labels = [
     </div>
 </div>
 
-<script>
+<script nonce="<?= e(csp_nonce()) ?>">
 (function () {
     var form = document.getElementById('journal-purge-form');
     if (!form) { return; }

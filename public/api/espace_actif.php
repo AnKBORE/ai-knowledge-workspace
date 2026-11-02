@@ -14,6 +14,16 @@ $dependencies = require dirname(__DIR__, 2) . '/bootstrap.php';
 $lang = (string) $dependencies['session']->get('lang', 'en');
 
 if (!$dependencies['auth']->check()) {
+    $wantsJson = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest'
+        || str_contains((string) ($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json');
+
+    if ($wantsJson) {
+        http_response_code(401);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['error' => $T['auth_required'] ?? 'Authentication required.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     header('Location: ' . rtrim(str_replace('\\', '/', dirname(dirname((string) $_SERVER['SCRIPT_NAME']))), '/') . '/login');
     exit;
 }

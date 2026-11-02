@@ -203,7 +203,7 @@ $displayRole = $T['role'];
 <a href="#" class="scroll-top d-flex align-items-center justify-content-center" aria-label="<?= e($T['scroll_top']) ?>" title="<?= e($T['scroll_top']) ?>">
     <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
 </a>
-<script>window.WORKSPACE_BASE = <?= json_encode(rtrim(url('/'), '/'), JSON_UNESCAPED_SLASHES) ?>;
+<script nonce="<?= e(csp_nonce()) ?>">window.WORKSPACE_BASE = <?= json_encode(rtrim(url('/'), '/'), JSON_UNESCAPED_SLASHES) ?>;
 window.WORKSPACE_I18N = <?= json_encode(app_i18n($lang)['js'], JSON_UNESCAPED_UNICODE) ?>;</script>
 <script src="<?= e(url('/assets/vendor/jquery/jquery.min.js')) ?>" defer></script>
 <script src="<?= e(url('/assets/vendor/select2/js/select2.min.js')) ?>" defer></script>

@@ -101,7 +101,7 @@ $P = $T['categories'];
                                             <strong><?= e((string) ($categorie['nom'] ?? '')) ?></strong>
                                             <small><?= e(sprintf($P['doc_count'], (int) ($categorie['documents'] ?? 0), ((int) ($categorie['documents'] ?? 0)) > 1 ? 's' : '', (string) ($categorie['slug'] ?? ''))) ?></small>
                                         </div>
-                                        <form method="post" action="<?= e(url('/api/categorie_delete.php')) ?>" class="categorie-delete-form" onsubmit="return confirm(<?= json_encode($P['delete_confirm'], JSON_UNESCAPED_UNICODE) ?>)">
+                                        <form method="post" action="<?= e(url('/api/categorie_delete.php')) ?>" class="categorie-delete-form" data-confirm="<?= e((string) $P['delete_confirm']) ?>">
                                             <?= $csrf->field() ?>
                                             <input type="hidden" name="categorie_id" value="<?= (int) ($categorie['id'] ?? 0) ?>">
                                             <button type="submit" class="doc-action doc-action-danger categorie-delete" title="<?= e($P['delete_label']) ?>" aria-label="<?= e($P['delete_label']) ?> <?= e((string) ($categorie['nom'] ?? '')) ?>">
@@ -118,8 +118,3 @@ $P = $T['categories'];
         </div>
     </div>
 </div>
-
-<script>
-// Save and delete forms post natively: the API redirects back here with a
-// session flash, so every action reloads the page automatically.
-</script>

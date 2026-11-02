@@ -28,7 +28,10 @@ try {
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: no-referrer');
-header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
+// Scripts are allowed by nonce only: an injected inline script cannot run.
+// Styles keep 'unsafe-inline' for the dynamic colour attributes of the views.
+$cspNonce = csp_nonce();
+header("Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'nonce-{$cspNonce}'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
 
 $uiLang = (string) $dependencies['session']->get('lang', 'en');
 $apiT = app_i18n($uiLang)['api'];

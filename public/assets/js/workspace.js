@@ -26,6 +26,16 @@
     // Bound before anything else: a later init error must never disable
     // deleting a document.
     bindDeleteButtons();
+    /* Category deletion asks for confirmation through a data attribute: inline
+       handlers are forbidden by the CSP. */
+    document.addEventListener('submit', function (event) {
+        var form = event.target;
+        if (!form || !form.classList || !form.classList.contains('categorie-delete-form')) { return; }
+
+        var message = form.getAttribute('data-confirm');
+        if (message && !window.confirm(message)) { event.preventDefault(); }
+    });
+
 
     /* ------------------------------------------------------------------
        Admin confirmation + password gate — delegated on document and
