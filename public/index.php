@@ -44,6 +44,16 @@ $auth = $dependencies['auth'];
 $csrf = $dependencies['csrf'];
 $authController = new AuthController($dependencies['auth_service'], $csrf, $view);
 
+// Language switch — persisted in session, applied to the whole app.
+// (/presentation handles its own ?lang= to stay shareable without a session redirect.)
+if ($method === 'GET' && isset($_GET['lang']) && $path !== '/presentation') {
+    $lang = $_GET['lang'] === 'fr' ? 'fr' : 'en';
+    $dependencies['session']->set('lang', $lang);
+    header('Location: ' . url($path));
+    exit;
+}
+
+
 // Login form.
 if ($method === 'GET' && $path === '/login') {
     if ($auth->check()) {
@@ -83,15 +93,6 @@ if ($method === 'POST' && $path === '/logout') {
     }
 
     header('Location: ' . url('/login'));
-    exit;
-}
-
-// Language switch — persisted in session, applied to the whole app.
-// (/presentation handles its own ?lang= to stay shareable without a session redirect.)
-if ($method === 'GET' && isset($_GET['lang']) && $path !== '/presentation') {
-    $lang = $_GET['lang'] === 'fr' ? 'fr' : 'en';
-    $dependencies['session']->set('lang', $lang);
-    header('Location: ' . url($path));
     exit;
 }
 
