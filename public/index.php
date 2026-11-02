@@ -294,12 +294,24 @@ if ($method === 'GET') {
         }
     }
 
+    // Explicit filter from the document list: it wins over the active workspace.
+    $filtreEspace = $path === '/documents' ? (int) ($_GET['espace'] ?? 0) : 0;
+
     $documents = $search !== ''
         ? $dependencies['document_model']->search($search, 200, $visibleDocuments)
         : $dependencies['document_model']->listRecent(200, 0, $visibleDocuments);
 
     // Working inside a workspace scopes the list to that workspace.
-    if (($espaceActif ?? 0) > 0 && $documents !== []) {
+    if ($filtreEspace > 0 && $documents !== []) {
+        $documents = array_values(array_filter(
+            $documents,
+            static fn (array $doc): bool => in_array(
+                $filtreEspace,
+                array_map('intval', array_filter(explode(',', (string) ($doc['espaces'] ?? '')))),
+                true
+            )
+        ));
+    } elseif (($espaceActif ?? 0) > 0 && $documents !== []) {
         $documents = array_values(array_filter(
             $documents,
             static function (array $doc) use ($espaceActif): bool {
@@ -346,6 +358,17 @@ if ($method === 'GET') {
         ['administrateur_technique', 'administrateur_fonctionnel'],
         true
     );
+
+    // Names for the workspace badges on the document list. Only the spaces the
+    // user can enter are resolved: a visible document always belongs to one.
+    $espacesNoms = [];
+
+    if ($path === '/documents') {
+        foreach ($dependencies['espaces']->pourUtilisateur((int) $auth->id(), $estAdminGlobal) as $espaceBadge) {
+            $espacesNoms[(int) $espaceBadge['id']] = (string) $espaceBadge['nom'];
+        }
+    }
+
     // Only the workspaces where the user may actually deposit are offered.
     $espacesDepot = [];
 
@@ -409,6 +432,8 @@ if ($method === 'GET') {
         'mesEspaces' => $mesEspaces ?? [],
         'espaceActif' => $espaceActif ?? null,
         'espacesDepot' => $espacesDepot ?? [],
+        'espacesNoms' => $espacesNoms ?? [],
+        'filtreEspace' => $filtreEspace ?? 0,
         'canPublish' => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.administrer'),
         'espaceActifNom' => $espaceActifNom ?? '',
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],

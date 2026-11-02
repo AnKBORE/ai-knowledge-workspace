@@ -88,4 +88,31 @@ final class DocumentTest extends TestCase
         $this->assertCount(1, $documents);
         $this->assertSame('Rapport', $documents[0]['title']);
     }
+public function testReplacingSpacesWritesTheLinkTableAndThePrimaryColumn(): void
+    {
+        $documentId = $this->documents->create('Rapport', 1, 1, 'rapport.pdf', 'application/pdf');
+
+        // Duplicates are ignored, order is preserved for the primary column.
+        $this->documents->remplacerEspaces($documentId, [3, 5, 5]);
+
+        $this->assertSame([3, 5], $this->documents->espacesDe($documentId));
+        $this->assertSame(3, (int) $this->documents->find($documentId)['espace_id']);
+
+        // Removing every workspace is valid: the document becomes owner-only.
+        $this->documents->remplacerEspaces($documentId, []);
+
+        $this->assertSame([], $this->documents->espacesDe($documentId));
+        $this->assertNull($this->documents->find($documentId)['espace_id']);
+    }
+
+    public function testReplacingSpacesAgainReplacesTheWholeSet(): void
+    {
+        $documentId = $this->documents->create('Note', 1, 1, 'note.pdf', 'application/pdf');
+
+        $this->documents->remplacerEspaces($documentId, [1, 2]);
+        $this->documents->remplacerEspaces($documentId, [2]);
+
+        $this->assertSame([2], $this->documents->espacesDe($documentId));
+        $this->assertSame(2, (int) $this->documents->find($documentId)['espace_id']);
+    }
 }

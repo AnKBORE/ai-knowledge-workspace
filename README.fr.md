@@ -70,6 +70,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Gouvernance et contrôle d'accès
 
+- **La liste des documents montre les espaces de chaque document** (badges) et se filtre par espace, y compris combiné à la recherche.
 - **Un document, plusieurs espaces.** Un document peut être classé dans plusieurs espaces de travail, et retiré de l'un sans quitter les autres : l'accès suit l'union des espaces, et le propriétaire garde toujours l'accès.
 - **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité d'un document existant ; l'action exige son mot de passe et journalise les valeurs **avant** et **après**.
 - **Espace et confidentialité au dépôt.** Le déposant choisit l'espace cible et la confidentialité (`restreint`, `prive`, ou `public_interne` pour les administrateurs). Le choix est conservé jusque dans la file des dépôts différés (audio, images, PDF scannés).

@@ -38,6 +38,21 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                         <h2 class="panel-title" id="documents-title"><?= e($P['panel_title']) ?> <span class="technical-admin-count"><?= count($documents) ?></span></h2>
                         <p class="panel-sub" id="documents-help"><?= e($P['panel_sub']) ?></p>
                     </div>
+                    <div class="panel-head-tools">
+                        <form method="get" action="<?= e(url('/documents')) ?>" class="doc-space-filter">
+                            <label class="visually-hidden" for="doc-space-filter"><?= e($isFr ? 'Filtrer par espace de travail' : 'Filter by workspace') ?></label>
+                            <select id="doc-space-filter" name="espace" class="form-select form-select-sm">
+                                <option value="0"><?= e($isFr ? 'Tous les espaces' : 'All workspaces') ?></option>
+                                <?php foreach (($espacesNoms ?? []) as $espaceFiltreId => $espaceFiltreNom): ?>
+                                    <option value="<?= (int) $espaceFiltreId ?>"<?= (int) ($filtreEspace ?? 0) === (int) $espaceFiltreId ? ' selected' : '' ?>><?= e((string) $espaceFiltreNom) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if (($search ?? '') !== ''): ?>
+                                <input type="hidden" name="q" value="<?= e($search) ?>">
+                            <?php endif; ?>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary"><?= e($isFr ? 'Filtrer' : 'Filter') ?></button>
+                        </form>
+                    </div>
                 </div>
 
                 <?php if (empty($documents)): ?>
@@ -52,6 +67,7 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                     <th scope="col">N°</th>
                                     <th scope="col"><?= e($P['th_title']) ?></th>
                                     <th scope="col"><?= e($P['th_category']) ?></th>
+                                    <th scope="col"><?= e($isFr ? 'Espaces' : 'Workspaces') ?></th>
                                     <th scope="col"><?= e($P['th_file']) ?></th>
                                     <th scope="col"><?= e($P['th_versions']) ?></th>
                                     <th scope="col"><?= e($P['th_actions']) ?></th>
@@ -74,6 +90,21 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                                 <span class="categorie-badge" style="border-color: <?= e((string) $doc['categorie_couleur']) ?>; color: <?= e((string) $doc['categorie_couleur']) ?>"><?= e((string) $doc['categorie_nom']) ?></span>
                                             <?php else: ?>
                                                 <span class="text-muted small">—</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="doc-spaces-cell">
+                                            <?php
+                                            $docEspaces = array_filter(array_map(
+                                                'intval',
+                                                explode(',', (string) ($doc['espaces'] ?? ''))
+                                            ));
+                                            ?>
+                                            <?php if ($docEspaces === []): ?>
+                                                <span class="text-muted small">—</span>
+                                            <?php else: ?>
+                                                <?php foreach ($docEspaces as $docEspaceId): ?>
+                                                    <span class="doc-item-badge"><?= e((string) ($espacesNoms[$docEspaceId] ?? ('#' . $docEspaceId))) ?></span>
+                                                <?php endforeach; ?>
                                             <?php endif; ?>
                                         </td>
                                         <td class="small text-muted"><?= e($doc['filename'] ?? '') ?></td>
