@@ -61,6 +61,21 @@ foreach ($argv ?? [] as $argument) {
 }
 $motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
 
+// --- 0bis. Help: the three modes and the single-protected-account rule ---
+if (in_array('--help', $argv ?? [], true) || in_array('-h', $argv ?? [], true)) {
+    $nl = PHP_EOL;
+    echo 'Bootstrap account (Super Admin)' . $nl . $nl;
+    echo 'Exactly ONE account is protected at a time: it can never be deleted,' . $nl;
+    echo 'suspended or demoted. These commands maintain it.' . $nl . $nl;
+    echo '  php tools/seed_admin.php                     confirm or recreate it' . $nl;
+    echo '  php tools/seed_admin.php --reset             regenerate its password' . $nl;
+    echo '  php tools/seed_admin.php --transfer=email    MOVE the protection to another' . $nl;
+    echo '                                              account (the previous holder' . $nl;
+    echo '                                              loses it)' . $nl . $nl;
+    echo 'A transfer is journaled as compte.super_transfert and visible in /journal.' . $nl;
+    exit(0);
+}
+
 $users = new Utilisateur($pdo);
 $journal = new JournalService($pdo);
 

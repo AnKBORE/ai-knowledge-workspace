@@ -140,7 +140,7 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                             <?php foreach (($adminUsers ?? []) as $u): ?>
                                 <tr>
                                     <?= $rowNumberCell() ?>
-                                    <td><strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong><?php if (!empty($u['compte_super'])): ?> <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé : non supprimable, profil modifiable', 'Protected account: cannot be deleted, profile editable')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span><?php endif; ?></td>
+                                    <td><strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong><?php if (!empty($u['compte_super'])): ?> <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé (un seul à la fois) : non supprimable, non suspendable, non rétrogradable ; son profil reste modifiable', 'Protected account (only one at a time): cannot be deleted, suspended or demoted; its profile stays editable')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span><?php endif; ?></td>
                                     <td class="small text-muted"><?= e((string) ($u['courriel'] ?? '')) ?></td>
                                     <td><span class="doc-item-badge"><?= e((string) ($u['role_global'] ?? '')) ?></span></td>
                                                                         <td class="small">
