@@ -193,7 +193,8 @@ Chaîne intacte : tout dérivé remonte à l'enregistrement d'origine.
 - **Reconstruction phonétique ASR** — les moteurs de transcription déforment les langues peu dotées (whisper a entendu *« Ibe kibali kye mame zakalamba »* pour *« Yibeoog kibare, f zak ramba »*). Le traducteur reçoit l'ordre de reconstituer d'abord le mooré voulu phonétiquement, **puis** de traduire : ce transcript déformé donne désormais *« Comment s'est passée ta matinée ? Et les gens de la maison ? »* — le bon sens (un salut demandant des nouvelles de la matinée et de la famille)
 - **Ancrage few-shot** — jusqu'à 3 vrais extraits mooré issus des documents indexés de l'utilisateur sont injectés comme référence de style et d'orthographe dès que le mooré est en jeu
 - **Page Traduction** (`/traduire`) — FR ⇄ EN ⇄ MO dans les deux sens, copie en un clic, chaque traduction journalisée
-- **Honnêteté assumée** — la sortie mooré utilise l'orthographe mossi standard et est fiable sur le vocabulaire courant ; l'interface précise que les textes officiels doivent être relus par un locuteur
+- **Honnêteté assumée** — la sortie mooré utilise l'orthographe mossi standard et est fiable sur le vocabulaire
+- **L'OCR sur du mooré scanné n'est pas fiable.** Une page scannée dont le corps est en mooré est extraite comme du français, ou pas du tout : le moteur reconnaît bien l'alphabet latin et mal les diacritiques du mooré. Le texte saisi ou l'audio sont les voies fiables pour du contenu mooré ; un scan convient pour du français. courant ; l'interface précise que les textes officiels doivent être relus par un locuteur
 
 ### Transcription audio — double pipeline
 - **Enregistreur de réunion** — la page Ajouter enregistre directement le micro (WAV dans le navigateur), joint le fichier au formulaire et laisse le pipeline en arrière-plan transcrire puis indexer comme un document classique. Un vu-mètre et une détection de silence empêchent d'indexer un enregistrement vide

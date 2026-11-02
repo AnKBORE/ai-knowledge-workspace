@@ -194,7 +194,8 @@ Chain intact: every derivative traces back to the original recording.
 - **ASR phonetic reconstruction** — ASR engines garble low-resource languages (whisper heard *"Ibe kibali kye mame zakalamba"* for the actual *"Yibeoog kibare, f zak ramba"*). The translator is instructed to first reconstruct the intended Mooré phonetically, **then** translate: that garbled transcript now yields *« Comment s'est passée ta matinée ? Et les gens de la maison ? »* — the correct meaning (a greeting asking about one's morning and family)
 - **Few-shot grounding** — up to 3 real Mooré extracts from the user's own indexed documents are injected as style/orthography references whenever Mooré is involved
 - **Translation page** (`/traduire`) — FR ⇄ EN ⇄ MO both ways, one-click copy, every translation journaled
-- **Honest scope** — Mooré output uses standard Mossi orthography and is reliable for everyday vocabulary; the UI states that official texts should still be reviewed by a speaker
+- **Honest scope** — Mooré output uses standard Mossi orthography and is reliable for everyday vocabulary
+- **OCR on scanned Mooré is unreliable.** A scanned page whose body is Mooré is extracted as French text, or not at all: the recognition engine handles the Latin alphabet well and the Mooré diacritics poorly. Typed text or audio is the reliable route for Mooré content; a scan is fine for French.; the UI states that official texts should still be reviewed by a speaker
 
 ### Audio transcription — dual pipeline
 - **Meeting recorder** — the Add page records audio straight from the microphone (WAV in the browser), attaches it to the upload form and lets the background pipeline transcribe and index it as a regular document. A level meter and silence detection prevent indexing empty recordings
