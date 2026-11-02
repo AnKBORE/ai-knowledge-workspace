@@ -132,200 +132,221 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                     </div>
                 </div>
 
-                <h3 class="h6 admin-inv-title"><?= e($t('Comptes', 'Accounts')) ?> <span class="technical-admin-count"><?= count($adminUsers ?? []) ?></span></h3>
-                <div class="space-table-wrap">
-                    <table class="spaces-data-table technical-admin-table admin-inventory-table inv-users table table-hover align-middle w-100">
-                        <thead>
-                            <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col"><?= e($t('Nom', 'Name')) ?></th>
-                                <th scope="col"><?= e($t('Adresse e-mail', 'E-mail')) ?></th>
-                                <th scope="col"><?= e($t('Rôle global', 'Global role')) ?></th>
-                                <th scope="col"><?= e($t('Statut', 'Status')) ?></th>
-                                <th scope="col" class="text-end"><?= e($t('Actions', 'Actions')) ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach (($adminUsers ?? []) as $u): ?>
-                                <?php $estProtegeCompte = !empty($u['compte_super']); ?>
-                                <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
+                  <ul class="nav nav-tabs admin-inventory-tabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link active" id="inv-tab-accounts" data-bs-toggle="tab" data-bs-target="#inv-pane-accounts" type="button" role="tab" aria-controls="inv-pane-accounts" aria-selected="true">
+                              <?= e($t('Comptes', 'Accounts')) ?> <span class="technical-admin-count"><?= count($adminUsers ?? []) ?></span>
+                          </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="inv-tab-spaces" data-bs-toggle="tab" data-bs-target="#inv-pane-spaces" type="button" role="tab" aria-controls="inv-pane-spaces" aria-selected="false">
+                              <?= e($t('Espaces', 'Workspaces')) ?> <span class="technical-admin-count"><?= count($adminEspaces ?? []) ?></span>
+                          </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                          <button class="nav-link" id="inv-tab-adhesions" data-bs-toggle="tab" data-bs-target="#inv-pane-adhesions" type="button" role="tab" aria-controls="inv-pane-adhesions" aria-selected="false">
+                              <?= e($t('Adhésions', 'Memberships')) ?> <span class="technical-admin-count"><?= count($adminAdhesions ?? []) ?></span>
+                          </button>
+                      </li>
+                  </ul>
+
+                  <div class="tab-content admin-inventory-content">
+                      <div class="tab-pane fade show active" id="inv-pane-accounts" role="tabpanel" aria-labelledby="inv-tab-accounts" tabindex="0">
+                    <div class="space-table-wrap">
+                        <table class="spaces-data-table technical-admin-table admin-inventory-table inv-users table table-hover align-middle w-100">
+                            <thead>
                                 <tr>
-                                    <?= $rowNumberCell() ?>
-                                    <td>
-                                        <strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong>
-                                        <?php if ($estProtegeCompte): ?>
-                                            <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span>
-                                        <?php endif; ?>
-                                    </td>
-                                    <td class="small text-muted"><?= e((string) ($u['courriel'] ?? '')) ?></td>
-                                    <td><span class="doc-item-badge"><?= e((string) ($u['role_global'] ?? '')) ?></span></td>
-                                    <td class="small">
-                                        <span class="badge <?= $estActifCompte ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($u['statut'] ?? 'actif')) ?></span>
-                                    </td>
-                                    <td class="text-end">
-                                        <?php if ($estProtegeCompte): ?>
-                                            <span class="doc-action doc-action-locked"
-                                                  title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>"
-                                                  aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                                            </span>
-                                            <?php if (!empty($estSuperActeur)): ?>
-                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline ms-1">
+                                    <th scope="col">N°</th>
+                                    <th scope="col"><?= e($t('Nom', 'Name')) ?></th>
+                                    <th scope="col"><?= e($t('Adresse e-mail', 'E-mail')) ?></th>
+                                    <th scope="col"><?= e($t('Rôle global', 'Global role')) ?></th>
+                                    <th scope="col"><?= e($t('Statut', 'Status')) ?></th>
+                                    <th scope="col" class="text-end"><?= e($t('Actions', 'Actions')) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach (($adminUsers ?? []) as $u): ?>
+                                    <?php $estProtegeCompte = !empty($u['compte_super']); ?>
+                                    <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
+                                    <tr>
+                                        <?= $rowNumberCell() ?>
+                                        <td>
+                                            <strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong>
+                                            <?php if ($estProtegeCompte): ?>
+                                                <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="small text-muted"><?= e((string) ($u['courriel'] ?? '')) ?></td>
+                                        <td><span class="doc-item-badge"><?= e((string) ($u['role_global'] ?? '')) ?></span></td>
+                                        <td class="small">
+                                            <span class="badge <?= $estActifCompte ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($u['statut'] ?? 'actif')) ?></span>
+                                        </td>
+                                        <td class="text-end">
+                                            <?php if ($estProtegeCompte): ?>
+                                                <span class="doc-action doc-action-locked"
+                                                      title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>"
+                                                      aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                                </span>
+                                                <?php if (!empty($estSuperActeur)): ?>
+                                                    <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline ms-1">
+                                                        <?= $csrf?->field() ?? '' ?>
+                                                        <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                        <input type="hidden" name="action" value="revoke">
+                                                        <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
+                                                                title="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
+                                                                aria-label="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
+                                                                data-confirm-title="<?= e($t('Retirer la protection ?', 'Remove the protection?')) ?>"
+                                                                data-confirm-text="<?= e(($nbSuperAdmins ?? 0) <= 1
+                                                                    ? $t('C\'est le dernier compte protégé : plus aucun ne le sera. La protection pourra être rétablie en ligne de commande.', 'This is the last protected account: none will remain. The protection can be restored from the command line.')
+                                                                    : $t('Ce compte redevient un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M9 16h6"/></svg>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                <?php if (!empty($estSuperActeur)): ?>
+                                                    <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                                        <?= $csrf?->field() ?? '' ?>
+                                                        <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                        <input type="hidden" name="action" value="grant">
+                                                        <button type="submit" class="doc-action admin-confirm"
+                                                                title="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
+                                                                aria-label="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
+                                                                data-confirm-title="<?= e($t('Protéger ce compte ?', 'Protect this account?')) ?>"
+                                                                data-confirm-text="<?= e($t('Ce compte devient un Super Admin : il ne pourra plus être supprimé, suspendu ni rétrogradé. Action journalisée.', 'This account becomes a Super Admin: it can no longer be deleted, suspended or demoted. Journaled action.')) ?>">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M12 13v4M10.5 15h3"/></svg>
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                                <form method="post" action="<?= e(url('/api/admin_user_statut.php')) ?>" class="d-inline<?= !empty($estSuperActeur) ? ' ms-1' : '' ?>">
                                                     <?= $csrf?->field() ?? '' ?>
                                                     <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
-                                                    <input type="hidden" name="action" value="revoke">
+                                                    <input type="hidden" name="statut" value="<?= $estActifCompte ? 'suspendu' : 'actif' ?>">
+                                                    <button type="submit" class="doc-action <?= $estActifCompte ? 'doc-action-danger' : '' ?> admin-confirm"
+                                                            title="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
+                                                            aria-label="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
+                                                            data-confirm-title="<?= e($estActifCompte ? $t('Suspendre ce compte ?', 'Suspend this account?') : $t('Réactiver ce compte ?', 'Reinstate this account?')) ?>"
+                                                            data-confirm-text="<?= e($estActifCompte
+                                                                ? $t('Le compte ne pourra plus se connecter jusqu\'à réactivation. Action journalisée.', 'The account will not be able to sign in until reinstated. Journaled action.')
+                                                                : $t('Le compte pourra de nouveau se connecter. Action journalisée.', 'The account will be able to sign in again. Journaled action.')) ?>">
+                                                        <?php if ($estActifCompte): ?>
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M14 11h6"/></svg>
+                                                        <?php else: ?>
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M17 8v6"/><path d="M14 11h6"/></svg>
+                                                        <?php endif; ?>
+                                                    </button>
+                                                </form>
+                                                <form method="post" action="<?= e(url('/api/admin_user_delete.php')) ?>" class="d-inline ms-1">
+                                                    <?= $csrf?->field() ?? '' ?>
+                                                    <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                     <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
-                                                            title="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
-                                                            aria-label="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
-                                                            data-confirm-title="<?= e($t('Retirer la protection ?', 'Remove the protection?')) ?>"
-                                                            data-confirm-text="<?= e(($nbSuperAdmins ?? 0) <= 1
-                                                                ? $t('C\'est le dernier compte protégé : plus aucun ne le sera. La protection pourra être rétablie en ligne de commande.', 'This is the last protected account: none will remain. The protection can be restored from the command line.')
-                                                                : $t('Ce compte redevient un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M9 16h6"/></svg>
+                                                            title="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
+                                                            aria-label="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
+                                                            data-confirm-title="<?= e($t('Supprimer ce compte ?', 'Delete this account?')) ?>"
+                                                            data-confirm-text="<?= e($t('Suppression logique : le compte disparaît, l\'historique est conservé. Action journalisée.', 'Soft delete: the account disappears, its history is kept. Journaled action.')) ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13h10l1-13"/></svg>
                                                     </button>
                                                 </form>
                                             <?php endif; ?>
-                                        <?php else: ?>
-                                            <?php if (!empty($estSuperActeur)): ?>
-                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                      </div>
+                      <div class="tab-pane fade" id="inv-pane-spaces" role="tabpanel" aria-labelledby="inv-tab-spaces" tabindex="0">
+                    <div class="space-table-wrap">
+                        <table class="spaces-data-table technical-admin-table admin-inventory-table inv-espaces table table-hover align-middle w-100">
+                            <thead>
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col"><?= e($t('Espace', 'Workspace')) ?></th>
+                                    <th scope="col"><?= e($t('Visibilité', 'Visibility')) ?></th>
+                                    <th scope="col"><?= e($t('Statut', 'Status')) ?></th>
+                                    <th scope="col" class="text-end"><?= e($t('Cycle de vie', 'Lifecycle')) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach (($adminEspaces ?? []) as $es): ?>
+                                    <?php $esActif = ($es['statut'] ?? 'actif') === 'actif'; ?>
+                                    <tr>
+                                        <?= $rowNumberCell() ?>
+                                        <td><strong><?= e((string) $es['nom']) ?></strong></td>
+                                        <td><span class="doc-item-badge"><?= e((string) $es['visibilite']) ?></span></td>
+                                        <td class="small">
+                                            <span class="badge <?= $esActif ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($es['statut'] ?? 'actif')) ?></span>
+                                        </td>
+                                        <td class="text-end">
+                                            <?php if ($canArchive): ?>
+                                                <form method="post" action="<?= e(url('/api/admin_espace_statut.php')) ?>" class="d-inline">
                                                     <?= $csrf?->field() ?? '' ?>
-                                                    <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
-                                                    <input type="hidden" name="action" value="grant">
-                                                    <button type="submit" class="doc-action admin-confirm"
-                                                            title="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
-                                                            aria-label="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
-                                                            data-confirm-title="<?= e($t('Protéger ce compte ?', 'Protect this account?')) ?>"
-                                                            data-confirm-text="<?= e($t('Ce compte devient un Super Admin : il ne pourra plus être supprimé, suspendu ni rétrogradé. Action journalisée.', 'This account becomes a Super Admin: it can no longer be deleted, suspended or demoted. Journaled action.')) ?>">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M12 13v4M10.5 15h3"/></svg>
+                                                    <input type="hidden" name="espace_id" value="<?= (int) $es['id'] ?>">
+                                                    <input type="hidden" name="statut" value="<?= $esActif ? 'archive' : 'actif' ?>">
+                                                    <button type="submit" class="doc-action <?= $esActif ? 'doc-action-danger' : '' ?> admin-confirm" data-confirm-tone="danger"
+                                                            title="<?= e($esActif ? $t('Clore', 'Close') : $t('Réouvrir', 'Reopen')) ?>"
+                                                            aria-label="<?= e($esActif ? $t('Clore', 'Close') : $t('Réouvrir', 'Reopen')) ?>"
+                                                            data-confirm-title="<?= e($esActif ? $t('Clore cet espace ?', 'Close this workspace?') : $t('Réouvrir cet espace ?', 'Reopen this workspace?')) ?>"
+                                                            data-confirm-text="<?= e($esActif
+                                                                ? $t('Aucun nouveau dépôt ne sera accepté ; les documents restent lisibles. Action journalisée.', 'No new uploads will be accepted; documents stay readable. Journaled action.')
+                                                                : $t('Les dépôts redeviennent possibles dans cet espace. Action journalisée.', 'Uploads become possible again in this workspace. Journaled action.')) ?>">
+                                                        <?php if ($esActif): ?>
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                                                        <?php else: ?>
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                                                        <?php endif; ?>
                                                     </button>
                                                 </form>
+                                            <?php else: ?>
+                                                <span class="text-muted small">—</span>
                                             <?php endif; ?>
-                                            <form method="post" action="<?= e(url('/api/admin_user_statut.php')) ?>" class="d-inline<?= !empty($estSuperActeur) ? ' ms-1' : '' ?>">
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                      </div>
+                      <div class="tab-pane fade" id="inv-pane-adhesions" role="tabpanel" aria-labelledby="inv-tab-adhesions" tabindex="0">
+                        <table class="spaces-data-table technical-admin-table admin-inventory-table inv-adhesions table table-hover align-middle w-100">
+                            <thead>
+                                <tr>
+                                    <th scope="col">N°</th>
+                                    <th scope="col"><?= e($t('Membre', 'Member')) ?></th>
+                                    <th scope="col"><?= e($t('Espace', 'Workspace')) ?></th>
+                                    <th scope="col"><?= e($t('Rôle local', 'Local role')) ?></th>
+                                    <th scope="col" class="text-end"><?= e($t('Action', 'Action')) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach (($adminAdhesions ?? []) as $ad): ?>
+                                    <tr>
+                                        <?= $rowNumberCell() ?>
+                                        <td><strong><?= e(trim((string) ($ad['prenom'] ?? '') . ' ' . (string) ($ad['nom'] ?? ''))) ?></strong></td>
+                                        <td class="small text-muted"><?= e((string) ($ad['espace'] ?? '')) ?></td>
+                                        <td><span class="doc-item-badge"><?= e((string) ($ad['role_local'] ?? '')) ?></span></td>
+                                        <td class="text-end">
+                                            <form method="post" action="<?= e(url('/api/admin_adhesion_end.php')) ?>" class="d-inline">
                                                 <?= $csrf?->field() ?? '' ?>
-                                                <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
-                                                <input type="hidden" name="statut" value="<?= $estActifCompte ? 'suspendu' : 'actif' ?>">
-                                                <button type="submit" class="doc-action <?= $estActifCompte ? 'doc-action-danger' : '' ?> admin-confirm"
-                                                        title="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
-                                                        aria-label="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
-                                                        data-confirm-title="<?= e($estActifCompte ? $t('Suspendre ce compte ?', 'Suspend this account?') : $t('Réactiver ce compte ?', 'Reinstate this account?')) ?>"
-                                                        data-confirm-text="<?= e($estActifCompte
-                                                            ? $t('Le compte ne pourra plus se connecter jusqu\'à réactivation. Action journalisée.', 'The account will not be able to sign in until reinstated. Journaled action.')
-                                                            : $t('Le compte pourra de nouveau se connecter. Action journalisée.', 'The account will be able to sign in again. Journaled action.')) ?>">
-                                                    <?php if ($estActifCompte): ?>
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M14 11h6"/></svg>
-                                                    <?php else: ?>
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M17 8v6"/><path d="M14 11h6"/></svg>
-                                                    <?php endif; ?>
-                                                </button>
-                                            </form>
-                                            <form method="post" action="<?= e(url('/api/admin_user_delete.php')) ?>" class="d-inline ms-1">
-                                                <?= $csrf?->field() ?? '' ?>
-                                                <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                <input type="hidden" name="adhesion_id" value="<?= (int) $ad['id'] ?>">
                                                 <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
-                                                        title="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
-                                                        aria-label="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
-                                                        data-confirm-title="<?= e($t('Supprimer ce compte ?', 'Delete this account?')) ?>"
-                                                        data-confirm-text="<?= e($t('Suppression logique : le compte disparaît, l\'historique est conservé. Action journalisée.', 'Soft delete: the account disappears, its history is kept. Journaled action.')) ?>">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13h10l1-13"/></svg>
+                                                        title="<?= e($t("Terminer l'adhésion", 'End membership')) ?>"
+                                                        aria-label="<?= e($t("Terminer l'adhésion", 'End membership')) ?>"
+                                                        data-confirm-title="<?= e($t("Terminer cette adhésion ?", 'End this membership?')) ?>"
+                                                        data-confirm-text="<?= e($t('Le membre perdra l\'accès aux documents de l\'espace. Action journalisée.', 'The member will lose access to the workspace documents. Journaled action.')) ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8h5"/></svg>
                                                 </button>
                                             </form>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3 class="h6 admin-inv-title"><?= e($t('Espaces', 'Workspaces')) ?> <span class="technical-admin-count"><?= count($adminEspaces ?? []) ?></span></h3>
-                <div class="space-table-wrap">
-                    <table class="spaces-data-table technical-admin-table admin-inventory-table inv-espaces table table-hover align-middle w-100">
-                        <thead>
-                            <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col"><?= e($t('Espace', 'Workspace')) ?></th>
-                                <th scope="col"><?= e($t('Visibilité', 'Visibility')) ?></th>
-                                <th scope="col"><?= e($t('Statut', 'Status')) ?></th>
-                                <th scope="col" class="text-end"><?= e($t('Cycle de vie', 'Lifecycle')) ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach (($adminEspaces ?? []) as $es): ?>
-                                <?php $esActif = ($es['statut'] ?? 'actif') === 'actif'; ?>
-                                <tr>
-                                    <?= $rowNumberCell() ?>
-                                    <td><strong><?= e((string) $es['nom']) ?></strong></td>
-                                    <td><span class="doc-item-badge"><?= e((string) $es['visibilite']) ?></span></td>
-                                    <td class="small">
-                                        <span class="badge <?= $esActif ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($es['statut'] ?? 'actif')) ?></span>
-                                    </td>
-                                    <td class="text-end">
-                                        <?php if ($canArchive): ?>
-                                            <form method="post" action="<?= e(url('/api/admin_espace_statut.php')) ?>" class="d-inline">
-                                                <?= $csrf?->field() ?? '' ?>
-                                                <input type="hidden" name="espace_id" value="<?= (int) $es['id'] ?>">
-                                                <input type="hidden" name="statut" value="<?= $esActif ? 'archive' : 'actif' ?>">
-                                                <button type="submit" class="doc-action <?= $esActif ? 'doc-action-danger' : '' ?> admin-confirm" data-confirm-tone="danger"
-                                                        title="<?= e($esActif ? $t('Clore', 'Close') : $t('Réouvrir', 'Reopen')) ?>"
-                                                        aria-label="<?= e($esActif ? $t('Clore', 'Close') : $t('Réouvrir', 'Reopen')) ?>"
-                                                        data-confirm-title="<?= e($esActif ? $t('Clore cet espace ?', 'Close this workspace?') : $t('Réouvrir cet espace ?', 'Reopen this workspace?')) ?>"
-                                                        data-confirm-text="<?= e($esActif
-                                                            ? $t('Aucun nouveau dépôt ne sera accepté ; les documents restent lisibles. Action journalisée.', 'No new uploads will be accepted; documents stay readable. Journaled action.')
-                                                            : $t('Les dépôts redeviennent possibles dans cet espace. Action journalisée.', 'Uploads become possible again in this workspace. Journaled action.')) ?>">
-                                                    <?php if ($esActif): ?>
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-                                                    <?php else: ?>
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
-                                                    <?php endif; ?>
-                                                </button>
-                                            </form>
-                                        <?php else: ?>
-                                            <span class="text-muted small">—</span>
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3 class="h6 admin-inv-title"><?= e($t('Adhésions', 'Memberships')) ?> <span class="technical-admin-count"><?= count($adminAdhesions ?? []) ?></span></h3>
-                <div class="space-table-wrap">
-                    <table class="spaces-data-table technical-admin-table admin-inventory-table inv-adhesions table table-hover align-middle w-100">
-                        <thead>
-                            <tr>
-                                <th scope="col">N°</th>
-                                <th scope="col"><?= e($t('Membre', 'Member')) ?></th>
-                                <th scope="col"><?= e($t('Espace', 'Workspace')) ?></th>
-                                <th scope="col"><?= e($t('Rôle local', 'Local role')) ?></th>
-                                <th scope="col" class="text-end"><?= e($t('Action', 'Action')) ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach (($adminAdhesions ?? []) as $ad): ?>
-                                <tr>
-                                    <?= $rowNumberCell() ?>
-                                    <td><strong><?= e(trim((string) ($ad['prenom'] ?? '') . ' ' . (string) ($ad['nom'] ?? ''))) ?></strong></td>
-                                    <td class="small text-muted"><?= e((string) ($ad['espace'] ?? '')) ?></td>
-                                    <td><span class="doc-item-badge"><?= e((string) ($ad['role_local'] ?? '')) ?></span></td>
-                                    <td class="text-end">
-                                        <form method="post" action="<?= e(url('/api/admin_adhesion_end.php')) ?>" class="d-inline">
-                                            <?= $csrf?->field() ?? '' ?>
-                                            <input type="hidden" name="adhesion_id" value="<?= (int) $ad['id'] ?>">
-                                            <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
-                                                    title="<?= e($t("Terminer l'adhésion", 'End membership')) ?>"
-                                                    aria-label="<?= e($t("Terminer l'adhésion", 'End membership')) ?>"
-                                                    data-confirm-title="<?= e($t("Terminer cette adhésion ?", 'End this membership?')) ?>"
-                                                    data-confirm-text="<?= e($t('Le membre perdra l\'accès aux documents de l\'espace. Action journalisée.', 'The member will lose access to the workspace documents. Journaled action.')) ?>">
-                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8h5"/></svg>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                      </div>
+                  </div>
 
                 <p class="technical-admin-note technical-admin-footer">
                     <?= e($t('Chaque création, clôture et révocation est inscrite au journal d\'audit.', 'Every creation, closure and revocation is recorded in the audit journal.')) ?>

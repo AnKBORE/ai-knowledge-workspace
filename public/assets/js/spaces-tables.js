@@ -89,3 +89,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+/* DataTables inside a hidden tab computes its column widths from a zero-width
+   container: recalculate when the tab is shown. */
+document.addEventListener('shown.bs.tab', function (event) {
+    if (!window.DataTable || typeof window.DataTable.tables !== 'function') return;
+
+    var target = event.target.getAttribute('data-bs-target');
+    var pane = target ? document.querySelector(target) : null;
+    if (!pane) return;
+
+    // Target the table of the revealed pane only: adjusting every table would
+    // touch hidden ones whose width is meaningless.
+    var table = pane.querySelector('table.spaces-data-table');
+    if (!table || !window.jQuery) { return; }
+
+    var api = window.jQuery(table).DataTable();
+    api.columns.adjust();
+
+    if (api.responsive && typeof api.responsive.recalc === 'function') {
+        api.responsive.recalc();
+    }
+});

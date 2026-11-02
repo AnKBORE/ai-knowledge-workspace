@@ -672,3 +672,43 @@
     width: 17px;
     height: 17px;
 }
+
+/* Inventory tabs: comptes / espaces / adhésions */
+.admin-inventory-tabs {
+    padding: 0 1.25rem;
+    gap: .25rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-inventory-tabs .nav-link {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    padding: .6rem .9rem;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.admin-inventory-tabs .nav-link:hover {
+    color: #374151;
+    background: transparent;
+}
+
+.admin-inventory-tabs .nav-link.active {
+    color: #6d28d9;
+    border-bottom-color: #6d28d9;
+    background: transparent;
+}
+
+.admin-inventory-tabs .nav-link:focus-visible {
+    outline: 2px solid #6d28d9;
+    outline-offset: 2px;
+}
+
+.admin-inventory-content {
+    padding-top: 1rem;
+}
+
+.admin-inventory-content .tab-pane:focus {
+    outline: none;
+}
