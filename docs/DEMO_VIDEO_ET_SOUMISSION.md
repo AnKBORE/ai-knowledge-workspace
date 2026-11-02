@@ -100,35 +100,39 @@ Then open **http://127.0.0.1:8080/** and press **`Ctrl + F5`**.
 
 ## 3. Timed script — 2:50
 
-Eleven short sequences. Editing is allowed, so nothing has to be done in one take;
-the goal is a video that ends **before 3:00**, because the judges stop there.
+Nine sequences. The **live capture** opens the video: the thesis is that knowledge
+is spoken before it is written, so the demo starts by recording a voice and asking
+a question about it three minutes later. Editing is allowed, so a slow transcription
+is accelerated in the edit — not cut.
 
 | Time | Action on screen | Narration |
 |---|---|---|
-| **0:00–0:15** | Landing page `/` | "I'm Anatole, a developer from Burkina Faso. Organisations there lose their knowledge: reports on paper, minutes in mailboxes, songs on phones. This is where I started." |
-| **0:15–0:38** | Ask: **"Tell me about Meeting6"** | "One question. The answer is built only from documents this account may read, and every claim carries a numbered source. If the extract is missing, it says so instead of inventing." |
-| **0:38–0:58** | Ask: **"What does Meeting6 say in Mooré?"** | "Same document, another language. The reports are written in French, but the agents who use them work in Mooré — and a report nobody can read is a report that does not exist. Mooré is low-resource, so generic models fail: here the platform builds the resource, and refuses to invent." |
-| **0:58–1:26** | `/tache` → select **Meeting6** + **Formation** → instruction | "Now a task, not a question: plan, retrieve, scope, draft, verify, conformity. The result is a structured document with its sources." |
-| **1:26–1:40** | Click **✦ Clean**, then **DOCX** | "One click removes the scaffolding, one exports it. The document leaves the browser with its citations." |
-| **1:40–1:54** | `/documents` → filter **"Espace demo"** | "Nine documents, each showing its workspaces. This filter is a private workspace: zero results. Access is computed per document, not per screen." |
-| **1:54–2:08** | Lock icon on **Meeting6** → modal | "Administration can re-file a document and change who reads it — with its own password, and the before and after are written to the journal." |
-| **2:08–2:22** | `/administration` → the three tabs → crown | "Three tabs: accounts, workspaces, memberships. The crown protects an account: a protected Super Admin can never be deleted, suspended or demoted." |
-| **2:22–2:36** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: six menu entries instead of ten, zero documents, and the audit journal answers 403. That is the whole claim — the interface and the server agree." |
-| **2:36–2:44** | **Terminal beside the browser**: the model call log | "Every model call is written down: endpoint, model, status, duration. You are watching the live Meta model calls, and the log stays in the repository." |
-| **2:44–2:50** | Back to `/` | "PHP 8.4, MySQL 8.4, 121 automated tests. Built solo in nine days. The repository is public." |
+| **0:00–0:08** | Landing page `/` | "In Burkina Faso, knowledge is spoken before it is written. Watch what happens to a voice in the next three minutes." |
+| **0:08–0:48** | `/ajouter` → **record 12 seconds**, stop, upload | "I record a sentence nobody has written anywhere: *the Koudougou site starts on 12 January, budget four million.* The audio is kept as the original, its fingerprint computed, then transcribed and indexed." |
+| **0:48–1:10** | `/` → ask **"When does the Koudougou site start?"** | "A fact that exists only as sound, thirty seconds ago. The answer comes back with the source: the recording. That is the whole point — a report nobody can hear does not exist." |
+| **1:10–1:30** | Ask **"What does Meeting6 say in Mooré?"** | "Same engine, another language. The reports are written in French, the agents work in Mooré. Mooré is low-resource, so generic models fail here: the platform builds the resource and refuses to invent." |
+| **1:30–1:58** | `/tache` → select two documents → instruction → **✦ Clean** → **DOCX** | "Now a task: plan, retrieve, scope, draft, verify, conformity. One click cleans the scaffolding, one exports the document with its citations." |
+| **1:58–2:28** | `/documents` → filter → lock modal → `/administration` tabs + crown | "Nine documents, each with its workspaces; this private workspace returns zero. Administration re-files a document and changes who reads it, with its password. The crown protects an account that can never be deleted or demoted." |
+| **2:28–2:40** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: zero documents, and the audit journal answers 403. The interface and the server agree." |
+| **2:40–2:47** | Terminal beside the browser: the call log | "Every model call is written down: endpoint, model, status, duration — live, and kept in the repository." |
+| **2:47–2:50** | Back to `/` | "PHP 8.4, MySQL 8.4, 121 tests. Built solo in nine days." |
 
-**The log shot is not decoration** — the organizers ask for the live model calls to
-be visible. Prepare the terminal before recording:
+### Before the take — the four things that make the opening work
+
+| # | Preparation |
+|---|---|
+| 1 | **Microphone allowed** in Chrome for `127.0.0.1` (one dry run, then reload) |
+| 2 | A **sentence you have never written anywhere**, with a date and a number: it is what proves the answer comes from the recording |
+| 3 | **Rehearse the upload twice**: record → stop → send → wait for *indexed*. Note the real duration; if it exceeds 20 s, plan the time-lapse |
+| 4 | **Fallback** if the microphone fails on camera: upload a pre-recorded 12-second WAV through the same form — the chain stays identical, only the recording is pre-made |
 
 ```powershell
+# the log shot (2:40)
 Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\model_calls.log" -Wait -Tail 5
 ```
 
-Then generate one answer so two or three lines appear while the camera runs.
-
 **Two rules for the voice-over.** Do not read the table; speak these sentences at
-a natural pace and let the screen do the work. And never apologise for an accent:
-the words matter more than the music of them.
+a natural pace and let the screen do the work. And never apologise for an accent.
 
 ## 4. Fallback paths
 

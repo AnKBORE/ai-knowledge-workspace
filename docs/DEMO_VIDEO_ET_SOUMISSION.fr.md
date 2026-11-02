@@ -100,36 +100,39 @@ Puis ouvrir **http://127.0.0.1:8080/** et faire **`Ctrl + F5`**.
 
 ## 3. Scénario minuté — 2 min 50
 
-Onze séquences courtes. Le montage est autorisé, donc rien n'a besoin d'être tourné
-d'une traite ; l'objectif est une vidéo qui se termine **avant 3:00**, parce que les
-juges coupent là.
+Neuf séquences. La **capture en direct** ouvre la vidéo : la thèse est que le savoir
+se dit avant de s'écrire, donc la démonstration commence par enregistrer une voix et
+poser une question dessus trois minutes plus tard. Le montage est autorisé : une
+transcription lente est **accélérée au montage**, jamais coupée.
 
 | Temps | Action à l'écran | Narration |
 |---|---|---|
-| **0:00–0:15** | Page d'accueil `/` | « Je suis Anatole, développeur au Burkina Faso. Ici, les organisations perdent leur savoir : rapports sur papier, comptes rendus dans les boîtes mail, chants sur des téléphones. C'est de là que je suis parti. » |
-| **0:15–0:38** | Poser : **« Parle-moi de Meeting6 »** | « Une question. La réponse n'est construite qu'avec les documents que ce compte a le droit de lire, et chaque affirmation porte une source numérotée. Si l'extrait manque, elle le dit au lieu d'inventer. » |
-| **0:38–0:58** | Poser : **« Que dit Meeting6 en mooré ? »** | « Même document, autre langue. Les rapports sont écrits en français, mais les agents qui les utilisent travaillent en mooré — et un rapport que personne ne peut lire est un rapport qui n'existe pas. Le mooré est peu doté, donc les modèles génériques échouent : ici, la plateforme construit la ressource, et refuse d'inventer. » |
-| **0:58–1:26** | `/tache` → cocher **Meeting6** + **Formation** → instruction | « Maintenant une tâche, pas une question : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Le résultat est un document structuré avec ses sources. » |
-| **1:26–1:40** | Cliquer **✦ Nettoyer**, puis **DOCX** | « Un clic retire l'échafaudage, un autre exporte. Le document quitte le navigateur avec ses citations. » |
-| **1:40–1:54** | `/documents` → filtrer **« Espace demo »** | « Neuf documents, chacun montre ses espaces. Ce filtre est un espace privé : zéro résultat. L'accès se calcule par document, pas par écran. » |
-| **1:54–2:08** | Icône cadenas sur **Meeting6** → modale | « L'administration reclasse un document et change qui le lit — avec son propre mot de passe, et l'avant comme l'après sont inscrits au journal. » |
-| **2:08–2:22** | `/administration` → les trois onglets → couronne | « Trois onglets : comptes, espaces, adhésions. La couronne protège un compte : un Super Admin protégé ne peut être ni supprimé, ni suspendu, ni rétrogradé. » |
-| **2:22–2:36** | Se connecter en `membre.demo` → `/documents` → `/journal` | « Même application, un membre : six entrées de menu au lieu de dix, zéro document, et le journal d'audit répond 403. Tout est là — l'interface et le serveur disent la même chose. » |
-| **2:36–2:44** | **Terminal à côté du navigateur** : le journal des appels | « Chaque appel au modèle est écrit : point d'entrée, modèle, statut, durée. Vous voyez les appels au modèle Meta en direct, et le journal reste dans le dépôt. » |
-| **2:44–2:50** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests automatisés. Construit seul en neuf jours. Le dépôt est public. » |
+| **0:00–0:08** | Page d'accueil `/` | « Au Burkina Faso, le savoir se dit avant de s'écrire. Regardez ce qui arrive à une voix dans les trois prochaines minutes. » |
+| **0:08–0:48** | `/ajouter` → **enregistrer 12 secondes**, arrêter, envoyer | « J'enregistre une phrase que personne n'a écrite nulle part : *le chantier de Koudougou démarre le 12 janvier, budget quatre millions.* L'audio est conservé comme original, son empreinte calculée, puis transcrit et indexé. » |
+| **0:48–1:10** | `/` → poser **« Quand démarre le chantier de Koudougou ? »** | « Un fait qui n'existe que sous forme de son, il y a trente secondes. La réponse revient avec sa source : l'enregistrement. Tout est là — un rapport que personne ne peut entendre n'existe pas. » |
+| **1:10–1:30** | Poser **« Que dit Meeting6 en mooré ? »** | « Même moteur, autre langue. Les rapports sont écrits en français, les agents travaillent en mooré. Le mooré est peu doté, donc les modèles génériques échouent : la plateforme construit la ressource et refuse d'inventer. » |
+| **1:30–1:58** | `/tache` → deux documents → instruction → **✦ Nettoyer** → **DOCX** | « Maintenant une tâche : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Un clic retire l'échafaudage, un autre exporte le document avec ses citations. » |
+| **1:58–2:28** | `/documents` → filtre → modale cadenas → `/administration` onglets + couronne | « Neuf documents, chacun avec ses espaces ; cet espace privé renvoie zéro. L'administration reclasse un document et change qui le lit, avec son mot de passe. La couronne protège un compte qui ne peut être ni supprimé ni rétrogradé. » |
+| **2:28–2:40** | Connexion `membre.demo` → `/documents` → `/journal` | « Même application, un membre : zéro document, et le journal d'audit répond 403. L'interface et le serveur disent la même chose. » |
+| **2:40–2:47** | Terminal à côté du navigateur : le journal des appels | « Chaque appel au modèle est écrit : point d'entrée, modèle, statut, durée — en direct, et conservé dans le dépôt. » |
+| **2:47–2:50** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests. Construit seul en neuf jours. » |
 
-**Le plan sur le journal n'est pas décoratif** — les organisateurs demandent que
-les appels au modèle soient visibles. Prépare le terminal avant d'enregistrer :
+### Avant la prise — les quatre choses qui font marcher l'ouverture
+
+| # | Préparation |
+|---|---|
+| 1 | **Micro autorisé** dans Chrome pour `127.0.0.1` (un essai à blanc, puis recharger) |
+| 2 | Une **phrase que tu n'as écrite nulle part**, avec une date et un nombre : c'est elle qui prouve que la réponse vient de l'enregistrement |
+| 3 | **Répéter l'envoi deux fois** : enregistrer → arrêter → envoyer → attendre *indexé*. Noter la durée réelle ; si elle dépasse 20 s, prévoir l'accéléré |
+| 4 | **Repli** si le micro lâche devant la caméra : envoyer un WAV de 12 secondes par le même formulaire — la chaîne reste identique, seul l'enregistrement est préexistant |
 
 ```powershell
+# le plan sur le journal (2:40)
 Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\model_calls.log" -Wait -Tail 5
 ```
 
-Puis génère une réponse pour que deux ou trois lignes apparaissent pendant la prise.
-
 **Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
-naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent — les
-mots comptent plus que leur musique.
+naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent.
 
 ## 4. Parcours de secours
 
