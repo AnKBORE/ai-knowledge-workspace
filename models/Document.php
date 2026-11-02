@@ -40,10 +40,11 @@ final class Document
         string $mimeType,
         string $type = 'autre',
         ?int $categorieId = null,
+        string $confidentialite = 'restreint',
     ): int {
         $stmt = $this->db->prepare(
-            'INSERT INTO documents (title, filename, mime_type, espace_id, proprietaire_id, type, categorie_id)
-             VALUES (:title, :filename, :mime, :espace, :proprietaire, :type, :categorie)'
+            'INSERT INTO documents (title, filename, mime_type, espace_id, proprietaire_id, type, categorie_id, confidentialite)
+             VALUES (:title, :filename, :mime, :espace, :proprietaire, :type, :categorie, :confidentialite)'
         );
         $stmt->execute([
             'title' => $titre,
@@ -53,6 +54,7 @@ final class Document
             'proprietaire' => $proprietaireId,
             'type' => $type,
             'categorie' => $categorieId,
+            'confidentialite' => $confidentialite,
         ]);
 
         return (int) $this->db->lastInsertId();

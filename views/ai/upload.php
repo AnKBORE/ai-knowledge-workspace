@@ -54,6 +54,35 @@ $P = $T['upload'];
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <?php $tx = static fn (string $fr, string $en): string => ($lang ?? 'en') === 'fr' ? $fr : $en; ?>
+                        <div class="mb-3">
+                            <label for="espace_id" class="form-label fw-semibold"><?= e($tx('Espace de travail', 'Workspace')) ?></label>
+                            <select id="espace_id" name="espace_id" class="form-select">
+                                <?php foreach (($espacesDepot ?? []) as $espaceDispo): ?>
+                                    <option value="<?= (int) $espaceDispo['id'] ?>"<?= (int) ($espaceActif ?? 0) === (int) $espaceDispo['id'] ? ' selected' : '' ?>>
+                                        <?= e((string) $espaceDispo['nom']) ?> — <?= e((string) $espaceDispo['visibilite']) ?> (<?= (int) ($espaceDispo['documents'] ?? 0) ?> <?= e($tx('documents', 'documents')) ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <p class="form-text mb-0"><?= e($tx(
+                                'Le document rejoint cet espace : seuls ses membres le verront.',
+                                'The document joins this workspace: only its members will see it.'
+                            )) ?></p>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confidentialite" class="form-label fw-semibold"><?= e($tx('Confidentialité', 'Confidentiality')) ?></label>
+                            <select id="confidentialite" name="confidentialite" class="form-select">
+                                <option value="restreint" selected><?= e($tx('Restreint — les membres de l\'espace', 'Restricted — members of the workspace')) ?></option>
+                                <option value="prive"><?= e($tx('Privé — vous uniquement', 'Private — yourself only')) ?></option>
+                                <?php if (!empty($canPublish)): ?>
+                                    <option value="public_interne"><?= e($tx('Public interne — toute l\'organisation', 'Internal public — whole organisation')) ?></option>
+                                <?php endif; ?>
+                            </select>
+                            <p class="form-text mb-0"><?= e($tx(
+                                'La confidentialité se décide au dépôt. Seule l\'administration peut élargir la diffusion ensuite.',
+                                'Confidentiality is decided at deposit time. Only administrators can widen the audience afterwards.'
+                            )) ?></p>
+                        </div>
                         <div class="mb-3">
                             <label for="file" class="form-label fw-semibold"><?= e($P['label_file']) ?> <span class="field-required" aria-hidden="true">*</span><span class="visually-hidden"><?= e($S['obligatoire']) ?></span></label>
                             <div class="upload-dropzone">

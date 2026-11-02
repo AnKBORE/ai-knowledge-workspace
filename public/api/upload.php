@@ -87,25 +87,57 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
     exit;
 }
 
-// A workspace is a piece of work with a lifecycle: once closed it accepts
-// no further deposits, while its documents remain readable.
-$espaceCible = $dependencies['espaces']->firstActive();
+// Where the document lands: the workspace chosen in the form, otherwise the
+// active workspace, otherwise the first active one. The chosen workspace must
+// be one where the user may deposit.
+$userId = (int) $dependencies['auth']->id();
+$espaceChoisi = (int) ($_POST['espace_id'] ?? 0);
+$espaceActifSession = (int) $dependencies['session']->get('espace_actif', 0);
+
+$espaceDepot = null;
+
+if ($espaceChoisi > 0) {
+    if (!$dependencies['permissions']->peut($userId, 'document.deposer', $espaceChoisi)) {
+        http_response_code(422);
+        $dependencies['journal']->log($userId, 'securite.refus', 'espace', $espaceChoisi, 'refus', ['raison' => 'depot_interdit']);
+        echo json_encode(['error' => $lang === 'fr' ? 'Vous ne pouvez pas déposer dans cet espace.' : 'You cannot deposit in this workspace.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $espaceDepot = $espaceChoisi;
+} elseif ($espaceActifSession > 0 && $dependencies['permissions']->peut($userId, 'document.deposer', $espaceActifSession)) {
+    $espaceDepot = $espaceActifSession;
+}
+
+$espaceCible = $espaceDepot ?? $dependencies['espaces']->firstActive();
 $espaceCibleRow = $espaceCible !== null ? $dependencies['espaces']->find($espaceCible) : null;
 
+// A workspace is a piece of work with a lifecycle: once closed it accepts no
+// further deposits, while its documents remain readable.
 if ($espaceCibleRow !== null && ($espaceCibleRow['statut'] ?? 'actif') === 'archive') {
     http_response_code(422);
-    $dependencies['journal']->log((int) $dependencies['auth']->id(), 'securite.refus', 'espace', $espaceCible, 'refus', ['raison' => 'espace_clos']);
+    $dependencies['journal']->log($userId, 'securite.refus', 'espace', $espaceCible, 'refus', ['raison' => 'espace_clos']);
     echo json_encode(['error' => $T['espace_clos'] ?? ($lang === 'fr' ? 'Espace de travail clos : dépôt refusé.' : 'Workspace closed: deposit refused.')], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-// Work happens inside a workspace: the one chosen on /espaces, as long as
-// the user is allowed to deposit there.
-$espaceActifSession = (int) $dependencies['session']->get('espace_actif', 0);
-$espaceDepot = $espaceActifSession > 0
-    && $dependencies['permissions']->peut((int) $dependencies['auth']->id(), 'document.deposer', $espaceActifSession)
-    ? $espaceActifSession
-    : null;
+// Confidentiality is declared at deposit time. Publishing to the whole
+// organisation is a diffusion decision, so it stays with the administrators.
+$confidentialite = (string) ($_POST['confidentialite'] ?? 'restreint');
+
+if (!in_array($confidentialite, ['public_interne', 'restreint', 'prive'], true)) {
+    $confidentialite = 'restreint';
+}
+
+if ($confidentialite === 'public_interne'
+    && !$dependencies['permissions']->peutAilleurs($userId, 'espace.administrer')) {
+    http_response_code(422);
+    $dependencies['journal']->log($userId, 'securite.refus', 'document', null, 'refus', ['raison' => 'diffusion_interdite']);
+    echo json_encode(['error' => $lang === 'fr'
+        ? 'Seul un administrateur peut diffuser un document à toute l\'organisation.'
+        : 'Only an administrator can publish a document to the whole organisation.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 $ingestion = $dependencies['ingestion'];
 
@@ -130,6 +162,8 @@ try {
             'utilisateur_id' => (int) $dependencies['auth']->id(),
             'titre' => $title,
             'categorie_id' => $categorieId,
+            'espace_id' => $espaceDepot,
+            'confidentialite' => $confidentialite,
             'nom_original' => $originalName,
             'type_mime' => (string) ($upload['type'] ?? ''),
             'taille_octets' => (int) ($upload['size'] ?? 0),
@@ -145,7 +179,7 @@ try {
 
     // Fast files (text, PDF with a text layer): processed synchronously.
     $content = $ingestion->extract($tmp, $extension);
-    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content, $espaceDepot);
+    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content, $espaceDepot, $confidentialite);
 
     echo json_encode([
         'title' => $title,

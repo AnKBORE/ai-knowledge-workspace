@@ -337,6 +337,17 @@ if ($method === 'GET') {
         ['administrateur_technique', 'administrateur_fonctionnel'],
         true
     );
+    // Only the workspaces where the user may actually deposit are offered.
+    $espacesDepot = [];
+
+    if ($path === '/ajouter') {
+        foreach ($dependencies['espaces']->pourUtilisateur((int) $auth->id(), $estAdminGlobal) as $espaceDispo) {
+            if ($dependencies['permissions']->peut((int) $auth->id(), 'document.deposer', (int) $espaceDispo['id'])) {
+                $espacesDepot[] = $espaceDispo;
+            }
+        }
+    }
+
     $mesEspaces = $path === '/espaces'
         ? $dependencies['espaces']->pourUtilisateur((int) $auth->id(), $estAdminGlobal)
         : [];
@@ -384,6 +395,8 @@ if ($method === 'GET') {
         'navPerms' => $navPerms ?? [],
         'mesEspaces' => $mesEspaces ?? [],
         'espaceActif' => $espaceActif ?? null,
+        'espacesDepot' => $espacesDepot ?? [],
+        'canPublish' => $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.administrer'),
         'espaceActifNom' => $espaceActifNom ?? '',
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],

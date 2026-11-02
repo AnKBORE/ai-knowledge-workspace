@@ -86,9 +86,11 @@ final class IngestionService
      * @param array{tmp_name: string, name: string, type?: string, size?: int, error?: int} $upload
      * @return array{document_id: int, chunks: int, sha256: string}
      */
-    public function finalize(string $title, int $categorieId, int $userId, array $upload, string $content, ?int $espaceId = null): array
+    public function finalize(string $title, int $categorieId, int $userId, array $upload, string $content, ?int $espaceId = null, string $confidentialite = 'restreint'): array
     {
-        // The active workspace is chosen by the user; the first active space\n        // remains the fallback for the background worker.\n        $result = $this->documents->createDocument($title, $espaceId ?? $this->espaces->firstActive(), $userId, $upload, $categorieId);
+        // The active workspace is chosen by the user; the first active space
+        // remains the fallback for the background worker.
+        $result = $this->documents->createDocument($title, $espaceId ?? $this->espaces->firstActive(), $userId, $upload, $categorieId, $confidentialite);
 
         $chunks = count($this->rag->chunk($content));
         $this->rag->indexDocument($result['document_id'], $content, $result['version_id']);

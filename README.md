@@ -70,6 +70,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 
 ### Governance and access control
 
+- **Workspace and confidentiality at deposit time.** The depositor chooses the target workspace and the confidentiality (`restreint`, `prive`, or `public_interne` for administrators). The choice survives the deferred queue (audio, images, scanned PDFs).
 - **Bootstrap account.** The **Super Admin** is the default account: `php tools/seed_admin.php` recreates it even after wiping the database, and it can be neither deleted, nor suspended, nor demoted. `php tools/seed_admin.php --reset` restores access by regenerating the password.
 
 - **Permission-driven menu.** A member only sees the entries they can actually use: Categories, Audit journal and Administration appear only for those allowed.

@@ -70,6 +70,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Gouvernance et contrôle d'accès
 
+- **Espace et confidentialité au dépôt.** Le déposant choisit l'espace cible et la confidentialité (`restreint`, `prive`, ou `public_interne` pour les administrateurs). Le choix est conservé jusque dans la file des dépôts différés (audio, images, PDF scannés).
 - **Compte d'amorçage.** Le **Super Admin** est le compte par défaut : il est recréé par `php tools/seed_admin.php` même après un effacement complet de la base, et il ne peut être ni supprimé, ni suspendu, ni rétrogradé. `php tools/seed_admin.php --reset` restaure l'accès en régénérant le mot de passe.
 
 - **Menu filtré par les droits.** Un membre ne voit que les entrées qu'il peut réellement utiliser : Catégories, Journal d'audit et Administration n'apparaissent que pour ceux qui en ont la permission.
