@@ -34,8 +34,13 @@ final class Espace
     public function pourUtilisateur(int $userId, bool $admin = false): array
     {
         $sql = 'SELECT e.id, e.nom, e.visibilite, e.statut,
-                       (SELECT COUNT(*) FROM documents d
-                        WHERE d.espace_id = e.id AND d.supprime_le IS NULL) AS documents
+                       (SELECT COUNT(DISTINCT d.id) FROM documents d
+                          JOIN document_espace de ON de.document_id = d.id
+                         WHERE de.espace_id = e.id AND d.supprime_le IS NULL)
+                       + (SELECT COUNT(*) FROM documents d2
+                           WHERE d2.espace_id = e.id AND d2.supprime_le IS NULL
+                             AND NOT EXISTS (SELECT 1 FROM document_espace x
+                                             WHERE x.document_id = d2.id)) AS documents
                 FROM espace e
                 WHERE e.supprime_le IS NULL';
         $params = [];
