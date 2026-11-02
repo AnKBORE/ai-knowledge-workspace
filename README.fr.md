@@ -448,6 +448,21 @@ Deux conséquences, dites clairement :
 - **Aucune synthèse vocale** : le projet ne parle jamais, donc la règle sur la voix
   de sortie ne le concerne pas.
 
+### Modèles Meta ouverts utilisés, et où ils s'exécutent
+
+Les organisateurs demandent aussi quels **modèles Meta ouverts** un projet utilise
+et **où ils tournent** — un modèle Meta auto-hébergé compte, où qu'il tourne.
+
+| Modèle | Nature | Où il s'exécute |
+|---|---|---|
+| `meta-models/muse-spark-open-1026` (Muse Spark Open) | poids ouverts de Meta | **Baseten**, un point d'entrée partenaire, via l'API compatible OpenAI |
+| — | — | **aucun modèle Meta ne s'exécute sur la machine de l'auteur** |
+
+Le binaire local `whisper.cpp` n'est **pas** un modèle Meta. C'est un repli qui ne
+s'exécute que si le modèle est injoignable, et il est déclaré comme tel dans le
+tableau ci-dessus. Les vecteurs de récupération sont calculés par hachage en PHP,
+ce qui est de l'arithmétique, pas un modèle.
+
 ---
 
 ## Ressources tierces et droits

@@ -447,6 +447,21 @@ Two consequences, stated plainly:
 - **No text-to-speech**: the project never speaks, so the rule on voice output does
   not apply to it.
 
+### Open Meta models used, and where they run
+
+The organizers also ask which **open Meta models** a project uses and **where they
+run** — a self-hosted Meta model counts, wherever it runs.
+
+| Model | Nature | Where it runs |
+|---|---|---|
+| `meta-models/muse-spark-open-1026` (Muse Spark Open) | Meta open weights | **Baseten**, a partner endpoint, over the OpenAI-compatible API |
+| — | — | **no Meta model runs on the author's machine** |
+
+The local `whisper.cpp` binary is **not** a Meta model. It is a fallback that only
+runs when the model is unreachable, and it is declared as such in the table above.
+The retrieval vectors are computed by hashing in PHP, which is arithmetic, not a
+model.
+
 ---
 
 ## Third-party assets and rights

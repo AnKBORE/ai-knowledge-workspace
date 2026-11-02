@@ -34,6 +34,7 @@
 | R-23 | Vérifier que la clé de l'API Model n'atteint jamais le navigateur | **fait** | huit pages et les fichiers JS contrôlés : aucune clé, aucune variable globale `window.*KEY*` |
 | R-24 | Garder les logos et mascottes Meta hors de l'application et du dépôt | **fait** | aucune image versionnée dans `public/` ; les modèles sont nommés en texte simple |
 | R-25 | Déclarer quelles parties sont des appels au modèle Meta et lesquelles sont des fonctions du système | **fait** | section dans les deux README ; la transcription est Meta par défaut, locale en repli seulement |
+| R-26 | Dire quels modèles Meta ouverts sont utilisés et où ils tournent | **fait** | `muse-spark-open-1026` sur Baseten ; aucun modèle Meta sur la machine de l'auteur, dit explicitement |
 
 ---
 
