@@ -57,6 +57,7 @@ one; these captures exist for the jury, which cannot run the machine.
 | `03b-answer-cleaned.png` ✅ | the same answer after the clean step | the export strips the scaffolding and keeps the sentence |
 | `04-agentic-trace.png` | the task page during or after the run: plan, retrieve, draft, verify | the agentic loop is real, not a description |
 | `05-docx-export.png` | the clean result and the export button state | the document leaves the app with its citations |
+| `06b-workspace-refusal.png` ✅ | the same question asked in a workspace that does not hold the recording | the answer refuses and names the workspace instead of inventing |
 | `06-workspaces.png` | the documents list with badges, then the filter on an empty workspace | access is computed per document |
 | `07-administration.png` ✅ | the three tabs with their counts | governance is exposed and countable |
 | `08-member-403.png` | the member session: 0 documents and the journal answering 403 | the interface and the server agree |
