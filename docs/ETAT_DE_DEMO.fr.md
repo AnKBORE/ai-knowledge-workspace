@@ -2,6 +2,8 @@
 
 🇬🇧 English version: [ETAT_DE_DEMO.md](ETAT_DE_DEMO.md)
 
+> **⚠ Base remise à zéro le 2 novembre 2026.** Ce document décrit l'état **avant** la remise à zéro. Il sera réécrit dès que la recette (`RECETTE_AZ.fr.md`) aura produit un état stable.
+
 > **Objet.** Ce fichier décrit l'état exact de la base sur lequel reposent la vidéo
 > et le jury. Si cet état change, ce fichier doit être mis à jour dans le même
 > commit — sinon la démonstration ne correspond plus à ce qui est décrit.
@@ -9,6 +11,7 @@
 > Chaque chiffre ci-dessous a été lu dans la base le 2 novembre 2026, jamais de
 > mémoire.
 
+> 
 ---
 
 ## 1. Comptes — 3 actifs, 2 protégés

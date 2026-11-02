@@ -415,6 +415,7 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 | **Registre des problèmes (65 entrées : 22 résolues, 12 ouvertes, 31 incidents)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
 | **Démo vidéo & soumission** | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
 | **État de démonstration — comptes, espaces, documents, scénarios** | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) |
+| **Recette — exécution réelle sur base neuve** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
 | **Marque et propriété intellectuelle** | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) |
 
 

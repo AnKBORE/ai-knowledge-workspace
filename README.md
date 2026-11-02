@@ -414,6 +414,7 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 | **Issue register (65 entries: 22 resolved, 12 open, 31 incidents)** | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) |
 | **Demo video & submission** | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) |
 | **Demo state — accounts, workspaces, documents, scenarios** | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) |
+| **Acceptance test — real execution on a fresh database** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
 | **Trademark and intellectual property** | [`MARQUE_ET_PROPRIETE.md`](docs/MARQUE_ET_PROPRIETE.md) | [`MARQUE_ET_PROPRIETE.fr.md`](docs/MARQUE_ET_PROPRIETE.fr.md) |
 
 

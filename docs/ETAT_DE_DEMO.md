@@ -2,6 +2,8 @@
 
 🇫🇷 Version française : [ETAT_DE_DEMO.fr.md](ETAT_DE_DEMO.fr.md)
 
+> **⚠ Database wiped on 2 November 2026.** This document describes the state **before** the wipe. It will be rewritten once the acceptance run (`RECETTE_AZ.md`) produces a stable state.
+
 > **Purpose.** This file describes the exact state of the database the video and
 > the jury rely on. If that state changes, this file must be updated in the same
 > commit — otherwise the demonstration no longer matches what is described.
@@ -9,6 +11,7 @@
 > Every figure below was read from the live database on 2 November 2026, not from
 > memory.
 
+> 
 ---
 
 ## 1. Accounts — 3 active, 2 protected
