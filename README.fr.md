@@ -74,6 +74,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - **Un document, plusieurs espaces.** Une table de liaison `document_espace` porte l'affectation : l'accès suit l'**union** des espaces et le propriétaire garde toujours l'accès (migration 025).
 - **Espace et confidentialité au dépôt.** Le déposant choisit l'espace et la confidentialité ; `public_interne` est réservé aux administrateurs ; le contexte survit à la file des dépôts différés (migration 026).
 - **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité ; son mot de passe est exigé et les valeurs **avant/après** sont journalisées.
+- **L'espace actif limite l'assistant.** L'espace affiché en haut de page n'est pas décoratif : une question n'est répondue qu'à partir des documents de cet espace. Change d'espace, et la même question renvoie ce que cet espace contient — c'est ainsi qu'un projet reste un projet.
 - **Liste des documents cloisonnée.** La page et l'API ne renvoient que les documents visibles ; un document inaccessible répond **404**, sans révéler son existence.
 - **Badges et filtre par espace.** La liste affiche les espaces de chaque document et se filtre par espace, y compris combiné à la recherche.
 - **Espaces de travail.** Création, clôture (plus aucun dépôt, documents toujours lisibles), réouverture ; adhésions datées avec révocation immédiate ; la page `/espaces` permet de choisir l'espace actif.

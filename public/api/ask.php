@@ -57,9 +57,14 @@ if (!$dependencies['permissions']->peutAilleurs($dependencies['auth']->id(), $re
 
 try {
     $controller = new AiAssistantController($dependencies['rag'], $lang);
+
+    // The workspace displayed at the top of the page scopes the search.
+    $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
+    $espacePortee = $espaceActif > 0 ? $espaceActif : null;
+
     $response = $mode === 'task'
         ? $controller->task($input, $dependencies['auth']->id())
-        : $controller->ask($input, $dependencies['auth']->id());
+        : $controller->ask($input, $dependencies['auth']->id(), $espacePortee);
 
     $dependencies['journal']->log(
         $dependencies['auth']->id(),

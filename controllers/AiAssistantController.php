@@ -24,7 +24,7 @@ final class AiAssistantController
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
-    public function ask(array $input, ?int $userId = null): array
+    public function ask(array $input, ?int $userId = null, ?int $espaceId = null): array
     {
         $question = trim((string) ($input['question'] ?? ''));
 
@@ -32,7 +32,7 @@ final class AiAssistantController
             return ['error' => app_i18n($this->lang)['api']['question_required']];
         }
 
-        return $this->rag->answer($question, 6, $userId);
+        return $this->rag->answer($question, 6, $userId, $espaceId);
     }
 
     /**

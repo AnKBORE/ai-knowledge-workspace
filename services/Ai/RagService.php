@@ -119,7 +119,7 @@ final class RagService
      *
      * @return array{answer: string, sources: list<array{title: string, excerpt: string}>}
      */
-    public function answer(string $question, int $topK = 6, ?int $userId = null): array
+    public function answer(string $question, int $topK = 6, ?int $userId = null, ?int $espaceId = null): array
     {
         // An explicit question about a document the user may not consult is
         // refused up front: no retrieval, no off-topic answer, no leak.
@@ -155,7 +155,7 @@ final class RagService
             return ['answer' => $answer, 'sources' => $this->translateSources($sources, $question)];
         }
 
-        $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK, $question, $userId);
+        $chunks = $this->retrieveSimilar($this->embeddings->embed($question), $topK, $question, $userId, $espaceId);
 
         if ($chunks === []) {
             return [
@@ -172,7 +172,7 @@ final class RagService
         // Recall retry: a "not found" answer may hide a retrieval miss —
         // widen top-K once before conceding.
         if ($this->looksNotFound($answer)) {
-            $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId);
+            $wider = $this->retrieveSimilar($this->embeddings->embed($question), $topK * 2, $question, $userId, $espaceId);
             if (count($wider) > count($chunks)) {
                 $chunks = $wider;
                     $this->openQuestion = $this->isOpenQuestion($question);
@@ -1647,9 +1647,9 @@ PROMPT;
      *
      * @return list<array{content: string, title: string, score: float}>
      */
-    public function search(string $query, int $topK = 6, ?int $userId = null): array
+    public function search(string $query, int $topK = 6, ?int $userId = null, ?int $espaceId = null): array
     {
-        return $this->retrieveSimilar($this->embeddings->embed($query), $topK, $query, $userId);
+        return $this->retrieveSimilar($this->embeddings->embed($query), $topK, $query, $userId, $espaceId);
     }
 
     /**
@@ -1662,9 +1662,20 @@ PROMPT;
      * @param list<float> $queryVector
      * @return list<array{content: string, title: string, score: float}>
      */
-    private function retrieveSimilar(array $queryVector, int $topK, string $query = '', ?int $userId = null): array
+    private function retrieveSimilar(array $queryVector, int $topK, string $query = '', ?int $userId = null, ?int $espaceId = null): array
     {
         $allowed = $userId === null ? true : $this->accessibleDocumentIds($userId);
+
+        // The workspace shown at the top of the page scopes the search: a user
+        // who switches workspace expects the assistant to answer from it, not
+        // from every document their memberships open elsewhere.
+        if ($espaceId !== null && $espaceId > 0) {
+            $inSpace = $this->documentIdsInEspace($espaceId);
+
+            $allowed = $allowed === true
+                ? $inSpace
+                : array_intersect_key($allowed, $inSpace);
+        }
 
         if ($allowed === []) {
             return [];
@@ -1850,6 +1861,33 @@ PROMPT;
      *
      * @return true|array<int, true> `true` = no restriction, map of ids otherwise
      */
+    /**
+     * Document ids filed in one workspace, as a set.
+     *
+     * The link table is authoritative; the primary column is kept for documents
+     * that predate it.
+     *
+     * @return array<int, bool>
+     */
+    private function documentIdsInEspace(int $espaceId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT DISTINCT d.id
+               FROM documents d
+          LEFT JOIN document_espace de ON de.document_id = d.id
+              WHERE d.supprime_le IS NULL
+                AND (de.espace_id = :espace OR (de.document_id IS NULL AND d.espace_id = :espace2))'
+        );
+        $stmt->execute(['espace' => $espaceId, 'espace2' => $espaceId]);
+
+        $set = [];
+
+        foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $id) {
+            $set[(int) $id] = true;
+        }
+
+        return $set;
+    }
     private function accessibleDocumentIds(int $userId): array|bool
     {
         if ($this->permissions === null) {

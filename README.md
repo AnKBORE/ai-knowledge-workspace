@@ -74,6 +74,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 - **One document, several workspaces.** A `document_espace` link table carries the filing: access follows the **union** of the workspaces and the owner always keeps access (migration 025).
 - **Workspace and confidentiality at deposit time.** The depositor chooses the workspace and the confidentiality; `public_interne` is reserved to administrators; the context survives the deferred-upload queue (migration 026).
 - **Control roles changed by administrators only.** From the document list, an administrator changes the workspace and the confidentiality; their password is required and the **before/after** values are journaled.
+- **The active workspace scopes the assistant.** The workspace shown at the top of the page is not decoration: a question is answered only from the documents of that workspace. Switch workspace and the same question returns what that workspace holds - which is how a project stays a project.
 - **Scoped document list.** The page and the API only return visible documents; an inaccessible document answers **404**, without revealing its existence.
 - **Workspace badges and filter.** The list shows each document's workspaces and filters by workspace, including combined with the search.
 - **Workspaces.** Creation, closure (no further deposits, documents stay readable), reopening; dated memberships with immediate revocation; the `/espaces` page lets a member choose the active workspace.
