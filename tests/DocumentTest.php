@@ -20,6 +20,7 @@ final class DocumentTest extends TestCase
         $pdo->exec('CREATE TABLE documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            langue TEXT NULL,
             filename TEXT NULL,
             mime_type TEXT NULL,
             espace_id INTEGER NULL,

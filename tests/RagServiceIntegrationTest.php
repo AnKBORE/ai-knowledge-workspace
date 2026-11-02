@@ -24,6 +24,7 @@ final class RagServiceIntegrationTest extends TestCase
         $this->pdo->exec('CREATE TABLE documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            langue TEXT NULL,
             filename TEXT,
             mime_type TEXT,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP

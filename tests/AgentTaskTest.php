@@ -23,7 +23,8 @@ final class AgentTaskTest extends TestCase
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->exec('CREATE TABLE categorie (id INTEGER PRIMARY KEY, nom TEXT)');
         $this->pdo->exec('CREATE TABLE documents (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, filename TEXT, mime_type TEXT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL,
+            langue TEXT NULL, filename TEXT, mime_type TEXT,
             categorie_id INTEGER NULL, supprime_le TEXT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )');
         $this->pdo->exec('CREATE TABLE document_chunks (

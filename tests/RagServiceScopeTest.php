@@ -52,6 +52,7 @@ final class RagServiceScopeTest extends TestCase
             tenant_id INTEGER NOT NULL DEFAULT 1,
             espace_id INTEGER NULL,
             title TEXT NOT NULL,
+            langue TEXT NULL,
             confidentialite TEXT NOT NULL DEFAULT \'restreint\',
             proprietaire_id INTEGER NULL,
             supprime_le DATETIME NULL
