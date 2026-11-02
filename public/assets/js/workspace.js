@@ -20,6 +20,13 @@
     var base = (window.WORKSPACE_BASE || '').replace(/\/+$/, '');
     var I18N = window.WORKSPACE_I18N || {};
 
+    // Delegation flag, declared before the early bind so it is never reset.
+    var deleteBindingDone = false;
+
+    // Bound before anything else: a later init error must never disable
+    // deleting a document.
+    bindDeleteButtons();
+
     /* ------------------------------------------------------------------
        Admin confirmation + password gate — delegated on document and
        registered FIRST so it survives any error in later init code.
@@ -1776,71 +1783,91 @@
         });
     }
 
+    /**
+     * Suppression: delegated on document and bound early.
+     *
+     * Binding the rows directly worked until an unrelated initialisation error
+     * ran before the end of this file: the buttons then stayed inert with no
+     * visible symptom. Delegation plus an early call makes it independent of
+     * what happens later.
+     */
     function bindDeleteButtons() {
-        var modalEl = document.getElementById('doc-delete-modal');
-        var form = document.getElementById('doc-delete-form');
-        var passwordInput = document.getElementById('doc-delete-password');
-        var errorSlot = document.getElementById('doc-delete-error');
-        var nameSlot = document.getElementById('doc-delete-name');
-        var pendingId = null;
+        if (deleteBindingDone) { return; }
+        deleteBindingDone = true;
 
-        if (form) {
-            form.addEventListener('submit', async function (event) {
-                event.preventDefault();
-                if (pendingId === null) { return; }
+        document.addEventListener('click', function (event) {
+            var button = event.target.closest ? event.target.closest('.delete-btn') : null;
+            if (!button) { return; }
 
-                errorSlot.hidden = true;
-                try {
-                    var response = await fetch(apiUrl('delete_document.php'), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ document_id: pendingId, password: passwordInput.value })
-                    });
-                    var data = await response.json();
-                    if (data.error) {
+            var modalEl = document.getElementById('doc-delete-modal');
+            var form = document.getElementById('doc-delete-form');
+            var passwordInput = document.getElementById('doc-delete-password');
+            var errorSlot = document.getElementById('doc-delete-error');
+            var nameSlot = document.getElementById('doc-delete-name');
+
+            if (!modalEl || !form) { return; }
+
+            form.setAttribute('data-document-id', String(Number(button.getAttribute('data-document-id')) || 0));
+
+            if (nameSlot) {
+                nameSlot.textContent = sprintf(t('delete_text'), button.getAttribute('data-document-title') || t('this_document'));
+            }
+            if (passwordInput) { passwordInput.value = ''; }
+            if (errorSlot) { errorSlot.hidden = true; }
+
+            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+            modalEl.addEventListener('shown.bs.modal', function focusPassword() {
+                modalEl.removeEventListener('shown.bs.modal', focusPassword);
+                if (passwordInput) { passwordInput.focus(); }
+            });
+        });
+
+        document.addEventListener('submit', async function (event) {
+            var form = event.target;
+            if (!form || form.id !== 'doc-delete-form') { return; }
+            event.preventDefault();
+
+            var modalEl = document.getElementById('doc-delete-modal');
+            var passwordInput = document.getElementById('doc-delete-password');
+            var errorSlot = document.getElementById('doc-delete-error');
+            var documentId = Number(form.getAttribute('data-document-id') || 0);
+
+            if (!documentId || !passwordInput) { return; }
+            if (errorSlot) { errorSlot.hidden = true; }
+
+            try {
+                var response = await fetch(apiUrl('delete_document.php'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ document_id: documentId, password: passwordInput.value })
+                });
+                var data = await response.json();
+
+                if (data.error) {
+                    if (errorSlot) {
                         errorSlot.textContent = data.error;
                         errorSlot.hidden = false;
-                        passwordInput.select();
-                        return;
                     }
-                    bootstrap.Modal.getOrCreateInstance(modalEl).hide();
-                    if (document.getElementById('documents-list')) {
-                        await refreshDocuments();
-                    } else {
-                        window.location.reload();
-                    }
-                } catch (err) {
+                    passwordInput.select();
+                    return;
+                }
+
+                if (modalEl) { bootstrap.Modal.getOrCreateInstance(modalEl).hide(); }
+
+                if (document.getElementById('documents-list')) {
+                    await refreshDocuments();
+                } else {
+                    window.location.reload();
+                }
+            } catch (err) {
+                if (errorSlot) {
                     errorSlot.textContent = t('network_error');
                     errorSlot.hidden = false;
                 }
-            });
-        }
-
-        document.querySelectorAll('.delete-btn').forEach(function (button) {
-            if (button.dataset.bound === '1') {
-                return;
             }
-            button.dataset.bound = '1';
-
-            button.addEventListener('click', function () {
-                if (!modalEl) {
-                    return;
-                }
-                pendingId = Number(button.getAttribute('data-document-id'));
-                var title = button.getAttribute('data-document-title') || t('this_document');
-                nameSlot.textContent = sprintf(t('delete_text'), title);
-                passwordInput.value = '';
-                errorSlot.hidden = true;
-                var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                modal.show();
-                modalEl.addEventListener('shown.bs.modal', function focusPassword() {
-                    modalEl.removeEventListener('shown.bs.modal', focusPassword);
-                    passwordInput.focus();
-                });
-            });
         });
     }
-
     function renderDocuments(documents) {
         var list = document.getElementById('documents-list');
         if (!list) { return; }
