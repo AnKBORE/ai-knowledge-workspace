@@ -293,10 +293,22 @@ PowerShell**, not from a sandboxed environment.
 
 ## 11. After submission
 
+**Only two artefacts are judged**: the public repository and the 3-minute video.
+The organizers confirmed on 2 November that **nothing else** is expected — no live
+demo, no Q&A, no presentation deck.
+
+| Date | What happens |
+|---|---|
+| **Wed 4 Nov, 9:00 PM ET** | submission closes |
+| **Mon 9 Nov, 12:00 PM ET** | closing ceremony: the **top 10** (5 per track) are announced, with live final-round judging — `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/live` |
+| **Mon 16 Nov** | community vote result announced in Discord (one vote per verified account) |
+
+So: nothing to rehearse after submission, and no environment to keep warm.
+
 - [ ] Receive the **confirmation e-mail**
 - [ ] **Do not modify** the repository during judging
 - [ ] Keep the repository **public**
-- [ ] Watch the hackathon announcements
+- [ ] Watch `#announcements` — official updates only come from there
 
 ---
 

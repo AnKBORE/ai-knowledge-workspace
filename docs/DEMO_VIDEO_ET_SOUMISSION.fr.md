@@ -291,10 +291,22 @@ Si le push échoue avec `schannel: AcquireCredentialsHandle failed`, c'est que l
 
 ## 11. Après la soumission
 
-- [ ] Recevoir la **confirmation par e-mail**
-- [ ] **Ne plus modifier** le dépôt pendant la période de jugement
+**Deux artefacts seulement sont jugés** : le dépôt public et la vidéo de 3 minutes.
+Les organisateurs ont confirmé le 2 novembre que **rien d'autre** n'est attendu —
+pas de démo en direct, pas de questions-réponses, pas de présentation.
+
+| Date | Ce qui se passe |
+|---|---|
+| **mer. 4 nov., 21 h ET** | clôture des soumissions |
+| **lun. 9 nov., 12 h ET** | cérémonie de clôture : le **top 10** (5 par piste) est annoncé, avec le jugement final en direct — `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/live` |
+| **lun. 16 nov.** | résultat du vote de la communauté, annoncé sur Discord (une voix par compte vérifié) |
+
+Donc : rien à répéter après la soumission, et aucun environnement à maintenir allumé.
+
+- [ ] Recevoir l'**e-mail de confirmation**
+- [ ] **Ne pas modifier** le dépôt pendant le jugement
 - [ ] Garder le dépôt **public**
-- [ ] Surveiller les annonces du hackathon
+- [ ] Suivre `#announcements` — les mises à jour officielles ne viennent que de là
 
 ---
 
