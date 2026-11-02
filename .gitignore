@@ -40,3 +40,7 @@ _jfk.wav
 /storage/files-backup*
 /edge_err.txt
 /nul
+
+# Mooré reference PDFs: downloaded from SIL/Webonary and mooreburkina.com.
+# They are copyrighted material and are NOT redistributed with this repository.
+/storage/moore_sources/*.pdf

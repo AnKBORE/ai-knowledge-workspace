@@ -433,8 +433,13 @@ redistributed.
 | **DataTables** (Bootstrap 5 integration) | `public/assets/vendor/datatables` | MIT — the notice is kept inside the distributed files |
 | **Select2 4.1.0** | `public/assets/vendor/select2` | MIT — the notice is kept inside the distributed files |
 | **PHP dependencies** — dompdf, PHPMailer, pdfparser | `vendor/` (installed by Composer, not committed) | each package ships its own licence |
-| **Mooré reference material** — `appellations_moore_en.pdf`, `appellations_moore_fr.pdf`, `apprendre_moore.pdf` | `storage/moore_sources` | reference material the author holds the rights to use and redistribute; it is the source of the `moore_lexicon` and `moore_corpus` tables |
+| **Mooré reference material** — the *Dictionnaire mooré–français–anglais* edited by Urs Niggli, and its French/English word indexes | not distributed: downloaded locally into `storage/moore_sources/`, excluded from this repository | **© 2016 SIL International®**, published on [Webonary](https://www.webonary.org/moore/) and mirrored by [Mooré Burkina Faso](https://mooreburkina.com/fr/livres-en-moor%C3%A9/t%C3%A9l%C3%A9charger-pdf). Cited as: *Niggli, Urs (éd.). 2016. Dictionnaire mooré – français. SIL International.* Used through the import tools, **not redistributed** |
 | **Application source** | the rest of the repository | MIT, see [LICENSE](LICENSE) |
+
+**Mooré lexicon.** The import tools (`tools/import_moore_lexicon*.php`) can read the
+SIL dictionary placed locally in `storage/moore_sources/`. The resulting word lists are
+data derived from a cited work; the original PDFs stay on the operator's machine and
+are excluded from this repository by `.gitignore`.
 
 **Demo video.** No music, no stock footage, no third-party screenshot or logo.
 Everything shown on screen is produced by this application, from documents the

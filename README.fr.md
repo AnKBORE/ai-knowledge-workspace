@@ -434,8 +434,13 @@ projet et de sa vidéo de démonstration. Cette section indique, élément par
 | **DataTables** (intégration Bootstrap 5) | `public/assets/vendor/datatables` | MIT — la mention est conservée dans les fichiers distribués |
 | **Select2 4.1.0** | `public/assets/vendor/select2` | MIT — la mention est conservée dans les fichiers distribués |
 | **Dépendances PHP** — dompdf, PHPMailer, pdfparser | `vendor/` (installé par Composer, non versionné) | chaque paquet fournit sa licence |
-| **Ressources mooré** — `appellations_moore_en.pdf`, `appellations_moore_fr.pdf`, `apprendre_moore.pdf` | `storage/moore_sources` | ressources de référence que l'auteur détient le droit d'utiliser et de redistribuer ; elles sont la source des tables `moore_lexicon` et `moore_corpus` |
+| **Ressources mooré** — le *Dictionnaire mooré–français–anglais* édité par Urs Niggli, et ses index de mots français/anglais | non diffusées : téléchargées localement dans `storage/moore_sources/`, exclues de ce dépôt | **© 2016 SIL International®**, publiées sur [Webonary](https://www.webonary.org/moore/) et reprises par [Mooré Burkina Faso](https://mooreburkina.com/fr/livres-en-moor%C3%A9/t%C3%A9l%C3%A9charger-pdf). À citer : *Niggli, Urs (éd.). 2016. Dictionnaire mooré – français. SIL International.* Utilisées par les outils d'import, **non redistribuées** |
 | **Code de l'application** | le reste du dépôt | MIT, voir [LICENSE](LICENSE) |
+
+**Lexique mooré.** Les outils d'import (`tools/import_moore_lexicon*.php`) peuvent lire le
+dictionnaire SIL placé localement dans `storage/moore_sources/`. Les listes de mots produites
+sont des données dérivées d'une œuvre citée ; les PDF d'origine restent sur la machine de
+l'opérateur et sont exclus du dépôt par `.gitignore`.
 
 **Vidéo de démonstration.** Aucune musique, aucune image de banque, aucune capture
 ni logo tiers. Tout ce qui apparaît à l'écran est produit par l'application, à
