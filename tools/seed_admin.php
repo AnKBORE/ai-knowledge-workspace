@@ -29,6 +29,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 use App\Models\Adhesion;
 use App\Models\Espace;
 use App\Models\Utilisateur;
+use App\Services\JournalService;
 use App\Validators\PolitiqueMotDePasse;
 
 $pdo = new PDO(
@@ -61,6 +62,7 @@ foreach ($argv ?? [] as $argument) {
 $motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
 
 $users = new Utilisateur($pdo);
+$journal = new JournalService($pdo);
 
 // --- 0. Explicit transfer ------------------------------------------------
 if ($transfer !== null && $transfer !== '') {
@@ -76,7 +78,16 @@ if ($transfer !== null && $transfer !== '') {
     $ancienRole = (string) $candidat['role_global'];
     $ancienStatut = (string) $candidat['statut'];
 
+    $ancienSuper = $users->compteSuperId();
+
     $users->designerSuperAdmin((int) $candidat['id']);
+
+    // A privilege change without a trace is not auditable.
+    $journal->log(null, 'compte.super_transfert', 'utilisateur', (int) $candidat['id'], 'succes', [
+        'avant' => $ancienSuper,
+        'apres' => (int) $candidat['id'],
+        'ancien_role' => $ancienRole,
+    ]);
 
     echo "Super Admin transferred to {$transfer} (id {$candidat['id']})\n";
     echo "  role   : {$ancienRole} -> administrateur_technique\n";
@@ -122,7 +133,16 @@ if ($superId !== null) {
 }
 
 // Always re-assert the invariants: one Super Admin, technical, active, alive.
+$superAvant = $users->compteSuperId();
 $users->designerSuperAdmin((int) $superId);
+
+if ($superAvant !== (int) $superId) {
+    $journal->log(null, 'compte.super_designation', 'utilisateur', (int) $superId, 'succes', [
+        'avant' => $superAvant,
+        'apres' => (int) $superId,
+        'action' => $action,
+    ]);
+}
 
 // --- 2. Password replacement (recovery path) -------------------------------
 $motDePasseApplique = null;
