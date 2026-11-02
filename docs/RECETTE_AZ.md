@@ -176,6 +176,7 @@ What the pass produced, measured:
 | Same question in another workspace | **refusal**, zero sources |
 | Catalogue question, two workspaces | **4** documents, then **2** |
 | Test suite after the run | **124 tests, 295 assertions** |
+| Fresh install from a blank database | **25 migrations, 22 tables**, first admin seeded and protected |
 
 The state left behind is described in `ETAT_DE_DEMO.md`, and it is the state the
 video must show.

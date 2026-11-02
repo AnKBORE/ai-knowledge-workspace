@@ -176,6 +176,7 @@ Ce que la passe a produit, mesuré :
 | Même question dans un autre espace | **refus**, zéro source |
 | Question de catalogue, deux espaces | **4** documents, puis **2** |
 | Suite de tests après la passe | **124 tests, 295 assertions** |
+| Installation sur une base vierge | **25 migrations, 22 tables**, premier administrateur amorcé et protégé |
 
 L'état laissé derrière est décrit dans `ETAT_DE_DEMO.fr.md`, et c'est cet état que
 la vidéo doit montrer.
