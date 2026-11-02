@@ -280,7 +280,9 @@ final class DocumentTranslationService
             . 'omit no phrase, no word, no nuance; the excerpt may be cut mid-sentence, keep the '
             . 'partial thought as-is. The text may contain ASR mishearings: silently reconstruct the '
             . 'intended words when they are phonetically close, then translate. Keep names, figures '
-            . 'and dates exact. Output ONLY the final translation, decisively: no comments, no notes, '
+            . 'and dates exact, but never invent a proper noun: a common noun stays a common noun '
+            . '"the donor" is not a person, and turning it into a name is a mistranslation. '
+            . 'Output ONLY the final translation, decisively: no comments, no notes, '
             . 'no alternatives, no uncertainty markers — commit to the single most likely meaning.%s%s',
             $sourceNote,
             self::LANGUAGES[$lang] ?? $lang,
