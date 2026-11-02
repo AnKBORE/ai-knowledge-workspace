@@ -70,6 +70,7 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 
 ### Governance and access control
 
+- **One document, several workspaces.** A document can be filed in several workspaces and removed from one without leaving the others: access follows the union of the workspaces, and the owner always keeps access.
 - **Control roles are changed by administrators only.** From the document list, an administrator changes the workspace and confidentiality of an existing document; the action requires their password and journals the **before** and **after** values.
 - **Workspace and confidentiality at deposit time.** The depositor chooses the target workspace and the confidentiality (`restreint`, `prive`, or `public_interne` for administrators). The choice survives the deferred queue (audio, images, scanned PDFs).
 - **Bootstrap account.** The **Super Admin** is the default account: `php tools/seed_admin.php` recreates it even after wiping the database, and it can be neither deleted, nor suspended, nor demoted. `php tools/seed_admin.php --reset` restores access by regenerating the password.

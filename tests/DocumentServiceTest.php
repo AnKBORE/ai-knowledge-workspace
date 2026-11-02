@@ -65,6 +65,14 @@ final class DocumentServiceTest extends TestCase
         )');
 
         $this->storage = sys_get_temp_dir() . '/dsh_docs_' . bin2hex(random_bytes(4));
+          $this->pdo->exec('CREATE TABLE document_espace (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              document_id INTEGER NOT NULL,
+              espace_id INTEGER NOT NULL,
+              cree_le TEXT DEFAULT CURRENT_TIMESTAMP,
+              UNIQUE (document_id, espace_id)
+          )');
+
         $this->service = new DocumentService(
             new Document($this->pdo),
             new VersionDocument($this->pdo),

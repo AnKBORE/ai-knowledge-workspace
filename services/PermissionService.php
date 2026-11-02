@@ -202,22 +202,37 @@ final class PermissionService
         $tenantId = (int) $actor['tenant_id'];
         $isAdmin = in_array($actor['role_global'], ['administrateur_technique', 'administrateur_fonctionnel'], true);
 
+        // A document may be filed in several workspaces: visibility follows the
+        // union of them, so one accessible workspace is enough.
         $stmt = $this->db->prepare(
-            'SELECT id, espace_id, confidentialite, proprietaire_id
-             FROM documents
-             WHERE tenant_id = :tenant AND supprime_le IS NULL'
+            'SELECT d.id, d.confidentialite, d.proprietaire_id, d.espace_id AS principale, de.espace_id
+             FROM documents d
+             LEFT JOIN document_espace de ON de.document_id = d.id
+             WHERE d.tenant_id = :tenant AND d.supprime_le IS NULL
+             ORDER BY d.id'
         );
         $stmt->execute(['tenant' => $tenantId]);
-        $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $documents = [];
+
+        foreach ($rows as $row) {
+            $documentId = (int) $row['id'];
+            $documents[$documentId] ??= [
+                'confidentialite' => (string) $row['confidentialite'],
+                'proprietaire_id' => (int) ($row['proprietaire_id'] ?? 0),
+                'espaces' => [],
+            ];
+
+            foreach ([$row['principale'], $row['espace_id']] as $espaceLigne) {
+                if ($espaceLigne !== null) {
+                    $documents[$documentId]['espaces'][] = (int) $espaceLigne;
+                }
+            }
+        }
 
         if ($isAdmin) {
-            $all = [];
-
-            foreach ($documents as $document) {
-                $all[(int) $document['id']] = true;
-            }
-
-            return $all;
+            return array_fill_keys(array_keys($documents), true);
         }
 
         $publicSpaces = [];
@@ -237,28 +252,28 @@ final class PermissionService
         $spaceCache = [];
         $allowed = [];
 
-        foreach ($documents as $document) {
-            $documentId = (int) $document['id'];
-            $spaceId = $document['espace_id'] === null ? null : (int) $document['espace_id'];
-
-            if ((int) ($document['proprietaire_id'] ?? 0) === $acteurId) {
+        foreach ($documents as $documentId => $document) {
+            if ($document['proprietaire_id'] === $acteurId) {
                 $allowed[$documentId] = true;
                 continue;
             }
 
-            if ($spaceId === null || $document['confidentialite'] === 'prive') {
+            if ($document['confidentialite'] === 'prive') {
                 continue;
             }
 
-            if (isset($publicSpaces[$spaceId])) {
-                $allowed[$documentId] = true;
-                continue;
-            }
+            foreach ($document['espaces'] as $spaceId) {
+                if (isset($publicSpaces[$spaceId])) {
+                    $allowed[$documentId] = true;
+                    break;
+                }
 
-            $spaceCache[$spaceId] ??= $this->peut($acteurId, 'document.consulter', $spaceId);
+                $spaceCache[$spaceId] ??= $this->peut($acteurId, 'document.consulter', $spaceId);
 
-            if ($spaceCache[$spaceId]) {
-                $allowed[$documentId] = true;
+                if ($spaceCache[$spaceId]) {
+                    $allowed[$documentId] = true;
+                    break;
+                }
             }
         }
 

@@ -111,7 +111,7 @@
 
         var idField = document.getElementById('doc-control-id');
         var titleEl = document.getElementById('doc-control-title');
-        var espace = document.getElementById('doc-control-espace');
+        var espace = document.getElementById('doc-control-espaces');
         var conf = document.getElementById('doc-control-confidentialite');
 
         modal.addEventListener('show.bs.modal', function (event) {
@@ -122,9 +122,17 @@
             if (titleEl) { titleEl.textContent = trigger.getAttribute('data-document-title') || ''; }
 
             if (espace) {
-                espace.value = trigger.getAttribute('data-document-espace') || '0';
+                var espaces = (trigger.getAttribute('data-document-espaces') || '')
+                    .split(',')
+                    .map(function (value) { return value.trim(); })
+                    .filter(function (value) { return value !== ''; });
+
                 if (window.jQuery && window.jQuery.fn.select2) {
-                    window.jQuery(espace).val(espace.value).trigger('change');
+                    window.jQuery(espace).val(espaces).trigger('change');
+                } else {
+                    Array.prototype.forEach.call(espace.options, function (option) {
+                        option.selected = espaces.indexOf(option.value) !== -1;
+                    });
                 }
             }
 

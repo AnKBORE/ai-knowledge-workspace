@@ -121,7 +121,7 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                                             data-bs-toggle="modal" data-bs-target="#doc-control-modal"
                                                             data-document-id="<?= $docId ?>"
                                                             data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
-                                                            data-document-espace="<?= (int) ($doc['espace_id'] ?? 0) ?>"
+                                                            data-document-espaces="<?= e((string) ($doc['espaces'] ?? ($doc['espace_id'] ?? ''))) ?>"
                                                             data-document-confidentialite="<?= e((string) ($doc['confidentialite'] ?? 'restreint')) ?>"
                                                             aria-label="<?= e($isFr ? 'Espace et confidentialité' : 'Workspace and confidentiality') ?>">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
@@ -396,9 +396,8 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                 </div>
                 <div class="modal-body space-create-body">
                     <div class="space-create-fields">
-                        <label for="doc-control-espace"><?= e($isFr ? 'Espace de travail' : 'Workspace') ?>
-                            <select id="doc-control-espace" name="espace_id" class="form-select">
-                                <option value="0"><?= e($isFr ? 'Aucun espace (visible du propriétaire seul)' : 'No workspace (owner only)') ?></option>
+                        <label for="doc-control-espaces"><?= e($isFr ? 'Espaces de travail' : 'Workspaces') ?>
+                            <select id="doc-control-espaces" name="espace_ids[]" class="form-select" multiple size="4">
                                 <?php foreach (($adminEspaces ?? []) as $espaceChoix): ?>
                                     <option value="<?= (int) $espaceChoix['id'] ?>"><?= e((string) $espaceChoix['nom']) ?> (<?= e((string) $espaceChoix['visibilite']) ?>)</option>
                                 <?php endforeach; ?>
@@ -412,7 +411,7 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                             </select>
                         </label>
                     </div>
-                    <p class="form-text mb-0"><?= e($isFr ? 'Le changement est journalisé avec les valeurs précédentes.' : 'The change is journaled with the previous values.') ?></p>
+                    <p class="form-text mb-0"><?= e($isFr ? 'Aucun espace sélectionné = le document reste privé à son propriétaire. Le changement est journalisé.' : 'No workspace selected = the document stays private to its owner. The change is journaled.') ?></p>
                         <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Confirmez avec votre mot de passe' : 'Confirm with your password') ?>">
                         <input id="doc-control-password" name="mot_de_passe_admin" type="password" required autocomplete="current-password" placeholder="<?= e($isFr ? 'Votre mot de passe confirme l\'action' : 'Your password confirms the action') ?>">
                     </label>

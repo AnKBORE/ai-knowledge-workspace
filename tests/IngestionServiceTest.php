@@ -138,7 +138,7 @@ final class IngestionServiceTest extends TestCase
     {
         $this->pdo->exec("CREATE TABLE ingestion_jobs (
             id INTEGER PRIMARY KEY AUTOINCREMENT, utilisateur_id INTEGER, titre TEXT, categorie_id INTEGER,
-            espace_id INTEGER NULL, confidentialite TEXT NOT NULL DEFAULT 'restreint',
+            espace_id INTEGER NULL, espace_ids TEXT NULL, confidentialite TEXT NOT NULL DEFAULT 'restreint',
             nom_original TEXT, type_mime TEXT, taille_octets INTEGER, chemin_tmp TEXT, langue TEXT,
             statut TEXT NOT NULL DEFAULT 'en_attente', erreur TEXT NULL, document_id INTEGER NULL, chunks INTEGER NULL
         )");

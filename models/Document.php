@@ -65,6 +65,58 @@ final class Document
      *        (null or true = no restriction, [] = nothing visible)
      * @return list<array<string, mixed>>
      */
+    /**
+     * Replaces the whole set of workspaces attached to a document.
+     *
+     * @param list<int> $espaceIds
+     */
+    public function remplacerEspaces(int $documentId, array $espaceIds): void
+    {
+        $espaceIds = array_values(array_unique(array_map('intval', $espaceIds)));
+
+        $this->db->beginTransaction();
+
+        try {
+            $this->db->prepare('DELETE FROM document_espace WHERE document_id = :id')
+                ->execute(['id' => $documentId]);
+
+            $insert = $this->db->prepare(
+                'INSERT INTO document_espace (document_id, espace_id) VALUES (:document, :espace)'
+            );
+
+            foreach ($espaceIds as $espaceId) {
+                $insert->execute(['document' => $documentId, 'espace' => $espaceId]);
+            }
+
+            // The primary workspace follows the first attached one.
+            $this->db->prepare('UPDATE documents SET espace_id = :espace WHERE id = :id')
+                ->execute(['espace' => $espaceIds[0] ?? null, 'id' => $documentId]);
+
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollBack();
+
+            throw $e;
+        }
+    }
+
+
+    public function updateConfidentialite(int $id, string $confidentialite): void
+    {
+        $this->db->prepare('UPDATE documents SET confidentialite = :c WHERE id = :id')
+            ->execute(['c' => $confidentialite, 'id' => $id]);
+    }
+    /** @return list<int> */
+    public function espacesDe(int $documentId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT espace_id FROM document_espace WHERE document_id = :id ORDER BY espace_id'
+        );
+        $stmt->execute(['id' => $documentId]);
+
+        return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
     public function listRecent(int $limit = 20, int $offset = 0, array|bool|null $allowed = null): array
     {
         if (is_array($allowed) && $allowed === []) {
@@ -80,7 +132,8 @@ final class Document
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
-                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
+                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions,
+                    (SELECT GROUP_CONCAT(de.espace_id ORDER BY de.espace_id) FROM document_espace de WHERE de.document_id = d.id) AS espaces
              FROM documents d
              LEFT JOIN categorie c ON c.id = d.categorie_id
              WHERE ' . $where . '
@@ -118,7 +171,8 @@ final class Document
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
-                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
+                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions,
+                    (SELECT GROUP_CONCAT(de.espace_id ORDER BY de.espace_id) FROM document_espace de WHERE de.document_id = d.id) AS espaces
              FROM documents d
              LEFT JOIN categorie c ON c.id = d.categorie_id
              WHERE d.supprime_le IS NULL AND d.categorie_id = :categorie
@@ -150,7 +204,8 @@ final class Document
         $stmt = $this->db->prepare(
             'SELECT d.id, d.title, d.filename, d.mime_type, d.statut, d.categorie_id, d.espace_id,
                     c.nom AS categorie_nom, c.couleur AS categorie_couleur,
-                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions
+                    (SELECT COUNT(*) FROM version_document v WHERE v.document_id = d.id) AS versions,
+                    (SELECT GROUP_CONCAT(de.espace_id ORDER BY de.espace_id) FROM document_espace de WHERE de.document_id = d.id) AS espaces
              FROM documents d
              LEFT JOIN categorie c ON c.id = d.categorie_id
              WHERE d.supprime_le IS NULL'

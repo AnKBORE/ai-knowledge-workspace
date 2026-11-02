@@ -63,8 +63,21 @@ if (!verifier_mot_de_passe_admin($dependencies, 'document.controle')) {
 }
 
 $documentId = (int) ($_POST['document_id'] ?? 0);
-$espaceId = (int) ($_POST['espace_id'] ?? 0);
 $confidentialite = (string) ($_POST['confidentialite'] ?? 'restreint');
+
+// A document may be filed in several workspaces: the posted list replaces the
+// whole set, so unchecking a workspace detaches the document from it.
+$espaceIds = [];
+
+foreach ((array) ($_POST['espace_ids'] ?? []) as $espaceCandidat) {
+    $espaceCandidat = (int) $espaceCandidat;
+
+    if ($espaceCandidat > 0) {
+        $espaceIds[] = $espaceCandidat;
+    }
+}
+
+$espaceIds = array_values(array_unique($espaceIds));
 
 if ($documentId < 1) {
     $respond(['error' => $isFr ? 'Document invalide.' : 'Invalid document.'], 422);
@@ -80,21 +93,30 @@ if ($document === null) {
     $respond(['error' => $T['document_not_found']], 404);
 }
 
-// A space is optional: a document without a workspace is owner-only.
-if ($espaceId > 0 && $dependencies['espaces']->find($espaceId) === null) {
-    $respond(['error' => $isFr ? 'Espace inconnu.' : 'Unknown workspace.'], 404);
+// A document without any workspace is owner-only: the empty list is valid.
+$espacesConnus = [];
+
+foreach ($dependencies['espaces']->all() as $espaceExistant) {
+    $espacesConnus[] = (int) $espaceExistant['id'];
+}
+
+foreach ($espaceIds as $espaceCandidat) {
+    if (!in_array($espaceCandidat, $espacesConnus, true)) {
+        $respond(['error' => $isFr ? 'Espace inconnu.' : 'Unknown workspace.'], 404);
+    }
 }
 
 $avant = [
-    'espace_id' => $document['espace_id'] === null ? null : (int) $document['espace_id'],
+    'espaces' => $dependencies['document_model']->espacesDe($documentId),
     'confidentialite' => (string) ($document['confidentialite'] ?? 'restreint'),
 ];
 
-$dependencies['document_model']->updateControle($documentId, $espaceId > 0 ? $espaceId : null, $confidentialite);
+$dependencies['document_model']->remplacerEspaces($documentId, $espaceIds);
+$dependencies['document_model']->updateConfidentialite($documentId, $confidentialite);
 
 $dependencies['journal']->log($userId, 'document.controle', 'document', $documentId, 'succes', [
     'avant' => $avant,
-    'apres' => ['espace_id' => $espaceId > 0 ? $espaceId : null, 'confidentialite' => $confidentialite],
+    'apres' => ['espaces' => $espaceIds, 'confidentialite' => $confidentialite],
 ]);
 
 $respond(['message' => $isFr

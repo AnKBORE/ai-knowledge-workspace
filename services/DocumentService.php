@@ -36,7 +36,7 @@ final class DocumentService
      * @param array{tmp_name: string, name: string, type?: string, size?: int, error?: int} $upload
      * @return array{document_id: int, version_id: int, sha256: string, stored_path: string}
      */
-    public function createDocument(string $titre, ?int $espaceId, ?int $proprietaireId, array $upload, ?int $categorieId = null, string $confidentialite = 'restreint'): array
+    public function createDocument(string $titre, ?int $espaceId, ?int $proprietaireId, array $upload, ?int $categorieId = null, string $confidentialite = 'restreint', array $espaceIds = []): array
     {
         $this->validate($upload);
         [$sha, $stored] = $this->store($upload);
@@ -50,6 +50,13 @@ final class DocumentService
             'autre',
             $categorieId,
             $confidentialite,
+        );
+
+        // The link table is authoritative for access; the primary column is
+        // only a display and compatibility field.
+        $this->documents->remplacerEspaces(
+            $documentId,
+            $espaceIds !== [] ? $espaceIds : ($espaceId !== null ? [$espaceId] : [])
         );
 
         $versionId = $this->versions->create(

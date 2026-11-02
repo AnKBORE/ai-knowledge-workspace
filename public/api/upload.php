@@ -91,23 +91,43 @@ if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ER
 // active workspace, otherwise the first active one. The chosen workspace must
 // be one where the user may deposit.
 $userId = (int) $dependencies['auth']->id();
-$espaceChoisi = (int) ($_POST['espace_id'] ?? 0);
+
+// A document may be filed in several workspaces at once.
+$espaceIdsChoisis = [];
+
+foreach ((array) ($_POST['espace_ids'] ?? []) as $espaceCandidat) {
+    $espaceCandidat = (int) $espaceCandidat;
+
+    if ($espaceCandidat > 0) {
+        $espaceIdsChoisis[] = $espaceCandidat;
+    }
+}
+
+$espaceIdsChoisis = array_values(array_unique($espaceIdsChoisis));
+$espaceChoisi = $espaceIdsChoisis[0] ?? (int) ($_POST['espace_id'] ?? 0);
 $espaceActifSession = (int) $dependencies['session']->get('espace_actif', 0);
 
 $espaceDepot = null;
 
-if ($espaceChoisi > 0) {
-    if (!$dependencies['permissions']->peut($userId, 'document.deposer', $espaceChoisi)) {
+$espaceIdsValides = [];
+
+foreach ($espaceIdsChoisis as $espaceCandidat) {
+    if (!$dependencies['permissions']->peut($userId, 'document.deposer', $espaceCandidat)) {
         http_response_code(422);
-        $dependencies['journal']->log($userId, 'securite.refus', 'espace', $espaceChoisi, 'refus', ['raison' => 'depot_interdit']);
+        $dependencies['journal']->log($userId, 'securite.refus', 'espace', $espaceCandidat, 'refus', ['raison' => 'depot_interdit']);
         echo json_encode(['error' => $lang === 'fr' ? 'Vous ne pouvez pas déposer dans cet espace.' : 'You cannot deposit in this workspace.'], JSON_UNESCAPED_UNICODE);
         exit;
     }
 
-    $espaceDepot = $espaceChoisi;
-} elseif ($espaceActifSession > 0 && $dependencies['permissions']->peut($userId, 'document.deposer', $espaceActifSession)) {
-    $espaceDepot = $espaceActifSession;
+    $espaceIdsValides[] = $espaceCandidat;
 }
+
+if ($espaceIdsValides === [] && $espaceActifSession > 0
+    && $dependencies['permissions']->peut($userId, 'document.deposer', $espaceActifSession)) {
+    $espaceIdsValides[] = $espaceActifSession;
+}
+
+$espaceDepot = $espaceIdsValides[0] ?? null;
 
 $espaceCible = $espaceDepot ?? $dependencies['espaces']->firstActive();
 $espaceCibleRow = $espaceCible !== null ? $dependencies['espaces']->find($espaceCible) : null;
@@ -163,6 +183,7 @@ try {
             'titre' => $title,
             'categorie_id' => $categorieId,
             'espace_id' => $espaceDepot,
+            'espace_ids' => $espaceIdsValides,
             'confidentialite' => $confidentialite,
             'nom_original' => $originalName,
             'type_mime' => (string) ($upload['type'] ?? ''),
@@ -179,7 +200,7 @@ try {
 
     // Fast files (text, PDF with a text layer): processed synchronously.
     $content = $ingestion->extract($tmp, $extension);
-    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content, $espaceDepot, $confidentialite);
+    $result = $ingestion->finalize($title, $categorieId, (int) $dependencies['auth']->id(), $upload, $content, $espaceDepot, $confidentialite, $espaceIdsValides);
 
     echo json_encode([
         'title' => $title,

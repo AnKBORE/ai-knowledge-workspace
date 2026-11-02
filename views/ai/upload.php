@@ -56,16 +56,17 @@ $P = $T['upload'];
                         </div>
                         <?php $tx = static fn (string $fr, string $en): string => ($lang ?? 'en') === 'fr' ? $fr : $en; ?>
                         <div class="mb-3">
-                            <label for="espace_id" class="form-label fw-semibold"><?= e($tx('Espace de travail', 'Workspace')) ?></label>
-                            <select id="espace_id" name="espace_id" class="form-select">
+                            <label for="espace_ids" class="form-label fw-semibold"><?= e($tx('Espaces de travail', 'Workspaces')) ?></label>
+                            <select id="espace_ids" name="espace_ids[]" class="form-select" multiple size="4">
                                 <?php foreach (($espacesDepot ?? []) as $espaceDispo): ?>
-                                    <option value="<?= (int) $espaceDispo['id'] ?>"<?= (int) ($espaceActif ?? 0) === (int) $espaceDispo['id'] ? ' selected' : '' ?>>
+                                    <?php $selectionne = (int) ($espaceActif ?? 0) === (int) $espaceDispo['id']; ?>
+                                    <option value="<?= (int) $espaceDispo['id'] ?>"<?= $selectionne ? ' selected' : '' ?>>
                                         <?= e((string) $espaceDispo['nom']) ?> — <?= e((string) $espaceDispo['visibilite']) ?> (<?= (int) ($espaceDispo['documents'] ?? 0) ?> <?= e($tx('documents', 'documents')) ?>)
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                             <p class="form-text mb-0"><?= e($tx(
-                                'Le document rejoint cet espace : seuls ses membres le verront.',
+                                'Le document est classé dans un ou plusieurs espaces ; ses membres y accèdent.',
                                 'The document joins this workspace: only its members will see it.'
                             )) ?></p>
                         </div>

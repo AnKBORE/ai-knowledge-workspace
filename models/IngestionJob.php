@@ -21,8 +21,8 @@ final class IngestionJob
     public function create(array $job): int
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO ingestion_jobs (utilisateur_id, titre, categorie_id, espace_id, confidentialite, nom_original, type_mime, taille_octets, chemin_tmp, langue)
-             VALUES (:utilisateur_id, :titre, :categorie_id, :espace_id, :confidentialite, :nom_original, :type_mime, :taille_octets, :chemin_tmp, :langue)'
+            'INSERT INTO ingestion_jobs (utilisateur_id, titre, categorie_id, espace_id, espace_ids, confidentialite, nom_original, type_mime, taille_octets, chemin_tmp, langue)
+             VALUES (:utilisateur_id, :titre, :categorie_id, :espace_id, :espace_ids, :confidentialite, :nom_original, :type_mime, :taille_octets, :chemin_tmp, :langue)'
         );
 
         // Bind the known keys only: extra keys in $job would raise a driver error.
@@ -31,6 +31,9 @@ final class IngestionJob
             'titre' => (string) $job['titre'],
             'categorie_id' => (int) $job['categorie_id'],
             'espace_id' => $job['espace_id'] ?? null,
+            'espace_ids' => empty($job['espace_ids'])
+                ? null
+                : json_encode(array_values(array_map('intval', (array) $job['espace_ids']))),
             'confidentialite' => (string) ($job['confidentialite'] ?? 'restreint'),
             'nom_original' => (string) $job['nom_original'],
             'type_mime' => (string) $job['type_mime'],

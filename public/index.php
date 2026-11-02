@@ -302,7 +302,11 @@ if ($method === 'GET') {
     if (($espaceActif ?? 0) > 0 && $documents !== []) {
         $documents = array_values(array_filter(
             $documents,
-            static fn (array $doc): bool => (int) ($doc['espace_id'] ?? 0) === (int) $espaceActif
+            static function (array $doc) use ($espaceActif): bool {
+                $espaces = array_map('intval', array_filter(explode(',', (string) ($doc['espaces'] ?? ''))));
+
+                return in_array((int) $espaceActif, $espaces, true);
+            }
         ));
     }
 
@@ -390,7 +394,9 @@ if ($method === 'GET') {
         'entries' => $entries,
         'journalDenied' => $journalDenied ?? false,
         'adminUsers' => $adminUsers ?? [],
-        'adminEspaces' => $adminEspaces ?? [],
+        'adminEspaces' => ($adminEspaces ?? []) !== []
+            ? $adminEspaces
+            : (($canControlDocuments ?? false) ? $dependencies['espaces']->all() : []),
         'adminAdhesions' => $adminAdhesions ?? [],
         'adminFlash' => $adminFlash ?? null,
         'canInvite' => $canInvite ?? false,

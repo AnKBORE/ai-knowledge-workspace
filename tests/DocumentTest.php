@@ -44,6 +44,14 @@ final class DocumentTest extends TestCase
             document_id INTEGER NOT NULL
         )');
 
+          $pdo->exec('CREATE TABLE document_espace (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              document_id INTEGER NOT NULL,
+              espace_id INTEGER NOT NULL,
+              cree_le TEXT DEFAULT CURRENT_TIMESTAMP,
+              UNIQUE (document_id, espace_id)
+          )');
+
         $this->documents = new Document($pdo);
     }
 

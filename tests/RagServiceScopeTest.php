@@ -66,6 +66,14 @@ final class RagServiceScopeTest extends TestCase
         )');
 
         $client = new FakeMetaClient();
+          $this->pdo->exec('CREATE TABLE document_espace (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              document_id INTEGER NOT NULL,
+              espace_id INTEGER NOT NULL,
+              cree_le TEXT DEFAULT CURRENT_TIMESTAMP,
+              UNIQUE (document_id, espace_id)
+          )');
+
         $this->rag = new RagService($client, new EmbeddingService($client), $this->pdo, new PermissionService($this->pdo));
     }
 
