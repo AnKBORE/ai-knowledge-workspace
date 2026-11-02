@@ -502,7 +502,7 @@ significatives :
 | Les dépôts échouaient sur un `TypeError` | `\n` littéraux dans un commentaire : l'affectation `$result` était commentée | commentaire rétabli, balayage des `\n` littéraux |
 | `/categories` lisible par un lecteur | aucune garde sur la page | 403 + message, refus journalisé |
 | Trois endpoints répondant 302 | `$respond` ne lisant que `X-Requested-With` | négociation de contenu, 401 JSON |
-| Script inline bloqué par la CSP | nonce absent sur le script du journal (substitution non appliquée) | nonce posé, vérifié page par page |Détail complet : `docs/REGISTRE_PROBLEMES.md` (40 entrées).
+| Script inline bloqué par la CSP | nonce absent sur le script du journal (substitution non appliquée) | nonce posé, vérifié page par page |Détail complet : `docs/REGISTRE_PROBLEMES.md` (65 entrées : 22 résolues, 12 ouvertes, 31 incidents de phase).
 
 ---
 

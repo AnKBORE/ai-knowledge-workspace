@@ -502,7 +502,7 @@ A build journal without mistakes is a false journal. The most significant:
 | Uploads failed with a `TypeError` | literal `\n` inside a comment commented out the `$result` assignment | comment restored, scan for literal `\n` |
 | `/categories` readable by a reader | no guard on the page | 403 + message, journaled refusal |
 | Three endpoints answering 302 | `$respond` only reading `X-Requested-With` | content negotiation, 401 JSON |
-| Inline script blocked by the CSP | nonce missing on the journal script (substitution not applied) | nonce added, verified page by page |Full detail: `docs/REGISTRE_PROBLEMES.md` (40 entries).
+| Inline script blocked by the CSP | nonce missing on the journal script (substitution not applied) | nonce added, verified page by page |Full detail: `docs/REGISTRE_PROBLEMES.md` (65 entries: 22 resolved, 12 open, 31 phase incidents).
 
 ---
 
