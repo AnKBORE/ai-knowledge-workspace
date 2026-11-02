@@ -157,4 +157,5 @@ Quand un problème est résolu :
 | P-48 | Trois endpoints répondaient par une redirection au lieu d'un refus | `$respond` ne lisait que `X-Requested-With` : un client JSON recevait un 302 illisible par `fetch` | négociation de contenu : 401 JSON pour un client JSON, redirection pour un formulaire natif | ✅ |
 | P-49 | Un script inline du journal était bloqué par la CSP | substitution de motif annoncée mais non appliquée : le nonce manquait sur la balise `<script>` | nonce posé ligne à ligne, vérifié page par page (scripts inline = nonces) | ✅ |
 | P-50 | `--transfer` laissait croire à un ajout | le nom disait « transfert » pour un déplacement, puis a changé de sens avec le modèle multiple | `--grant` / `--revoke`, `--transfer` conservé en alias ; aide `--help` décrivant le modèle | ✅ |
+| P-51 | Le refus « Adresse e-mail invalide » ne dit pas ce qui est attendu : membre.recette@local est rejeté sans explication (ilter_var exige un point dans le domaine) | message générique, aucune indication de format | message explicite avec un exemple valide, dans l'API et dans le profil | ✅ |
 

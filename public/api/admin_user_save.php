@@ -73,7 +73,9 @@ $motDePasse = (string) ($_POST['mot_de_passe'] ?? '');
 $roleGlobal = (string) ($_POST['role_global'] ?? 'membre');
 
 if (!filter_var($courriel, FILTER_VALIDATE_EMAIL)) {
-    $respond(['error' => $isFr ? 'Adresse e-mail invalide.' : 'Invalid e-mail address.'], 422);
+    $respond(['error' => $isFr
+        ? 'Adresse e-mail invalide : utilisez une adresse complète, du type nom@organisation.org.'
+        : 'Invalid e-mail address: use a full address such as name@organisation.org.'], 422);
 }
 
 if ($nom === '' || $prenom === '') {
