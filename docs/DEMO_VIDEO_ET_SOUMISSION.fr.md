@@ -257,3 +257,17 @@ Si le push échoue avec `schannel: AcquireCredentialsHandle failed`, c'est que l
 | **Functionality** | Une démo qui **fonctionne de bout en bout**, sans temps mort |
 
 > La vidéo est **l'élément central** : montre le produit **réel**. Les slides ne sont qu'un emballage.
+
+## 13. Ce qui a changé le 2 novembre — à intégrer au tournage
+
+| Nouveau geste | Où | Ce qu'il démontre | Durée |
+|---|---|---|---|
+| **Filtre et badges d'espaces** | `/documents` | un document peut appartenir à plusieurs espaces | 10 s |
+| **Modale de contrôle** (cadenas) | `/documents` | l'administration change espace et confidentialité, mot de passe exigé | 15 s |
+| **Onglets d'administration** | `/administration` | comptes, espaces, adhésions séparés, actions confirmées | 15 s |
+| **Protection d'un compte** (couronne) | `/administration` | un Super Admin en ajoute un autre | 10 s |
+| **Espace actif** | `/espaces` | le membre choisit son espace, la liste et les dépôts suivent | 10 s |
+
+**Suppression d'un document** : geste conservé, il fonctionne à nouveau (liaison déléguée). À montrer une fois, sans insister.
+
+**À ne pas montrer** : les onglets si la vidéo est déjà longue — le filtre par espace suffit à illustrer le cloisonnement.

@@ -70,21 +70,17 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Gouvernance et contrôle d'accès
 
-- **Endpoints d'administration vérifiés.** `php tools/smoke_admin_endpoints.php` exerce les huit endpoints contre une instance locale : anonyme → 401, membre → 403, administrateur sans mot de passe → 422 (24 vérifications).
-- **La liste des documents montre les espaces de chaque document** (badges) et se filtre par espace, y compris combiné à la recherche.
-- **Un document, plusieurs espaces.** Un document peut être classé dans plusieurs espaces de travail, et retiré de l'un sans quitter les autres : l'accès suit l'union des espaces, et le propriétaire garde toujours l'accès.
-- **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité d'un document existant ; l'action exige son mot de passe et journalise les valeurs **avant** et **après**.
-- **Espace et confidentialité au dépôt.** Le déposant choisit l'espace cible et la confidentialité (`restreint`, `prive`, ou `public_interne` pour les administrateurs). Le choix est conservé jusque dans la file des dépôts différés (audio, images, PDF scannés).
-- **Comptes d'amorçage.** Plusieurs comptes peuvent être **Super Admin** en même temps : ils ne peuvent être ni supprimés, ni suspendus, ni rétrogradés. La protection peut aussi être **désactivée entièrement** (retrait du dernier compte protégé) : l'interface prévient alors qu'aucun compte n'est plus protégé, journalise `compte.super_desactivation`, et `php tools/seed_admin.php` la rétablit. `--grant=email` protège un compte, `--revoke=email` retire une protection.
-- **CSP par nonce.** Les scripts inline portent un nonce unique par requête ; `script-src` n'accepte plus `'unsafe-inline'`. Seul `style-src` le conserve, pour les couleurs dynamiques des vues.
-- **Gérés depuis l'interface.** Sur `/administration`, un Super Admin protège ou retire la protection d'un compte (icône couronne) avec son propre mot de passe ; chaque changement est journalisé (`compte.super_ajout`, `compte.super_retrait`).
-
-- **Menu filtré par les droits.** Un membre ne voit que les entrées qu'il peut réellement utiliser : Catégories, Journal d'audit et Administration n'apparaissent que pour ceux qui en ont la permission.
-- **Espace de travail actif.** Chaque membre choisit l'espace dans lequel il travaille ; la liste des documents et les dépôts suivent ce choix. Un espace peut être **clos** (plus aucun dépôt, documents toujours lisibles) puis **réouvert**.
-- **Accès daté.** Une adhésion porte une date de début et une date de fin ; la terminer coupe l'accès **immédiatement** (la borne de fin est inclusive, la révocation écrit donc la veille).
-- RBAC multi-niveaux
-- Permissions globales
-- Permissions par espace de travail
+- **RBAC à deux niveaux.** Rôles globaux (membre, administrateur fonctionnel, administrateur technique) et rôles locaux par espace (lecteur, contributeur, animateur, responsable) ; la résolution remonte la hiérarchie des espaces.
+- **Un document, plusieurs espaces.** Une table de liaison `document_espace` porte l'affectation : l'accès suit l'**union** des espaces et le propriétaire garde toujours l'accès (migration 025).
+- **Espace et confidentialité au dépôt.** Le déposant choisit l'espace et la confidentialité ; `public_interne` est réservé aux administrateurs ; le contexte survit à la file des dépôts différés (migration 026).
+- **Rôles de contrôle modifiables par l'administration seule.** Depuis la liste des documents, un administrateur change l'espace et la confidentialité ; son mot de passe est exigé et les valeurs **avant/après** sont journalisées.
+- **Liste des documents cloisonnée.** La page et l'API ne renvoient que les documents visibles ; un document inaccessible répond **404**, sans révéler son existence.
+- **Badges et filtre par espace.** La liste affiche les espaces de chaque document et se filtre par espace, y compris combiné à la recherche.
+- **Espaces de travail.** Création, clôture (plus aucun dépôt, documents toujours lisibles), réouverture ; adhésions datées avec révocation immédiate ; la page `/espaces` permet de choisir l'espace actif.
+- **Comptes protégés (Super Admin).** Plusieurs comptes peuvent être protégés : ni supprimables, ni suspendables, ni rétrogradables. La protection s'accorde et se retire depuis l'interface (mot de passe exigé), peut être **désactivée entièrement**, et `php tools/seed_admin.php` restaure le minimum.
+- **Menu filtré par les droits.** Un membre ne voit que les entrées qu'il peut utiliser ; `/journal` et `/administration` répondent **403** sans la permission, `/categories` exige de pouvoir déposer ou supprimer.
+- **Administration en onglets.** Comptes, espaces et adhésions dans trois onglets DataTables, chaque action confirmée par le mot de passe administrateur.
+- **CSP par nonce.** `script-src` n'accepte plus `'unsafe-inline'` : chaque script inline porte un nonce unique par requête.
 
 ### Gestion documentaire avancée
 - Stockage hors racine web
@@ -275,8 +271,9 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 | **PHP** | **8.4.27** — MVC strict (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **Modèle IA** | **Muse Spark Open** (Meta, servi par un partenaire d'inférence) |
-| **Tests** | **100 tests automatisés · 230 assertions** |
-| **Sécurité** | Argon2 · CSP · CSRF · journal d'audit |
+| **Tests** | **121 tests automatisés · 281 assertions** |
+| **Sécurité** | Argon2 · CSP par nonce · CSRF · journal d'audit |
+| **Périmètre** | **10 pages** · **31 endpoints** · **25 migrations** · **3 outils de vérification** |
 | **UI** | Bilingue EN/FR (EN par défaut) — mooré géré pour le contenu (réponses, tâches, traduction), Bootstrap + DataTables + Select2 |
 
 ---
@@ -358,16 +355,19 @@ Endpoints API (protégés par session) :
 ## Tests
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit
+php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
+php tools/smoke_admin_endpoints.php                 # 27 vérifications sur 9 endpoints
+php tools/smoke_endpoints_anonymous.php             # 31 endpoints × 2 méthodes, sans session
+php tools/lint_docs.php                             # structure de la documentation
 ```
 
-**100 tests, 230 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
+**121 tests, 281 assertions** — couvrant l'authentification, le RBAC, les versions de documents, l'audit, le retrieval RAG filtré par permissions, les exports, les services multimodaux, le pipeline d'ingestion en arrière-plan, la boucle d'agent, le limiteur de débit, le modèle de correction et le moteur d'apprentissage (isolation par langue, pondération IDF, effet réel de la suppression). Aucun serveur de base de données ni API requis (SQLite en mémoire + doubles déterministes).
 
 ---
 
 ## Sécurité
 
-Requêtes SQL préparées · protection CSRF sur chaque POST · hachage des mots de passe (Argon2/bcrypt) · verrouillage progressif anti-force brute · RBAC résolu centralement (`PermissionService`) · refus par défaut · fichiers stockés hors racine web · aucun secret dans le code ou les logs · journal d'audit (ajout seul ; purge légale restreinte, re-authentifiée et elle-même journalisée) · en-têtes de sécurité (CSP).
+Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-tête `X-CSRF-Token` ajouté par un wrapper `fetch`) · **CSP par nonce** (aucun script inline sans nonce) · hachage Argon2id · verrouillage progressif des connexions anti-force brute · RBAC résolu centralement (`PermissionService`) · refus par défaut · fichiers stockés hors racine web · aucun secret dans le code ou les logs · journal d'audit (ajout seul ; purge légale restreinte, re-authentifiée et elle-même journalisée) · en-têtes de sécurité (CSP).
 
 ---
 

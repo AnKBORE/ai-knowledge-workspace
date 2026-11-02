@@ -78,6 +78,28 @@ ai-knowledge-workspace/
 | `moore_corpus` | Corpus mooré (phrases de référence) |
 | `journal` | Audit append-only (acteur, action, objet, résultat, IP, détails JSON) |
 
+### Relation N‑N document ↔ espaces (migration 025)
+
+`documents.espace_id` ne suffisait pas : un rapport peut concerner deux chantiers. La table `document_espace` porte l'affectation réelle.
+
+| Élément | Rôle |
+|---|---|
+| `document_espace (document_id, espace_id)` | ensemble des espaces d'un document, contrainte d'unicité |
+| `documents.espace_id` | **espace principal**, conservé pour l'affichage et la compatibilité ; toujours inclus dans la liaison |
+| `ingestion_jobs.espace_ids` (JSON, migration 026) | contexte d'un dépôt différé, pour que le worker n'attache pas tout au premier espace |
+
+**Règle d'accès** : `visible = propriétaire OU (non privé ET au moins un espace accessible)`. L'union est calculée par `PermissionService::documentsVisibles()`, partagée par la liste, la recherche, le téléchargement et le moteur de récupération. Un document sans espace reste visible de son seul propriétaire.
+
+### Comptes protégés (Super Admin)
+
+`utilisateur.compte_super` marque un **ensemble** de comptes protégés, pas un siège unique.
+
+| Invariant | Porté par |
+|---|---|
+| ni suppression, ni suspension, ni rétrogradation | `changerRole`, `changerStatut`, `supprimerLogique` refusent tout compte protégé |
+| ajout et retrait libres, y compris jusqu'à zéro | `accorderSuperAdmin()` / `retirerSuperAdmin()` |
+| traçabilité | `compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation` |
+| amorçage après un effacement | `compteSuperId()` renvoie le plus ancien ; `tools/seed_admin.php` réapplique le minimum |
 ### Point de vigilance : collations
 
 `correction_document` a été créée en `utf8mb4_unicode_ci` alors que `documents`
@@ -448,25 +470,46 @@ enregistrée. Un robot pourrait sinon noyer le journal en ajout seul et enterrer
 les événements réels. Seuls les refus impliquant une session réelle sont tracés.
 ---
 
+### CSP par nonce
+
+`script-src 'self' 'nonce-…'` : le nonce est généré une fois par requête (`csp_nonce()`), posé sur les trois scripts inline, et **aucun script inline ne s'exécute sans lui**. Les gestionnaires d'événements inline (`onsubmit="…"`) ont été remplacés par des attributs `data-*` traités en JavaScript. `style-src` conserve `'unsafe-inline'` pour les couleurs dynamiques des vues.
+
+### Négociation de contenu
+
+Un endpoint qui reçoit `Accept: application/json` (ou `X-Requested-With: XMLHttpRequest`) répond **toujours** en JSON, jamais par une redirection : un `fetch` ne sait pas lire un 302. Les formulaires natifs, eux, gardent la redirection avec message en session.
+
+### Protection des pages
+
+`/journal` exige `journal.lire`, `/administration` au moins une permission d'administration, `/categories` la capacité de déposer ou de supprimer un document. Sans le droit, la page répond **403** et le refus est journalisé (`securite.refus`).
+
 ## 11. Tests
 
-`vendor/bin/phpunit` — **100 tests, 230 assertions**, sans base de données ni API.
+`vendor/bin/phpunit` — **121 tests, 281 assertions**, sans base de données ni API.
 
 | Fichier | Ce qu'il protège |
 |---|---|
 | `AuthTest`, `PermissionServiceTest` | authentification, RBAC, verrouillage |
-| `DocumentTest`, `DocumentServiceTest` | documents, versions, catégories |
+| `PermissionServiceDocumentsVisiblesTest` | **visibilité par union d'espaces** : propriétaire, privé, espace public interne, compte suspendu |
+| `DocumentTest`, `DocumentServiceTest` | documents, versions, catégories, **remplacerEspaces()** et colonne primaire |
+| `UtilisateurSuperTest` | **comptes protégés** : coexistence, retrait partiel, désactivation totale, refus de suppression/suspension/rétrogradation |
 | `CategorieTest`, `AdhesionTest` | identifiants auto, slugs portables, adhésions |
 | `RateLimiterTest` | fenêtre fixe, clés séparées, réinitialisation |
 | `ApprentissageTest` | **moteur d'apprentissage** : isolation par langue, IDF, plafond d'exemples, suppression effective |
 | `MooreResourcesTest` | lexique chargé, recherche par racine, proverbes, glossaire bidirectionnel |
 | `AnonymiseurTest`, `AudioSplitterTest` | anonymisation, découpage audio |
-| `RagServiceTest`, `ExportServiceTest` | récupération, exports |
+| `RagServiceTest`, `RagServiceScopeTest`, `ExportServiceTest` | récupération, cloisonnement, exports |
 
 Les doubles (`FakeMetaClient`) rendent les tests **déterministes** et **gratuits**.
 
----
+### Trois outils de vérification hors PHPUnit
 
+Les endpoints sont des scripts (`require bootstrap`, `exit`) : PHPUnit ne peut pas les appeler. Trois commandes couvrent ce que les tests unitaires ne touchent pas.
+
+| Commande | Ce qu'elle prouve |
+|---|---|
+| `php tools/smoke_admin_endpoints.php` | 9 endpoints d'administration × 3 profils (anonyme 401, membre 403, admin sans mot de passe 422) — **27 vérifications** |
+| `php tools/smoke_endpoints_anonymous.php` | 31 endpoints × 2 méthodes **sans session** : tout est refusé, aucune clé de données exposée |
+| `php tools/lint_docs.php` | structure de la documentation (titres collés, tableaux, échappements, résidus) |
 ## 12. Limites connues (assumées)
 
 | Limite | Réalité |

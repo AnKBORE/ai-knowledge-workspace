@@ -300,3 +300,66 @@ journal étant en ajout seul, un robot pourrait le noyer et enterrer les
 `journal.purge` exige : administrateur technique, POST + CSRF, **mot de passe
 re-saisi**, fenêtre **≤ 92 jours**, fin de période **≤ D-10**, et **5 tentatives
 par 5 minutes**. La purge est elle-même journalisée, refus compris.
+
+## 19. Durcissement du 2 novembre 2026
+
+Cette section documente les mesures ajoutées après l'audit du 2 novembre. Elles sont **vérifiables** par des commandes, pas par des déclarations.
+
+### 19.1 CSP par nonce — plus de script inline libre
+
+| Avant | Après |
+|---|---|
+| `script-src 'self' 'unsafe-inline'` | `script-src 'self' 'nonce-<unique par requête>'` |
+| `onsubmit="return confirm(…)"` dans une vue | attribut `data-confirm` traité par `workspace.js` |
+
+Le nonce est produit par `csp_nonce()` (une fois par requête, stocké dans `$GLOBALS`) et posé sur les **trois** scripts inline : configuration `window.WORKSPACE_*`, purge du journal, et les scripts de vue. `style-src` conserve `'unsafe-inline'` pour les couleurs dynamiques (`style="border-color: …"`), ce qui est assumé et documenté.
+
+**Vérification** : sur les 10 pages, le nombre de scripts inline égale le nombre de nonces et aucun gestionnaire `on*=` ne subsiste.
+
+### 19.2 Négociation de contenu sur les endpoints
+
+Un endpoint qui reçoit `Accept: application/json` ou `X-Requested-With: XMLHttpRequest` répond **toujours** en JSON. Un `fetch` ne sait pas lire un `302` : il récupère du HTML et échoue sur `response.json()`.
+
+Trois endpoints ont été corrigés après le balayage : `categorie_save`, `categorie_delete`, `espace_actif`.
+
+### 19.3 Protection des pages sensibles
+
+| Page | Condition | Sans le droit |
+|---|---|---|
+| `/journal` | `journal.lire` | **403** + refus journalisé |
+| `/administration` | au moins une permission d'administration | **403** |
+| `/categories` | pouvoir déposer **ou** supprimer un document | **403** + message dédié |
+
+Ces gardes ferment l'écart entre ce que l'interface montre et ce que le serveur autorise : plus de page qui affiche des boutons voués à un 403.
+
+### 19.4 Comptes protégés — invariants
+
+`utilisateur.compte_super` désigne un **ensemble** de comptes protégés.
+
+| Invariant | Porté par | Vérifié par |
+|---|---|---|
+| ni suppression, ni suspension, ni rétrogradation | `changerRole`, `changerStatut`, `supprimerLogique` | `UtilisateurSuperTest` |
+| ajout/retrait libres, jusqu'à zéro | `accorderSuperAdmin()`, `retirerSuperAdmin()` | `UtilisateurSuperTest` |
+| trace complète | `compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation` | journal (`/journal`) |
+| amorçage après effacement | `compteSuperId()` (le plus ancien) + `tools/seed_admin.php` | procédure documentée |
+
+### 19.5 Cloisonnement des documents
+
+`PermissionService::documentsVisibles()` calcule l'ensemble visible à partir de la **table de liaison** `document_espace` (union des espaces, confidentialité, propriété, suppression logique). Cette même fonction sert la liste, la recherche, le téléchargement et le moteur de récupération : une seule règle, un seul endroit.
+
+Conséquence mesurée : un membre rattaché à un autre espace reçoit `[]` sur la liste et **404** sur un téléchargement par identifiant — l'existence du document n'est pas révélée.
+
+### 19.6 CSRF sur les appels JSON
+
+Un wrapper `fetch` (début de `workspace.js`) ajoute l'en-tête `X-CSRF-Token` lu depuis `<meta name="csrf-token">` à **tous** les appels. Côté serveur, `Csrf::validateRequest()` accepte `$_POST['_csrf']` ou l'un des en-têtes `X-CSRF-Token` / `X-XSRF-Token`.
+
+### 19.7 Preuves exécutables
+
+```powershell
+php tools/smoke_admin_endpoints.php        # 27 vérifications, 9 endpoints
+php tools/smoke_endpoints_anonymous.php    # 31 endpoints × 2 méthodes, sans session
+php tools/lint_docs.php                    # structure de la documentation
+php vendor/phpunit/phpunit/phpunit         # 121 tests, 281 assertions
+```
+
+Le balayage anonyme vérifie deux choses : le **statut** (401/403/405/419/422) et l'**absence de clé de données** dans le corps (`"documents"`, `"entries"`, `"chunks"`, `"url"`, `"answer"`, `"job_id"`).

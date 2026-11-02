@@ -77,6 +77,28 @@ ai-knowledge-workspace/
 | `moore_corpus` | Mooré corpus (reference sentences) |
 | `journal` | Append-only audit (actor, action, object, result, IP, JSON details) |
 
+### N‑N document ↔ workspaces relation (migration 025)
+
+`documents.espace_id` was not enough: one report may concern two projects. The `document_espace` table carries the actual filing.
+
+| Element | Role |
+|---|---|
+| `document_espace (document_id, espace_id)` | the set of workspaces of a document, unique constraint |
+| `documents.espace_id` | **primary workspace**, kept for display and compatibility; always included in the link |
+| `ingestion_jobs.espace_ids` (JSON, migration 026) | context of a deferred deposit, so the worker does not attach everything to the first workspace |
+
+**Access rule**: `visible = owner OR (not private AND at least one accessible workspace)`. The union is computed by `PermissionService::documentsVisibles()`, shared by the list, the search, the download and the retrieval engine. A document without any workspace stays visible to its owner only.
+
+### Protected accounts (Super Admin)
+
+`utilisateur.compte_super` marks a **set** of protected accounts, not a single seat.
+
+| Invariant | Enforced by |
+|---|---|
+| no deletion, suspension or demotion | `changerRole`, `changerStatut`, `supprimerLogique` refuse any protected account |
+| free grant and revoke, down to zero if desired | `accorderSuperAdmin()` / `retirerSuperAdmin()` |
+| traceability | `compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation` |
+| bootstrap after a wipe | `compteSuperId()` returns the oldest; `tools/seed_admin.php` re-applies the minimum |
 ### Pitfall: collations
 
 `correction_document` was created with `utf8mb4_unicode_ci` while `documents`
@@ -444,26 +466,46 @@ recorded. A bot could otherwise flood the append-only journal and bury the real
 events. Only refusals involving a real session are traced.
 ---
 
+### Nonce-based CSP
+
+`script-src 'self' 'nonce-…'`: the nonce is generated once per request (`csp_nonce()`), carried by the three inline scripts, and **no inline script runs without it**. Inline event handlers (`onsubmit="…"`) were replaced by `data-*` attributes handled in JavaScript. `style-src` keeps `'unsafe-inline'` for the dynamic colours of the views.
+
+### Content negotiation
+
+An endpoint receiving `Accept: application/json` (or `X-Requested-With: XMLHttpRequest`) **always** answers JSON, never a redirect: a `fetch` cannot read a 302. Native forms keep the redirect with a session flash.
+
+### Page protection
+
+`/journal` requires `journal.lire`, `/administration` at least one administration permission, `/categories` the ability to deposit or delete a document. Without the right, the page answers **403** and the refusal is journaled (`securite.refus`).
+
 ## 11. Tests
 
-`vendor/bin/phpunit` — **100 tests, 230 assertions**, with no database server and
-no API.
+`vendor/bin/phpunit` — **121 tests, 281 assertions**, without a database or an API.
 
 | File | What it protects |
 |---|---|
 | `AuthTest`, `PermissionServiceTest` | authentication, RBAC, lockout |
-| `DocumentTest`, `DocumentServiceTest` | documents, versions, categories |
+| `PermissionServiceDocumentsVisiblesTest` | **visibility through the union of workspaces**: owner, private, internal public space, suspended account |
+| `DocumentTest`, `DocumentServiceTest` | documents, versions, categories, **remplacerEspaces()** and the primary column |
+| `UtilisateurSuperTest` | **protected accounts**: coexistence, partial revocation, full deactivation, refusal of deletion/suspension/demotion |
 | `CategorieTest`, `AdhesionTest` | auto identifiers, portable slugs, memberships |
-| `RateLimiterTest` | fixed window, separate keys, reset |
-| `ApprentissageTest` | **learning engine**: language isolation, IDF, example cap, deletion taking effect |
-| `MooreResourcesTest` | lexicon loaded, stem search, proverbs, bidirectional glossary |
+| `RateLimiterTest` | fixed window, distinct keys, reset |
+| `ApprentissageTest` | **learning engine**: per-language isolation, IDF, example cap, effective deletion |
+| `MooreResourcesTest` | loaded lexicon, root search, proverbs, bidirectional glossary |
 | `AnonymiseurTest`, `AudioSplitterTest` | anonymisation, audio splitting |
-| `RagServiceTest`, `ExportServiceTest` | retrieval, exports |
+| `RagServiceTest`, `RagServiceScopeTest`, `ExportServiceTest` | retrieval, scoping, exports |
 
-Fakes (`FakeMetaClient`) keep the suite **deterministic** and **free**.
+The doubles (`FakeMetaClient`) make the tests **deterministic** and **free**.
 
----
+### Three verification tools outside PHPUnit
 
+The endpoints are scripts (`require bootstrap`, `exit`): PHPUnit cannot call them. Three commands cover what the unit tests do not reach.
+
+| Command | What it proves |
+|---|---|
+| `php tools/smoke_admin_endpoints.php` | 9 administration endpoints × 3 profiles (anonymous 401, member 403, admin without password 422) — **27 checks** |
+| `php tools/smoke_endpoints_anonymous.php` | 31 endpoints × 2 methods **without a session**: everything is refused, no data key exposed |
+| `php tools/lint_docs.php` | documentation structure (glued headings, tables, escaping, leftovers) |
 ## 12. Known limitations (accepted)
 
 | Limitation | Reality |

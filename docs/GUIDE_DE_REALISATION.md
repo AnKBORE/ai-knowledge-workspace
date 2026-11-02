@@ -332,3 +332,54 @@ Based in Ouagadougou (Burkina Faso), I am an information technology professional
 
 - LinkedIn: <https://www.linkedin.com/in/anatole-kabore-73b076342>
 - GitHub: <https://github.com/AnKBORE>
+
+## 14. Verification and governance — 2 November additions
+
+### 14.1 The three verification commands
+
+| Command | When to use it | Duration |
+|---|---|---|
+| `php tools/smoke_admin_endpoints.php` | after any change to an administration endpoint | 3 s |
+| `php tools/smoke_endpoints_anonymous.php` | before any commit touching `public/api/` | 5 s |
+| `php tools/lint_docs.php` | before any commit touching `README*.md` or `docs/` | 1 s |
+
+Both sweeps require the application to be running (`php -S 127.0.0.1:8080 -t public`) and read credentials from environment variables (`SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, `SMOKE_MEMBER_EMAIL`, `SMOKE_MEMBER_PASSWORD`).
+
+### 14.2 Create and govern a workspace
+
+1. `/administration` → **Workspaces** tab → "Create a collaborative workspace".
+2. Choose a name and a visibility (`restreint` or `public_interne`).
+3. The creator becomes **manager** of the workspace (automatic membership).
+4. **Memberships** tab → add a member with a local role (`lecteur`, `contributeur`, `animateur`, `responsable`).
+5. To close a workspace: button in the *Lifecycle* column. Closing erases nothing, it only forbids new deposits.
+
+### 14.3 Protect an account (Super Admin)
+
+Several accounts may be protected.
+
+| Action | Where | Effect |
+|---|---|---|
+| Protect | `/administration`, crown icon on the account row | the account becomes Super Admin, can no longer be deleted/suspended/demoted |
+| Remove | crossed crown on the protected row | becomes an ordinary technical administrator again |
+| Disable entirely | remove the last protection | no protected account left; a banner says so |
+| Restore the minimum | `php tools/seed_admin.php` | re-applies one protection |
+| Replace the password | `php tools/seed_admin.php --reset` | regenerates and prints a password |
+
+Every change is journaled (`compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation`).
+
+### 14.4 File a document in several workspaces
+
+- **At deposit time**: the "Workspaces" field accepts several selections.
+- **After deposit**: lock icon on the document row → choose workspaces and confidentiality, confirm with the administrator password.
+- **Effect**: access follows the union of the workspaces; removing one does not remove the others.
+
+### 14.5 Before the demonstration
+
+```powershell
+php tools/lint_docs.php
+php vendor/phpunit/phpunit/phpunit
+php tools/smoke_admin_endpoints.php
+php tools/smoke_endpoints_anonymous.php
+```
+
+Then check on screen: filtered menu (member), `/journal` answering 403 to a member, working delete button, administration tabs, workspace filter in the document list.

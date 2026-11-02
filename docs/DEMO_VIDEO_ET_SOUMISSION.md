@@ -251,3 +251,17 @@ PowerShell**, not from a sandboxed environment.
 | **Functionality** | A demo that **works end to end**, without dead time |
 
 > The video is **the central element**: show the **real** product. Slides are only packaging.
+
+## 13. What changed on 2 November — to include in the recording
+
+| New gesture | Where | What it demonstrates | Duration |
+|---|---|---|---|
+| **Workspace badges and filter** | `/documents` | a document can belong to several workspaces | 10 s |
+| **Control modal** (lock) | `/documents` | administration changes workspace and confidentiality, password required | 15 s |
+| **Administration tabs** | `/administration` | accounts, workspaces, memberships separated, confirmed actions | 15 s |
+| **Protect an account** (crown) | `/administration` | one Super Admin adds another | 10 s |
+| **Active workspace** | `/espaces` | the member chooses their workspace, list and deposits follow | 10 s |
+
+**Deleting a document**: keep the gesture, it works again (delegated binding). Show it once, without insisting.
+
+**Do not show**: the tabs if the video is already long — the workspace filter is enough to illustrate scoping.

@@ -244,6 +244,38 @@ The product could answer; it could not yet **deliver**.
 
 ---
 
+### 2 November 2026 — audits, workspace scoping, hardening
+
+**Starting point.** The MVP worked, but a systematic audit (syntax, pages, data, headers, endpoints, documentation) revealed gaps between what the interface showed and what the server allowed.
+
+**Access hole closed.** The document list and the download-by-id endpoint only checked the **global** `document.consulter` permission. A member could therefore list and download documents from another workspace. The visibility rule was extracted into `PermissionService::documentsVisibles()`, shared by the list, the search, the download and the retrieval engine. Verified with a real second account: 0 documents listed, download answered 404.
+
+**Audit journal closed.** The `/journal` page was readable by any authenticated member. It now requires `journal.lire`: 403 and a journaled refusal.
+
+**Governance made visible.** `/administration` page (accounts, workspaces, memberships), workspace lifecycle (close / reopen), dated memberships with immediate revocation, `/espaces` page to choose the active workspace, permission-filtered menu.
+
+**Document ↔ workspaces as N-N.** `documents.espace_id` could only carry one workspace. Migrations 025 (`document_espace`) and 026 (`ingestion_jobs.espace_ids`): a document is filed in several workspaces, access follows the **union**, the owner always keeps access. Verified: deposit into two workspaces, detach one, a member of the other sees the document and then no longer does.
+
+**Protected accounts.** The model moved from a single seat to a **set**: `accorderSuperAdmin()` / `retirerSuperAdmin()`, protection can be switched off, journaling (`compte.super_ajout`, `.retrait`, `.desactivation`), crown button in the interface, `--grant` / `--revoke` on the command line.
+
+**Interface.** Administration inventory in three DataTables **tabs** (column widths recomputed on display), workspace badges and workspace filter in the document list, control modal (workspace + confidentiality) protected by password.
+
+**Hardening.** **Nonce-based** CSP (no more `'unsafe-inline'` for scripts), content negotiation on the endpoints (401 JSON instead of a redirect), `/categories` guard, **delegated** binding of the delete button, independent of the initialisation order.
+
+**Verification on 2 November.**
+
+| Check | Result |
+|---|---|
+| `git rev-list --count HEAD` | **262** |
+| `phpunit` | **121 tests · 281 assertions** |
+| `tools/smoke_admin_endpoints.php` | **27 checks** (9 endpoints × 3 profiles) |
+| `tools/smoke_endpoints_anonymous.php` | **31 endpoints × 2 methods**: everything refused, no data |
+| `tools/lint_docs.php` | no defect |
+| Demo database | 3 accounts (2 protected) · 3 workspaces · 6 memberships · 9 documents · 25 migrations |
+
+**What this audit changed in the method.** Three of the defects found came from my own patch scripts (insertion inside a table cell, a comment containing literal `\n`, a substitution reported but not applied). Every correction is now followed by a **rendering check**: `<th>`/`<td>` counts, nonce per page, real HTTP status.
+
+---
 ## 4. What was produced, by domain
 
 ### Ingestion
@@ -449,7 +481,12 @@ A build journal without mistakes is a false journal. The most significant:
 | "Too many requests" on translation | translation on every keystroke, mismatched quota | 1.2 s of silence + unchanged text skipped + pause after 429 |
 | Fix invisible after deployment | tab running the previous JavaScript | `no-store` pages, `Ctrl+F5` documented |
 
-Full detail: `docs/REGISTRE_PROBLEMES.md` (40 entries).
+| Delete button inert on the documents page | binding done at the **end** of the script | delegation on `document` + early idempotent bind |
+| Accounts table misaligned (DataTables error) | block inserted inside the **name** cell, swallowing e-mail/role/status | row rebuilt, 6 columns for 6 headers |
+| Uploads failed with a `TypeError` | literal `\n` inside a comment commented out the `$result` assignment | comment restored, scan for literal `\n` |
+| `/categories` readable by a reader | no guard on the page | 403 + message, journaled refusal |
+| Three endpoints answering 302 | `$respond` only reading `X-Requested-With` | content negotiation, 401 JSON |
+| Inline script blocked by the CSP | nonce missing on the journal script (substitution not applied) | nonce added, verified page by page |Full detail: `docs/REGISTRE_PROBLEMES.md` (40 entries).
 
 ---
 

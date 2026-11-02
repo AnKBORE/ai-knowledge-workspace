@@ -70,21 +70,17 @@ The hackathon rules **explicitly exclude basic RAG applications**. Our approach 
 
 ### Governance and access control
 
-- **Administration endpoints checked.** `php tools/smoke_admin_endpoints.php` exercises the eight endpoints against a local instance: anonymous → 401, member → 403, administrator without the password → 422 (24 checks).
-- **The document list shows each document's workspaces** (badges) and filters by workspace, including combined with the search.
-- **One document, several workspaces.** A document can be filed in several workspaces and removed from one without leaving the others: access follows the union of the workspaces, and the owner always keeps access.
-- **Control roles are changed by administrators only.** From the document list, an administrator changes the workspace and confidentiality of an existing document; the action requires their password and journals the **before** and **after** values.
-- **Workspace and confidentiality at deposit time.** The depositor chooses the target workspace and the confidentiality (`restreint`, `prive`, or `public_interne` for administrators). The choice survives the deferred queue (audio, images, scanned PDFs).
-- **Bootstrap accounts.** Several accounts may be **Super Admin** at the same time: they can be neither deleted, nor suspended, nor demoted. The protection can also be **switched off entirely** (removing the last protected account): the interface then warns that no account is protected, journals `compte.super_desactivation`, and `php tools/seed_admin.php` restores it. `--grant=email` protects an account, `--revoke=email` removes one.
-- **Nonce-based CSP.** Inline scripts carry a per-request nonce; `script-src` no longer accepts `'unsafe-inline'`. Only `style-src` keeps it, for the dynamic colours of the views.
-- **Managed from the interface.** On `/administration`, a Super Admin protects or unprotects an account (crown icon) with their own password; every change is journaled (`compte.super_ajout`, `compte.super_retrait`).
-
-- **Permission-driven menu.** A member only sees the entries they can actually use: Categories, Audit journal and Administration appear only for those allowed.
-- **Active workspace.** Each member chooses the workspace they work in; the document list and the deposits follow that choice. A workspace can be **closed** (no further deposits, documents stay readable) and **reopened**.
-- **Time-bounded access.** A membership carries a start and an end date; ending it revokes access **immediately** (the end bound is inclusive, so revocation writes yesterday).
-- Multi-level RBAC
-- Global permissions
-- Per-workspace permissions
+- **Two-level RBAC.** Global roles (member, functional administrator, technical administrator) and per-workspace local roles (reader, contributor, animator, manager); resolution walks up the workspace hierarchy.
+- **One document, several workspaces.** A `document_espace` link table carries the filing: access follows the **union** of the workspaces and the owner always keeps access (migration 025).
+- **Workspace and confidentiality at deposit time.** The depositor chooses the workspace and the confidentiality; `public_interne` is reserved to administrators; the context survives the deferred-upload queue (migration 026).
+- **Control roles changed by administrators only.** From the document list, an administrator changes the workspace and the confidentiality; their password is required and the **before/after** values are journaled.
+- **Scoped document list.** The page and the API only return visible documents; an inaccessible document answers **404**, without revealing its existence.
+- **Workspace badges and filter.** The list shows each document's workspaces and filters by workspace, including combined with the search.
+- **Workspaces.** Creation, closure (no further deposits, documents stay readable), reopening; dated memberships with immediate revocation; the `/espaces` page lets a member choose the active workspace.
+- **Protected accounts (Super Admin).** Several accounts may be protected: they can be neither deleted, nor suspended, nor demoted. Protection is granted and removed from the interface (password required), can be **switched off entirely**, and `php tools/seed_admin.php` restores the minimum.
+- **Permission-driven menu.** A member only sees the entries they can use; `/journal` and `/administration` answer **403** without the permission, `/categories` requires being allowed to deposit or delete.
+- **Tabbed administration.** Accounts, workspaces and memberships in three DataTables tabs, every action confirmed by the administrator password.
+- **Nonce-based CSP.** `script-src` no longer accepts `'unsafe-inline'`: every inline script carries a per-request nonce.
 
 ### Advanced document management
 - Storage outside the web root
@@ -274,9 +270,10 @@ A deliberately lean, robust and controlled architecture.
 | **PHP** | **8.4.27** — strict MVC (PSR-4) |
 | **MySQL** | **8.4.13** — InnoDB / UTF8MB4 |
 | **AI model** | **Muse Spark Open** (Meta, served by a partner inference provider) |
-| **Tests** | **100 automated tests · 230 assertions** |
+| **Tests** | **121 automated tests · 281 assertions** |
 | **UI** | Bilingual EN/FR (EN default) — Mooré supported for content (answers, tasks, translation), Bootstrap + DataTables + Select2 |
-| **Security** | Argon2 · CSP · CSRF · audit journal |
+| **Security** | Argon2 · nonce-based CSP · CSRF · audit journal |
+| **Scope** | **10 pages** · **31 endpoints** · **25 migrations** · **3 verification tools** |
 
 ---
 
@@ -357,10 +354,13 @@ API endpoints (session-protected):
 ## Tests
 
 ```powershell
-php vendor/phpunit/phpunit/phpunit
+php vendor/phpunit/phpunit/phpunit                  # 121 tests, 281 assertions
+php tools/smoke_admin_endpoints.php                 # 27 checks over 9 endpoints
+php tools/smoke_endpoints_anonymous.php             # 31 endpoints x 2 methods, no session
+php tools/lint_docs.php                             # documentation structure
 ```
 
-**100 tests, 230 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).
+**121 tests, 281 assertions** — covering authentication, RBAC, document versions, audit, permission-scoped RAG retrieval, exports, the multimodal services, the background ingestion pipeline, the agent loop, the rate limiter, the correction model and the learning engine (language isolation, IDF weighting, deletion taking effect). No database server or API required (SQLite in memory + deterministic fakes).
 
 ---
 

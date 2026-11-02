@@ -247,6 +247,38 @@ Le produit savait répondre ; il ne savait pas encore **livrer**.
 
 ---
 
+### 2 novembre 2026 — audits, cloisonnement des espaces, durcissement
+
+**Point de départ.** Le MVP fonctionnait, mais un audit systématique (syntaxe, pages, données, en-têtes, endpoints, documentation) a révélé des écarts entre ce que l'interface montrait et ce que le serveur autorisait.
+
+**Faille d'accès fermée.** La liste des documents et le téléchargement par identifiant ne vérifiaient que la permission **globale** `document.consulter`. Un membre pouvait donc lister et télécharger les documents d'un autre espace. La règle de visibilité a été extraite dans `PermissionService::documentsVisibles()`, partagée par la liste, la recherche, le téléchargement et le moteur de récupération. Vérifié avec un second compte réel : 0 document listé, téléchargement en 404.
+
+**Journal d'audit fermé.** La page `/journal` était lisible par tout membre authentifié. Elle exige désormais `journal.lire` : 403 et refus journalisé.
+
+**Gouvernance rendue visible.** Page `/administration` (comptes, espaces, adhésions), cycle de vie des espaces (clore / réouvrir), adhésions datées avec révocation immédiate, page `/espaces` pour choisir l'espace actif, menu filtré par les permissions.
+
+**Document ↔ espaces en N-N.** `documents.espace_id` ne pouvait porter qu'un seul espace. Migrations 025 (`document_espace`) et 026 (`ingestion_jobs.espace_ids`) : un document est classé dans plusieurs espaces, l'accès suit l'**union**, le propriétaire garde toujours l'accès. Vérifié : dépôt dans deux espaces, retrait de l'un, un membre de l'autre voit le document puis ne le voit plus.
+
+**Comptes protégés.** Le modèle est passé d'un siège unique à un **ensemble** : `accorderSuperAdmin()` / `retirerSuperAdmin()`, protection désactivable, journalisation (`compte.super_ajout`, `.retrait`, `.desactivation`), bouton couronne dans l'interface, `--grant` / `--revoke` en ligne de commande.
+
+**Interface.** Inventaire d'administration en trois **onglets** DataTables (recalcul des largeurs à l'affichage), badges d'espaces et filtre par espace dans la liste des documents, modale de contrôle (espace + confidentialité) protégée par mot de passe.
+
+**Durcissement.** CSP par **nonce** (plus de `'unsafe-inline'` pour les scripts), négociation de contenu sur les endpoints (401 JSON au lieu d'une redirection), garde de `/categories`, liaison **déléguée** du bouton supprimer, indépendante de l'ordre d'initialisation.
+
+**Vérifications au 2 novembre.**
+
+| Contrôle | Résultat |
+|---|---|
+| `git rev-list --count HEAD` | **262** |
+| `phpunit` | **121 tests · 281 assertions** |
+| `tools/smoke_admin_endpoints.php` | **27 vérifications** (9 endpoints × 3 profils) |
+| `tools/smoke_endpoints_anonymous.php` | **31 endpoints × 2 méthodes** : tout refusé, aucune donnée |
+| `tools/lint_docs.php` | aucun défaut |
+| Base de démonstration | 3 comptes (2 protégés) · 3 espaces · 6 adhésions · 9 documents · 25 migrations |
+
+**Ce que cet audit a changé dans la méthode.** Trois des défauts trouvés venaient de mes propres scripts de modification (insertion dans une cellule de tableau, commentaire contenant des `\n` littéraux, substitution annoncée mais non appliquée). Chaque correction est désormais suivie d'une **vérification du rendu** : comptage `<th>`/`<td>`, nonce par page, statut HTTP réel.
+
+---
 ## 4. Ce qui a été produit, par domaine
 
 ### Ingestion
@@ -449,11 +481,23 @@ significatives :
 | « Trop de requêtes » sur la traduction | traduction à chaque frappe, quota inadapté | silence 1,2 s + texte inchangé ignoré + pause après 429 |
 | Correctif invisible après déploiement | onglet exécutant l'ancien JavaScript | pages en `no-store`, `Ctrl+F5` documenté |
 
-Détail complet : `docs/REGISTRE_PROBLEMES.md` (40 entrées).
+| Suppression inerte dans les documents | liaison posée en **fin** de script | délégation sur `document` + liaison précoce et idempotente |
+| Tableau des comptes désaligné (erreur DataTables) | bloc inséré dans la cellule du **nom**, avalant e-mail/rôle/statut | ligne reconstruite, 6 colonnes pour 6 en-têtes |
+| Les dépôts échouaient sur un `TypeError` | `\n` littéraux dans un commentaire : l'affectation `$result` était commentée | commentaire rétabli, balayage des `\n` littéraux |
+| `/categories` lisible par un lecteur | aucune garde sur la page | 403 + message, refus journalisé |
+| Trois endpoints répondant 302 | `$respond` ne lisant que `X-Requested-With` | négociation de contenu, 401 JSON |
+| Script inline bloqué par la CSP | nonce absent sur le script du journal (substitution non appliquée) | nonce posé, vérifié page par page |Détail complet : `docs/REGISTRE_PROBLEMES.md` (40 entrées).
 
 ---
 
 ## 6. Preuves vérifiables par le jury
+
+```powershell
+# Les vérifications ajoutées le 2 novembre
+php tools/smoke_admin_endpoints.php        # 27 vérifications, 9 endpoints d'administration
+php tools/smoke_endpoints_anonymous.php    # 31 endpoints × 2 méthodes, sans session
+php tools/lint_docs.php                    # structure de la documentation
+```
 
 ```powershell
 # Volume et rythme
@@ -496,6 +540,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 | 01/11 | Registre des problèmes traduit (40 incidents) | `e5629d0` |
 | 01/11 | Guide de réalisation traduit (13 sections) | `ca57984` |
 | 01/11 | Audit des liens : les docs FR renvoient aux versions FR | `dcb6d1f` |
+| 02/11 | Audit complet, N-N document↔espaces, comptes protégés, CSP par nonce | `42263e5` |
 | | | |
 
 ---

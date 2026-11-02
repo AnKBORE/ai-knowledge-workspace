@@ -300,3 +300,66 @@ Only refusals involving a **real session** are traced.
 `journal.purge` requires: technical administrator, POST + CSRF, **password
 re-entered**, window **≤ 92 days**, period end **≤ D-10**, and **5 attempts per
 5 minutes**. The purge is itself journaled, refusals included.
+
+## 19. Hardening of 2 November 2026
+
+This section documents the measures added after the audit of 2 November. They are **verifiable** by commands, not by claims.
+
+### 19.1 Nonce-based CSP — no free inline script
+
+| Before | After |
+|---|---|
+| `script-src 'self' 'unsafe-inline'` | `script-src 'self' 'nonce-<per-request>'` |
+| `onsubmit="return confirm(…)"` in a view | `data-confirm` attribute handled by `workspace.js` |
+
+The nonce is produced by `csp_nonce()` (once per request, stored in `$GLOBALS`) and carried by the **three** inline scripts: the `window.WORKSPACE_*` configuration, the journal purge, and the view scripts. `style-src` keeps `'unsafe-inline'` for the dynamic colours (`style="border-color: …"`), which is accepted and documented.
+
+**Verification**: across the 10 pages, the number of inline scripts equals the number of nonces and no `on*=` handler remains.
+
+### 19.2 Content negotiation on the endpoints
+
+An endpoint receiving `Accept: application/json` or `X-Requested-With: XMLHttpRequest` **always** answers JSON. A `fetch` cannot read a `302`: it gets HTML and fails on `response.json()`.
+
+Three endpoints were fixed after the sweep: `categorie_save`, `categorie_delete`, `espace_actif`.
+
+### 19.3 Protection of sensitive pages
+
+| Page | Condition | Without the right |
+|---|---|---|
+| `/journal` | `journal.lire` | **403** + journaled refusal |
+| `/administration` | at least one administration permission | **403** |
+| `/categories` | allowed to deposit **or** delete a document | **403** + dedicated message |
+
+These guards close the gap between what the interface shows and what the server allows: no page offers buttons doomed to a 403.
+
+### 19.4 Protected accounts — invariants
+
+`utilisateur.compte_super` designates a **set** of protected accounts.
+
+| Invariant | Enforced by | Verified by |
+|---|---|---|
+| no deletion, suspension or demotion | `changerRole`, `changerStatut`, `supprimerLogique` | `UtilisateurSuperTest` |
+| free grant and revoke, down to zero | `accorderSuperAdmin()`, `retirerSuperAdmin()` | `UtilisateurSuperTest` |
+| complete trace | `compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation` | journal (`/journal`) |
+| bootstrap after a wipe | `compteSuperId()` (oldest) + `tools/seed_admin.php` | documented procedure |
+
+### 19.5 Document scoping
+
+`PermissionService::documentsVisibles()` computes the visible set from the `document_espace` **link table** (union of workspaces, confidentiality, ownership, soft deletion). The same function serves the list, the search, the download and the retrieval engine: one rule, one place.
+
+Measured consequence: a member attached to another workspace receives `[]` on the list and **404** on a download by identifier — the document's existence is not revealed.
+
+### 19.6 CSRF on JSON calls
+
+A `fetch` wrapper (top of `workspace.js`) adds the `X-CSRF-Token` header read from `<meta name="csrf-token">` to **every** call. On the server, `Csrf::validateRequest()` accepts `$_POST['_csrf']` or one of the `X-CSRF-Token` / `X-XSRF-Token` headers.
+
+### 19.7 Executable proofs
+
+```powershell
+php tools/smoke_admin_endpoints.php        # 27 checks, 9 endpoints
+php tools/smoke_endpoints_anonymous.php    # 31 endpoints x 2 methods, no session
+php tools/lint_docs.php                    # documentation structure
+php vendor/phpunit/phpunit/phpunit         # 121 tests, 281 assertions
+```
+
+The anonymous sweep checks two things: the **status** (401/403/405/419/422) and the **absence of a data key** in the body (`"documents"`, `"entries"`, `"chunks"`, `"url"`, `"answer"`, `"job_id"`).

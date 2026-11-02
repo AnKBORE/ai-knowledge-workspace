@@ -339,3 +339,54 @@ Basé à Ouagadougou (Burkina Faso), je suis un professionnel des technologies d
 
 - LinkedIn : <https://www.linkedin.com/in/anatole-kabore-73b076342>
 - GitHub : <https://github.com/AnKBORE>
+
+## 14. Vérifications et gouvernance — ajouts du 2 novembre
+
+### 14.1 Les trois commandes de vérification
+
+| Commande | Quand l'utiliser | Durée |
+|---|---|---|
+| `php tools/smoke_admin_endpoints.php` | après toute modification d'un endpoint d'administration | 3 s |
+| `php tools/smoke_endpoints_anonymous.php` | avant chaque commit touchant `public/api/` | 5 s |
+| `php tools/lint_docs.php` | avant chaque commit touchant `README*.md` ou `docs/` | 1 s |
+
+Les deux balayages exigent que l'application tourne (`php -S 127.0.0.1:8080 -t public`) et lisent des identifiants par variables d'environnement (`SMOKE_ADMIN_EMAIL`, `SMOKE_ADMIN_PASSWORD`, `SMOKE_MEMBER_EMAIL`, `SMOKE_MEMBER_PASSWORD`).
+
+### 14.2 Créer et gouverner un espace
+
+1. `/administration` → onglet **Espaces** → carte « Créer un espace collaboratif ».
+2. Choisir un nom et une visibilité (`restreint` ou `public_interne`).
+3. Le créateur devient **responsable** de l'espace (adhésion automatique).
+4. Onglet **Adhésions** → ajouter un membre avec un rôle local (`lecteur`, `contributeur`, `animateur`, `responsable`).
+5. Pour clore un espace : bouton dans la colonne *Cycle de vie*. Clore n'efface rien, interdit seulement les nouveaux dépôts.
+
+### 14.3 Protéger un compte (Super Admin)
+
+Plusieurs comptes peuvent être protégés.
+
+| Action | Où | Effet |
+|---|---|---|
+| Protéger | `/administration`, icône couronne sur la ligne du compte | le compte devient Super Admin, ne peut plus être supprimé/suspendu/rétrogradé |
+| Retirer | icône couronne barrée sur la ligne protégée | redevient administrateur technique ordinaire |
+| Désactiver entièrement | retirer la dernière protection | plus aucun compte protégé ; un bandeau l'indique |
+| Restaurer le minimum | `php tools/seed_admin.php` | réapplique une protection |
+| Remplacer le mot de passe | `php tools/seed_admin.php --reset` | régénère et affiche un mot de passe |
+
+Chaque changement est journalisé (`compte.super_ajout`, `compte.super_retrait`, `compte.super_desactivation`).
+
+### 14.4 Classer un document dans plusieurs espaces
+
+- **Au dépôt** : le champ « Espaces de travail » accepte plusieurs sélections.
+- **Après dépôt** : icône cadenas sur la ligne du document → choisir les espaces et la confidentialité, confirmer par le mot de passe administrateur.
+- **Effet** : l'accès suit l'union des espaces ; retirer un espace ne retire pas les autres.
+
+### 14.5 Avant la démonstration
+
+```powershell
+php tools/lint_docs.php
+php vendor/phpunit/phpunit/phpunit
+php tools/smoke_admin_endpoints.php
+php tools/smoke_endpoints_anonymous.php
+```
+
+Puis vérifier à l'écran : menu filtré (membre), `/journal` en 403 pour un membre, bouton supprimer fonctionnel, onglets d'administration, filtre par espace dans la liste des documents.
