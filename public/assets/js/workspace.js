@@ -259,6 +259,87 @@
             .replace(/\n/g, '<br>');
     }
 
+    /**
+     * Render an answer or a summary as readable HTML.
+     *
+     * The model writes light Markdown: **short emphasis**, "* item" and
+     * "1. item" lines. Showing those markers literally made every result look
+     * like a draft, so they become real lists. Anything that is not recognised
+     * stays escaped text — never HTML.
+     */
+    function renderRich(text) {
+        var escaped = String(text)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+
+        // Emphasis is a few words, not a paragraph.
+        var inline = function (line) {
+            return line
+                .replace(/\*\*([^*\n]{1,60})\*\*/g, '<strong>$1</strong>')
+                .replace(/\*\*([\s\S]{61,}?)\*\*/g, '$1')
+                .replace(/\*\*/g, '');
+        };
+
+        var lines = escaped.split('\n');
+        var out = [];
+        var list = null;
+
+        var closeList = function () {
+            if (list !== null) {
+                out.push('</' + list + '>');
+                list = null;
+            }
+        };
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+
+            if (line === '') {
+                closeList();
+                continue;
+            }
+
+            var bullet = line.match(/^[*\-•]\s+(.*)$/);
+            var numbered = line.match(/^\d{1,2}[.)]\s+(.*)$/);
+
+            if (bullet) {
+                if (list !== 'ul') {
+                    closeList();
+                    out.push('<ul class="mb-2 ps-4">');
+                    list = 'ul';
+                }
+                out.push('<li>' + inline(bullet[1]) + '</li>');
+                continue;
+            }
+
+            if (numbered) {
+                if (list !== 'ol') {
+                    closeList();
+                    out.push('<ol class="mb-2 ps-4">');
+                    list = 'ol';
+                }
+                out.push('<li>' + inline(numbered[1]) + '</li>');
+                continue;
+            }
+
+            closeList();
+
+            // A line that is only a title stays as a title, not as a paragraph.
+            var heading = line.match(/^#{1,6}\s+(.*)$/) || line.match(/^\*\*([^*]{1,60})\*\*$/);
+
+            if (heading) {
+                out.push('<p class="mb-2"><strong>' + inline(heading[1]) + '</strong></p>');
+                continue;
+            }
+
+            out.push('<p class="mb-2">' + inline(line) + '</p>');
+        }
+
+        closeList();
+
+        return out.join('\n');
+    }
     async function postJson(url, payload) {
         var response = await fetch(url, {
             method: 'POST',
@@ -356,7 +437,7 @@
         resultBadge.textContent = badge;
         resultTitle.textContent = title;
         resultSub.textContent = sub;
-        resultContent.innerHTML = escapeThenBold(content);
+        resultContent.innerHTML = renderRich(content);
         var qInput = document.getElementById('question');
         resultSources.hidden = !renderSources(resultSourcesList, sources, qInput ? qInput.value : '');
         renderSteps(steps);
@@ -576,7 +657,7 @@
                     currentResult.content = cleaned;
                 }
 
-                resultContent.innerHTML = escapeThenBold(cleaned);
+                resultContent.innerHTML = renderRich(cleaned);
 
                 if (resultSources) { resultSources.hidden = true; }
                 if (resultSteps) { resultSteps.hidden = true; }
