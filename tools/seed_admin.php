@@ -17,6 +17,7 @@ declare(strict_types=1);
  * Usage:
  *   php tools/seed_admin.php
  *   php tools/seed_admin.php --reset
+ *   php tools/seed_admin.php --transfer=someone@organisation.org
  *
  * Override with: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NOM, ADMIN_PRENOM.
  */
@@ -47,9 +48,47 @@ $courriel = getenv('ADMIN_EMAIL') ?: 'anatolekbore@gmail.com';
 $nom = getenv('ADMIN_NOM') ?: 'KABORE';
 $prenom = getenv('ADMIN_PRENOM') ?: 'Anatole';
 $reset = in_array('--reset', $argv ?? [], true);
+
+// --transfer=email designates another existing account as the bootstrap
+// account: the flag moves there, and only one account keeps it.
+$transfer = null;
+
+foreach ($argv ?? [] as $argument) {
+    if (str_starts_with((string) $argument, '--transfer=')) {
+        $transfer = strtolower(trim(substr((string) $argument, 11)));
+    }
+}
 $motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
 
 $users = new Utilisateur($pdo);
+
+// --- 0. Explicit transfer ------------------------------------------------
+if ($transfer !== null && $transfer !== '') {
+    $stmt = $pdo->prepare('SELECT id, role_global, statut FROM utilisateur WHERE courriel = :courriel LIMIT 1');
+    $stmt->execute(['courriel' => $transfer]);
+    $candidat = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($candidat === false) {
+        fwrite(STDERR, "No account uses {$transfer}: create it first, then transfer.\n");
+        exit(1);
+    }
+
+    $ancienRole = (string) $candidat['role_global'];
+    $ancienStatut = (string) $candidat['statut'];
+
+    $users->designerSuperAdmin((int) $candidat['id']);
+
+    echo "Super Admin transferred to {$transfer} (id {$candidat['id']})\n";
+    echo "  role   : {$ancienRole} -> administrateur_technique\n";
+
+    if ($ancienStatut !== 'actif') {
+        echo "  statut : {$ancienStatut} -> actif\n";
+    }
+
+    echo "The previous holder is no longer protected.\n";
+
+    exit(0);
+}
 
 // --- 1. Which account is (or becomes) the Super Admin? ----------------------
 $superId = $users->compteSuperId();
