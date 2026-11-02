@@ -707,7 +707,8 @@ class MetaClient
                 return;
             }
 
-            $path = (string) (parse_url($url, PHP_URL_PATH) ?: '/');
+            $path = (string) (parse_url($url, PHP_URL_HOST) ?: '')
+                . (string) (parse_url($url, PHP_URL_PATH) ?: '/');
             $model = (string) ($body['model'] ?? '-');
             $bytesIn = strlen((string) json_encode($body, JSON_UNESCAPED_UNICODE));
 

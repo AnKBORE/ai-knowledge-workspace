@@ -1,0 +1,1 @@
+2026-11-02 16:12:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1573 ms | in=   180 o=   864
