@@ -422,6 +422,34 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 
 Chaque document existe **dans les deux langues**, l'anglais en nom de base et le français en `.fr.md`.
 
+## Quels appels sont des appels au modèle Meta
+
+Les organisateurs demandent à chaque projet de préciser quelles parties sont des
+**appels au modèle Meta** et lesquelles sont des **fonctions du système** ou du
+traitement local. Voici la liste complète ; rien n'y est déduit.
+
+| Fonction | Ce qui s'exécute à l'exécution | Appel au modèle Meta ? |
+|---|---|---|
+| Répondre à une question | `meta-models/muse-spark-open-1026`, servi par Baseten | **oui** |
+| Tâche agentique — plan, rédaction, vérification, conformité | le même modèle, plusieurs appels | **oui** |
+| Traduction FR / EN / MO | le même modèle | **oui** |
+| Compréhension d'images et de scans (repli OCR) | le même modèle, entrée visuelle | **oui** |
+| Transcription audio — **chemin par défaut** | le même modèle, entrée audio | **oui** |
+| Transcription audio — **repli seulement** | binaire local `whisper.cpp` | **non** — un programme sur la même machine, utilisé seulement si le modèle est injoignable |
+| Score de récupération (cosinus + lexical) | arithmétique en PHP sur des vecteurs stockés | **non** |
+| Enregistrement audio, analyse de fichiers, extraction de texte PDF | navigateur et PHP | **non** — fonctions du système et de bibliothèques |
+| Synthèse vocale | non utilisée | — |
+
+Deux conséquences, dites clairement :
+
+- **Aucun logo Meta, aucune mascotte, aucun élément de marque** n'apparaît dans
+  l'application, la page de présentation, ce dépôt ou la vidéo de démonstration. Les
+  modèles sont nommés en texte simple, ce que les organisateurs autorisent.
+- **Aucune synthèse vocale** : le projet ne parle jamais, donc la règle sur la voix
+  de sortie ne le concerne pas.
+
+---
+
 ## Ressources tierces et droits
 
 Le règlement du hackathon exige de détenir les droits sur **chaque élément** d'un

@@ -32,6 +32,8 @@
 | R-21 | Audit d'accessibilité (clavier, contrastes, lecteur d'écran) | **ouvert** | jamais fait ; limite assumée |
 | R-22 | Garder le dépôt public, comme l'exigent les organisateurs | **décidé** | Cerebral Valley, 28 octobre |
 | R-23 | Vérifier que la clé de l'API Model n'atteint jamais le navigateur | **fait** | huit pages et les fichiers JS contrôlés : aucune clé, aucune variable globale `window.*KEY*` |
+| R-24 | Garder les logos et mascottes Meta hors de l'application et du dépôt | **fait** | aucune image versionnée dans `public/` ; les modèles sont nommés en texte simple |
+| R-25 | Déclarer quelles parties sont des appels au modèle Meta et lesquelles sont des fonctions du système | **fait** | section dans les deux README ; la transcription est Meta par défaut, locale en repli seulement |
 
 ---
 

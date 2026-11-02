@@ -421,6 +421,34 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 
 Every document exists in **both languages**, with the English as the base name and the French as `.fr.md`.
 
+## Which calls are Meta model calls
+
+The organizers ask every project to say which parts are **Meta model calls** and
+which are **OS features** or local processing. This is the complete list; nothing
+here is inferred.
+
+| Feature | What runs at runtime | Meta model call? |
+|---|---|---|
+| Answering a question | `meta-models/muse-spark-open-1026`, served by Baseten | **yes** |
+| Agentic task — plan, draft, verify, conformity | same model, several calls | **yes** |
+| Translation FR / EN / MO | same model | **yes** |
+| Image and scan understanding (OCR fallback) | same model, vision input | **yes** |
+| Speech-to-text — **default path** | same model, audio input | **yes** |
+| Speech-to-text — **fallback only** | local `whisper.cpp` binary | **no** — a program on the same machine, used only when the model is unreachable |
+| Retrieval scoring (cosine + lexical) | arithmetic in PHP over stored vectors | **no** |
+| Audio recording, file parsing, PDF text extraction | browser and PHP | **no** — OS and library features |
+| Text-to-speech | not used | — |
+
+Two consequences, stated plainly:
+
+- **No Meta logo, no mascot, no brand asset** appears in the application, the
+  landing page, this repository or the demo video. Models are named in plain text,
+  which the organizers allow.
+- **No text-to-speech**: the project never speaks, so the rule on voice output does
+  not apply to it.
+
+---
+
 ## Third-party assets and rights
 
 The hackathon rules require the rights to **every asset** used by a project and

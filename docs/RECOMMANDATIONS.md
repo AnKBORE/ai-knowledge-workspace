@@ -31,6 +31,8 @@
 | R-21 | Accessibility audit (keyboard, contrasts, screen reader) | **open** | never done; assumed limitation |
 | R-22 | Keep the repository public, as the organizers require | **decided** | Cerebral Valley, 28 October |
 | R-23 | Verify that the Model API key never reaches the browser | **done** | eight pages and the JS assets checked: no key, no `window.*KEY*` global |
+| R-24 | Keep Meta logos and mascots out of the app and the repository | **done** | no image is versioned in `public/`; the models are named in plain text |
+| R-25 | Declare which parts are Meta model calls and which are system features | **done** | section in both READMEs; speech-to-text is Meta by default, local only as a fallback |
 
 ---
 
