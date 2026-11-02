@@ -110,6 +110,6 @@ if (!function_exists('compte_super_protege')) {
      */
     function compte_super_protege(array $dependencies, int $targetId): bool
     {
-        return $targetId > 0 && $targetId === (int) ($dependencies['users']->compteSuperId() ?? 0);
+        return $targetId > 0 && $dependencies['users']->estCompteSuper($targetId);
     }
 }

@@ -80,18 +80,52 @@ final class Utilisateur
      * The Super Admin is the protected installation account: it can never be
      * deleted, suspended or demoted (its profile stays editable by its owner).
      */
+    /**
+     * The oldest protected account: the anchor used by the bootstrap script
+     * after a wipe. Several accounts may be protected at the same time.
+     */
     public function compteSuperId(): ?int
     {
         $row = $this->db->query(
-            'SELECT id FROM utilisateur WHERE compte_super = 1 AND supprime_le IS NULL LIMIT 1'
+            'SELECT id FROM utilisateur
+             WHERE compte_super = 1 AND supprime_le IS NULL
+             ORDER BY id
+             LIMIT 1'
         )->fetch(PDO::FETCH_ASSOC);
 
         return $row === false ? null : (int) $row['id'];
     }
 
+    /**
+     * Protection is a per-account property now: any number of accounts may hold
+     * it, but at least one must always remain.
+     */
     public function estCompteSuper(int $id): bool
     {
-        return $this->compteSuperId() === $id;
+        $stmt = $this->db->prepare(
+            'SELECT 1 FROM utilisateur
+             WHERE id = :id AND compte_super = 1 AND supprime_le IS NULL'
+        );
+        $stmt->execute(['id' => $id]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    /**
+     * Every protected account, oldest first.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function superAdmins(): array
+    {
+        $stmt = $this->db->query(
+            'SELECT id, courriel, nom, prenom, role_global, statut
+             FROM utilisateur
+             WHERE compte_super = 1 AND supprime_le IS NULL
+             ORDER BY id'
+        );
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
@@ -100,27 +134,41 @@ final class Utilisateur
      * technical administrator, never deletable, never suspended, never demoted.
      * The invariants live here so every caller inherits them.
      */
-    public function designerSuperAdmin(int $id): void
+    /**
+     * Adds an account to the set of protected accounts. Idempotent: granting
+     * twice changes nothing, and other protected accounts keep the flag.
+     */
+    public function accorderSuperAdmin(int $id): void
     {
-        $this->db->beginTransaction();
+        $stmt = $this->db->prepare(
+            'UPDATE utilisateur
+             SET compte_super = 1, role_global = :role, statut = :statut, supprime_le = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute(['role' => 'administrateur_technique', 'statut' => 'actif', 'id' => $id]);
+    }
 
-        try {
-            // Uniqueness: clearing first means a transfer can never leave two.
-            $this->db->exec('UPDATE utilisateur SET compte_super = 0');
-
-            $stmt = $this->db->prepare(
-                'UPDATE utilisateur
-                 SET compte_super = 1, role_global = :role, statut = :statut, supprime_le = NULL
-                 WHERE id = :id'
-            );
-            $stmt->execute(['role' => 'administrateur_technique', 'statut' => 'actif', 'id' => $id]);
-
-            $this->db->commit();
-        } catch (\Throwable $e) {
-            $this->db->rollBack();
-
-            throw $e;
+    /**
+     * Removes the protection from one account. The installation must never be
+     * left without a protected account, so the last one cannot be removed.
+     *
+     * @throws \RuntimeException when the target is the last protected account
+     */
+    public function retirerSuperAdmin(int $id): void
+    {
+        if (!$this->estCompteSuper($id)) {
+            return;
         }
+
+        $stmt = $this->db->query('SELECT COUNT(*) FROM utilisateur WHERE compte_super = 1 AND supprime_le IS NULL');
+        $proteges = (int) $stmt->fetchColumn();
+
+        if ($proteges <= 1) {
+            throw new \RuntimeException('dernier_super_admin');
+        }
+
+        $this->db->prepare('UPDATE utilisateur SET compte_super = 0 WHERE id = :id')
+            ->execute(['id' => $id]);
     }
 
     /** @throws \RuntimeException when the target is the protected account */

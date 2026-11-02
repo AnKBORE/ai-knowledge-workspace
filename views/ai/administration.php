@@ -140,23 +140,31 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                             <?php foreach (($adminUsers ?? []) as $u): ?>
                                 <tr>
                                     <?= $rowNumberCell() ?>
-                                    <td><strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong><?php if (!empty($u['compte_super'])): ?> <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé (un seul à la fois) : non supprimable, non suspendable, non rétrogradable ; son profil reste modifiable', 'Protected account (only one at a time): cannot be deleted, suspended or demoted; its profile stays editable')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span><?php endif; ?></td>
-                                    <td class="small text-muted"><?= e((string) ($u['courriel'] ?? '')) ?></td>
-                                    <td><span class="doc-item-badge"><?= e((string) ($u['role_global'] ?? '')) ?></span></td>
-                                                                        <td class="small">
-                                        <span class="badge <?= ($u['statut'] ?? 'actif') === 'actif' ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($u['statut'] ?? 'actif')) ?></span>
-                                    </td>
-                                    <td class="text-end">
-                                        <?php if (!empty($u['compte_super'])): ?>
+                                    <td><strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong><?php if (!empty($u['compte_super'])): ?>
                                             <span class="doc-action doc-action-locked"
-                                                  title="<?= e($t('Compte d\'amorçage protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected bootstrap account: no deletion, suspension or demotion')) ?>"
+                                                  title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>"
                                                   aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                             </span>
+                                            <?php if (($nbSuperAdmins ?? 0) > 1 && !empty($estSuperActeur)): ?>
+                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                                    <?= $csrf?->field() ?? '' ?>
+                                                    <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                    <input type="hidden" name="action" value="revoke">
+                                                    <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
+                                                            title="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
+                                                            aria-label="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
+                                                            data-confirm-title="<?= e($t('Retirer la protection ?', 'Remove the protection?')) ?>"
+                                                            data-confirm-text="<?= e($t('Ce compte redeviendra un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M9 16h6"/></svg>
+                                                    </button>
+                                                </form>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
                                             <?php if (!empty($estSuperActeur)): ?>
                                                 <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                                <input type="hidden" name="action" value="grant">
                                                     <?= $csrf?->field() ?? '' ?>
                                                     <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                     <button type="submit" class="doc-action admin-confirm"

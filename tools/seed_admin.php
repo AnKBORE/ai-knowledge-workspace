@@ -3,21 +3,19 @@
 declare(strict_types=1);
 
 /**
- * Bootstrap the installation: create (or restore) the Super Admin and the
- * default workspace.
+ * Bootstrap the installation: maintain the protected Super Admin accounts and
+ * the default workspace.
  *
- * The Super Admin is the default account — the one you can always come back to,
- * even after wiping the database. This script is idempotent and self-healing:
- *
- *   - it designates exactly one Super Admin (never two);
- *   - it restores a softly deleted or suspended Super Admin;
- *   - it recreates the account from scratch when the table is empty;
- *   - `--reset` sets a new password and prints it.
+ * Several accounts may be protected at the same time — it is a set of trusted
+ * administrators, not a single seat. The rule is simply that the set is never
+ * empty: the installation must always keep at least one way back in.
  *
  * Usage:
- *   php tools/seed_admin.php
- *   php tools/seed_admin.php --reset
- *   php tools/seed_admin.php --transfer=someone@organisation.org
+ *   php tools/seed_admin.php                        ensure at least one exists
+ *   php tools/seed_admin.php --reset                regenerate its password
+ *   php tools/seed_admin.php --grant=email          protect another account
+ *   php tools/seed_admin.php --revoke=email         remove the protection
+ *                                                   (refused on the last one)
  *
  * Override with: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NOM, ADMIN_PRENOM.
  */
@@ -50,90 +48,118 @@ $nom = getenv('ADMIN_NOM') ?: 'KABORE';
 $prenom = getenv('ADMIN_PRENOM') ?: 'Anatole';
 $reset = in_array('--reset', $argv ?? [], true);
 
-// --transfer=email designates another existing account as the bootstrap
-// account: the flag moves there, and only one account keeps it.
-$transfer = null;
+$grant = null;
+$revoke = null;
 
 foreach ($argv ?? [] as $argument) {
-    if (str_starts_with((string) $argument, '--transfer=')) {
-        $transfer = strtolower(trim(substr((string) $argument, 11)));
-    }
-}
-$motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
+    $argument = (string) $argument;
 
-// --- 0bis. Help: the three modes and the single-protected-account rule ---
-if (in_array('--help', $argv ?? [], true) || in_array('-h', $argv ?? [], true)) {
-    $nl = PHP_EOL;
-    echo 'Bootstrap account (Super Admin)' . $nl . $nl;
-    echo 'Exactly ONE account is protected at a time: it can never be deleted,' . $nl;
-    echo 'suspended or demoted. These commands maintain it.' . $nl . $nl;
-    echo '  php tools/seed_admin.php                     confirm or recreate it' . $nl;
-    echo '  php tools/seed_admin.php --reset             regenerate its password' . $nl;
-    echo '  php tools/seed_admin.php --transfer=email    MOVE the protection to another' . $nl;
-    echo '                                              account (the previous holder' . $nl;
-    echo '                                              loses it)' . $nl . $nl;
-    echo 'A transfer is journaled as compte.super_transfert and visible in /journal.' . $nl;
-    exit(0);
+    if (str_starts_with($argument, '--grant=') || str_starts_with($argument, '--transfer=')) {
+        // --transfer is the old name: it now adds instead of moving.
+        $grant = strtolower(trim(substr($argument, strpos($argument, '=') + 1)));
+    }
+
+    if (str_starts_with($argument, '--revoke=')) {
+        $revoke = strtolower(trim(substr($argument, 9)));
+    }
 }
 
 $users = new Utilisateur($pdo);
 $journal = new JournalService($pdo);
 
-// --- 0. Explicit transfer ------------------------------------------------
-if ($transfer !== null && $transfer !== '') {
-    $stmt = $pdo->prepare('SELECT id, role_global, statut FROM utilisateur WHERE courriel = :courriel LIMIT 1');
-    $stmt->execute(['courriel' => $transfer]);
-    $candidat = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($candidat === false) {
-        fwrite(STDERR, "No account uses {$transfer}: create it first, then transfer.\n");
-        exit(1);
-    }
-
-    $ancienRole = (string) $candidat['role_global'];
-    $ancienStatut = (string) $candidat['statut'];
-
-    $ancienSuper = $users->compteSuperId();
-
-    $users->designerSuperAdmin((int) $candidat['id']);
-
-    // A privilege change without a trace is not auditable.
-    $journal->log(null, 'compte.super_transfert', 'utilisateur', (int) $candidat['id'], 'succes', [
-        'avant' => $ancienSuper,
-        'apres' => (int) $candidat['id'],
-        'ancien_role' => $ancienRole,
-    ]);
-
-    echo "Super Admin transferred to {$transfer} (id {$candidat['id']})\n";
-    echo "  role   : {$ancienRole} -> administrateur_technique\n";
-
-    if ($ancienStatut !== 'actif') {
-        echo "  statut : {$ancienStatut} -> actif\n";
-    }
-
-    echo "The previous holder is no longer protected.\n";
-
+// --- Help ------------------------------------------------------------------
+if (in_array('--help', $argv ?? [], true) || in_array('-h', $argv ?? [], true)) {
+    $nl = PHP_EOL;
+    echo 'Protected accounts (Super Admin)' . $nl . $nl;
+    echo 'Several accounts may be protected at once; they can never be deleted,' . $nl;
+    echo 'suspended or demoted, and at least one must always remain.' . $nl . $nl;
+    echo '  php tools/seed_admin.php                 ensure at least one exists' . $nl;
+    echo '  php tools/seed_admin.php --reset         regenerate its password' . $nl;
+    echo '  php tools/seed_admin.php --grant=email   protect another account' . $nl;
+    echo '  php tools/seed_admin.php --revoke=email  remove one (refused on the last)' . $nl . $nl;
+    echo 'Every change is journaled (compte.super_ajout / compte.super_retrait).' . $nl;
     exit(0);
 }
 
-// --- 1. Which account is (or becomes) the Super Admin? ----------------------
-$superId = $users->compteSuperId();
-$action = '';
+/** Resolves an account by address, even softly deleted. */
+$trouver = static function (PDO $pdo, string $courriel): ?array {
+    $stmt = $pdo->prepare('SELECT id, courriel, role_global, statut FROM utilisateur WHERE courriel = :c LIMIT 1');
+    $stmt->execute(['c' => $courriel]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($superId !== null) {
-    $action = 'Super Admin confirmed';
-    $target = $users->findById($superId);
-    $courriel = (string) ($target['courriel'] ?? $courriel);
-} else {
-    // No Super Admin: reuse the bootstrap address if it exists at all, even
-    // softly deleted, otherwise create it.
-    $stmt = $pdo->prepare('SELECT id FROM utilisateur WHERE courriel = :courriel LIMIT 1');
-    $stmt->execute(['courriel' => strtolower(trim($courriel))]);
-    $existingId = $stmt->fetchColumn();
+    return $row === false ? null : $row;
+};
 
-    if ($existingId !== false) {
-        $superId = (int) $existingId;
-        $action = 'Super Admin restored';
+// --- Grant -----------------------------------------------------------------
+if ($grant !== null && $grant !== '') {
+    $cible = $trouver($pdo, $grant);
+
+    if ($cible === null) {
+        fwrite(STDERR, "No account uses {$grant}: create it first, then grant.\n");
+        exit(1);
+    }
+
+    $ancienRole = (string) $cible['role_global'];
+    $users->accorderSuperAdmin((int) $cible['id']);
+
+    $journal->log(null, 'compte.super_ajout', 'utilisateur', (int) $cible['id'], 'succes', [
+        'courriel' => $grant,
+        'ancien_role' => $ancienRole,
+    ]);
+
+    echo "Protected account added: {$grant} (id {$cible['id']})\n";
+
+    if ($ancienRole !== 'administrateur_technique') {
+        echo "  role : {$ancienRole} -> administrateur_technique\n";
+    }
+
+    echo 'Protected accounts now: ' . count($users->superAdmins()) . "\n";
+    exit(0);
+}
+
+// --- Revoke ----------------------------------------------------------------
+if ($revoke !== null && $revoke !== '') {
+    $cible = $trouver($pdo, $revoke);
+
+    if ($cible === null) {
+        fwrite(STDERR, "No account uses {$revoke}.\n");
+        exit(1);
+    }
+
+    if (!$users->estCompteSuper((int) $cible['id'])) {
+        fwrite(STDERR, "{$revoke} is not a protected account.\n");
+        exit(1);
+    }
+
+    try {
+        $users->retirerSuperAdmin((int) $cible['id']);
+    } catch (\RuntimeException $e) {
+        fwrite(STDERR, "Refused: the installation must keep at least one protected account.\n");
+        exit(1);
+    }
+
+    $journal->log(null, 'compte.super_retrait', 'utilisateur', (int) $cible['id'], 'succes', [
+        'courriel' => $revoke,
+    ]);
+
+    echo "Protection removed from {$revoke}\n";
+    echo 'Protected accounts left: ' . count($users->superAdmins()) . "\n";
+    exit(0);
+}
+
+// --- Ensure at least one protected account --------------------------------
+$superAdmins = $users->superAdmins();
+$action = 'Protected account confirmed';
+
+if ($superAdmins === []) {
+    // No protected account at all: reuse the bootstrap address if it exists,
+    // even softly deleted, otherwise create it.
+    $cible = $trouver($pdo, strtolower(trim($courriel)));
+    $motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
+
+    if ($cible !== null) {
+        $superId = (int) $cible['id'];
+        $action = 'Protected account restored';
     } else {
         $errors = PolitiqueMotDePasse::validate($motDePasse);
 
@@ -143,26 +169,27 @@ if ($superId !== null) {
         }
 
         $superId = $users->create($courriel, $nom, $prenom, PolitiqueMotDePasse::hash($motDePasse), 'administrateur_technique', true);
-        $action = 'Super Admin created';
+        $action = 'Protected account created';
     }
-}
 
-// Always re-assert the invariants: one Super Admin, technical, active, alive.
-$superAvant = $users->compteSuperId();
-$users->designerSuperAdmin((int) $superId);
+    $users->accorderSuperAdmin((int) $superId);
 
-if ($superAvant !== (int) $superId) {
-    $journal->log(null, 'compte.super_designation', 'utilisateur', (int) $superId, 'succes', [
-        'avant' => $superAvant,
-        'apres' => (int) $superId,
-        'action' => $action,
+    $journal->log(null, 'compte.super_ajout', 'utilisateur', (int) $superId, 'succes', [
+        'courriel' => $courriel,
+        'source' => 'bootstrap',
     ]);
+
+    $superAdmins = $users->superAdmins();
 }
 
-// --- 2. Password replacement (recovery path) -------------------------------
+$superId = (int) $superAdmins[0]['id'];
+$courriel = (string) $superAdmins[0]['courriel'];
+
+// --- Password replacement (recovery path) ---------------------------------
 $motDePasseApplique = null;
 
 if ($reset) {
+    $motDePasse = getenv('ADMIN_PASSWORD') ?: 'Super-' . bin2hex(random_bytes(6)) . '-2026!';
     $errors = PolitiqueMotDePasse::validate($motDePasse);
 
     if ($errors !== []) {
@@ -170,12 +197,12 @@ if ($reset) {
         exit(1);
     }
 
-    $users->updateMotDePasse((int) $superId, PolitiqueMotDePasse::hash($motDePasse));
+    $users->updateMotDePasse($superId, PolitiqueMotDePasse::hash($motDePasse));
     $motDePasseApplique = $motDePasse;
     $action .= ' + password reset';
 }
 
-// --- 3. Default workspace + membership (idempotent) ------------------------
+// --- Default workspace + membership (idempotent) --------------------------
 $espaces = new Espace($pdo);
 $adhesions = new Adhesion($pdo);
 
@@ -189,21 +216,26 @@ if ($spaceId === false) {
 
 $spaceId = (int) $spaceId;
 
-if ($adhesions->find($spaceId, (int) $superId) === null) {
-    $adhesions->create($spaceId, (int) $superId, 'responsable');
+if ($adhesions->find($spaceId, $superId) === null) {
+    $adhesions->create($spaceId, $superId, 'responsable');
     echo "Membership created: {$courriel} → Général (responsable)\n";
 }
 
-// --- 4. Report -------------------------------------------------------------
+// --- Report ----------------------------------------------------------------
 echo "\n";
 echo "{$action}\n";
 echo "  id        : {$superId}\n";
 echo "  courriel  : {$courriel}\n";
-echo "  role      : administrateur_technique (compte_super = 1)\n";
+echo '  protégés  : ' . count($superAdmins) . "\n";
+
+foreach ($superAdmins as $protege) {
+    echo '    - ' . $protege['courriel'] . ' (#' . $protege['id'] . ")\n";
+}
 
 if ($motDePasseApplique !== null) {
     echo "  password  : {$motDePasseApplique}\n";
     echo "\n  Note this password now: it is not stored anywhere in clear.\n";
 }
 
-echo "\nProtected account: it can never be deleted, suspended or demoted.\n";
+echo "\nProtected accounts can never be deleted, suspended or demoted,\n";
+echo "and at least one always remains.\n";
