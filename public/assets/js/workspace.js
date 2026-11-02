@@ -276,6 +276,8 @@
 
     function showLoading(badge, title, sub) {
         if (!modal) { return; }
+
+        syncRetry();
         resultBadge.textContent = badge;
         resultTitle.textContent = title;
         resultSub.textContent = sub;
@@ -396,19 +398,43 @@
 
     var lastRequest = null;
     var retryBtn = document.getElementById('retry-result');
+
+    // The button only means something when a request was memorised. Replaying a
+    // summary through ask.php was wrong anyway: each action keeps its endpoint.
+    function syncRetry() {
+        if (!retryBtn) { return; }
+        var armed = lastRequest !== null;
+        retryBtn.disabled = !armed;
+        retryBtn.setAttribute('aria-disabled', armed ? 'false' : 'true');
+        retryBtn.title = armed
+            ? (retryBtn.getAttribute('data-label') || retryBtn.title)
+            : (document.documentElement.lang === 'fr'
+                ? 'Aucune requête à rejouer'
+                : 'Nothing to replay');
+    }
+
     if (retryBtn) {
+        // Remember the original label so the tooltip can be restored.
+        retryBtn.setAttribute('data-label', retryBtn.title || '');
+
         retryBtn.addEventListener('click', async function () {
             if (lastRequest === null) { return; }
+
             showLoading(lastRequest.badge, lastRequest.badge, lastRequest.loading);
+
             try {
-                var data = await postJson(apiUrl('ask.php'), lastRequest.payload);
+                var data = await postJson(apiUrl(lastRequest.url || 'ask.php'), lastRequest.payload);
+
                 if (data.error) { showError(data.error); return; }
+
                 showResult(lastRequest.badge, lastRequest.badge, lastRequest.sub,
-                    data.answer || data.draft || '', data.sources, data.steps);
+                    data.answer || data.draft || data.summary || '', data.sources, data.steps);
             } catch (err) {
                 showError(t('network_error_long'));
             }
         });
+
+        syncRetry();
     }
 
     /* ---------------- Question ---------------- */
@@ -1727,6 +1753,14 @@
     /* ---------------- Documents list ---------------- */
 
     async function runSummarize(documentId, documentTitle) {
+        lastRequest = {
+            url: 'summarize.php',
+            payload: { document_id: Number(documentId) },
+            badge: t('summary_badge'),
+            loading: t('summary_loading'),
+            sub: t('summary_prefix') + documentTitle
+        };
+
         showLoading(t('summary_badge'), t('summary_prefix') + documentTitle, t('summary_loading'));
 
         try {
