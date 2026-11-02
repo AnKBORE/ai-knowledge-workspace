@@ -137,7 +137,7 @@ final class RagService
         if ($this->isCatalogQuestion($question)) {
             // The catalogue lists metadata; corrections are declared on the
             // extracts rather than substituted, so the dates stay intact.
-            $chunks = $this->annotateCorrections($this->catalogChunks($userId));
+            $chunks = $this->annotateCorrections($this->catalogChunks($userId, $espaceId));
             if ($chunks === []) {
                 return [
                     'answer' => $this->msg('no_documents'),
@@ -791,9 +791,20 @@ final class RagService
             default => $this->t('document texte', 'text document'),
         };
     }
-    private function catalogChunks(?int $userId): array
+    private function catalogChunks(?int $userId, ?int $espaceId = null): array
     {
         $allowed = $userId === null ? true : $this->accessibleDocumentIds($userId);
+
+        // Same scope as the search: the workspace shown at the top of the
+        // page decides which documents may appear in a catalogue answer.
+        if ($espaceId !== null && $espaceId > 0) {
+            $inSpace = $this->documentIdsInEspace($espaceId);
+
+            $allowed = $allowed === true
+                ? $inSpace
+                : array_intersect_key($allowed, $inSpace);
+        }
+
         if ($allowed === []) {
             return [];
         }
