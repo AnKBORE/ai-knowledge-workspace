@@ -30,6 +30,8 @@
 | R-19 | Tests fonctionnels des 16 endpoints couverts seulement par le balayage anonyme | **ouvert** | optionnel, après soumission |
 | R-20 | Retirer l'alias `--transfer` quand le modèle multiple sera expliqué partout | **ouvert** | optionnel, cosmétique |
 | R-21 | Audit d'accessibilité (clavier, contrastes, lecteur d'écran) | **ouvert** | jamais fait ; limite assumée |
+| R-22 | Garder le dépôt public, comme l'exigent les organisateurs | **décidé** | Cerebral Valley, 28 octobre |
+| R-23 | Vérifier que la clé de l'API Model n'atteint jamais le navigateur | **fait** | huit pages et les fichiers JS contrôlés : aucune clé, aucune variable globale `window.*KEY*` |
 
 ---
 

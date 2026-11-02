@@ -21,6 +21,10 @@
 | **Les appels au modèle Meta doivent être visibles** | idem |
 | **Accélérer les étapes longues, sans couper le cœur du parcours** | idem |
 | Mettre des **preuves dans le dépôt** (sorties enregistrées, journaux, captures) | idem |
+| **Aucune version hébergée exigée** — exécutable depuis les instructions d'installation, montré en vidéo | Cerebral Valley, 28 octobre |
+| **La clé de l'API Model reste sur le serveur, jamais dans le code client** | idem |
+| **Le dépôt doit rester public** | idem |
+| **Soumettre sur** `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` **avant mer. 4 nov., 21 h ET** | idem |
 
 C'est pour cette dernière règle que chaque appel au modèle écrit désormais une
 ligne dans `storage/logs/model_calls.log`, et que l'enregistrement la montre.
@@ -203,6 +207,7 @@ git log --oneline -1    # noter le hash affiché
 ```
 
 - [ ] Dépôt **public** : `https://github.com/AnKBORE/ai-knowledge-workspace`
+- [ ] **Formulaire de soumission** : `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` — avant mer. 4 nov., 21 h ET
 - [ ] `README.md` + `README.fr.md` à jour
 - [ ] `docs/ARCHITECTURE.md` + `docs/ARCHITECTURE.fr.md` présents
 - [ ] `LICENSE` (MIT)

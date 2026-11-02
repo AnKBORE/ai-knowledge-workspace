@@ -29,6 +29,8 @@
 | R-19 | Functional tests for the 16 endpoints covered only by the anonymous sweep | **open** | optional, after submission |
 | R-20 | Remove the `--transfer` alias once the multiple model is explained everywhere | **open** | optional, cosmetic |
 | R-21 | Accessibility audit (keyboard, contrasts, screen reader) | **open** | never done; assumed limitation |
+| R-22 | Keep the repository public, as the organizers require | **decided** | Cerebral Valley, 28 October |
+| R-23 | Verify that the Model API key never reaches the browser | **done** | eight pages and the JS assets checked: no key, no `window.*KEY*` global |
 
 ---
 

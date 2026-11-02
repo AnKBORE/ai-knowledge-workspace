@@ -21,6 +21,10 @@
 | **The live Meta model calls must be visible** | idem |
 | **Speed up long-running steps; do not cut the core flow** | idem |
 | Put **provenance in the repository** (recorded outputs, logs, captures) | idem |
+| **No hosted version needed** — runnable from the setup instructions, shown in the video | Cerebral Valley, 28 October |
+| **The Model API key stays on the server, never in client code** | idem |
+| **Keep the repository public** | idem |
+| **Submit at** `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` **before Wed 4 Nov, 9:00 PM ET** | idem |
 
 That last rule is why every model call now writes a line to
 `storage/logs/model_calls.log`, and why the recording shows it.
@@ -203,6 +207,7 @@ git log --oneline -1    # note the hash
 ```
 
 - [ ] Public repository: `https://github.com/AnKBORE/ai-knowledge-workspace`
+- [ ] **Submission form**: `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` — before Wed 4 Nov, 9:00 PM ET
 - [ ] `README.md` + `README.fr.md` up to date
 - [ ] `docs/ARCHITECTURE.md` + `docs/ARCHITECTURE.fr.md` present
 - [ ] `docs/JOURNAL_DE_CONSTRUCTION.md` + `.fr.md` present
