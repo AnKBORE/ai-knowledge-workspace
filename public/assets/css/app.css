@@ -2433,3 +2433,7 @@ a:focus-visible,button:focus-visible,.dashboard-space-manage:focus-visible,.spac
     outline: 2px solid var(--primary, #1e3a8a);
     outline-offset: 1px;
 }
+
+/* No block may ever push the page wider than the screen: `clip` (unlike
+   `hidden`) does not create a scroll container, so sticky topbars keep working. */
+html, body { overflow-x: clip; }

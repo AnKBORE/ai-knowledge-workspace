@@ -70,6 +70,8 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 
 ### Gouvernance et contrôle d'accès
 
+- **Compte d'amorçage.** Le **Super Admin** est le compte par défaut : il est recréé par `php tools/seed_admin.php` même après un effacement complet de la base, et il ne peut être ni supprimé, ni suspendu, ni rétrogradé. `php tools/seed_admin.php --reset` restaure l'accès en régénérant le mot de passe.
+
 - **Menu filtré par les droits.** Un membre ne voit que les entrées qu'il peut réellement utiliser : Catégories, Journal d'audit et Administration n'apparaissent que pour ceux qui en ont la permission.
 - **Espace de travail actif.** Chaque membre choisit l'espace dans lequel il travaille ; la liste des documents et les dépôts suivent ce choix. Un espace peut être **clos** (plus aucun dépôt, documents toujours lisibles) puis **réouvert**.
 - **Accès daté.** Une adhésion porte une date de début et une date de fin ; la terminer coupe l'accès **immédiatement** (la borne de fin est inclusive, la révocation écrit donc la veille).

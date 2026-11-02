@@ -120,6 +120,16 @@
 .space-admin table.dataTable.dtr-inline.collapsed td.dtr-control::before, .membership-modal table.dataTable.dtr-inline.collapsed td.dtr-control::before { display: none !important; }
 .dtr-control-btn { display: none; width: 1.65rem; height: 1.65rem; flex: 0 0 1.65rem; align-items: center; justify-content: center; margin: 0 .55rem 0 0; padding: 0; border: 1px solid #b8d7c0; border-radius: 50%; background: #eaf5ed; color: #176b2e; font: inherit; font-size: 1.05rem; font-weight: 750; line-height: 1; cursor: pointer; vertical-align: middle; }
 .space-admin table.dataTable.dtr-inline.collapsed td.dtr-control .dtr-control-btn { display: inline-flex; }
+.space-admin table.dataTable.has-responsive-details td.dtr-control .dtr-control-btn { display: inline-flex; }
+/* Admin inventories: keep cells unwrapped so Responsive actually collapses
+   columns behind the + control instead of squeezing them. */
+.admin-inventory-table tbody td { white-space: nowrap; }
+/* Inventory group titles: the tables sit flush in the panel like /documents,
+   so the titles carry their own padding instead of a .panel-body wrapper. */
+.admin-inv-title { margin: 0; padding: 1rem 1.2rem .3rem; }
+/* Grid columns inside admin panels may never force the page wider than the
+   viewport: Bootstrap keeps flex children at shrink:0, so cap them here. */
+.space-admin .row, .space-admin .row > * { min-width: 0; }
 .space-admin table.membership-table.has-responsive-details td.dtr-control .dtr-control-btn { display: inline-flex; }
 .membership-modal table.membership-table.has-responsive-details td.dtr-control .dtr-control-btn { display: inline-flex; }
 .dtr-control-btn:hover, .dtr-control-btn:focus-visible { border-color: #17752d; background: #17752d; color: #fff; }
@@ -358,8 +368,21 @@
 /* Upload page : formulaire recentre et embelli */
 .form-card { display: grid; gap: .65rem; }
 .form-card .form-label { margin-bottom: .25rem; color: #394660; font-size: .82rem; }
-.form-card .form-control { min-height: 46px; border: 1px solid #dce1eb; border-radius: 10px; font-size: .9rem; transition: border-color .15s ease, box-shadow .15s ease; }
-.form-card .form-control:focus { border-color: #7594d8; box-shadow: 0 0 0 3px rgb(55 107 212 / 14%); }
+.form-card .form-control, .form-card .form-select { min-height: 46px; border: 1px solid #dce1eb; border-radius: 10px; font-size: .9rem; transition: border-color .15s ease, box-shadow .15s ease; }
+.form-card .form-control:focus, .form-card .form-select:focus { border-color: #7594d8; box-shadow: 0 0 0 3px rgb(55 107 212 / 14%); }
+.form-card .select2-container--default .select2-selection--single { min-height: 46px; border-radius: 10px; }
+
+/* Compact variant: administration forms stay dense like the inventory tables. */
+.space-admin .form-card .form-control, .space-admin .form-card .form-select { min-height: 38px; border-radius: 8px; font-size: .84rem; }
+.space-admin .form-card .form-label { margin-bottom: .15rem; font-size: .78rem; }
+.space-admin .form-card .form-text { font-size: .72rem; }
+/* Tighter vertical rhythm: smaller grid gap, gutters and helper spacing. */
+.space-admin .form-card { gap: .45rem; }
+.space-admin .form-card .row { --bs-gutter-x: .6rem; --bs-gutter-y: .55rem; }
+.space-admin .form-card .form-text { margin-top: .1rem; margin-bottom: 0; }
+.space-admin .form-card .space-create-submit { margin-top: .7rem !important; }
+.space-admin .form-card .select2-container--default .select2-selection--single { min-height: 38px; border-radius: 8px; }
+.space-admin .form-card .select2-container--default .select2-selection--single .select2-selection__rendered { font-size: .84rem; }
 .upload-dropzone { position: relative; display: grid; place-items: center; gap: .45rem; padding: 1.1rem .9rem; border: 2px dashed #c6d2e6; border-radius: 12px; background: #f7f9fd; color: #5a6b8c; text-align: center; transition: border-color .15s ease, background .15s ease; }
 .upload-dropzone:hover, .upload-dropzone:focus-within { border-color: #7594d8; background: #eef3fc; }
 .upload-dropzone > svg { width: 34px; height: 34px; color: #315fb7; }
@@ -578,3 +601,55 @@
     color: #1e3a8a;
     font-weight: 600;
 }
+/* DataTables toolbars: allow wrapping instead of forcing width on narrow screens. */
+.space-list-panel .dt-layout-row, .membership-panel .dt-layout-row { flex-wrap: wrap; }
+/* Inventory tables get distinct header colors matching their panel accents. */
+.space-admin .inv-users thead th { background: #7a3fd8; }
+.space-admin .inv-espaces thead th { background: #0e7490; }
+.space-admin .inv-adhesions thead th { background: #315fb7; }
+/* Select2 dropdown: long option labels wrap instead of overflowing. */
+.select2-container--default .select2-dropdown { overflow-x: hidden; }
+.select2-container--default .select2-results__option { white-space: normal; overflow-wrap: anywhere; word-break: break-word; }
+.select2-container--default .select2-results__option .select2-results__option { padding: .5rem .7rem; }
+/* Administration: action buttons opening the creation modals. */
+.admin-open-btn { display: flex; align-items: center; gap: .7rem; min-height: 62px; padding: .6rem 1rem; border: 0; border-radius: 14px; color: #fff; text-align: left; box-shadow: 0 6px 16px rgb(25 39 66 / 14%); transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; }
+.admin-open-btn:hover, .admin-open-btn:focus-visible { transform: translateY(-1px); filter: brightness(1.06); color: #fff; }
+.admin-open-btn svg { flex: 0 0 auto; }
+.admin-open-btn span { display: grid; gap: .1rem; min-width: 0; }
+.admin-open-btn strong { font-size: .88rem; }
+.admin-open-btn small { font-size: .72rem; opacity: .85; }
+.admin-open-violet { background: linear-gradient(135deg, #7a3fd8, #5b2fb0); }
+.admin-open-teal { background: linear-gradient(135deg, #0e7490, #0b5c73); }
+.admin-open-blue { background: linear-gradient(135deg, #315fb7, #264a91); }
+/* Creation modals: header color matches their concern. */
+.space-create-header.admin-head-violet { background: #7a3fd8; border-color: #5b2fb0 !important; }
+.space-create-header.admin-head-teal { background: #0e7490; border-color: #0b5c73 !important; }
+.space-create-header.admin-head-blue { background: #315fb7; border-color: #264a91 !important; }
+/* Mobile toolbars: "Afficher [50] entrées" stays on one line, search full width. */
+@media (max-width: 767.98px) {
+    .space-list-panel .dt-length { display: flex; align-items: center; width: 100%; }
+    .space-list-panel .dt-length label { display: flex; align-items: center; gap: .35rem; white-space: nowrap; }
+    .space-list-panel .dt-length select { min-width: 64px; margin: 0 .2rem; }
+    .space-list-panel .dt-search { width: 100%; }
+    .space-list-panel .dt-search label { display: grid; width: 100%; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .35rem; }
+    .space-list-panel .dt-search input { width: 100%; margin-left: 0; }
+    .space-list-panel .dt-layout-row:last-child { align-items: center; }
+}
+/* DataTables toolbar layout: "Afficher [50] entrées" on one line, search
+   label and field side by side, at every screen width. */
+.space-list-panel .dt-length { display: flex; align-items: center; }
+.space-list-panel .dt-length label { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; }
+.space-list-panel .dt-length select { margin: 0 .25rem; }
+.space-list-panel .dt-search { display: flex; align-items: center; gap: .4rem; }
+.space-list-panel .dt-search label { margin: 0; white-space: nowrap; }
+.space-list-panel .dt-search input { flex: 1 1 auto; width: auto; min-width: 8rem; max-width: 16rem; margin-left: 0; }
+/* Admin creation modals: white background kept, compact fields. */
+.space-create-modal.admin-dark-modal .space-create-fields input,
+.space-create-modal.admin-dark-modal .space-create-fields select { min-height: 38px; padding: .45rem .65rem; border-radius: 8px; font-size: .84rem; }
+.space-create-modal.admin-dark-modal .select2-container--default .select2-selection--single { min-height: 38px; border-radius: 8px; }
+/* Custom-colored modal headers: white text (no text-bg-* class on them). */
+.space-create-header.admin-head-violet,
+.space-create-header.admin-head-teal,
+.space-create-header.admin-head-blue { color: #fff; }
+/* Super Admin badge: gold pill marking the protected installation account. */
+.super-badge { background: #fdf3d8; color: #8a6100; border: 1px solid #e7c66b; font-weight: 700; }

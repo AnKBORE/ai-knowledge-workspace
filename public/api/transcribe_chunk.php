@@ -28,7 +28,9 @@ if (!$dependencies['auth']->check()) {
     exit;
 }
 
-if (!$dependencies['rate_limiter']->allow('transcribe_chunk:' . (int) $dependencies['auth']->id(), 60, 300)) {
+// Live slicing sends ~1 request every 5 s plus retries and a second
+// in-flight call: 60/300 s would throttle mid-recording and drop slices.
+if (!$dependencies['rate_limiter']->allow('transcribe_chunk:' . (int) $dependencies['auth']->id(), 150, 300)) {
     http_response_code(429);
     header('Retry-After: 60');
     echo json_encode([
@@ -54,8 +56,12 @@ if ((int) $_FILES['audio']['size'] > 24 * 1024 * 1024 || (int) $_FILES['audio'][
     exit;
 }
 
-$tmp = tempnam(sys_get_temp_dir(), 'akw_live_') . '.wav';
+// tempnam() already creates the base file: reusing its name would leak one
+// empty file per slice in the temp dir, so the real file gets a .wav suffix.
+$tmpBase = tempnam(sys_get_temp_dir(), 'akw_live_');
+$tmp = $tmpBase . '.wav';
 move_uploaded_file($_FILES['audio']['tmp_name'], $tmp);
+@unlink($tmpBase);
 
 $from = preg_match('/^(fr|en|mo)$/', (string) ($_POST['from'] ?? '')) ? (string) $_POST['from'] : null;
 

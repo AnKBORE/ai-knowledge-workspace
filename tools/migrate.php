@@ -88,6 +88,18 @@ $pdo->exec(
 $upFiles = glob($dir . '/*.up.sql') ?: [];
 sort($upFiles, SORT_STRING);
 
+// Migrations renumbered after having been applied under an old name: rewrite
+// the stored name so they are not re-applied and rollback finds its .down.sql.
+$renames = [
+    '016_rate_limit' => '020_rate_limit',
+    '017_document_translations' => '021_document_translations',
+    '018_moore_corpus' => '022_moore_corpus',
+];
+$rename = $pdo->prepare('UPDATE migrations SET migration = ? WHERE migration = ?');
+foreach ($renames as $old => $new) {
+    $rename->execute([$new, $old]);
+}
+
 $command = $argv[1] ?? 'migrate';
 
 switch ($command) {

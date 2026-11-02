@@ -276,6 +276,18 @@ if ($method === 'GET') {
     // are allowed to read, otherwise the permission model would only apply
     // inside the RAG.
     $visibleDocuments = $dependencies['permissions']->documentsVisibles((int) $auth->id());
+    $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
+    // The active workspace name is shown in the topbar on every page.
+    $espaceActifNom = '';
+    if ($espaceActif > 0) {
+        $espaceRow = $dependencies['espaces']->find($espaceActif);
+        $espaceActifNom = $espaceRow === null ? '' : (string) ($espaceRow['nom'] ?? '');
+        if ($espaceActifNom === '') {
+            // The workspace no longer exists: clear the stale selection.
+            $dependencies['session']->set('espace_actif', 0);
+            $espaceActif = 0;
+        }
+    }
 
     $documents = $search !== ''
         ? $dependencies['document_model']->search($search, 200, $visibleDocuments)
@@ -320,7 +332,6 @@ if ($method === 'GET') {
         9 => true,
     ];
 
-    $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
     $estAdminGlobal = in_array(
         (string) ($dependencies['permissions']->roleGlobal((int) $auth->id()) ?? ''),
         ['administrateur_technique', 'administrateur_fonctionnel'],
@@ -373,6 +384,7 @@ if ($method === 'GET') {
         'navPerms' => $navPerms ?? [],
         'mesEspaces' => $mesEspaces ?? [],
         'espaceActif' => $espaceActif ?? null,
+        'espaceActifNom' => $espaceActifNom ?? '',
         'memberships' => $path === '/mon-profil' ? $dependencies['adhesions']->listForUser((int) $auth->id()) : [],
         'categories' => in_array($path, ['/ajouter', '/categories'], true) ? $dependencies['categorie_model']->listAll() : [],
         'versions' => $path === '/documents' ? $dependencies['version_model']->allByDocument() : [],

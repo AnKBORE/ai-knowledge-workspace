@@ -38,3 +38,5 @@ _jfk.wav
 # Sauvegardes locales (jamais versionnees : donnees personnelles)
 /storage/backup*
 /storage/files-backup*
+/edge_err.txt
+/nul

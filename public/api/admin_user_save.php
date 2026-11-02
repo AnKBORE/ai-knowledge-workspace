@@ -61,6 +61,11 @@ if (!$dependencies['csrf']->validateRequest()) {
     $respond(['error' => $T['csrf'] ?? 'Session expirée.'], 419);
 }
 
+// Sensitive action: the actor's own password is required.
+if (!verifier_mot_de_passe_admin($dependencies, 'compte.creer')) {
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+}
+
 $courriel = strtolower(trim((string) ($_POST['courriel'] ?? '')));
 $nom = trim((string) ($_POST['nom'] ?? ''));
 $prenom = trim((string) ($_POST['prenom'] ?? ''));

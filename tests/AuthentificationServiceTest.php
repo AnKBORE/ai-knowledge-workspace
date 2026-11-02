@@ -37,6 +37,7 @@ final class AuthentificationServiceTest extends TestCase
             mot_de_passe TEXT NOT NULL,
             role_global TEXT NOT NULL DEFAULT "membre",
             statut TEXT NOT NULL DEFAULT "actif",
+            compte_super INTEGER NOT NULL DEFAULT 0,
             derniere_connexion_le TEXT NULL,
             cree_le TEXT DEFAULT CURRENT_TIMESTAMP,
             maj_le TEXT DEFAULT CURRENT_TIMESTAMP,

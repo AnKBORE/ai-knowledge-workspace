@@ -89,8 +89,8 @@ $displayRole = $T['role'];
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/select2/css/select2.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset('/assets/css/app.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/shell.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/spaces.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/shell.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/spaces.css')) ?>">
     <script src="<?= e(url('/assets/vendor/bootstrap/bootstrap.bundle.min.js')) ?>"></script>
 </head>
 <body class="app-body">
@@ -131,6 +131,12 @@ $displayRole = $T['role'];
             <div class="topbar-crumbs">
                 <span class="crumbs"><a href="<?= e(url('/')) ?>"><?= e($productName) ?></a> / <?= e($T['crumb']) ?></span>
                 <strong class="topbar-title"><?= e($title ?? $T['crumb']) ?></strong>
+                <?php if (!empty($espaceActifNom)): ?>
+                    <span class="topbar-espace" title="<?= e(($lang ?? 'fr') === 'fr' ? 'Espace de travail actif' : 'Active workspace') ?>">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7h-9V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2Z"/></svg>
+                        <?= e($espaceActifNom) ?>
+                    </span>
+                <?php endif; ?>
             </div>
 
             <div class="topbar-actions">

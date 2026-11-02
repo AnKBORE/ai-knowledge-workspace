@@ -15,11 +15,11 @@ $locale = (string) config('app.locale', 'fr');
     <title><?= e($title ?? 'Connexion') ?> — <?= e($productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset('/assets/css/app.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/auth.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/auth.css')) ?>">
 </head>
 <body class="auth-body">
     <?= $content ?>
-    <script src="<?= e(url('/assets/js/auth.js')) ?>" defer></script>
-    <script src="<?= e(url('/assets/js/scroll-top.js')) ?>" defer></script>
+    <script src="<?= e(asset('/assets/js/auth.js')) ?>" defer></script>
+    <script src="<?= e(asset('/assets/js/scroll-top.js')) ?>" defer></script>
 </body>
 </html>

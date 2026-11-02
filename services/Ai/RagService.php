@@ -121,6 +121,16 @@ final class RagService
      */
     public function answer(string $question, int $topK = 6, ?int $userId = null): array
     {
+        // An explicit question about a document the user may not consult is
+        // refused up front: no retrieval, no off-topic answer, no leak.
+        if ($this->inaccessibleDocumentScope($question, $userId) !== null) {
+            return [
+                'answer' => $this->msg('not_accessible'),
+                'sources' => [],
+                'refused' => true,
+            ];
+        }
+
         // Catalogue intent: "list all documents" cannot be answered from chunk
         // retrieval — the top-K only sees fragments of the dominant document.
         // Feed the permission-scoped document catalogue to the model instead.
@@ -299,7 +309,32 @@ final class RagService
             }
         }
 
+        // Documents explicitly requested but all forbidden: refuse instead of
+        // silently answering from unrelated sources.
+        if ($documentIds !== [] && $scopeIds === []) {
+            $steps[] = ['step' => 'scope', 'refused' => 'document_ids_inaccessible'];
+
+            return [
+                'draft' => $this->msg('not_accessible'),
+                'sources' => [],
+                'steps' => $steps,
+                'refused' => true,
+            ];
+        }
+
         if ($scopeIds === []) {
+            // An instruction naming a forbidden document is refused too.
+            if ($this->inaccessibleDocumentScope($instruction, $userId) !== null) {
+                $steps[] = ['step' => 'scope', 'refused' => 'document_inaccessible'];
+
+                return [
+                    'draft' => $this->msg('not_accessible'),
+                    'sources' => [],
+                    'steps' => $steps,
+                    'refused' => true,
+                ];
+            }
+
             $detected = $this->documentScope($instruction, $userId);
 
             if ($detected !== null) {
@@ -1513,6 +1548,60 @@ PROMPT;
             $id = (int) $row['id'];
 
             if (is_array($allowed) && !isset($allowed[$id])) {
+                continue;
+            }
+
+            if (mb_strlen($title) > $bestLength) {
+                $best = $id;
+                $bestLength = mb_strlen($title);
+            }
+        }
+
+        return $best;
+    }
+
+    /**
+     * Best document title named in the text that the user may NOT consult.
+     * Unlike documentScope() — which silently skips inaccessible documents —
+     * this detects an explicit question about a forbidden document so the
+     * answer can be an explicit access refusal instead of an off-topic reply.
+     */
+    private function inaccessibleDocumentScope(string $text, ?int $userId): ?int
+    {
+        if ($userId === null) {
+            return null;
+        }
+
+        try {
+            $stmt = $this->db->query('SELECT id, title FROM documents WHERE supprime_le IS NULL');
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $allowed = $this->accessibleDocumentIds($userId);
+
+        if ($allowed === true) {
+            return null;
+        }
+
+        $best = null;
+        $bestLength = 0;
+
+        foreach ($rows as $row) {
+            $title = trim((string) ($row['title'] ?? ''));
+
+            if ($title === '' || mb_strlen($title) < 3) {
+                continue;
+            }
+
+            if (preg_match('/\b' . preg_quote($title, '/') . '\b/iu', $text) !== 1) {
+                continue;
+            }
+
+            $id = (int) $row['id'];
+
+            if (isset($allowed[$id])) {
                 continue;
             }
 

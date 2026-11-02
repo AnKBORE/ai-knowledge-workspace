@@ -20,6 +20,90 @@
     var base = (window.WORKSPACE_BASE || '').replace(/\/+$/, '');
     var I18N = window.WORKSPACE_I18N || {};
 
+    /* ------------------------------------------------------------------
+       Admin confirmation + password gate — delegated on document and
+       registered FIRST so it survives any error in later init code.
+       ------------------------------------------------------------------ */
+    (function () {
+        var modalEl = document.getElementById('admin-confirm-modal');
+        if (!modalEl) { return; }
+
+        var titleEl = document.getElementById('admin-confirm-title');
+        var textEl = document.getElementById('admin-confirm-text');
+        var confirmBtn = document.getElementById('admin-confirm-btn');
+        var passwordInput = document.getElementById('admin-confirm-password');
+        var errorEl = document.getElementById('admin-confirm-error');
+        var pendingForm = null;
+        var pendingOrigin = null;
+        var submitting = false;
+
+        /* Stacked modals render unreliably on small screens: the origin
+           modal is closed while the password modal is open, restored on
+           cancel with its fields intact. */
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            if (pendingOrigin && !submitting) {
+                window.bootstrap.Modal.getOrCreateInstance(pendingOrigin).show();
+            }
+            pendingOrigin = null;
+            submitting = false;
+        });
+
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function () {
+                if (!pendingForm) { return; }
+                var password = (passwordInput.value || '').trim();
+                if (password === '') {
+                    errorEl.textContent = 'Mot de passe requis. / Password required.';
+                    errorEl.hidden = false;
+                    passwordInput.focus();
+                    return;
+                }
+                var form = pendingForm;
+                submitting = true;
+                pendingForm = null;
+                var stamp = document.createElement('input');
+                stamp.type = 'hidden';
+                stamp.name = 'mot_de_passe_admin';
+                stamp.value = password;
+                form.appendChild(stamp);
+                window.bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                form.submit();
+            });
+        }
+
+        document.addEventListener('click', function (event) {
+            var el = event.target.closest ? event.target.closest('.admin-confirm') : null;
+            if (!el) { return; }
+            event.preventDefault();
+            var form = el.closest('form');
+            /* Required fields are validated first: the modal only opens once
+               the form itself is complete. */
+            if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            pendingForm = form;
+            pendingOrigin = el.closest('.modal');
+            if (passwordInput) { passwordInput.value = ''; }
+            if (errorEl) { errorEl.hidden = true; }
+            titleEl.textContent = el.getAttribute('data-confirm-title') || 'Confirmer / Confirm';
+            textEl.textContent = el.getAttribute('data-confirm-text') || '';
+            var danger = el.getAttribute('data-confirm-tone') === 'danger';
+            var head = modalEl.querySelector('.modal-header');
+            head.classList.toggle('text-bg-danger', danger);
+            head.classList.toggle('border-danger', danger);
+            head.classList.toggle('text-bg-primary', !danger);
+            head.classList.toggle('border-primary', !danger);
+            confirmBtn.classList.toggle('btn-danger', danger);
+            confirmBtn.classList.toggle('btn-primary', !danger);
+            if (pendingOrigin) {
+                window.bootstrap.Modal.getOrCreateInstance(pendingOrigin).hide();
+            }
+            window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            if (passwordInput) { passwordInput.focus(); }
+        });
+    })();
+
     function t(key, fallback) {
         return I18N[key] || fallback || key;
     }
@@ -1633,6 +1717,9 @@
             });
         });
     }
+
+    /* Generic form-confirmation modal: submit buttons with .admin-confirm
+       declare data-confirm-title / data-confirm-text; the wrapped form is
 
     function bindSummarizeButtons() {
         document.querySelectorAll('.summarize-btn').forEach(function (button) {

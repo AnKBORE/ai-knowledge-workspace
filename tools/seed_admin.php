@@ -3,10 +3,20 @@
 declare(strict_types=1);
 
 /**
- * Create the first administrator account and the default space (idempotent).
+ * Bootstrap the installation: create (or restore) the Super Admin and the
+ * default workspace.
+ *
+ * The Super Admin is the default account — the one you can always come back to,
+ * even after wiping the database. This script is idempotent and self-healing:
+ *
+ *   - it designates exactly one Super Admin (never two);
+ *   - it restores a softly deleted or suspended Super Admin;
+ *   - it recreates the account from scratch when the table is empty;
+ *   - `--reset` sets a new password and prints it.
  *
  * Usage:
  *   php tools/seed_admin.php
+ *   php tools/seed_admin.php --reset
  *
  * Override with: ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_NOM, ADMIN_PRENOM.
  */
@@ -34,30 +44,64 @@ $pdo = new PDO(
 );
 
 $courriel = getenv('ADMIN_EMAIL') ?: 'anatolekbore@gmail.com';
-$motDePasse = getenv('ADMIN_PASSWORD') ?: 'Hackathon2026!';
 $nom = getenv('ADMIN_NOM') ?: 'KABORE';
 $prenom = getenv('ADMIN_PRENOM') ?: 'Anatole';
+$reset = in_array('--reset', $argv ?? [], true);
+$motDePasse = getenv('ADMIN_PASSWORD') ?: ($reset ? 'Super-' . bin2hex(random_bytes(6)) . '-2026!' : 'Hackathon2026!');
 
 $users = new Utilisateur($pdo);
-$user = $users->findByEmail($courriel);
 
-if ($user === null) {
+// --- 1. Which account is (or becomes) the Super Admin? ----------------------
+$superId = $users->compteSuperId();
+$action = '';
+
+if ($superId !== null) {
+    $action = 'Super Admin confirmed';
+    $target = $users->findById($superId);
+    $courriel = (string) ($target['courriel'] ?? $courriel);
+} else {
+    // No Super Admin: reuse the bootstrap address if it exists at all, even
+    // softly deleted, otherwise create it.
+    $stmt = $pdo->prepare('SELECT id FROM utilisateur WHERE courriel = :courriel LIMIT 1');
+    $stmt->execute(['courriel' => strtolower(trim($courriel))]);
+    $existingId = $stmt->fetchColumn();
+
+    if ($existingId !== false) {
+        $superId = (int) $existingId;
+        $action = 'Super Admin restored';
+    } else {
+        $errors = PolitiqueMotDePasse::validate($motDePasse);
+
+        if ($errors !== []) {
+            fwrite(STDERR, "Password rejected:\n" . implode("\n", $errors) . "\n");
+            exit(1);
+        }
+
+        $superId = $users->create($courriel, $nom, $prenom, PolitiqueMotDePasse::hash($motDePasse), 'administrateur_technique', true);
+        $action = 'Super Admin created';
+    }
+}
+
+// Always re-assert the invariants: one Super Admin, technical, active, alive.
+$users->designerSuperAdmin((int) $superId);
+
+// --- 2. Password replacement (recovery path) -------------------------------
+$motDePasseApplique = null;
+
+if ($reset) {
     $errors = PolitiqueMotDePasse::validate($motDePasse);
+
     if ($errors !== []) {
         fwrite(STDERR, "Password rejected:\n" . implode("\n", $errors) . "\n");
         exit(1);
     }
 
-    $users->create($courriel, $nom, $prenom, PolitiqueMotDePasse::hash($motDePasse), 'administrateur_technique');
-    echo "Admin created: {$courriel}\n";
-
-    $user = $users->findByEmail($courriel);
-} else {
-    echo "Admin already exists: {$courriel}\n";
+    $users->updateMotDePasse((int) $superId, PolitiqueMotDePasse::hash($motDePasse));
+    $motDePasseApplique = $motDePasse;
+    $action .= ' + password reset';
 }
 
-// Default space + membership (idempotent). The global role alone never grants
-// local permissions, so the admin needs a membership to use the assistant.
+// --- 3. Default workspace + membership (idempotent) ------------------------
 $espaces = new Espace($pdo);
 $adhesions = new Adhesion($pdo);
 
@@ -71,7 +115,21 @@ if ($spaceId === false) {
 
 $spaceId = (int) $spaceId;
 
-if ($user !== null && $adhesions->find($spaceId, (int) $user['id']) === null) {
-    $adhesions->create($spaceId, (int) $user['id'], 'responsable');
+if ($adhesions->find($spaceId, (int) $superId) === null) {
+    $adhesions->create($spaceId, (int) $superId, 'responsable');
     echo "Membership created: {$courriel} → Général (responsable)\n";
 }
+
+// --- 4. Report -------------------------------------------------------------
+echo "\n";
+echo "{$action}\n";
+echo "  id        : {$superId}\n";
+echo "  courriel  : {$courriel}\n";
+echo "  role      : administrateur_technique (compte_super = 1)\n";
+
+if ($motDePasseApplique !== null) {
+    echo "  password  : {$motDePasseApplique}\n";
+    echo "\n  Note this password now: it is not stored anywhere in clear.\n";
+}
+
+echo "\nProtected account: it can never be deleted, suspended or demoted.\n";

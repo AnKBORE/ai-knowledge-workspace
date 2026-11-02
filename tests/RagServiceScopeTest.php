@@ -193,4 +193,42 @@ final class RagServiceScopeTest extends TestCase
         $this->assertSame([], $result['sources']);
         $this->assertStringContainsString('not accessible', $result['summary']);
     }
+
+    public function testQuestionNamingInaccessibleDocumentIsRefused(): void
+    {
+        $owner = $this->insertUser();
+        $member = $this->insertUser();
+        $this->insertDocument('Rapport secret', null, 'prive', $owner);
+        $this->insertDocument('Rapport public', null, 'public_interne');
+
+        $result = $this->rag->answer('Que dit le Rapport secret ?', 6, $member);
+
+        $this->assertTrue((bool) ($result['refused'] ?? false));
+        $this->assertSame([], $result['sources']);
+        $this->assertStringContainsString('not accessible', $result['answer']);
+    }
+
+    public function testQuestionNamingAccessibleDocumentIsNotRefused(): void
+    {
+        $member = $this->insertUser();
+        $space = $this->insertSpace('public_interne');
+        $this->insertDocument('Rapport public', $space);
+
+        $result = $this->rag->answer('Resume le Rapport public', 6, $member);
+
+        $this->assertArrayNotHasKey('refused', $result);
+    }
+
+    public function testTaskWithOnlyInaccessibleDocumentIdsIsRefused(): void
+    {
+        $owner = $this->insertUser();
+        $member = $this->insertUser();
+        $docId = $this->insertDocument('Note privee', null, 'prive', $owner);
+
+        $result = $this->rag->task('Redige un resume de la note', 8, $member, [$docId]);
+
+        $this->assertTrue((bool) ($result['refused'] ?? false));
+        $this->assertSame([], $result['sources']);
+        $this->assertStringContainsString('not accessible', $result['draft']);
+    }
 }

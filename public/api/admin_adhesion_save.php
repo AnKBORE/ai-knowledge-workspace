@@ -58,6 +58,11 @@ if (!$dependencies['csrf']->validateRequest()) {
     $respond(['error' => $T['csrf'] ?? 'Session expirée.'], 419);
 }
 
+// Sensitive action: the actor's own password is required.
+if (!verifier_mot_de_passe_admin($dependencies, 'adhesion.creer')) {
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+}
+
 $utilisateurId = (int) ($_POST['utilisateur_id'] ?? 0);
 $espaceId = (int) ($_POST['espace_id'] ?? 0);
 $roleLocal = (string) ($_POST['role_local'] ?? 'lecteur');

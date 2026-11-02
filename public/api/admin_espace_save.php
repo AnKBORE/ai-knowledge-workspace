@@ -56,6 +56,11 @@ if (!$dependencies['csrf']->validateRequest()) {
     $respond(['error' => $T['csrf'] ?? 'Session expirée.'], 419);
 }
 
+// Sensitive action: the actor's own password is required.
+if (!verifier_mot_de_passe_admin($dependencies, 'espace.creer')) {
+    $respond(['error' => $isFr ? 'Mot de passe administrateur incorrect.' : 'Incorrect administrator password.'], 403);
+}
+
 $nom = trim((string) ($_POST['nom'] ?? ''));
 $visibilite = (string) ($_POST['visibilite'] ?? 'restreint');
 

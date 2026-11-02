@@ -603,10 +603,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 2rem;
-    min-height: 194px;
+    min-height: 0;
     overflow: hidden;
-    margin-bottom: 1.25rem;
-    padding: 2rem 2.15rem;
+    margin-bottom: 1rem;
+    padding: 1.1rem 1.6rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     background:
@@ -653,7 +653,7 @@
 .dashboard-hero h1 {
     margin: 0;
     color: #ffffff;
-    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-size: clamp(1.4rem, 2.4vw, 1.85rem);
     font-weight: 700;
     letter-spacing: -0.045em;
     line-height: 1.12;
@@ -661,7 +661,7 @@
 
 .dashboard-hero-copy > p:last-child {
     max-width: 37rem;
-    margin: 0.7rem 0 0;
+    margin: 0.35rem 0 0;
     color: rgba(226, 232, 240, 0.82);
     font-size: 0.9rem;
     line-height: 1.55;
@@ -1547,11 +1547,11 @@
     .dashboard-hero {
         align-items: flex-start;
         flex-direction: column;
-        gap: 1.2rem;
+        gap: .7rem;
         min-height: 0;
-        margin-bottom: 1rem;
-        padding: 1.45rem;
-        border-radius: 16px;
+        margin-bottom: .8rem;
+        padding: 1rem 1.1rem;
+        border-radius: 14px;
     }
 
     .dashboard-hero-actions {
@@ -1682,12 +1682,12 @@
     }
 
     .dashboard-hero {
-        gap: 1rem;
-        padding: 1.25rem;
+        gap: .7rem;
+        padding: .95rem 1.1rem;
     }
 
     .dashboard-hero h1 {
-        font-size: 1.75rem;
+        font-size: 1.4rem;
     }
 
     .dashboard-hero-copy > p:last-child {
@@ -2646,3 +2646,7 @@
     margin-bottom: 0.6rem;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
 }
+/* Active workspace chip: persistent reminder in the topbar on every page. */
+.topbar-espace { display: inline-flex; align-items: center; gap: .3rem; max-width: 12rem; padding: .22rem .6rem; margin-left: .55rem; border: 1px solid rgb(23 117 45 / 25%); border-radius: 999px; background: #eaf5ed; color: #176b2e; font-size: .68rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-espace svg { flex: 0 0 auto; }
+@media (max-width: 767.98px) { .topbar-espace { max-width: 8rem; } }

@@ -14,7 +14,7 @@ $locale = (string) config('app.locale', 'fr');
     <meta name="description" content="Agentic multimodal knowledge workspace: turn documents, scans and voice into decision-ready knowledge.">
     <title><?= e($title ?? 'Workspace') ?> — <?= e($productName) ?></title>
     <link rel="stylesheet" href="<?= e(url('/assets/vendor/bootstrap/bootstrap.min.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/app.css')) ?>">
 </head>
 <body class="app-public">
 <a class="skip-link" href="#contenu">Aller au contenu principal</a>

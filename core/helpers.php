@@ -72,3 +72,44 @@ if (!function_exists('brand_mark')) {
             . '</svg></span>';
     }
 }
+
+if (!function_exists('verifier_mot_de_passe_admin')) {
+    /**
+     * Sensitive administration actions require the actor's own password:
+     * verifies $_POST['mot_de_passe_admin'] against the current user's hash
+     * and journals the refusal. Returns true when the password is correct.
+     */
+    function verifier_mot_de_passe_admin(array $dependencies, string $action): bool
+    {
+        $userId = (int) $dependencies['auth']->id();
+        $hash = $dependencies['users']->motDePasseHash($userId);
+        $password = (string) ($_POST['mot_de_passe_admin'] ?? '');
+
+        if ($hash !== null && \App\Validators\PolitiqueMotDePasse::verify($password, $hash)) {
+            return true;
+        }
+
+        $dependencies['journal']->log(
+            $userId,
+            'securite.refus',
+            'securite',
+            null,
+            'refus',
+            ['raison' => 'mot_de_passe_admin', 'action' => $action]
+        );
+
+        return false;
+    }
+}
+
+if (!function_exists('compte_super_protege')) {
+    /**
+     * True when the target account is the protected Super Admin: deletion,
+     * suspension and demotion must be refused (its profile stays editable by
+     * its owner from /mon-profil). Endpoints journal the refusal themselves.
+     */
+    function compte_super_protege(array $dependencies, int $targetId): bool
+    {
+        return $targetId > 0 && $targetId === (int) ($dependencies['users']->compteSuperId() ?? 0);
+    }
+}
