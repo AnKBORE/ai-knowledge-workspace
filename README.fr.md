@@ -147,7 +147,7 @@ upload.php ──(texte / PDF texte)──► extraction → stockage → index 
 - `IngestionService` partagé par les deux chemins (extraction, stockage, indexation, messages d'erreur traduits) — couvert par des tests unitaires
 
 ### Documents scannés — pipeline OCR
-- Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open. Un PDF scanné n'est lu que si ses pages sont stockées en **JPEG** : une image encodée en Flate est une donnée brute, pas un fichier image, et l'OCR la refuse avec un message explicite plutôt que d'indexer du vide. Exportez les pages en JPEG, ou déposez directement l'image.
+- Les **images** (png/jpg/tiff/webp) et les **PDF scannés** (sans couche texte) sont lus par la vision de Muse Spark Open. Un PDF scanné est rastérisé page par page : les flux JPEG sont utilisés tels quels, et les bitmaps Flate en 8 bits gris ou RVB sont encapsulés en PNG avant l'appel. Les encodages inhabituels — 1 bit noir et blanc, CMJN, palettes indexées — sont refusés avec un message qui nomme le cas, plutôt qu'indexés comme vides.
 - Un PDF dont l'extraction de texte est vide est détecté automatiquement : ses images de pages JPEG sont extraites et passées à l'OCR, puis concaténées avec des marqueurs `[Page n / N]` — vérifié sur un recueil de chants scanné de 4 pages en mooré
 - Les pages sont envoyées **en parallèle** (`curl_multi`) : le temps total est à peu près celui de la page la plus lente ; une page en échec est relancée seule sans perdre les autres
 - Les scans volumineux sont réduits à 1600 px (GD) avant envoi : le texte reste lisible et on évite les délais dépassés ; `META_VISION_TIMEOUT` (300 s par défaut) couvre les pages denses
@@ -194,7 +194,7 @@ Chaîne intacte : tout dérivé remonte à l'enregistrement d'origine.
 - **Ancrage few-shot** — jusqu'à 3 vrais extraits mooré issus des documents indexés de l'utilisateur sont injectés comme référence de style et d'orthographe dès que le mooré est en jeu
 - **Page Traduction** (`/traduire`) — FR ⇄ EN ⇄ MO dans les deux sens, copie en un clic, chaque traduction journalisée
 - **Honnêteté assumée** — la sortie mooré utilise l'orthographe mossi standard et est fiable sur le vocabulaire
-- **L'OCR sur du mooré scanné n'est pas fiable.** Une page scannée dont le corps est en mooré est extraite comme du français, ou pas du tout : le moteur reconnaît bien l'alphabet latin et mal les diacritiques du mooré. Le texte saisi ou l'audio sont les voies fiables pour du contenu mooré ; un scan convient pour du français. courant ; l'interface précise que les textes officiels doivent être relus par un locuteur
+- **Le mooré scanné est lu par le modèle de vision.** Une page scannée dont le corps est en mooré est transcrite avec ses diacritiques (ɛ ɔ ã ẽ ĩ õ ũ) — mesuré sur un scan réel : 1 093 caractères en 8,6 s. La qualité dépend encore du scan ; le texte saisi reste la voie la plus fiable pour le mooré.
 
 ### Transcription audio — double pipeline
 - **Enregistreur de réunion** — la page Ajouter enregistre directement le micro (WAV dans le navigateur), joint le fichier au formulaire et laisse le pipeline en arrière-plan transcrire puis indexer comme un document classique. Un vu-mètre et une détection de silence empêchent d'indexer un enregistrement vide

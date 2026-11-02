@@ -30,27 +30,109 @@ final class VisionService
      * image is extracted and read by the vision model, then concatenated with
      * page markers. Returns '' when the PDF holds no usable image.
      */
+    /**
+     * Wrap raw PDF bitmap samples in a PNG.
+     *
+     * A Flate-encoded image in a PDF is not an image file: it is the pixel data
+     * itself. This builds a valid PNG (8-bit grey or RGB) around it, which the
+     * vision call can then read. Anything less usual - 1-bit scans, CMYK,
+     * indexed palettes - returns null and the caller reports it.
+     *
+     * @param array<string, mixed> $details the image dictionary
+     */
+    private function rawBitmapToPng(string $raw, array $details): ?string
+    {
+        $width = (int) ($details['Width'] ?? 0);
+        $height = (int) ($details['Height'] ?? 0);
+        $bits = (int) ($details['BitsPerComponent'] ?? 8);
+        $space = $details['ColorSpace'] ?? '';
+
+        if (is_array($space)) {
+            $space = (string) (end($space) ?: '');
+        }
+
+        $space = (string) $space;
+        $channels = match ($space) {
+            'DeviceRGB', 'RGB' => 3,
+            'DeviceGray', 'G' => 1,
+            default => 0,
+        };
+
+        // Guard: 8 bits only, sane dimensions, and the samples must match.
+        if ($channels === 0 || $bits !== 8 || $width < 8 || $height < 8 || $width * $height > 12_000_000) {
+            return null;
+        }
+
+        $stride = $width * $channels;
+
+        if (strlen($raw) < $stride * $height) {
+            return null;
+        }
+
+        // One filter byte (0 = none) per scanline, then the samples.
+        $scanlines = '';
+
+        for ($y = 0; $y < $height; $y++) {
+            $scanlines .= "\x00" . substr($raw, $y * $stride, $stride);
+        }
+
+        $chunk = static function (string $type, string $data): string {
+            return pack('N', strlen($data)) . $type . $data . pack('N', crc32($type . $data));
+        };
+
+        $ihdr = pack('N2', $width, $height) . chr(8) . chr($channels === 3 ? 2 : 0) . "\x00\x00\x00";
+
+        return "\x89PNG\r\n\x1a\n"
+            . $chunk('IHDR', $ihdr)
+            . $chunk('IDAT', gzcompress($scanlines, 6))
+            . $chunk('IEND', '');
+    }
     public function extractTextFromScannedPdf(\Smalot\PdfParser\Document $pdf): string
     {
         $all = $pdf->getObjectsByType('XObject', 'Image');
-        $images = array_values(array_filter(
-            $all,
-            // JPEG streams (DCTDecode) are valid image files as-is. Flate-encoded
-            // bitmaps are raw samples, not an image file: they need a rasteriser.
-            static fn ($image) => str_starts_with($image->getContent(), "\xFF\xD8\xFF"),
-        ));
 
-        // Say why nothing can be read, instead of returning an empty string that
-        // the caller would report as "file empty or unreadable".
-        if ($images === [] && $all !== []) {
-            throw new \RuntimeException('Scanned PDF images are not JPEG');
+        if ($all === []) {
+            throw new \RuntimeException('Scanned PDF has no readable image');
         }
 
         $paths = [];
-        foreach ($images as $image) {
+        $skipped = 0;
+
+        foreach ($all as $image) {
+            $content = (string) $image->getContent();
+            $details = $image->getDetails();
+
+            // JPEG streams are valid image files as they are.
+            if (str_starts_with($content, "\xFF\xD8\xFF")) {
+                $base = tempnam(sys_get_temp_dir(), 'akw_ocr_');
+                file_put_contents($base . '.jpg', $content);
+                $paths[$base] = $base . '.jpg';
+
+                continue;
+            }
+
+            // Flate-encoded bitmaps arrive as raw samples: wrap them in a PNG.
+            $png = $this->rawBitmapToPng($content, $details);
+
+            if ($png === null) {
+                $skipped++;
+
+                continue;
+            }
+
             $base = tempnam(sys_get_temp_dir(), 'akw_ocr_');
-            file_put_contents($base . '.jpg', $image->getContent());
-            $paths[$base] = $base . '.jpg';
+            file_put_contents($base . '.png', $png);
+            $paths[$base] = $base . '.png';
+        }
+
+        if ($paths === []) {
+            // Everything was skipped: say which case it is, instead of returning
+            // an empty string the caller would report as "file empty".
+            throw new \RuntimeException(
+                $skipped > 0
+                    ? 'Scanned PDF images are not convertible (unsupported colour space or depth)'
+                    : 'Scanned PDF has no readable image'
+            );
         }
 
         try {

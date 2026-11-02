@@ -513,6 +513,8 @@ class MetaClient
             curl_multi_add_handle($multi, $handles[$i]);
         }
 
+        $startedAt = microtime(true);
+
         do {
             $status = curl_multi_exec($multi, $running);
             if ($running) {
@@ -522,10 +524,24 @@ class MetaClient
 
         $texts = [];
         foreach ($handles as $i => $handle) {
-            $payload = json_decode((string) curl_multi_getcontent($handle), true);
+            $body = (string) curl_multi_getcontent($handle);
+            $payload = json_decode($body, true);
             $error = curl_error($handle);
+            $statusCode = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            $elapsed = (int) round((microtime(true) - $startedAt) * 1000);
             curl_multi_remove_handle($multi, $handle);
             curl_close($handle);
+
+            // The vision path runs in parallel and never goes through request(),
+            // so it is journaled here too - otherwise OCR calls stay invisible.
+            $this->logModelCall(
+                $url,
+                ['model' => (string) ($this->config['chat_model'] ?? '-')],
+                $statusCode,
+                $elapsed,
+                strlen($body),
+                $error !== '' ? $error : null
+            );
 
             $content = is_array($payload) ? (string) ($payload['choices'][0]['message']['content'] ?? '') : '';
             if ($content === '') {

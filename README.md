@@ -148,7 +148,7 @@ upload.php ──(text / text PDF)──► extract → store → index → 200 
 - Shared `IngestionService` for both paths (extraction, storage, indexing, localized error mapping) — covered by unit tests
 
 ### Scanned documents — OCR pipeline
-- **Images** (png/jpg/tiff/webp) and **scanned PDFs** (no text layer) are read by Muse Spark Open vision. A scanned PDF is read only when its pages are stored as **JPEG** images: a Flate-encoded bitmap is raw sample data, not an image file, and the OCR refuses it with an explicit message instead of indexing nothing. Export the pages as JPEG, or deposit the image itself.
+- **Images** (png/jpg/tiff/webp) and **scanned PDFs** (no text layer) are read by Muse Spark Open vision. A scanned PDF is rasterised page by page: JPEG streams are used as they are, and Flate bitmaps in 8-bit grey or RGB are wrapped into PNG before the call. Unusual encodings — 1-bit bilevel, CMYK, indexed palettes — are refused with a message that names the case, rather than indexed as empty.
 - A PDF whose text extraction is empty is detected automatically: its embedded JPEG page images are extracted and OCR'd, then concatenated with `[Page n / N]` markers — verified on a 4-page scanned hymn booklet in Mooré
 - Pages are sent **in parallel** (`curl_multi`), so the total time is roughly that of the slowest page; a failed page is retried on its own without losing the others
 - Large scans are downscaled to 1600 px (GD) before sending: text stays legible while avoiding provider timeouts; `META_VISION_TIMEOUT` (default 300 s) covers dense pages
@@ -195,7 +195,7 @@ Chain intact: every derivative traces back to the original recording.
 - **Few-shot grounding** — up to 3 real Mooré extracts from the user's own indexed documents are injected as style/orthography references whenever Mooré is involved
 - **Translation page** (`/traduire`) — FR ⇄ EN ⇄ MO both ways, one-click copy, every translation journaled
 - **Honest scope** — Mooré output uses standard Mossi orthography and is reliable for everyday vocabulary
-- **OCR on scanned Mooré is unreliable.** A scanned page whose body is Mooré is extracted as French text, or not at all: the recognition engine handles the Latin alphabet well and the Mooré diacritics poorly. Typed text or audio is the reliable route for Mooré content; a scan is fine for French.; the UI states that official texts should still be reviewed by a speaker
+- **Scanned Mooré is read by the vision model.** A scanned page whose body is Mooré is transcribed with its diacritics (ɛ ɔ ã ẽ ĩ õ ũ) — measured on a real scan: 1 093 characters in 8.6 s. The quality still depends on the scan; typed text remains the most reliable route for Mooré.
 
 ### Audio transcription — dual pipeline
 - **Meeting recorder** — the Add page records audio straight from the microphone (WAV in the browser), attaches it to the upload form and lets the background pipeline transcribe and index it as a regular document. A level meter and silence detection prevent indexing empty recordings
