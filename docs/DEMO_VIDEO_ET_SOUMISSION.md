@@ -242,7 +242,7 @@ git log --oneline -1    # note the hash
 - [ ] **Submission form**: `https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit` — before Wed 4 Nov, 9:00 PM ET
 - [ ] `README.md` + `README.fr.md` up to date
 - [ ] `docs/ARCHITECTURE.md` + `docs/ARCHITECTURE.fr.md` present
-- [ ] `docs/JOURNAL_DE_CONSTRUCTION.md` + `.fr.md` present
+- [ ] `docs/JOURNAL_DE_CONSTRUCTION.md` and `docs/JOURNAL_DE_CONSTRUCTION.fr.md` present
 - [ ] `LICENSE` (MIT)
 - [ ] **No secret** committed (`git ls-files | Select-String -Pattern '\.env$'` → empty)
 - [ ] `composer install` + `php tools/migrate.php migrate` work from a clean clone (§9)
