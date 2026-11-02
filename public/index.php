@@ -99,9 +99,8 @@ if ($method === 'POST' && $path === '/logout') {
 // Public presentation page (bilingual, no authentication required).
 if ($method === 'GET' && $path === '/presentation') {
     $lang = (($_GET['lang'] ?? 'en') === 'fr') ? 'fr' : 'en';
-    if (isset($_GET['lang'])) {
-        $dependencies['session']->set('lang', $lang);
-    }
+        // A shared link must not change the application language: the landing
+        // page renders in the requested language and leaves the session alone.
 
     header('Content-Type: text/html; charset=utf-8');
     echo $view->render('public/landing', [
