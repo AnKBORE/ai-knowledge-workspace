@@ -9,13 +9,14 @@
 
 ## 1. What the demo must prove (and nothing more)
 
-Three ideas, in this order. Everything else is decoration.
+Four ideas, in this order. Everything else is decoration.
 
 | # | Idea to land | Proof on screen |
 |---|---|---|
 | **1** | Answers are **grounded**, never invented | The numbered sources under every answer |
 | **2** | The system **constrains itself** | The six-step agent trace, including *Scope* and *Conformity* |
 | **3** | It **learns from humans** | A corrected version that becomes the reference, and can be downloaded |
+| **4** | **The interface and the server agree** | The member session: six menu entries, zero documents, `/journal` answering 403 |
 
 > A jury remembers **one** thing. Make it: *"it cites its sources, and it refuses to invent."*
 
@@ -41,7 +42,7 @@ cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Expected: `OK (100 tests, 230 assertions)` — **without** warnings.
+Expected: `OK (121 tests, 281 assertions)` — **without** warnings.
 
 ### 2.3 Verify the demo database
 
@@ -78,24 +79,25 @@ Then open **http://127.0.0.1:8080/** and press **`Ctrl + F5`**.
 
 ## 3. Timed script — 3:00
 
-### English version
+Ten sequences, 15 to 30 seconds each. The narration is written to be spoken, not
+read: about 240 words, which leaves room for pauses and for the interface to load.
 
 | Time | Action on screen | Narration |
 |---|---|---|
-| **0:00–0:10** | Landing page `/` | "Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Knowledge Workspace." |
-| **0:10–0:25** | Quick scroll of the landing page | "An organisation piles up reports, minutes, recordings. The knowledge is there — but unusable. Generic chatbots, for their part, invent." |
-| **0:25–0:55** | Ask: **"Tell me about Meeting6"** | "A real document. Look at the answer: it describes **a French audio recording**, and mentions that a **corrected Mooré translation** exists." <br> "And below the answer, the exact sources, numbered, with a badge when it is a corrected version." |
-| **0:55–1:20** | Ask: **"What does Meeting6 say in Mooré?"** | "Same question, language specified. The named language wins: it gives me the Mooré text, citing the corrected version of 31 October 2026." |
-| **1:20–1:50** | **Agentic task** → check **Meeting6** + **Formation** → instruction: *"Based on Meeting6 and the project file, draft an official launch speech"* | "Now a task, not a question. I **choose my source documents**. It plans, retrieves, **restricts the scope** to my two documents, drafts, **verifies every claim**, then **checks that its output answers my request**." <br> "Six steps, all visible." |
-| **1:50–2:10** | Click **✦ Clean**, then **DOCX** | "The proposal works for me. One click: citations, sources and working annotations disappear. I export to Word — the file contains only the speech, ready to be delivered." |
-| **2:10–2:35** | **Indexed documents** → open Meeting6's correction modal | "And it learns. A corrected version was uploaded by a native speaker. It becomes the reference: substituted for the raw text, announced in the sources, and downloadable **byte for byte**." |
-| **2:35–3:00** | Back to the landing page | "PHP 8.4, MySQL 8.4, one hundred automated tests, append-only audit journal. Real domain knowledge, amplified by Meta's models. Thank you." |
+| **0:00–0:15** | Landing page `/` | "I'm Anatole, a developer from Burkina Faso. Organisations there lose their knowledge: reports on paper, minutes in mailboxes, songs on phones. This is where I started." |
+| **0:15–0:40** | Ask: **"Tell me about Meeting6"** | "One question. The answer is built only from documents this account may read, and every claim carries a numbered source. If the extract is missing, it says so instead of inventing." |
+| **0:40–1:00** | Ask: **"What does Meeting6 say in Mooré?"** | "Same document, another language. Mooré is spoken by fifteen million people and almost never written — the platform treats it as a language, not a checkbox." |
+| **1:00–1:30** | `/tache` → select **Meeting6** + **Formation** → instruction | "Now a task, not a question: plan, retrieve, scope, draft, verify, conformity. The result is a structured document with its sources." |
+| **1:30–1:45** | Click **✦ Clean**, then **DOCX** | "One click removes the scaffolding, one exports it. The document leaves the browser with its citations." |
+| **1:45–2:00** | `/documents` → filter **"Espace demo"** | "Nine documents, each showing its workspaces. This filter is a private workspace: zero results. Access is computed per document, not per screen." |
+| **2:00–2:15** | Lock icon on **Meeting6** → modal | "Administration can re-file a document and change who reads it — with its own password, and the before and after are written to the journal." |
+| **2:15–2:30** | `/administration` → the three tabs → crown again | "Three tabs: accounts, workspaces, memberships. The crown protects an account: a protected Super Admin can never be deleted, suspended or demoted." |
+| **2:30–2:45** | Sign in as `membre.demo` → `/documents` → `/journal` | "Same application, a member: six menu entries instead of ten, zero documents, and the audit journal answers 403. That is the whole claim — the interface and the server agree." |
+| **2:45–3:00** | Back to `/` | "PHP 8.4, MySQL 8.4, 121 automated tests, append-only audit. Built solo in nine days. The repository is public, the link is right there." |
 
-### French version
-
-See [DEMO_VIDEO_ET_SOUMISSION.fr.md](DEMO_VIDEO_ET_SOUMISSION.fr.md) — same timings, French narration.
-
----
+**Two rules for the voice-over.** Do not read the table; speak these sentences at
+a natural pace and let the screen do the work. And never apologise for an accent:
+the words matter more than the music of them.
 
 ## 4. Fallback paths
 
@@ -130,7 +132,7 @@ If a sequence fails while recording, **do not stop** — move to the next one.
 
 | Metric | Value |
 |---|---|
-| **Automated tests** | **100 tests · 230 assertions** (in-memory SQLite, no server needed) |
+| **Automated tests** | **121 tests · 281 assertions** (in-memory SQLite, no server needed) |
 | **Traceability** | **21 action types** journaled, refusals included, **append-only** journal |
 | **Agentic pipeline** | **6 steps**: plan → retrieve → scope → draft → verify → conformity |
 | **Retrieval** | Hybrid score `0.6 semantic + 0.4 lexical`, neighbour expansion, **priority to corrections** |
@@ -202,7 +204,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Expected: migrations applied **and** `OK (100 tests, 230 assertions)`.
+Expected: migrations applied **and** `OK (121 tests, 281 assertions)`.
 
 > If that passes, the repository is **ready for the jury**.
 
@@ -252,16 +254,8 @@ PowerShell**, not from a sandboxed environment.
 
 > The video is **the central element**: show the **real** product. Slides are only packaging.
 
-## 13. What changed on 2 November — to include in the recording
+## 13. What changed on 2 November — now integrated into section 3
 
-| New gesture | Where | What it demonstrates | Duration |
-|---|---|---|---|
-| **Workspace badges and filter** | `/documents` | a document can belong to several workspaces | 10 s |
-| **Control modal** (lock) | `/documents` | administration changes workspace and confidentiality, password required | 15 s |
-| **Administration tabs** | `/administration` | accounts, workspaces, memberships separated, confirmed actions | 15 s |
-| **Protect an account** (crown) | `/administration` | one Super Admin adds another | 10 s |
-| **Active workspace** | `/espaces` | the member chooses their workspace, list and deposits follow | 10 s |
-
-**Deleting a document**: keep the gesture, it works again (delegated binding). Show it once, without insisting.
-
-**Do not show**: the tabs if the video is already long — the workspace filter is enough to illustrate scoping.
+The five gestures added on 2 November (workspace badges and filter, control modal,
+administration tabs, account protection, member session) are part of the script in
+**section 3**. Nothing else needs to be fitted into three minutes.

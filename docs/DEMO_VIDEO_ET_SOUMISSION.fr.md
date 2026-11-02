@@ -16,6 +16,7 @@ Trois idées, dans cet ordre. Tout le reste est du décor.
 | **1** | Les réponses sont **ancrées**, jamais inventées | Les sources numérotées sous chaque réponse |
 | **2** | Le système **sait se contraindre** | La trace agentique en 6 étapes, dont *Cadrage* et *Conformité* |
 | **3** | Il **apprend des humains** | Une version corrigée qui devient la référence, et qu'on peut télécharger |
+| **4** | **L'interface et le serveur disent la même chose** | La session membre : six entrées de menu, zéro document, `/journal` en 403 |
 
 > Un jury retient **une** chose. Fais en sorte que ce soit : *« il cite ses sources, et il refuse d'inventer. »*
 
@@ -41,7 +42,7 @@ cd "C:\wamp64\www\projet hackaton\ai-knowledge-workspace"
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : `OK (100 tests, 230 assertions)` — **sans** avertissement.
+Attendu : `OK (121 tests, 281 assertions)` — **sans** avertissement.
 
 ### 2.3 Vérifier l'état de la base de démonstration
 
@@ -78,33 +79,25 @@ Puis ouvrir **http://127.0.0.1:8080/** et faire **`Ctrl + F5`**.
 
 ## 3. Scénario minuté — 3 min 00
 
-### Version française (recommandée)
+Dix séquences de 15 à 30 secondes. La narration est écrite pour être **dite**, pas
+lue : environ 240 mots, ce qui laisse la place aux pauses et aux chargements.
 
 | Temps | Action à l'écran | Narration |
 |---|---|---|
-| **0:00–0:10** | Page d'accueil `/` | « Bonjour, je suis Anatole KABORE, développeur indépendant au Burkina Faso. Voici l'Agentic Knowledge Workspace. » |
-| **0:10–0:25** | Scroll rapide sur la page de présentation | « Une organisation accumule des rapports, des procès-verbaux, des enregistrements. Le savoir est là — mais il est inexploitable. Les chatbots génériques, eux, inventent. » |
-| **0:25–0:55** | Poser la question : **« Parle-moi de Meeting6 »** | « Je pose une question sur un document réel. Regardez la réponse : elle décrit **un enregistrement audio transcrit en français**, et signale qu'il existe une **traduction corrigée en mooré**. » <br> « Et sous la réponse, les sources exactes, numérotées, avec un badge quand il s'agit d'une version corrigée. » |
-| **0:55–1:20** | Poser : **« Que dit Meeting6 en mooré ? »** | « La même question, en précisant la langue. La langue demandée l'emporte : il me donne le texte mooré, en citant la version corrigée du 31 octobre 2026. » |
-| **1:20–1:50** | Page **Tâche agentique** → cocher **Meeting6** + **Formation** → instruction : *« À base de Meeting6 et du dossier projet, propose un discours de lancement officiel »* | « Maintenant, une tâche, pas une question. Je **choisis mes documents sources**. Il planifie, cherche, **borne le périmètre** à mes deux documents, rédige, **vérifie chaque affirmation**, puis **contrôle que sa sortie répond bien à ma demande**. » <br> « Six étapes, toutes visibles. » |
-| **1:50–2:10** | Cliquer **✦ Nettoyer**, puis **DOCX** | « La proposition me convient. Un clic : les citations, les sources et les annotations de travail disparaissent. J'exporte en Word — le fichier ne contient que le discours, prêt à être prononcé. » |
-| **2:10–2:35** | Page **Documents indexés** → ouvrir le modal de correction de Meeting6 | « Et il apprend. Une version corrigée a été déposée par un locuteur natif. Elle devient la référence : le système la substitue au texte brut, l'annonce dans ses sources, et permet de **retélécharger le fichier d'origine à l'octet près**. » |
-| **2:35–3:00** | Retour à la page de présentation | « PHP 8.4, MySQL 8.4, cent tests automatisés, journal d'audit en ajout seul. Une connaissance métier réelle, amplifiée par les modèles de Meta. Merci. » |
+| **0:00–0:15** | Page d'accueil `/` | « Je suis Anatole, développeur au Burkina Faso. Ici, les organisations perdent leur savoir : rapports sur papier, comptes rendus dans les boîtes mail, chants sur des téléphones. C'est de là que je suis parti. » |
+| **0:15–0:40** | Poser : **« Parle-moi de Meeting6 »** | « Une question. La réponse n'est construite qu'avec les documents que ce compte a le droit de lire, et chaque affirmation porte une source numérotée. Si l'extrait manque, elle le dit au lieu d'inventer. » |
+| **0:40–1:00** | Poser : **« Que dit Meeting6 en mooré ? »** | « Même document, autre langue. Le mooré est parlé par quinze millions de personnes et presque jamais écrit — la plateforme le traite comme une langue, pas comme une case à cocher. » |
+| **1:00–1:30** | `/tache` → cocher **Meeting6** + **Formation** → instruction | « Maintenant une tâche, pas une question : planifier, récupérer, cadrer, rédiger, vérifier, conformité. Le résultat est un document structuré avec ses sources. » |
+| **1:30–1:45** | Cliquer **✦ Nettoyer**, puis **DOCX** | « Un clic retire l'échafaudage, un autre exporte. Le document quitte le navigateur avec ses citations. » |
+| **1:45–2:00** | `/documents` → filtrer **« Espace demo »** | « Neuf documents, chacun montre ses espaces. Ce filtre est un espace privé : zéro résultat. L'accès se calcule par document, pas par écran. » |
+| **2:00–2:15** | Icône cadenas sur **Meeting6** → modale | « L'administration reclasse un document et change qui le lit — avec son propre mot de passe, et l'avant comme l'après sont inscrits au journal. » |
+| **2:15–2:30** | `/administration` → les trois onglets → couronne | « Trois onglets : comptes, espaces, adhésions. La couronne protège un compte : un Super Admin protégé ne peut être ni supprimé, ni suspendu, ni rétrogradé. » |
+| **2:30–2:45** | Se connecter en `membre.demo` → `/documents` → `/journal` | « Même application, un membre : six entrées de menu au lieu de dix, zéro document, et le journal d'audit répond 403. Tout est là — l'interface et le serveur disent la même chose. » |
+| **2:45–3:00** | Retour à `/` | « PHP 8.4, MySQL 8.4, 121 tests automatisés, journal d'audit append-only. Construit seul en neuf jours. Le dépôt est public, le lien est juste là. » |
 
-### Version anglaise (si le jury est international)
-
-| Time | On screen | Narration (EN) |
-|---|---|---|
-| **0:00–0:10** | Landing | "Hi, I'm Anatole Kabore, an independent developer from Burkina Faso. This is the Agentic Knowledge Workspace." |
-| **0:10–0:25** | Landing scroll | "An organisation piles up reports, minutes, recordings. The knowledge is there — but unusable. Generic chatbots invent." |
-| **0:25–0:55** | Ask **"Tell me about Meeting6"** | "A real document. The answer says what it actually is: **a French audio recording**, and mentions a **corrected Mooré translation**. Below it, the exact numbered sources." |
-| **0:55–1:20** | Ask **"What does Meeting6 say in Mooré?"** | "Same question, language specified. The named language wins: it gives me the Mooré text, citing the corrected version." |
-| **1:20–1:50** | **Agentic task** → select **Meeting6** + **Formation** → *"Based on Meeting6 and the project file, draft an official launch speech"* | "Now a task. I **pick the source documents**. It plans, retrieves, **restricts itself to my two documents**, drafts, **verifies every claim**, then **checks that its output answers my request**. Six steps, all visible." |
-| **1:50–2:10** | **✦ Clean**, then **DOCX** | "The proposal works. One click removes citations, sources and working notes. Exported to Word — a speech, ready to deliver." |
-| **2:10–2:35** | **Indexed documents** → Meeting6 correction modal | "And it learns. A corrected version was uploaded by a native speaker. It becomes the reference: substituted for the raw text, announced in the sources, and downloadable **byte for byte**." |
-| **2:35–3:00** | Landing | "PHP 8.4, MySQL 8.4, one hundred automated tests, append-only audit journal. Real domain knowledge, amplified by Meta's models. Thank you." |
-
----
+**Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
+naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent — les
+mots comptent plus que leur musique.
 
 ## 4. Parcours de secours
 
@@ -116,7 +109,7 @@ Si une séquence échoue pendant l'enregistrement, **ne t'arrête pas** — ench
 | La réponse est hors sujet | Reformule en une phrase plus courte, ou utilise une question déjà testée |
 | Le mooré ne sort pas | Montre la **traduction** FR→MO sur `/traduire` (2,5 s, vérifiée) |
 | Le modal de correction est vide | Montre le **badge** dans les sources de la réponse (même preuve, 3 s) |
-| Plus aucune connexion API | Montre les **100 tests verts** + la page de présentation : le produit tient sans démo live |
+| Plus aucune connexion API | Montre les **121 tests verts** + la page de présentation : le produit tient sans démo live |
 
 > **Filet de sécurité** : enregistre **deux** prises. Garde la meilleure. Une vidéo un peu moins fluide vaut mieux qu'une vidéo absente.
 
@@ -139,7 +132,7 @@ Si une séquence échoue pendant l'enregistrement, **ne t'arrête pas** — ench
 
 | Métrique | Valeur |
 |---|---|
-| **Tests automatisés** | **100 tests · 230 assertions** (SQLite en mémoire, aucun serveur requis) |
+| **Tests automatisés** | **121 tests · 281 assertions** (SQLite en mémoire, aucun serveur requis) |
 | **Traçabilité** | **21 types d'actions** journalisées, refus compris, journal **en ajout seul** |
 | **Pipeline agentique** | **6 étapes** : plan → retrieve → scope → draft → verify → conformity |
 | **Retrieval** | Score hybride `0,6 sémantique + 0,4 lexical`, expansion aux voisins, **priorité aux corrections** |
@@ -210,7 +203,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe tools\migrate.php migrate
 C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\phpunit --configuration phpunit.xml --no-coverage
 ```
 
-Attendu : migrations appliquées **et** `OK (100 tests, 230 assertions)`.
+Attendu : migrations appliquées **et** `OK (121 tests, 281 assertions)`.
 
 > Si ça passe, le dépôt est **prêt pour le jury**.
 
@@ -258,16 +251,8 @@ Si le push échoue avec `schannel: AcquireCredentialsHandle failed`, c'est que l
 
 > La vidéo est **l'élément central** : montre le produit **réel**. Les slides ne sont qu'un emballage.
 
-## 13. Ce qui a changé le 2 novembre — à intégrer au tournage
+## 13. Ce qui a changé le 2 novembre — désormais intégré au §3
 
-| Nouveau geste | Où | Ce qu'il démontre | Durée |
-|---|---|---|---|
-| **Filtre et badges d'espaces** | `/documents` | un document peut appartenir à plusieurs espaces | 10 s |
-| **Modale de contrôle** (cadenas) | `/documents` | l'administration change espace et confidentialité, mot de passe exigé | 15 s |
-| **Onglets d'administration** | `/administration` | comptes, espaces, adhésions séparés, actions confirmées | 15 s |
-| **Protection d'un compte** (couronne) | `/administration` | un Super Admin en ajoute un autre | 10 s |
-| **Espace actif** | `/espaces` | le membre choisit son espace, la liste et les dépôts suivent | 10 s |
-
-**Suppression d'un document** : geste conservé, il fonctionne à nouveau (liaison déléguée). À montrer une fois, sans insister.
-
-**À ne pas montrer** : les onglets si la vidéo est déjà longue — le filtre par espace suffit à illustrer le cloisonnement.
+Les cinq gestes ajoutés le 2 novembre (badges et filtre d'espaces, modale de contrôle,
+onglets d'administration, protection d'un compte, session membre) font partie du
+scénario du **§3**. Rien d'autre n'a à tenir dans trois minutes.
