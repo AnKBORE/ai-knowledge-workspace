@@ -40,3 +40,25 @@ Then ask a question in the application; a new line appears within a second.
 
 *Generated during the session of 2 November 2026. Extend this folder after the
 acceptance run with a captured answer, an agent trace and an exported document.*
+
+---
+
+## Captures to collect during the acceptance run
+
+One capture per proof, named as below, saved in this folder. **Full window, URL
+visible** — a cropped image proves nothing. The check that matters is the database
+one; these captures exist for the jury, which cannot run the machine.
+
+| File | What to capture | What it proves |
+|---|---|---|
+| `01-audio-recorded.png` | the recorder with the timer running | the voice is captured in the browser, not uploaded from a file |
+| `02-audio-indexed.png` | the same document, status **indexed** | the pipeline ran: transcription, chunks, versions |
+| `03-answer-with-sources.png` | a question about that recording, with numbered sources | the answer comes from the new document, and it cites it |
+| `04-agentic-trace.png` | the task page during or after the run: plan, retrieve, draft, verify | the agentic loop is real, not a description |
+| `05-docx-export.png` | the clean result and the export button state | the document leaves the app with its citations |
+| `06-workspaces.png` | the documents list with badges, then the filter on an empty workspace | access is computed per document |
+| `07-administration.png` | the three tabs with their counts | governance is exposed and countable |
+| `08-member-403.png` | the member session: 0 documents and the journal answering 403 | the interface and the server agree |
+
+**Never capture a terminal showing the API key.** The model call log is safe — it
+contains no key — and it can be pasted as text rather than as an image.
