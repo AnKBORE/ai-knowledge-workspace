@@ -169,7 +169,7 @@ $t = [
 
     'roadmap_title' => $isFr ? 'Feuille de route' : 'Roadmap',
     'badge_mvp' => 'MVP',
-    'badge_future' => $isFr ? 'Pour le futur' : 'For the future',
+    'badge_future' => $isFr ? 'Pas encore livré' : 'Not shipped yet',
     'roadmap_note' => $isFr
         ? 'Ces fonctionnalités ne font pas partie du MVP soumis : elles prolongent la plateforme et s’appuient sur ses fondations existantes (espaces et RBAC, documents et journal, RAG et tâches agentiques).'
         : 'These features are not part of the submitted MVP: they extend the platform and build on its existing foundations (spaces and RBAC, documents and journal, RAG and agentic tasks).',
