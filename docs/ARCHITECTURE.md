@@ -51,7 +51,7 @@ ai-knowledge-workspace/
 │   ├── public/              # landing.php (bilingual presentation page)
 │   └── auth/                # login
 ├── migrations/              # 21 .up.sql / .down.sql pairs
-├── tests/                   # 23 files, 100 tests (in-memory SQLite)
+├── tests/                   # 25 files, 124 tests (in-memory SQLite)
 ├── docs/                    # this documentation
 └── storage/files/           # documents + corrections (outside the web root)
 ```

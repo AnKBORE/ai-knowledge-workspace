@@ -469,13 +469,13 @@ débit) a été construite pour les 20 endpoints. Des constats, pas des impressi
 | 6 | `upload` sans limite de débit | saturation du disque | 20 / 5 min |
 
 Vérifié après correction : `GET /api/categorie_save.php` → **405** ; les endpoints
-d'écriture répondent toujours **200** ; les 100 tests restent verts.
+d'écriture répondent toujours **200** ; les 124 tests restent verts.
 
 ### Limites connues, mesurées et non supposées
 
 | Limite | Réalité |
 |---|---|
-| **Couverture de test des endpoints** | **14 endpoints sur 20** ne sont jamais mentionnés dans un fichier de test. Les 100 tests couvrent les services et les règles métier, pas la couche HTTP |
+| **Couverture de test des endpoints** | **14 endpoints sur 20** ne sont jamais mentionnés dans un fichier de test. Les 124 tests couvrent les services et les règles métier, pas la couche HTTP |
 | **Ingestion en arrière-plan** | `forking is not supported on this platform` sous Windows : un dépôt lourd est traité en synchrone |
 | **Aucune mesure de qualité** | pas de précision@k, pas de score de traduction — rien ne mesure la qualité des réponses sur un jeu de référence |
 | **JavaScript** | zéro test automatisé ; la bascule de nettoyage, le sélecteur et l'enregistreur ont été vérifiés à la main |
@@ -537,7 +537,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 | Affirmation | Réalité |
 |---|---|
 | « 8 jours » | 8 jours **calendaires**, avec des journées de 3 à 71 commits ; le 28 et le 30 comptent peu de commits mais de gros volumes |
-| « 100 tests » | ils couvrent la logique métier, **pas** le JavaScript ni les endpoints de correction |
+| « 124 tests » | ils couvrent la logique métier, **pas** le JavaScript ni les endpoints de correction |
 | « Traduction mooré » | lexique limité à 1 349 entrées ; les tournures complexes restent approximatives |
 | « RAG sémantique » | embeddings par **hachage**, moins sémantiques qu'un vrai modèle |
 | « Production ready » | projet de hackathon : CSP à durcir, pagination partielle, pas de mesure qualité métier |

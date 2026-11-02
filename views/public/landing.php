@@ -163,7 +163,9 @@ $t = [
     'stack_1' => 'PHP 8.4.27 · MVC strict (PSR-4)',
     'stack_2' => 'MySQL 8.4.13 · InnoDB / UTF8MB4',
     'stack_3' => 'Muse Spark Open (Meta)',
-    'stack_4' => $isFr ? '100 tests automatisés · 230 assertions' : '100 automated tests · 230 assertions',
+    'stack_4' => $isFr
+        ? sprintf('%d tests automatisés · %d assertions', config('tests')['count'], config('tests')['assertions'])
+        : sprintf('%d automated tests · %d assertions', config('tests')['count'], config('tests')['assertions']),
     'stack_5' => 'Argon2 · CSP · CSRF · ' . ($isFr ? 'journal d’audit' : 'audit journal'),
     'stack_6' => $isFr ? 'Lexique mooré SIL · 1 349 entrées' : 'SIL Mooré lexicon · 1,349 entries',
 

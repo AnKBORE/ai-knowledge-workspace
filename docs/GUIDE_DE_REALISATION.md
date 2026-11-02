@@ -193,7 +193,7 @@ Every result opens in a **modal** with **PDF** and **DOCX** download.
 php vendor/phpunit/phpunit/phpunit
 ```
 
-**100 tests, 230 assertions** — covering authentication, RBAC, document versions, audit, RAG, exports and the multimodal services. No database server or API required (in-memory SQLite + deterministic fakes).
+**124 tests, 295 assertions** — covering authentication, RBAC, document versions, audit, RAG, exports and the multimodal services. No database server or API required (in-memory SQLite + deterministic fakes).
 
 ---
 
@@ -305,7 +305,7 @@ escaped line-by-line patterns.
 | **6 — Multimodal** | OCR (vision) + audio transcription | ✅ |
 | **7 — Export** | PDF (dompdf) + DOCX (native OOXML) | ✅ |
 | **8 — UI** | 5 pages, modals, DataTables, public page | ✅ |
-| **9 — Quality** | 100 tests, CSP, detailed audit | ✅ |
+| **9 — Quality** | 124 tests, CSP, detailed audit | ✅ |
 | **10 — Delivery** | Video ≤ 3 min, submission | ⏳ |
 
 ---

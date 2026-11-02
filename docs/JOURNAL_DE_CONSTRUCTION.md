@@ -470,13 +470,13 @@ session, then a static matrix (HTTP method, CSRF, rate limit) was built for the
 | 6 | `upload` had no rate limit | disk exhaustion | 20 / 5 min |
 
 Verified after the fix: `GET /api/categorie_save.php` → **405**; write endpoints
-still **200**; the 100 tests stay green.
+still **200**; the 124 tests stay green.
 
 ### Known limitations, measured not guessed
 
 | Limitation | Reality |
 |---|---|
-| **Endpoint test coverage** | **14 of 20** endpoints are never mentioned in a test file. The 100 tests cover services and business rules, not the HTTP layer |
+| **Endpoint test coverage** | **14 of 20** endpoints are never mentioned in a test file. The 124 tests cover services and business rules, not the HTTP layer |
 | **Background ingestion** | `forking is not supported on this platform` under Windows: a heavy upload is processed synchronously |
 | **No quality metric** | no precision@k, no translation score — nothing measures answer quality on a benchmark |
 | **JavaScript** | zero automated test; the clean toggle, the picker and the recorder were verified manually |
@@ -530,7 +530,7 @@ C:\wamp64\bin\php\php8.4.27\php.exe -d memory_limit=1G vendor\phpunit\phpunit\ph
 | Claim | Reality |
 |---|---|
 | "8 days" | 8 **calendar** days, with days ranging from 3 to 71 commits; 28 and 30 October have few commits but large volumes |
-| "100 tests" | they cover business logic, **not** the JavaScript nor the correction endpoints |
+| "124 tests" | they cover business logic, **not** the JavaScript nor the correction endpoints |
 | "Mooré translation" | lexicon limited to 1,349 entries; complex constructions remain approximate |
 | "Semantic RAG" | **hashing** embeddings, less semantic than a real model |
 | "Production ready" | hackathon project: CSP to harden, partial pagination, no quality measurement |

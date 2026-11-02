@@ -117,15 +117,87 @@ foreach ($files as $file) {
     }
 }
 
+// ---------------------------------------------------------------------------
+// The figures published about the test suite: config/app.php is the single
+// source, and every page or document that quotes them must agree with it.
+// ---------------------------------------------------------------------------
+$config = require $root . '/config/app.php';
+$expectedTests = (int) ($config['tests']['count'] ?? 0);
+$expectedAssertions = (int) ($config['tests']['assertions'] ?? 0);
+
+$published = array_merge(
+    glob($root . '/views/*.php') ?: [],
+    glob($root . '/views/*/*.php') ?: [],
+    glob($root . '/*.md') ?: [],
+    glob($root . '/docs/*.md') ?: []
+);
+
+// The build journal and the defect register record what was true at a date:
+// their figures are history, not claims about the present. Current figures live
+// in the README, the architecture, the guide, the demo state and the pages.
+$published = array_values(array_filter(
+    $published,
+    static fn (string $file): bool => !preg_match('/JOURNAL_DE_CONSTRUCTION|REGISTRE_PROBLEMES/', $file)
+));
+
+$claims = 0;
+
+foreach ($published as $file) {
+    $relative = str_replace($root . DIRECTORY_SEPARATOR, '', $file);
+    $lines = file($file, FILE_IGNORE_NEW_LINES) ?: [];
+
+    foreach ($lines as $index => $line) {
+        if (preg_match('/removed|deleted|supprim|renamed|remplac|announced|P-\d+|back to green/i', $line)) {
+            continue;
+        }
+
+        if (preg_match_all('/(\d{2,4})\s+(?:automated\s+|automatisés\s+)?tests\b/i', $line, $m)) {
+            foreach ($m[1] as $claimed) {
+                $claims++;
+
+                if ((int) $claimed !== $expectedTests) {
+                    $problems[] = sprintf(
+                        '%s:%d | annonce %s tests, la configuration dit %d',
+                        $relative,
+                        $index + 1,
+                        $claimed,
+                        $expectedTests
+                    );
+                }
+            }
+        }
+
+        if (preg_match_all('/(\d{2,4})\s+assertions\b/i', $line, $m)) {
+            foreach ($m[1] as $claimed) {
+                $claims++;
+
+                if ((int) $claimed !== $expectedAssertions) {
+                    $problems[] = sprintf(
+                        '%s:%d | annonce %s assertions, la configuration dit %d',
+                        $relative,
+                        $index + 1,
+                        $claimed,
+                        $expectedAssertions
+                    );
+                }
+            }
+        }
+    }
+}
+
 echo "\n=== CHIFFRES AFFIRMÉS DANS ETAT_DE_DEMO ===\n\n";
 printf("  affirmations lues : %d\n", $read);
 
+echo "\n=== CHIFFRES DE LA SUITE DE TESTS ===\n\n";
+printf("  configuration : %d tests, %d assertions\n", $expectedTests, $expectedAssertions);
+printf("  affirmations lues : %d (pages et documents)\n", $claims);
+
 if ($problems === []) {
-    echo "  Tous les chiffres correspondent à la base.\n";
+    echo "\n  Tous les chiffres correspondent.\n";
     exit(0);
 }
 
-echo '  ' . count($problems) . " écart(s) :\n";
+echo "\n  " . count($problems) . " écart(s) :\n";
 
 foreach ($problems as $problem) {
     echo '    - ' . $problem . "\n";
