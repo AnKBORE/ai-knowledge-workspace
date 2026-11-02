@@ -344,9 +344,13 @@ Une architecture volontairement sobre, robuste et maîtrisée.
 
 **En un clic (Windows/WAMP) :** `setup.bat` exécute toutes les étapes ci-dessous (il télécharge `composer.phar` si Composer n'est pas installé).
 
-```powershell
 # 1. Dépendances (composer.phar n'est pas versionné : utiliser un Composer global)
 composer install
+
+#    Pas de Composer sous la main ? L'espace de travail démarre quand même sans
+#    vendor/ : les classes de l'application sont chargées automatiquement, donc
+#    le dépôt, les questions, le journal et l'administration fonctionnent. Seuls
+#    l'analyse PDF, l'export DOCX/PDF et le courriel exigent les dépendances.
 
 # 2. Configuration locale — puis renseigner DB_* et META_MODEL_API_KEY
 Copy-Item .env.example .env

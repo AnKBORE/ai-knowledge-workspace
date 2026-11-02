@@ -342,9 +342,13 @@ A deliberately lean, robust and controlled architecture.
 
 **One-click (Windows/WAMP):** `setup.bat` runs every step below (it downloads `composer.phar` if Composer is not installed).
 
-```powershell
 # 1. Dependencies (composer.phar is not versioned: use a global Composer)
 composer install
+
+#    No Composer at hand? The workspace still boots without vendor/: the
+#    application's own classes are autoloaded, so deposit, questions, the
+#    journal and administration work. PDF parsing, DOCX/PDF export and mail
+#    are the three features that need the dependencies.
 
 # 2. Local configuration — then set DB_* and META_MODEL_API_KEY
 Copy-Item .env.example .env

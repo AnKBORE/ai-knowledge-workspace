@@ -41,7 +41,36 @@ use App\Services\Ai\VisionService;
 
 $root = __DIR__;
 
-require $root . '/vendor/autoload.php';
+$vendorAutoload = $root . '/vendor/autoload.php';
+
+if (is_file($vendorAutoload)) {
+    require $vendorAutoload;
+} else {
+    // A clean clone has no vendor/ until `composer install`. The workspace's own
+    // classes are mapped here so the application still boots — deposit, questions,
+    // journal and administration work — instead of dying on a missing autoloader.
+    // The three runtime dependencies (PDF parsing, DOCX/PDF export, mail) are only
+    // touched when used, and fail there with their own message.
+    foreach ([
+        'App\\Controllers\\' => 'controllers/',
+        'App\\Models\\' => 'models/',
+        'App\\Services\\' => 'services/',
+        'App\\Validators\\' => 'validators/',
+        'App\\Core\\' => 'core/',
+    ] as $prefix => $directory) {
+        spl_autoload_register(static function (string $class) use ($root, $prefix, $directory): void {
+            if (!str_starts_with($class, $prefix)) {
+                return;
+            }
+
+            $file = $root . '/' . $directory . str_replace('\\', '/', substr($class, strlen($prefix))) . '.php';
+
+            if (is_file($file)) {
+                require $file;
+            }
+        });
+    }
+}
 
 Env::load($root . '/.env');
 require $root . '/core/helpers.php';
