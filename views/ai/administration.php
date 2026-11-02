@@ -138,16 +138,30 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                         </thead>
                         <tbody>
                             <?php foreach (($adminUsers ?? []) as $u): ?>
+                                <?php $estProtegeCompte = !empty($u['compte_super']); ?>
+                                <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
                                 <tr>
                                     <?= $rowNumberCell() ?>
-                                    <td><strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong><?php if (!empty($u['compte_super'])): ?>
+                                    <td>
+                                        <strong><?= e(trim(($u['prenom'] ?? '') . ' ' . ($u['nom'] ?? ''))) ?></strong>
+                                        <?php if ($estProtegeCompte): ?>
+                                            <span class="doc-item-badge super-badge" title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>">★ <?= e($t('Super Admin', 'Super Admin')) ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td class="small text-muted"><?= e((string) ($u['courriel'] ?? '')) ?></td>
+                                    <td><span class="doc-item-badge"><?= e((string) ($u['role_global'] ?? '')) ?></span></td>
+                                    <td class="small">
+                                        <span class="badge <?= $estActifCompte ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= e((string) ($u['statut'] ?? 'actif')) ?></span>
+                                    </td>
+                                    <td class="text-end">
+                                        <?php if ($estProtegeCompte): ?>
                                             <span class="doc-action doc-action-locked"
                                                   title="<?= e($t('Compte protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected account: no deletion, suspension or demotion')) ?>"
                                                   aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
                                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                             </span>
                                             <?php if (($nbSuperAdmins ?? 0) > 1 && !empty($estSuperActeur)): ?>
-                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
+                                                <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline ms-1">
                                                     <?= $csrf?->field() ?? '' ?>
                                                     <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                     <input type="hidden" name="action" value="revoke">
@@ -155,28 +169,27 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                                             title="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
                                                             aria-label="<?= e($t('Retirer la protection', 'Remove the protection')) ?>"
                                                             data-confirm-title="<?= e($t('Retirer la protection ?', 'Remove the protection?')) ?>"
-                                                            data-confirm-text="<?= e($t('Ce compte redeviendra un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
+                                                            data-confirm-text="<?= e($t('Ce compte redevient un administrateur technique ordinaire. Action journalisée.', 'This account becomes an ordinary technical administrator again. Journaled action.')) ?>">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M9 16h6"/></svg>
                                                     </button>
                                                 </form>
                                             <?php endif; ?>
                                         <?php else: ?>
-                                            <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
                                             <?php if (!empty($estSuperActeur)): ?>
                                                 <form method="post" action="<?= e(url('/api/admin_user_super.php')) ?>" class="d-inline">
-                                                <input type="hidden" name="action" value="grant">
                                                     <?= $csrf?->field() ?? '' ?>
                                                     <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
+                                                    <input type="hidden" name="action" value="grant">
                                                     <button type="submit" class="doc-action admin-confirm"
-                                                            title="<?= e($t('Faire de ce compte le Super Admin', 'Make this account the Super Admin')) ?>"
-                                                            aria-label="<?= e($t('Faire de ce compte le Super Admin', 'Make this account the Super Admin')) ?>"
-                                                            data-confirm-title="<?= e($t('Transférer la protection ?', 'Transfer the protection?')) ?>"
-                                                            data-confirm-text="<?= e($t('Ce compte deviendra le Super Admin, et le vôtre perdra la protection. L\'action est journalisée.', 'This account becomes the Super Admin and yours loses the protection. The action is journaled.')) ?>">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/></svg>
+                                                            title="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
+                                                            aria-label="<?= e($t('Protéger ce compte (Super Admin)', 'Protect this account (Super Admin)')) ?>"
+                                                            data-confirm-title="<?= e($t('Protéger ce compte ?', 'Protect this account?')) ?>"
+                                                            data-confirm-text="<?= e($t('Ce compte devient un Super Admin : il ne pourra plus être supprimé, suspendu ni rétrogradé. Action journalisée.', 'This account becomes a Super Admin: it can no longer be deleted, suspended or demoted. Journaled action.')) ?>">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5L3 8z"/><path d="M12 13v4M10.5 15h3"/></svg>
                                                     </button>
                                                 </form>
                                             <?php endif; ?>
-                                            <form method="post" action="<?= e(url('/api/admin_user_statut.php')) ?>" class="d-inline">
+                                            <form method="post" action="<?= e(url('/api/admin_user_statut.php')) ?>" class="d-inline<?= !empty($estSuperActeur) ? ' ms-1' : '' ?>">
                                                 <?= $csrf?->field() ?? '' ?>
                                                 <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                 <input type="hidden" name="statut" value="<?= $estActifCompte ? 'suspendu' : 'actif' ?>">
