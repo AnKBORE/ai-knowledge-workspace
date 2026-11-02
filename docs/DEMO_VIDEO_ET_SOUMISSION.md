@@ -159,6 +159,15 @@ Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\m
 > The Baseten hackathon key only serves `meta-models/muse-spark-open-1026`, so the
 > breadth of use is the honest way to score here.
 
+
+> **What not to show.** The public landing page carries a roadmap section, labelled
+> *“These features are not part of the submitted MVP”* with a *For the future* badge.
+> It is honest, but a judge skimming a video can read it as a claim: **keep the
+> landing page out of the recording** and start on the authenticated workspace, as
+> the script does. The disabled audio-export buttons on the documents page are not
+> unbuilt features either — they enable themselves as soon as a translation exists,
+> and the handlers are wired.
+
 **Two rules for the voice-over.** Do not read the table; speak these sentences at
 a natural pace and let the screen do the work. And never apologise for an accent.
 

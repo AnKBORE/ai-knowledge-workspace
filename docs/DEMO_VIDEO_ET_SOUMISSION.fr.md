@@ -161,6 +161,16 @@ Get-Content "C:\wamp64\www\projet hackaton\ai-knowledge-workspace\storage\logs\m
 > `meta-models/muse-spark-open-1026` ; l'étendue de l'usage est donc la façon honnête
 > de marquer ce critère.
 
+
+> **Ce qu'il ne faut pas montrer.** La page publique contient une section « Feuille de
+> route », étiquetée *« Ces fonctionnalités ne font pas partie du MVP soumis »* avec un
+> badge *Pour le futur*. C'est honnête, mais un juge qui survole la vidéo peut le lire
+> comme une promesse : **garde la page de présentation hors de l'enregistrement** et
+> commence sur l'espace authentifié, comme le fait le scénario. Les boutons d'export
+> audio désactivés sur la page des documents ne sont pas non plus des fonctions
+> absentes : ils s'activent dès qu'une traduction existe, et leurs gestionnaires sont
+> câblés.
+
 **Deux règles pour la voix.** Ne pas lire le tableau : dire ces phrases à un rythme
 naturel et laisser l'écran travailler. Et ne jamais s'excuser d'un accent.
 
