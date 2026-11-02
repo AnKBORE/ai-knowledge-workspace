@@ -653,3 +653,22 @@
 .space-create-header.admin-head-blue { color: #fff; }
 /* Super Admin badge: gold pill marking the protected installation account. */
 .super-badge { background: #fdf3d8; color: #8a6100; border: 1px solid #e7c66b; font-weight: 700; }
+
+/* Protected account: a lock that looks like an action but is not one. */
+.admin-inventory-table .doc-action-locked {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: #fdf3d8;
+    color: #8a6100;
+    border: 1px solid #e7c66b;
+    cursor: default;
+}
+
+.admin-inventory-table .doc-action-locked svg {
+    width: 17px;
+    height: 17px;
+}

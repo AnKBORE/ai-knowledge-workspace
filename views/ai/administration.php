@@ -133,6 +133,7 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                 <th scope="col"><?= e($t('Adresse e-mail', 'E-mail')) ?></th>
                                 <th scope="col"><?= e($t('Rôle global', 'Global role')) ?></th>
                                 <th scope="col"><?= e($t('Statut', 'Status')) ?></th>
+                                <th scope="col" class="text-end"><?= e($t('Actions', 'Actions')) ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -147,8 +148,10 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                     </td>
                                     <td class="text-end">
                                         <?php if (!empty($u['compte_super'])): ?>
-                                            <span class="small text-muted" title="<?= e($t('Compte d\'amorçage protégé', 'Protected bootstrap account')) ?>">
-                                                🔒 <?= e($t('protégé', 'protected')) ?>
+                                            <span class="doc-action doc-action-locked"
+                                                  title="<?= e($t('Compte d\'amorçage protégé : ni suppression, ni suspension, ni rétrogradation', 'Protected bootstrap account: no deletion, suspension or demotion')) ?>"
+                                                  aria-label="<?= e($t('Compte protégé', 'Protected account')) ?>">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                             </span>
                                         <?php else: ?>
                                             <?php $estActifCompte = ($u['statut'] ?? 'actif') === 'actif'; ?>
@@ -156,21 +159,29 @@ $rowNumberCell = static fn (): string => '<td class="table-row-number dtr-contro
                                                 <?= $csrf?->field() ?? '' ?>
                                                 <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                 <input type="hidden" name="statut" value="<?= $estActifCompte ? 'suspendu' : 'actif' ?>">
-                                                <button type="submit" class="doc-action admin-confirm"
+                                                <button type="submit" class="doc-action <?= $estActifCompte ? 'doc-action-danger' : '' ?> admin-confirm"
+                                                        title="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
+                                                        aria-label="<?= e($estActifCompte ? $t('Suspendre ce compte', 'Suspend this account') : $t('Réactiver ce compte', 'Reinstate this account')) ?>"
                                                         data-confirm-title="<?= e($estActifCompte ? $t('Suspendre ce compte ?', 'Suspend this account?') : $t('Réactiver ce compte ?', 'Reinstate this account?')) ?>"
                                                         data-confirm-text="<?= e($estActifCompte
-                                                            ? $t('Le compte ne pourra plus se connecter jusqu\'à réactivation. Action journalisée.', 'The account will not be able to sign in until reinstated. Action journaled.')
-                                                            : $t('Le compte pourra de nouveau se connecter. Action journalisée.', 'The account will be able to sign in again. Action journaled.')) ?>">
-                                                    <?= e($estActifCompte ? $t('Suspendre', 'Suspend') : $t('Réactiver', 'Reinstate')) ?>
+                                                            ? $t('Le compte ne pourra plus se connecter jusqu\'à réactivation. Action journalisée.', 'The account will not be able to sign in until reinstated. Journaled action.')
+                                                            : $t('Le compte pourra de nouveau se connecter. Action journalisée.', 'The account will be able to sign in again. Journaled action.')) ?>">
+                                                    <?php if ($estActifCompte): ?>
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M14 11h6"/></svg>
+                                                    <?php else: ?>
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 19a6 6 0 0 0-12 0"/><circle cx="9" cy="7" r="4"/><path d="M17 8v6"/><path d="M14 11h6"/></svg>
+                                                    <?php endif; ?>
                                                 </button>
                                             </form>
                                             <form method="post" action="<?= e(url('/api/admin_user_delete.php')) ?>" class="d-inline ms-1">
                                                 <?= $csrf?->field() ?? '' ?>
                                                 <input type="hidden" name="utilisateur_id" value="<?= (int) $u['id'] ?>">
                                                 <button type="submit" class="doc-action doc-action-danger admin-confirm" data-confirm-tone="danger"
+                                                        title="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
+                                                        aria-label="<?= e($t('Supprimer ce compte', 'Delete this account')) ?>"
                                                         data-confirm-title="<?= e($t('Supprimer ce compte ?', 'Delete this account?')) ?>"
-                                                        data-confirm-text="<?= e($t('Suppression logique : le compte disparaît, l\'historique est conservé. Action journalisée.', 'Soft delete: the account disappears, its history is kept. Action journaled.')) ?>">
-                                                    <?= e($t('Supprimer', 'Delete')) ?>
+                                                        data-confirm-text="<?= e($t('Suppression logique : le compte disparaît, l\'historique est conservé. Action journalisée.', 'Soft delete: the account disappears, its history is kept. Journaled action.')) ?>">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 13h10l1-13"/></svg>
                                                 </button>
                                             </form>
                                         <?php endif; ?>
