@@ -164,6 +164,18 @@ final class RagService
             ];
         }
 
+        // A weak best score means the workspace holds nothing about this question.
+        // Answering anyway produces a confident sentence about the wrong subject,
+        // which is the worst outcome for a tool whose claim is grounding.
+        // Measured: relevant matches score 0.53 and above, off-topic ones 0.17 and below.
+        if ((float) ($chunks[0]['score'] ?? 0.0) < 0.25) {
+            return [
+                'answer' => $this->msg($espaceId === null ? 'no_documents' : 'not_in_workspace'),
+                'sources' => [],
+                'refused' => true,
+            ];
+        }
+
             $this->openQuestion = $this->isOpenQuestion($question);
         $this->translationRequested = $this->wantsTranslation($question);
             $system = $this->answerPrompt() . "\n\n" . $this->labeledContext($chunks);
@@ -1919,12 +1931,14 @@ PROMPT;
                 'no_chunks' => "Aucun document pertinent n'a été trouvé. Indexez d'abord un document.",
                 'no_content' => 'Aucun contenu indexé pour ce document.',
                 'not_accessible' => "Ce document n'est pas accessible avec vos permissions.",
+                'not_in_workspace' => "Je ne trouve pas cette information dans l'espace de travail courant. Changez d'espace, ou déposez le document qui la contient.",
             ],
             'en' => [
                 'no_documents' => 'This information is not in the provided documents. Index a document first.',
                 'no_chunks' => 'No relevant document was found. Index a document first.',
                 'no_content' => 'No indexed content for this document.',
                 'not_accessible' => 'This document is not accessible with your permissions.',
+                'not_in_workspace' => 'I cannot find this information in the current workspace. Switch workspace, or deposit the document that contains it.',
             ],
         ];
 
