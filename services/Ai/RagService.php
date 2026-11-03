@@ -692,8 +692,20 @@ final class RagService
         }
 
         $numbered = [];
+
+        // A transcript chunk may carry the translation appended at ingestion
+        // ("[Traduction — French] …"). Once translated for display it reads
+        // "[Translation — French]" followed by the target language, which looks
+        // like a bug to the reader. The marker and what follows are dropped from
+        // the display excerpt only; the model still sees the full chunk.
+        $stripMarker = static function (string $excerpt): string {
+            $clean = preg_replace('/\s*\[(?:Traduction|Translation)\s*—[^\]]*\][\s\S]*$/u', '', $excerpt);
+
+            return is_string($clean) && trim($clean) !== '' ? trim($clean) : $excerpt;
+        };
+
         foreach ($sources as $source) {
-            $numbered[] = '[' . $source['num'] . '] ' . $source['excerpt'];
+            $numbered[] = '[' . $source['num'] . '] ' . $stripMarker((string) $source['excerpt']);
         }
 
         try {
