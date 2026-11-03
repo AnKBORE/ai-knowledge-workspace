@@ -40,7 +40,10 @@ final class PolitiqueMotDePasse
 
     public static function hash(string $motDePasse): string
     {
-        return password_hash($motDePasse, PASSWORD_DEFAULT);
+        // Argon2id, like the admin-created accounts: the public page claims
+        // Argon2 and half the application hashed with bcrypt, which made the
+        // claim true only for some accounts. Existing bcrypt hashes still verify.
+        return password_hash($motDePasse, PASSWORD_ARGON2ID);
     }
 
     public static function verify(string $motDePasse, string $hash): bool

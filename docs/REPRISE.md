@@ -62,9 +62,9 @@ traduction française adjointe.
 
 ## 3. Ce qui a été fait cette nuit — et qu'il ne faut **pas** refaire
 
-Une passe de recette complète a trouvé **vingt défauts** (P-51 à P-70 dans
-`docs/REGISTRE_PROBLEMES.fr.md`). Tous corrigés, testés, documentés. Les plus
-importants :
+Une passe de recette complète a trouvé tous les défauts de la plage **P-51 à P-71**
+(voir `docs/REGISTRE_PROBLEMES.fr.md`, qui fait foi et compte les entrées lui-même).
+Tous corrigés, testés, documentés. Les plus importants :
 
 | Défaut | Ce qu'il était |
 |---|---|

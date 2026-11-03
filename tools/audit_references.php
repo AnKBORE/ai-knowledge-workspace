@@ -131,6 +131,39 @@ foreach ($docs as $doc) {
 }
 
 // ---------------------------------------------------------------------------
+// 3 bis. The README announces a register count: it must be the real one.
+// ---------------------------------------------------------------------------
+$registerRows = 0;
+$registerFile = $root . '/docs/REGISTRE_PROBLEMES.md';
+
+if (is_file($registerFile)) {
+    foreach (file($registerFile, FILE_IGNORE_NEW_LINES) ?: [] as $registerLine) {
+        if (str_starts_with($registerLine, '| P-')) {
+            $registerRows++;
+        }
+    }
+}
+
+foreach (['README.md', 'README.fr.md'] as $readme) {
+    $readmePath = $root . '/' . $readme;
+
+    if (!is_file($readmePath)) {
+        continue;
+    }
+
+    $readmeText = (string) file_get_contents($readmePath);
+
+    if (preg_match('/(?:Issue register|Registre des problèmes) \((\d+) entr/', $readmeText, $labelMatch) === 1) {
+        $checked['register'] = ($checked['register'] ?? 0) + 1;
+
+        if ((int) $labelMatch[1] !== $registerRows) {
+            $failures[] = $readme . ' | le libellé du registre annonce ' . $labelMatch[1]
+                . ' entrée(s), le registre en contient ' . $registerRows;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // 4. Captures.
 // ---------------------------------------------------------------------------
 $preuves = (string) file_get_contents($root . '/docs/PREUVES/README.md');
@@ -152,6 +185,7 @@ printf("  références de fichiers : %d\n", $checked['files']);
 printf("  routes citées          : %d\n", $checked['routes']);
 printf("  variables citées       : %d\n", $checked['env']);
 printf("  captures listées       : %d\n", $checked['captures']);
+printf("  libellés de registre   : %d\n", $checked['register'] ?? 0);
 printf("  routes routées         : %d\n", count($routes));
 printf("  variables documentées  : %d\n\n", count($documented));
 
