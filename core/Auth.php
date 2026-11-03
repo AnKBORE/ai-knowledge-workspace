@@ -52,6 +52,9 @@ final class Auth
     {
         $this->session->remove(self::KEY);
         $this->session->remove('_csrf_token');
+        // The active workspace belonged to the account that just left; keeping
+        // it made the next account inherit a workspace it may not belong to.
+        $this->session->remove('espace_actif');
         $this->session->regenerate();
     }
 }

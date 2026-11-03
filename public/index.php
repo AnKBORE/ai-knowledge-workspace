@@ -93,6 +93,18 @@ if ($method === 'POST' && $path === '/login') {
         // inside the session, by explicit choice only.
         $dependencies['session']->set('lang', 'en');
         $dependencies['session']->set('lang_choice', 'en');
+
+        // Start in a workspace this account actually belongs to, instead of
+        // inheriting whatever the session held before.
+        $dependencies['session']->remove('espace_actif');
+        $sesEspaces = $dependencies['espaces']->pourUtilisateur((int) $dependencies['auth']->id());
+
+        if ($sesEspaces !== []) {
+            // Oldest workspace first: the account that belongs to several starts in
+            // the one created first, not in whichever the query happened to return.
+            usort($sesEspaces, static fn (array $a, array $b): int => (int) ($a['id'] ?? 0) <=> (int) ($b['id'] ?? 0));
+            $dependencies['session']->set('espace_actif', (int) ($sesEspaces[0]['id'] ?? 0));
+        }
         header('Location: ' . url('/'));
         exit;
     }
