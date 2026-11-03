@@ -401,8 +401,13 @@
                 text = sprintf(t('step_draft'), step.citations);
             } else if (step.step === 'scope') {
                 var frScope = document.documentElement.lang === 'fr';
-                text = step.document_id
-                    ? (frScope ? 'Cadrage : tâche limitée au document demandé' : 'Scope: task restricted to the requested document')
+                // The scope can hold one document or several: say how many.
+                var scopedIds = Array.isArray(step.document_ids) ? step.document_ids : [];
+                var scopedCount = scopedIds.length > 0 ? scopedIds.length : (step.document_id ? 1 : 0);
+                text = scopedCount > 0
+                    ? (frScope
+                        ? 'Cadrage : tâche limitée à ' + scopedCount + ' document(s)'
+                        : 'Scope: task restricted to ' + scopedCount + ' document(s)')
                     : (frScope ? 'Aucun document nommé — recherche sur tout le corpus' : 'No document named — searching the whole corpus');            } else if (step.step === 'conformity') {
                 var frUi = document.documentElement.lang === 'fr';
                 text = !step.available
