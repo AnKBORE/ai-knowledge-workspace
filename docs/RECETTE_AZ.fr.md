@@ -177,6 +177,7 @@ Ce que la passe a produit, mesuré :
 | Question de catalogue, deux espaces | **4** documents, puis **2** |
 | Suite de tests après la passe | **124 tests, 295 assertions** |
 | Installation sur une base vierge | **25 migrations, 22 tables**, premier administrateur amorcé et protégé |
+| Outils d'audit | **testés par mutation** : un chunk faux, une référence de fichier inexistante et un chiffre de tests faux ont été injectés, détectés, puis annulés |
 
 L'état laissé derrière est décrit dans `ETAT_DE_DEMO.fr.md`, et c'est cet état que
 la vidéo doit montrer.

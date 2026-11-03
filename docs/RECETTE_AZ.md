@@ -177,6 +177,7 @@ What the pass produced, measured:
 | Catalogue question, two workspaces | **4** documents, then **2** |
 | Test suite after the run | **124 tests, 295 assertions** |
 | Fresh install from a blank database | **25 migrations, 22 tables**, first admin seeded and protected |
+| Audit tools | **mutation-tested**: a wrong chunk count, a missing file reference and a wrong test figure were each injected, caught, then reverted |
 
 The state left behind is described in `ETAT_DE_DEMO.md`, and it is the state the
 video must show.

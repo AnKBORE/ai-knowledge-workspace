@@ -3,15 +3,16 @@
 declare(strict_types=1);
 
 /**
- * Numeric coherence audit.
+ * State coherence audit: the numbers the documentation states about the live
+ * database must be the numbers the database holds.
  *
- * The reference audit checks that what the documentation *names* exists. This
- * one checks that the numbers the documentation *states* are true right now,
- * measured against the database and against the test suite.
+ * Two things are measured, and both are printed:
+ *   - how many claims were verified (so the coverage is explicit);
+ *   - how many numbers could not be verified automatically, because they are a
+ *     duration, a score or a narrative figure.
  *
- * It is deliberately strict on ETAT_DE_DEMO, which claims to describe the live
- * state, and tolerant on the register and the journal, where wrong numbers are
- * recorded history rather than claims.
+ * A "all figures match" line means every *checkable* claim was checked, never
+ * that every number in the file was.
  */
 
 $root = dirname(__DIR__);
@@ -33,30 +34,31 @@ $pdo = new PDO(
     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
 );
 
-$one = static function (PDO $pdo, string $sql): int {
-    return (int) $pdo->query($sql)->fetchColumn();
-};
+$one = static fn (string $sql): int => (int) $pdo->query($sql)->fetchColumn();
 
 $truth = [
-    'documents' => $one($pdo, 'SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL'),
-    'chunks' => $one($pdo, 'SELECT COUNT(*) FROM document_chunks'),
-    'espaces' => $one($pdo, 'SELECT COUNT(*) FROM espace'),
-    'comptes' => $one($pdo, 'SELECT COUNT(*) FROM utilisateur WHERE supprime_le IS NULL'),
-    'proteges' => $one($pdo, 'SELECT COUNT(*) FROM utilisateur WHERE compte_super = 1'),
-    'adhesions' => $one($pdo, 'SELECT COUNT(*) FROM adhesion'),
-    'migrations' => $one($pdo, 'SELECT COUNT(*) FROM migrations'),
-    'corrections' => $one($pdo, 'SELECT COUNT(*) FROM correction_document'),
+    'documents' => $one('SELECT COUNT(*) FROM documents WHERE supprime_le IS NULL'),
+    'chunks' => $one('SELECT COUNT(*) FROM document_chunks'),
+    'espaces' => $one('SELECT COUNT(*) FROM espace'),
+    'comptes' => $one('SELECT COUNT(*) FROM utilisateur WHERE supprime_le IS NULL'),
+    'proteges' => $one('SELECT COUNT(*) FROM utilisateur WHERE compte_super = 1'),
+    'adhesions' => $one('SELECT COUNT(*) FROM adhesion'),
+    'migrations' => $one('SELECT COUNT(*) FROM migrations'),
+    'corrections' => $one('SELECT COUNT(*) FROM correction_document'),
+    'versions' => $one('SELECT COUNT(*) FROM version_document'),
+    'categories' => $one('SELECT COUNT(*) FROM categorie'),
 ];
 
-echo "=== VALEURS REELLES (base) ===\n\n";
+// A document row in the state table: | # | Title | Type | lang | Spaces | Chunks | Proof |
+$documents = [];
 
-foreach ($truth as $key => $value) {
-    printf("  %-14s %d\n", $key, $value);
+foreach ($pdo->query('SELECT d.id, d.langue, (SELECT COUNT(*) FROM document_chunks c WHERE c.document_id = d.id) AS chunks FROM documents d WHERE d.supprime_le IS NULL ORDER BY d.id') as $row) {
+    $documents[(int) $row['id']] = [
+        'langue' => (string) $row['langue'],
+        'chunks' => (int) $row['chunks'],
+    ];
 }
 
-// ---------------------------------------------------------------------------
-// Claims: a number followed by a noun, in the state document.
-// ---------------------------------------------------------------------------
 $nouns = [
     'documents' => 'documents',
     'chunks' => 'chunks',
@@ -67,49 +69,91 @@ $nouns = [
     'comptes' => 'comptes',
     'memberships' => 'adhesions',
     'adhésions' => 'adhesions',
+    'adhesions' => 'adhesions',
     'migrations' => 'migrations',
     'corrections' => 'corrections',
+    'versions' => 'versions',
+    'categories' => 'categories',
+    'catégories' => 'categories',
 ];
 
 $files = ['docs/ETAT_DE_DEMO.md', 'docs/ETAT_DE_DEMO.fr.md'];
 $problems = [];
-$read = 0;
+$verified = 0;
+$excluded = 0;
+$numbers = 0;
 
 foreach ($files as $file) {
-    $path = $root . '/' . $file;
-    $lines = file($path, FILE_IGNORE_NEW_LINES);
+    $lines = file($root . '/' . $file, FILE_IGNORE_NEW_LINES) ?: [];
 
     foreach ($lines as $index => $line) {
-        foreach ($nouns as $noun => $key) {
-            $pattern = '/(\d{1,3})\s+' . preg_quote($noun, '/') . '\b/iu';
+        $numbers += preg_match_all('/\b\d{1,4}\b/', $line);
 
-            if (!preg_match_all($pattern, $line, $m)) {
+        // A claim is scoped only when the line is genuinely about one workspace
+        // or one profile — not merely because it mentions the word. Excluding
+        // whole lines on a keyword silenced 100 % of the document once.
+        $scoped = preg_match('/^\|\s*\*\*(?:Général|Chantier test)\*\*/u', $line) === 1
+            || preg_match('/(?:member|membre|anatole|visibles?|sees|voit)[^.]{0,40}\d{1,3}\s+(?:documents|chunks)/iu', $line) === 1;
+
+        $historical = preg_match('/removed|deleted|supprim|renamed|remplac|announced|P-\d+/i', $line) === 1;
+
+        if ($scoped || $historical) {
+            $excluded += preg_match_all('/\d{1,3}\s+(?:' . implode('|', array_map(static fn (string $n): string => preg_quote($n, '/'), array_keys($nouns))) . ')\b/iu', $line);
+
+            continue;
+        }
+
+        // 1. "N noun" claims.
+        foreach ($nouns as $noun => $key) {
+            if (preg_match_all('/(\d{1,3})\s+' . preg_quote($noun, '/') . '\b/iu', $line, $m) === 0) {
                 continue;
             }
 
             foreach ($m[1] as $claimed) {
-                $read++;
-                $value = (int) $claimed;
+                $verified++;
 
-                // A line recording what an older state said is history, and a
-                // line scoped to one profile or one workspace states a count
-                // that is not the global one: both are skipped.
-                if (preg_match('/removed|deleted|supprim|renamed|remplac|announced|P-\d+/i', $line)) {
-                    continue;
-                }
-
-                if (preg_match('/Chantier test|Général|member|membre|anatole|workspace/iu', $line)) {
-                    continue;
-                }
-
-                if ($value !== $truth[$key]) {
+                if ((int) $claimed !== $truth[$key]) {
                     $problems[] = sprintf(
-                        '%s:%d | annonce %d %s, la base dit %d',
+                        '%s:%d | annonce %s %s, la base dit %d',
                         $file,
                         $index + 1,
-                        $value,
+                        $claimed,
                         $noun,
                         $truth[$key]
+                    );
+                }
+            }
+        }
+
+        // 2. A document row: its chunk count and its language.
+        if (preg_match('/^\|\s*(\d+)\s*\|([^|]+)\|([^|]+)\|([^|]*)\|([^|]*)\|\s*(\d+)\s*\|/', $line, $m) === 1) {
+            $documentId = (int) $m[1];
+
+            if (isset($documents[$documentId])) {
+                $verified++;
+                $claimedChunks = (int) $m[6];
+
+                if ($claimedChunks !== $documents[$documentId]['chunks']) {
+                    $problems[] = sprintf(
+                        '%s:%d | document %d annonce %d chunk(s), la base dit %d',
+                        $file,
+                        $index + 1,
+                        $documentId,
+                        $claimedChunks,
+                        $documents[$documentId]['chunks']
+                    );
+                }
+
+                $claimedLang = trim($m[4], " *`\t");
+
+                if ($claimedLang !== '' && $claimedLang !== $documents[$documentId]['langue']) {
+                    $problems[] = sprintf(
+                        '%s:%d | document %d annoncé en « %s », la base dit « %s »',
+                        $file,
+                        $index + 1,
+                        $documentId,
+                        $claimedLang,
+                        $documents[$documentId]['langue']
                     );
                 }
             }
@@ -118,8 +162,8 @@ foreach ($files as $file) {
 }
 
 // ---------------------------------------------------------------------------
-// The figures published about the test suite: config/app.php is the single
-// source, and every page or document that quotes them must agree with it.
+// The figures about the test suite: config/app.php is the single source, and
+// every page or document that quotes them must agree with it.
 // ---------------------------------------------------------------------------
 $config = require $root . '/config/app.php';
 $expectedTests = (int) ($config['tests']['count'] ?? 0);
@@ -133,27 +177,26 @@ $published = array_merge(
 );
 
 // The build journal and the defect register record what was true at a date:
-// their figures are history, not claims about the present. Current figures live
-// in the README, the architecture, the guide, the demo state and the pages.
+// their figures are history, not claims about the present.
 $published = array_values(array_filter(
     $published,
-    static fn (string $file): bool => !preg_match('/JOURNAL_DE_CONSTRUCTION|REGISTRE_PROBLEMES/', $file)
+    static fn (string $file): bool => preg_match('/JOURNAL_DE_CONSTRUCTION|REGISTRE_PROBLEMES/', $file) !== 1
 ));
 
-$claims = 0;
+$suiteClaims = 0;
 
 foreach ($published as $file) {
     $relative = str_replace($root . DIRECTORY_SEPARATOR, '', $file);
     $lines = file($file, FILE_IGNORE_NEW_LINES) ?: [];
 
     foreach ($lines as $index => $line) {
-        if (preg_match('/removed|deleted|supprim|renamed|remplac|announced|P-\d+|back to green/i', $line)) {
+        if (preg_match('/removed|deleted|supprim|renamed|remplac|announced|P-\d+/i', $line)) {
             continue;
         }
 
-        if (preg_match_all('/(\d{2,4})\s+(?:automated\s+|automatisés\s+)?tests\b/i', $line, $m)) {
+        if (preg_match_all('/(\d{2,4})\s+(?:automated\s+|automatisés\s+)?tests\b/i', $line, $m) > 0) {
             foreach ($m[1] as $claimed) {
-                $claims++;
+                $suiteClaims++;
 
                 if ((int) $claimed !== $expectedTests) {
                     $problems[] = sprintf(
@@ -167,9 +210,9 @@ foreach ($published as $file) {
             }
         }
 
-        if (preg_match_all('/(\d{2,4})\s+assertions\b/i', $line, $m)) {
+        if (preg_match_all('/(\d{2,4})\s+assertions\b/i', $line, $m) > 0) {
             foreach ($m[1] as $claimed) {
-                $claims++;
+                $suiteClaims++;
 
                 if ((int) $claimed !== $expectedAssertions) {
                     $problems[] = sprintf(
@@ -185,15 +228,27 @@ foreach ($published as $file) {
     }
 }
 
-echo "\n=== CHIFFRES AFFIRMÉS DANS ETAT_DE_DEMO ===\n\n";
-printf("  affirmations lues : %d\n", $read);
+echo "=== VALEURS RÉELLES (base) ===\n\n";
 
-echo "\n=== CHIFFRES DE LA SUITE DE TESTS ===\n\n";
-printf("  configuration : %d tests, %d assertions\n", $expectedTests, $expectedAssertions);
-printf("  affirmations lues : %d (pages et documents)\n", $claims);
+foreach ($truth as $key => $value) {
+    printf("  %-12s %d\n", $key, $value);
+}
+
+printf("\n  suite de tests (config/app.php) : %d tests, %d assertions\n", $expectedTests, $expectedAssertions);
+
+echo "\n=== AFFIRMATIONS NUMÉRIQUES ===\n\n";
+printf("  vérifiées              : %d\n", $verified);
+printf("  exclues (espace/profil/histoire) : %d\n", $excluded);
+printf("  vérifiables au total   : %d\n", $verified + $excluded);
+printf("  nombres dans le document : %d\n", $numbers);
+printf(
+    "  non vérifiables        : %d (dates, durées, scores, montants)\n",
+    $numbers - $verified - $excluded
+);
+printf("  chiffres de la suite cités (pages + docs) : %d\n", $suiteClaims);
 
 if ($problems === []) {
-    echo "\n  Tous les chiffres correspondent.\n";
+    echo "\n  Toutes les affirmations vérifiables correspondent.\n";
     exit(0);
 }
 
