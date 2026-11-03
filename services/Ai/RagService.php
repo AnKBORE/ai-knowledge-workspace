@@ -718,7 +718,8 @@ final class RagService
                     . "1. Garde le numéro [n] devant chaque extrait, une ligne par extrait.\n"
                     . "2. Traduction fidèle, sans ajout ni résumé. Conserve chiffres, dates et noms propres exacts.\n"
                     . "3. Si un extrait est déjà dans la langue de la question, recopie-le tel quel.\n"
-                    . "4. Ne renvoie que les extraits traduits, aucune phrase d'introduction."]],
+                    . "4. Ne remplace JAMAIS un mot par des points de suspension : si un terme n'a pas d'équivalent, garde le terme original tel quel. Un extrait troué ne permet pas de vérifier une source.\n"
+                    . "5. Ne renvoie que les extraits traduits, aucune phrase d'introduction."]],
                 null,
                 0.1,
             );
@@ -730,7 +731,12 @@ final class RagService
             }
 
             foreach ($sources as &$source) {
-                if (isset($byNum[$source['num']]) && $byNum[$source['num']] !== '') {
+                // A Mooré excerpt stays as it was read. Machine translation of a
+                // low-resource text produces holes ("They are gathered ... paradise"),
+                // and a holed source cannot be checked against the answer.
+                $isMoore = preg_match('/[ɛɔãẽĩõũƐƆÃẼĨÕŨ]/u', (string) $source['excerpt']) === 1;
+
+                if (!$isMoore && isset($byNum[$source['num']]) && $byNum[$source['num']] !== '') {
                     $source['excerpt'] = $byNum[$source['num']];
                 }
             }
