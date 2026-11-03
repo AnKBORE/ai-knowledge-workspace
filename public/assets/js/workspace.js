@@ -393,7 +393,11 @@
             var text = '';
             var details = [];
             if (step.step === 'plan') {
-                text = sprintf(t('step_plan'), (step.queries || []).length);
+                // The first query is the instruction itself; the list below shows the
+                // searches the planner added. Counting the instruction made the label
+                // announce one search more than it displayed.
+                var addedQueries = Math.max(0, (step.queries || []).length - 1);
+                text = sprintf(t('step_plan'), addedQueries);
                 details = (step.queries || []).slice(1);
             } else if (step.step === 'retrieve') {
                 text = sprintf(t('step_retrieve'), step.extracts, step.documents);
