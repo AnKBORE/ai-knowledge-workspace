@@ -429,10 +429,11 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 | Document | 🇫🇷 Français | 🇬🇧 English |
 |---|---|---|
 | **Journal de construction — ce qui a réellement été fait, jour par jour** | [`JOURNAL_DE_CONSTRUCTION.fr.md`](docs/JOURNAL_DE_CONSTRUCTION.fr.md) | [`JOURNAL_DE_CONSTRUCTION.md`](docs/JOURNAL_DE_CONSTRUCTION.md) |
+| **Reprendre le travail — état, commandes, ce qui reste** | [`REPRISE.md`](docs/REPRISE.md) | — |
 | **Référence technique** | [`ARCHITECTURE.fr.md`](docs/ARCHITECTURE.fr.md) | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | **Guide de réalisation** | [`GUIDE_DE_REALISATION.fr.md`](docs/GUIDE_DE_REALISATION.fr.md) | [`GUIDE_DE_REALISATION.md`](docs/GUIDE_DE_REALISATION.md) |
 | **Sécurité et confidentialité des données** | [`SECURITE_DONNEES_API.fr.md`](docs/SECURITE_DONNEES_API.fr.md) | [`SECURITE_DONNEES_API.md`](docs/SECURITE_DONNEES_API.md) |
-| **Registre des problèmes (65 entrées : 22 résolues, 12 ouvertes, 31 incidents)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
+| **Registre des problèmes (51 entrées, toutes résolues)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
 | **Démo vidéo & soumission** | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
 | **État de démonstration — comptes, espaces, documents, scénarios** | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) |
 | **Recette — exécution réelle sur base neuve** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
