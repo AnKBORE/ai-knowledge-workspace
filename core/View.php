@@ -39,6 +39,13 @@ final class View
     /** @param array<string, mixed> $data */
     private function capture(string $file, array $data): string
     {
+        // Every view branches on $isFr, and each one used to fall back to French
+        // when the value was missing - which it always was. The language the view
+        // already receives decides it, in one place rather than in twenty views.
+        if (!array_key_exists('isFr', $data)) {
+            $data['isFr'] = ($data['lang'] ?? 'en') === 'fr';
+        }
+
         extract($data, EXTR_SKIP);
 
         ob_start();
