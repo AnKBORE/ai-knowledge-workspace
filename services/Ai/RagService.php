@@ -280,7 +280,7 @@ final class RagService
     {
         $steps = [];
 
-        $queries = $this->planQueries($instruction, $userId);
+        $queries = $this->planQueries($instruction, $userId, $documentIds, $espaceId);
         $steps[] = ['step' => 'plan', 'queries' => $queries];
 
         $merged = [];
@@ -533,13 +533,28 @@ final class RagService
             return '';
         }
     }
-    private function planQueries(string $instruction, ?int $userId): array
+    /**
+     * @param list<int> $documentIds documents the task is restricted to
+     */
+    private function planQueries(string $instruction, ?int $userId, array $documentIds = [], ?int $espaceId = null): array
     {
         $queries = [$instruction];
         try {
+            $catalog = $this->catalogChunks($userId, $espaceId);
+
+            // A plan that names documents the task will never read announces
+            // searches that cannot happen: the planner only sees the selection.
+            if ($documentIds !== []) {
+                $wanted = array_flip(array_map('intval', $documentIds));
+                $catalog = array_values(array_filter(
+                    $catalog,
+                    static fn (array $chunk): bool => isset($wanted[(int) ($chunk['document_id'] ?? 0)]),
+                ));
+            }
+
             $titles = array_slice(array_map(
                 static fn (array $chunk): string => '- ' . $chunk['title'],
-                $this->catalogChunks($userId),
+                $catalog,
             ), 0, 60);
 
             $raw = $this->client->chat(
