@@ -62,7 +62,7 @@ one; these captures exist for the jury, which cannot run the machine.
 | `06-workspaces.png` | *not needed* — replaced by `06b-workspace-refusal.png`: no workspace is empty in the demo state, so the refusal proves the scoping better than an empty filter | — |
 | `07-administration.png` ✅ | the three tabs with their counts | governance is exposed and countable |
 | `08a-member-documents.png` ✅ | the member's document list: two documents, the Chantier test badge, and **no delete action** | the interface offers only what the server accepts |
-| `08-member-403.png` | the member session: **2 documents** — those of their own workspace — and the journal answering 403 | the interface and the server agree |
+| `08-member-403.png` ✅ | the member typing `/journal` by hand: the URL is in the bar, the message refuses the page | a page that is not offered in the menu is still refused by the server |
 
 **Never capture a terminal showing the API key.** The model call log is safe — it
 contains no key — and it can be pasted as text rather than as an image.
