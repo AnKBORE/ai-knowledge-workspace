@@ -230,7 +230,7 @@ Le prompt de réponse ajoute la règle 4a : les dates s'écrivent comme la langu
 les écrit, jamais en ISO — la valeur elle-même n'est jamais modifiée.
 ---
 
-## 6. Tâche agentique — plan → retrieve → draft → verify → revise
+## 6. Tâche agentique — plan → retrieve → scope → draft → verify → conformity
 
 `AiAssistantController::task()` → `RagService::task()` :
 
@@ -238,9 +238,9 @@ les écrit, jamais en ISO — la valeur elle-même n'est jamais modifiée.
 |---|---|
 | **plan** | Le modèle décompose l'instruction en 2 à 4 requêtes de recherche |
 | **retrieve** | Chaque requête interroge `retrieveSimilar()` (donc **bénéficie des corrections**), fusion par `document_id \| version_id \| chunk_index` |
+| **scope** | Le cadrage documentaire de l'instruction est appliqué **avant la rédaction** : un document nommé borne toute la tâche, et un document que l'utilisateur ne peut pas lire est refusé plutôt que résumé à partir d'autre chose |
 | **draft** | Rédaction ancrée, avec citations `[n]` obligatoires |
 | **verify** | Un second appel vérifie que chaque affirmation est **soutenue** par le contexte ; renvoie les affirmations non soutenues |
-| **revise** | Si des affirmations ne sont pas soutenues, un troisième appel corrige le brouillon |
 | **conformité** | Une dernière vérification demande si la sortie **répond réellement à l'instruction**. Un brouillon ancré peut être hors sujet (décrire le projet quand une analyse de risques était demandée) ; s'il est rejeté, une passe de réécriture est faite puis la vérification est relancée. Cette étape ne bloque jamais : un échec d'analyse vaut « conforme ». |
 
 La trace complète (`steps`) est renvoyée à l'interface : c'est ce qui distingue

@@ -229,7 +229,7 @@ The answer prompt adds rule 4a: dates are written the way the language writes
 them, never ISO — the value itself is never altered.
 ---
 
-## 6. Agentic task — plan → retrieve → draft → verify → revise
+## 6. Agentic task — plan → retrieve → scope → draft → verify → conformity
 
 `AiAssistantController::task()` → `RagService::task()`:
 
@@ -237,13 +237,16 @@ them, never ISO — the value itself is never altered.
 |---|---|
 | **plan** | The model splits the instruction into 2 to 4 search queries |
 | **retrieve** | Each query calls `retrieveSimilar()` (so it **benefits from corrections**); results merged by `document_id \| version_id \| chunk_index` |
+| **scope** | The instruction's document scope is applied **before writing**: a document named in the instruction bounds the whole task, and a document the user may not read is refused rather than summarised from something else |
 | **draft** | Grounded writing, with mandatory `[n]` citations |
 | **verify** | A second call checks that each claim is **supported** by the context, and returns unsupported ones |
-| **revise** | If claims are unsupported, a third call fixes the draft |
 | **conformity** | A final check asks whether the output actually **answers the instruction**. A grounded draft can still be off-topic (describing the project when a risk analysis was asked); if rejected, one rewrite pass is made and the check is repeated. This step never blocks: a parsing failure counts as "conform". |
 
-The full trace (`steps`) is returned to the UI: this is what separates an
-**agentic** task from a plain prompt.
+The trace carries these **six steps**. Revision is not one of them: it happens
+inside `verify` (unsupported claims) and inside `conformity` (an answer that is
+grounded but off-topic), and both steps report a `revised` flag. The trace is
+returned to the UI — this is what separates an **agentic** task from a plain
+prompt.
 
 ---
 

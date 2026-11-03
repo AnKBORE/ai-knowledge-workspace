@@ -1,1 +1,162 @@
-2026-11-02 16:12:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1573 ms | in=   180 o=   864
+# Model call log — evidence, 2 November 2026
+
+This is a verbatim extract of `storage/logs/model_calls.log`, written by the
+application itself. One line per call: timestamp, endpoint, model, HTTP status,
+duration, and the size of the request and response in bytes.
+
+Read the `in=` field to tell the usages apart:
+
+- small (a few hundred bytes) — a question, a summary, one agentic step;
+- large (tens of thousands) — an image sent to the vision model for OCR;
+- largest — an audio file sent for transcription.
+
+Measured in this file: **147 calls**, request payload from **45 to 841508 bytes**, every one to `meta-models/muse-spark-open-1026`.
+Last line: 2026-11-02 23:29:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5327 ms | in=  1565 o=  6724
+
+2026-11-02 18:34:04 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  8497 ms | in=    45 o=  2060
+2026-11-02 18:34:04 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  8498 ms | in=    45 o=  2257
+2026-11-02 18:36:38 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  9039 ms | in=    45 o=  2002
+2026-11-02 18:36:38 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  9042 ms | in=    45 o=  2162
+2026-11-02 19:12:41 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  7454 ms | in=260645 o=  4299
+2026-11-02 19:12:47 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  6532 ms | in=260645 o=  4049
+2026-11-02 19:12:56 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  8462 ms | in=260645 o=  2173
+2026-11-02 19:12:59 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3277 ms | in=   831 o=  2998
+2026-11-02 19:13:27 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4917 ms | in=205566 o=  4006
+2026-11-02 19:13:33 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  6213 ms | in=205566 o=  3779
+2026-11-02 19:13:38 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5287 ms | in=205566 o=  2066
+2026-11-02 19:13:42 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4076 ms | in=   832 o=  4118
+2026-11-02 19:14:40 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 | 56995 ms | in=841508 o=164692
+2026-11-02 19:15:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 | 59427 ms | in=841508 o=164741
+2026-11-02 19:15:49 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 | 10234 ms | in=841508 o=  8145
+2026-11-02 19:16:07 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2570 ms | in=   937 o=  2746
+2026-11-02 19:16:14 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  6880 ms | in=185334 o=  4244
+2026-11-02 19:16:22 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  7475 ms | in=185334 o=  4604
+2026-11-02 19:16:29 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  7275 ms | in=185334 o=  3376
+2026-11-02 19:16:56 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  7286 ms | in=235143 o=  5168
+2026-11-02 19:16:58 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1853 ms | in=   997 o=  1410
+2026-11-02 20:13:38 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  7875 ms | in=195928 o=  5131
+2026-11-02 20:13:43 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4942 ms | in=195928 o=  2197
+2026-11-02 20:13:47 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3985 ms | in=   835 o=  2381
+2026-11-02 20:13:53 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5635 ms | in=499545 o=  2366
+2026-11-02 20:13:56 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2415 ms | in=   880 o=  1891
+2026-11-02 20:15:16 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 | 54609 ms | in=196624 o=175698
+2026-11-02 20:15:21 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5347 ms | in=196624 o=  1967
+2026-11-02 20:15:22 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1329 ms | in=   835 o=  1198
+2026-11-02 20:15:29 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  6622 ms | in=651597 o=  2741
+2026-11-02 20:15:30 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1372 ms | in=   923 o=  1295
+2026-11-02 20:16:52 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  6630 ms | in=651597 o=  3462
+2026-11-02 20:16:54 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1757 ms | in=  6566 o=  1499
+2026-11-02 20:23:26 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3419 ms | in= 12236 o=  3984
+2026-11-02 20:23:28 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2259 ms | in=   989 o=  2658
+2026-11-02 20:25:32 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2073 ms | in= 12236 o=  1817
+2026-11-02 20:25:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2999 ms | in=   989 o=  3751
+2026-11-02 20:30:43 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2359 ms | in= 12236 o=  1388
+2026-11-02 20:30:46 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2967 ms | in=   989 o=  3904
+2026-11-02 20:34:30 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1771 ms | in= 12236 o=  1304
+2026-11-02 20:34:33 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2670 ms | in=   989 o=  3546
+2026-11-02 20:34:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1947 ms | in= 12236 o=  1241
+2026-11-02 20:34:38 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3047 ms | in=   989 o=  3281
+2026-11-02 20:34:56 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1763 ms | in= 12236 o=  1302
+2026-11-02 20:34:59 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2955 ms | in=   989 o=  3743
+2026-11-02 20:35:01 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2484 ms | in=  9751 o=  2622
+2026-11-02 20:35:04 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2654 ms | in=   983 o=  2258
+2026-11-02 20:36:18 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1789 ms | in=  9751 o=  1209
+2026-11-02 20:36:21 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3305 ms | in=   983 o=  3416
+2026-11-02 20:38:01 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3461 ms | in=  9751 o=  3109
+2026-11-02 20:38:04 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2421 ms | in=   983 o=  2201
+2026-11-02 20:38:58 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1779 ms | in=  9751 o=  1373
+2026-11-02 20:39:02 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3578 ms | in=   983 o=  3024
+2026-11-02 20:41:12 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1968 ms | in= 12236 o=  1621
+2026-11-02 20:41:14 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2110 ms | in=   989 o=  2572
+2026-11-02 20:41:17 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2478 ms | in=  9747 o=  2390
+2026-11-02 20:41:26 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  8752 ms | in=   979 o=  8073
+2026-11-02 20:44:20 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2169 ms | in=  9749 o=  1983
+2026-11-02 20:44:23 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2651 ms | in=   981 o=  2587
+2026-11-02 20:47:34 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4594 ms | in= 12245 o=  4590
+2026-11-02 20:47:37 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3199 ms | in=   998 o=  4235
+2026-11-02 20:48:27 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4308 ms | in= 12245 o=  5233
+2026-11-02 20:48:30 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3918 ms | in=   998 o=  4496
+2026-11-02 20:49:50 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3794 ms | in=  6609 o=  2797
+2026-11-02 20:49:52 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2355 ms | in=  6484 o=  2119
+2026-11-02 20:50:48 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2988 ms | in=  6920 o=  2365
+2026-11-02 20:51:12 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2613 ms | in=   921 o=  3612
+2026-11-02 20:51:42 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3923 ms | in=   922 o=  5575
+2026-11-02 20:52:09 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2600 ms | in=  1367 o=  3465
+2026-11-02 20:52:32 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2200 ms | in=  1390 o=  2490
+2026-11-02 20:53:00 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2636 ms | in=  1380 o=  3620
+2026-11-02 20:53:15 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2540 ms | in=  1362 o=  3410
+2026-11-02 20:53:26 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2132 ms | in=  1381 o=  2447
+2026-11-02 20:55:44 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3201 ms | in=  1384 o=  3453
+2026-11-02 20:55:59 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1810 ms | in=  1413 o=  2280
+2026-11-02 20:56:13 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2393 ms | in=  1391 o=  3270
+2026-11-02 20:56:18 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2078 ms | in=  1414 o=  2413
+2026-11-02 20:56:49 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3225 ms | in=  6920 o=  2198
+2026-11-02 21:12:04 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3709 ms | in=   824 o=  3694
+2026-11-02 21:13:45 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2611 ms | in=   824 o=  2501
+2026-11-02 21:19:52 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4350 ms | in=  1896 o=  4604
+2026-11-02 21:25:19 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3680 ms | in=  1896 o=  3990
+2026-11-02 21:25:32 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4466 ms | in=  1896 o=  5287
+2026-11-02 21:29:47 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3618 ms | in=  1896 o=  3304
+2026-11-02 21:33:05 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5291 ms | in=  1896 o=  5080
+2026-11-02 21:35:15 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3804 ms | in=  1896 o=  3816
+2026-11-02 22:17:45 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4079 ms | in=  6452 o=  2942
+2026-11-02 22:18:42 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4190 ms | in=  6929 o=  4041
+2026-11-02 22:18:51 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2873 ms | in=  6926 o=  2775
+2026-11-02 22:18:57 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3127 ms | in=  6932 o=  2574
+2026-11-02 22:22:36 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3615 ms | in=  6915 o=  3139
+2026-11-02 22:24:10 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3288 ms | in=  6920 o=  2483
+2026-11-02 22:24:17 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2882 ms | in=  6912 o=  2509
+2026-11-02 22:24:25 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4538 ms | in=  6925 o=  4467
+2026-11-02 22:24:33 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3435 ms | in=  6929 o=  2769
+2026-11-02 22:24:43 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3163 ms | in=  6920 o=  2758
+2026-11-02 22:24:51 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4059 ms | in=  6920 o=  3096
+2026-11-02 22:25:27 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3087 ms | in=  3434 o=  4021
+2026-11-02 22:28:53 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3432 ms | in=  1042 o=  4110
+2026-11-02 22:29:40 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2332 ms | in=  6970 o=  2188
+2026-11-02 22:29:43 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3779 ms | in=  1258 o=  3335
+2026-11-02 22:30:25 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2070 ms | in=  6970 o=  1829
+2026-11-02 22:30:29 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3760 ms | in=  1258 o=  4690
+2026-11-02 22:31:55 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2285 ms | in=  6978 o=  2246
+2026-11-02 22:32:00 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4752 ms | in=  1266 o=  3212
+2026-11-02 22:32:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2026 ms | in=  6970 o=  2074
+2026-11-02 22:32:43 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3334 ms | in=  1258 o=  3923
+2026-11-02 22:34:16 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2043 ms | in=  6970 o=  1961
+2026-11-02 22:34:19 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2886 ms | in=  1258 o=  3306
+2026-11-02 22:36:22 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2802 ms | in=  6971 o=  2172
+2026-11-02 22:36:25 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2169 ms | in=  1259 o=  2518
+2026-11-02 22:36:27 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2576 ms | in=  6595 o=  1748
+2026-11-02 22:36:29 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1790 ms | in=   987 o=  2041
+2026-11-02 22:37:15 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1779 ms | in=  6595 o=  1508
+2026-11-02 22:37:18 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3205 ms | in=   987 o=  4092
+2026-11-02 22:41:23 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3019 ms | in=   824 o=  3090
+2026-11-02 22:41:25 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2072 ms | in=   815 o=  2361
+2026-11-02 22:41:30 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4728 ms | in=  4722 o=  4578
+2026-11-02 22:41:33 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2962 ms | in=  2277 o=  3902
+2026-11-02 22:41:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1842 ms | in=  1845 o=  2212
+2026-11-02 22:41:37 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2483 ms | in=   977 o=  2805
+2026-11-02 22:41:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1760 ms | in=   749 o=  1973
+2026-11-02 22:41:41 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2188 ms | in=   817 o=  2357
+2026-11-02 22:41:45 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3921 ms | in=  9442 o=  3927
+2026-11-02 22:41:48 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2922 ms | in=  7555 o=  4337
+2026-11-02 22:41:50 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1861 ms | in=  2407 o=  1640
+2026-11-02 22:41:54 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4189 ms | in=  1225 o=  5738
+2026-11-02 22:41:56 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1810 ms | in=   817 o=  1854
+2026-11-02 22:42:01 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5364 ms | in= 10248 o=  5758
+2026-11-02 22:42:06 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4783 ms | in=  8583 o=  7224
+2026-11-02 22:42:08 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1993 ms | in=  2629 o=  1494
+2026-11-02 22:42:11 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2953 ms | in=  2017 o=  4155
+2026-11-02 22:42:13 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1687 ms | in= 12236 o=  1317
+2026-11-02 22:42:15 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2081 ms | in=   989 o=  2375
+2026-11-02 22:42:28 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2380 ms | in=  1405 o=  2998
+2026-11-02 22:42:30 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2262 ms | in=  1281 o=  2660
+2026-11-02 23:21:34 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3501 ms | in=  1224 o=  4330
+2026-11-02 23:21:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  1837 ms | in=  1223 o=  2116
+2026-11-02 23:21:39 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3763 ms | in=  6786 o=  3365
+2026-11-02 23:28:17 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  4567 ms | in= 11322 o=  1614
+2026-11-02 23:28:21 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  3565 ms | in=   994 o=  4147
+2026-11-02 23:29:12 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2450 ms | in=   854 o=  1806
+2026-11-02 23:29:18 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5752 ms | in=  6197 o=  5222
+2026-11-02 23:29:24 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5943 ms | in=  4481 o=  7224
+2026-11-02 23:29:27 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2972 ms | in=  9258 o=  3652
+2026-11-02 23:29:29 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  2617 ms | in=  2549 o=  2028
+2026-11-02 23:29:35 | POST inference.baseten.co/v1/chat/completions | model=meta-models/muse-spark-open-1026 | 200 |  5327 ms | in=  1565 o=  6724
