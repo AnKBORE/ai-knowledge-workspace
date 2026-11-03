@@ -510,11 +510,20 @@ if ($method === 'GET') {
         'flash' => $flashMessage,
         'stats' => $path === '/' ? [
             'documents' => $totalDocuments,
-            'chunks' => (int) $dependencies['pdo']->query(
-                'SELECT COUNT(*) FROM document_chunks c
-                 JOIN documents d ON d.id = c.document_id
-                 WHERE d.supprime_le IS NULL'
-            )->fetchColumn(),
+            // Chunks of the documents this person may read, not of the whole base:
+            // a member who sees two documents cannot hold eight chunks.
+            'chunks' => (static function (array $lignes) use ($dependencies): int {
+                $ids = array_map(static fn (array $d): int => (int) ($d['id'] ?? 0), $lignes);
+                $ids = array_values(array_filter($ids, static fn (int $id): bool => $id > 0));
+
+                if ($ids === []) {
+                    return 0;
+                }
+
+                return (int) $dependencies['pdo']->query(
+                    'SELECT COUNT(*) FROM document_chunks WHERE document_id IN (' . implode(',', $ids) . ')'
+                )->fetchColumn();
+            })($documents),
             'categories' => $dependencies['categorie_model']->count(),
         ] : null,
         'lang' => $lang,
