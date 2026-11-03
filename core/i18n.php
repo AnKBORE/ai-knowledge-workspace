@@ -617,6 +617,7 @@ function app_i18n(string $lang): array
             'delete_confirm' => 'Delete this category? Linked documents will be unclassified.',
             'saving' => 'Saving…',
             'saved' => 'Category saved.',
+            'network_error' => 'Network error.',
         ],
         'journal' => [
             'hero_sub' => 'Action traceability: logins, document uploads, consultations, summaries, questions, permission refusals and deletions. The journal is append-only.',
@@ -647,6 +648,7 @@ function app_i18n(string $lang): array
             'purge_password_ph' => 'Required to confirm the purge',
             'purge_btn' => 'Purge',
             'purge_done' => '%d journal entr(ies) deleted.',
+            'network_error' => 'Network error.',
         ],
         'profil' => [
             'hero_sub' => 'Your identity, your global role and your workspace memberships.',
