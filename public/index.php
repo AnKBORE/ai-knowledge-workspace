@@ -312,6 +312,10 @@ if ($method === 'GET') {
     $visibleDocuments = $dependencies['permissions']->documentsVisibles((int) $auth->id());
     // Changing a document's workspace or confidentiality is an administrative act.
     $canControlDocuments = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'espace.administrer');
+
+// The delete action is offered only to an account the server will accept it
+// from: a button that always refuses is worse than no button.
+$canDeleteDocuments = $dependencies['permissions']->peutAilleurs((int) $auth->id(), 'document.supprimer');
     $documentsFlash = $dependencies['session']->get('documents_flash');
     $dependencies['session']->remove('documents_flash');
 
@@ -493,6 +497,7 @@ if ($method === 'GET') {
         'nbSuperAdmins' => $nbSuperAdmins ?? 0,
         'navPerms' => $navPerms ?? [],
         'canControlDocuments' => $canControlDocuments ?? false,
+            'canDeleteDocuments' => $canDeleteDocuments ?? false,
         'documentsFlash' => $documentsFlash ?? null,
         'categoriesDenied' => $categoriesDenied ?? false,
         'mesEspaces' => $mesEspaces ?? [],

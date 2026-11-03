@@ -159,12 +159,14 @@ $versionsLabel = static fn (int $n): string => $n . ' ' . $P[$n > 1 ? 'versions'
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
                                                     </button>
                                                 <?php endif; ?>
+<?php if (!empty($canDeleteDocuments)): ?>
                                                 <button type="button" class="doc-action doc-action-danger delete-btn" title="<?= e($P['delete_title']) ?>"
                                                         data-document-id="<?= $docId ?>"
                                                         data-document-title="<?= e((string) ($doc['title'] ?? '')) ?>"
                                                         aria-label="<?= e($P['delete_title']) ?>">
                                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>
                                                 </button>
+<?php endif; ?>
                                             </div>
                                         </td>
                                     </tr>

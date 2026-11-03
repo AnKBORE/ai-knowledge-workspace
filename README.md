@@ -432,7 +432,7 @@ Prepared SQL statements · CSRF protection on every POST · password hashing (Ar
 | **Technical reference** | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) | [`ARCHITECTURE.fr.md`](docs/ARCHITECTURE.fr.md) |
 | **Delivery guide** | [`GUIDE_DE_REALISATION.md`](docs/GUIDE_DE_REALISATION.md) | [`GUIDE_DE_REALISATION.fr.md`](docs/GUIDE_DE_REALISATION.fr.md) |
 | **Data security and privacy** | [`SECURITE_DONNEES_API.md`](docs/SECURITE_DONNEES_API.md) | [`SECURITE_DONNEES_API.fr.md`](docs/SECURITE_DONNEES_API.fr.md) |
-| **Issue register (59 entries, all resolved)** | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) |
+| **Issue register (60 entries, all resolved)** | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) |
 | **Demo video & submission** | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) |
 | **Demo state — accounts, workspaces, documents, scenarios** | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) |
 | **Acceptance test — real execution on a fresh database** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
