@@ -27,8 +27,8 @@ sources et refus explicite quand la réponse n'existe pas. Construit seul pour l
 
 | Élément | Valeur |
 |---|---|
-| Branche | `main`, **1 commit en avance sur `origin/main`** |
-| Tête locale | `10e58a2` · distant `84e0a80` |
+| Branche | `main` · tête à la rédaction : `eb2ced7` |
+| Écart avec le distant | à lire avec `git status -sb` — un décompte écrit ici serait périmé au commit suivant |
 | Tests | **124 tests, 295 assertions** |
 | Migrations | **25** (50 fichiers `.sql`, up + down) → 22 tables |
 | Comptes | **2** (1 protégé) · Espaces **2** · Adhésions **3** |
