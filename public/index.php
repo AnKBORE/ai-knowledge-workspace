@@ -316,6 +316,20 @@ if ($method === 'GET') {
     $dependencies['session']->remove('documents_flash');
 
     $espaceActif = (int) $dependencies['session']->get('espace_actif', 0);
+
+    // The session may hold a workspace this account does not belong to: it was
+    // inherited from a previous session, or the membership ended meanwhile. The
+    // badge would then advertise a workspace the person cannot work in.
+    if ($espaceActif > 0) {
+        $espacesDuCompte = $dependencies['espaces']->pourUtilisateur((int) $auth->id());
+        $idsDuCompte = array_map(static fn (array $e): int => (int) ($e['id'] ?? 0), $espacesDuCompte);
+
+        if (!in_array($espaceActif, $idsDuCompte, true)) {
+            usort($espacesDuCompte, static fn (array $a, array $b): int => (int) ($a['id'] ?? 0) <=> (int) ($b['id'] ?? 0));
+            $espaceActif = (int) ($espacesDuCompte[0]['id'] ?? 0);
+            $dependencies['session']->set('espace_actif', $espaceActif);
+        }
+    }
     // The active workspace name is shown in the topbar on every page.
     $espaceActifNom = '';
     if ($espaceActif > 0) {
