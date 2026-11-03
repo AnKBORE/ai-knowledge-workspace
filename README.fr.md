@@ -107,6 +107,7 @@ Le règlement du hackathon **exclut explicitement les applications RAG basiques*
 - Réponses en langage naturel
 - Fondées exclusivement sur les documents autorisés
 - Sources automatiquement citées
+- Les extraits de sources sont affichés dans la langue de la question, **sauf les extraits mooré**, montrés exactement tels que l'OCR les a lus : la traduction automatique d'une langue peu dotée produit des trous qui ne permettent pas de vérifier la réponse
 
 ### Recherche intelligente
 - Recherche hybride vectorielle et lexicale
@@ -433,7 +434,7 @@ Requêtes SQL préparées partout · CSRF sur chaque POST (formulaire **et** en-
 | **Référence technique** | [`ARCHITECTURE.fr.md`](docs/ARCHITECTURE.fr.md) | [`ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | **Guide de réalisation** | [`GUIDE_DE_REALISATION.fr.md`](docs/GUIDE_DE_REALISATION.fr.md) | [`GUIDE_DE_REALISATION.md`](docs/GUIDE_DE_REALISATION.md) |
 | **Sécurité et confidentialité des données** | [`SECURITE_DONNEES_API.fr.md`](docs/SECURITE_DONNEES_API.fr.md) | [`SECURITE_DONNEES_API.md`](docs/SECURITE_DONNEES_API.md) |
-| **Registre des problèmes (52 entrées, toutes résolues)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
+| **Registre des problèmes (56 entrées, toutes résolues)** | [`REGISTRE_PROBLEMES.fr.md`](docs/REGISTRE_PROBLEMES.fr.md) | [`REGISTRE_PROBLEMES.md`](docs/REGISTRE_PROBLEMES.md) |
 | **Démo vidéo & soumission** | [`DEMO_VIDEO_ET_SOUMISSION.fr.md`](docs/DEMO_VIDEO_ET_SOUMISSION.fr.md) | [`DEMO_VIDEO_ET_SOUMISSION.md`](docs/DEMO_VIDEO_ET_SOUMISSION.md) |
 | **État de démonstration — comptes, espaces, documents, scénarios** | [`ETAT_DE_DEMO.fr.md`](docs/ETAT_DE_DEMO.fr.md) | [`ETAT_DE_DEMO.md`](docs/ETAT_DE_DEMO.md) |
 | **Recette — exécution réelle sur base neuve** | [`RECETTE_AZ.fr.md`](docs/RECETTE_AZ.fr.md) | [`RECETTE_AZ.md`](docs/RECETTE_AZ.md) |
