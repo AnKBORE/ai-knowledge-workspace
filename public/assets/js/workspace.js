@@ -461,12 +461,37 @@
         resultSources.hidden = true;
     }
 
+    /**
+     * A name for the exported file.
+     *
+     * The modal title is a badge ("Draft", "Answer", "Summary"), so exporting with
+     * it wrote a document whose first line was "Draft". When the title is one of
+     * those, the first meaningful line of the content becomes the title.
+     */
+    function exportTitle(content, fallback) {
+        var generic = ['draft', 'answer', 'summary', 'réponse', 'resume', 'résumé', 'note', 'traduction'];
+        var current = String(fallback || '').trim().toLowerCase();
+
+        if (current !== '' && generic.indexOf(current) === -1) { return String(fallback).trim(); }
+
+        var lines = String(content || '').split('\n');
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].replace(/^#+\s*/, '').replace(/\*\*/g, '').replace(/^[-*•]\s*/, '').trim();
+
+            if (line.length >= 6) { return line.substring(0, 90); }
+        }
+
+        return String(fallback || 'document');
+    }
+
     async function downloadResult(format) {
         try {
+            var exportName = exportTitle(currentResult.content, currentResult.title);
             var response = await fetch(apiUrl('export.php'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: currentResult.title, content: currentResult.content, format: format })
+                body: JSON.stringify({ title: exportName, content: currentResult.content, format: format }),
             });
             if (!response.ok) {
                 throw new Error('export');
@@ -475,7 +500,7 @@
             var url = URL.createObjectURL(blob);
             var link = document.createElement('a');
             link.href = url;
-            link.download = currentResult.title.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.' + format;
+            link.download = exportName.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.' + format;
             document.body.appendChild(link);
             link.click();
             link.remove();
