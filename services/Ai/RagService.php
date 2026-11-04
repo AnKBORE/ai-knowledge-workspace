@@ -1055,6 +1055,10 @@ PROMPT;
 
     private function taskPrompt(): string
     {
+        // The prompt asks for a date and never received one, so the model invented
+        // "Date of note: 08/05/2026" in a note written on the fourth of November.
+        $today = date('d/m/Y');
+
         $langRule = "7. Rédige le document dans la langue de l'instruction : anglais → document en anglais, mooré → document en mooré, coréen → coréen, etc. Si l'instruction est en mooré, rédige entièrement en mooré courant en gardant les données exactes telles quelles.";
 
         return <<<PROMPT
@@ -1069,6 +1073,7 @@ RÈGLES :
 4. Distingue clairement ce qui provient des extraits (cité) de ce qui est proposé.
 4b. Mets en gras (**…**) le titre du document, les intitulés de sections et les données clés (dates, chiffres, noms propres).
 4c. Toute citation littérale entre guillemets DOIT être traduite dans la langue de rédaction ; l'original ne peut être gardé qu'entre parenthèses juste après. Aucun passage du document ne doit rester dans une autre langue que celle de l'instruction.
+4d. La date de rédaction est le jour où le document est produit : {$today}. Utilise exactement cette date comme date du document. Ne prends JAMAIS une date trouvée dans les extraits comme date de rédaction, et n'en invente aucune autre.
 5. Structure ADAPTÉE au type de document demandé — n'impose jamais une structure étrangère au genre :
    - note / mémo : titre, destinataires et objet, points essentiels, actions ou recommandations ;
    - rapport / synthèse : titre, contexte, constats, analyse, conclusions et recommandations ;
