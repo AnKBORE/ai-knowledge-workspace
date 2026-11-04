@@ -6,6 +6,8 @@
 >
 > Built for the **Meta Global AI Developer Hackathon** — Theme: **Build for Your World** · Track: **Indie Developer** · Model: **Muse Spark Open** · License: **MIT**.
 
+**▶ [Three-minute demonstration](https://www.youtube.com/watch?v=MjJUhYCnJEU)** — a spoken decision becomes a citable document, a refusal replaces a guess, an agentic task verifies itself, and an access is refused by the server.
+
 ---
 
 ## The problem

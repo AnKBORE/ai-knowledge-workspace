@@ -6,6 +6,8 @@
 >
 > Réalisé pour le **Meta Global AI Developer Hackathon** — Thème : **Build for Your World** · Piste : **Indie Developer** · Modèle : **Muse Spark Open** · Licence : **MIT**.
 
+**▶ [Démonstration de trois minutes](https://www.youtube.com/watch?v=MjJUhYCnJEU)** — une décision orale devient un document citable, un refus remplace une invention, une tâche agentique se vérifie, et un accès est refusé par le serveur.
+
 ---
 
 ## La problématique
