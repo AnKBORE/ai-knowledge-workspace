@@ -45,6 +45,14 @@ final class DocumentTest extends TestCase
             document_id INTEGER NOT NULL
         )');
 
+        // Deleting a document also removes what was derived from it.
+        $pdo->exec('CREATE TABLE document_chunks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id INTEGER NOT NULL,
+            chunk_index INTEGER NOT NULL DEFAULT 0,
+            content TEXT NOT NULL DEFAULT ""
+        )');
+
           $pdo->exec('CREATE TABLE document_espace (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               document_id INTEGER NOT NULL,

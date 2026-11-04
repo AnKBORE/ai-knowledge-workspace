@@ -241,6 +241,14 @@ final class Document
     {
         $this->db->prepare('UPDATE documents SET supprime_le = CURRENT_TIMESTAMP WHERE id = :id')
             ->execute(['id' => $id]);
+
+        // The chunks and versions are derived from the document: kept, they outlive it
+        // and keep counting in totals that no page shows. The file itself stays in
+        // storage/files under its SHA-256, which is what makes a document restorable.
+        $this->db->prepare('DELETE FROM document_chunks WHERE document_id = :id')
+            ->execute(['id' => $id]);
+        $this->db->prepare('DELETE FROM version_document WHERE document_id = :id')
+            ->execute(['id' => $id]);
     }
     /**
      * Record the detected language of the document body.
